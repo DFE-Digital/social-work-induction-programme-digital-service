@@ -9,11 +9,12 @@ services:
     ports:
       - 7028:8081
     environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DOCKER__KESTREL__CERTIFICATE_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${DOCKER__KESTREL__CERTIFICATE_PATH}
     volumes:
       - ~/.aspnet/https:/https:ro
-      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
 
   dfe.sww.ecf.accountservice:
     image: dfe.sww.ecf.accountservice
@@ -25,10 +26,11 @@ services:
     ports:
       - 7009:8081
     environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DOCKER__KESTREL__CERTIFICATE_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${DOCKER__KESTREL__CERTIFICATE_PATH}
     volumes:
       - ~/.aspnet/https:/https:ro
-      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
 networks:
   dfe-sww-ecf: { }
