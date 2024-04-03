@@ -1,0 +1,6 @@
+@Dfe.Sww.Ecf.AccountService_HostAddress = http://localhost:5015
+
+GET {{Dfe.Sww.Ecf.AccountService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
