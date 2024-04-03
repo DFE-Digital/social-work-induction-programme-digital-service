@@ -15,6 +15,7 @@ services:
     image: "dfe.sww.ecf.accountservice:dev"
     ports: []
     volumes:
+    - "/Users/bradpark/.microsoft/usersecrets:/home/app/.microsoft/usersecrets"
     - "/Users/bradpark/.nuget/packages:/home/app/.nuget/packages"
     - "/Users/bradpark/dev/ecf-dev-private/apps/Dfe.Sww.Ecf.AccountService:/app:rw"
     - "/Users/bradpark/dev/ecf-dev-private:/src:rw"
@@ -35,6 +36,7 @@ services:
     image: "dfe.sww.ecf.ui:dev"
     ports: []
     volumes:
+    - "/Users/bradpark/.microsoft/usersecrets:/home/app/.microsoft/usersecrets"
     - "/Users/bradpark/.nuget/packages:/home/app/.nuget/packages"
     - "/Users/bradpark/dev/ecf-dev-private/apps/Dfe.Sww.Ecf.Ui:/app:rw"
     - "/Users/bradpark/dev/ecf-dev-private:/src:rw"
