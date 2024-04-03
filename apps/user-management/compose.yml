@@ -1,0 +1,34 @@
+services:
+  dfe.sww.ecf.ui:
+    image: dfe.sww.ecf.ui
+    build:
+      context: .
+      dockerfile: apps/Dfe.Sww.Ecf.Ui/Dockerfile
+    networks:
+      - dfe-sww-ecf
+    ports:
+      - 7028:8081
+    environment:
+      - ASPNETCORE_URLS=https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=devcert123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/dfe.sww.ecf.ui.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  dfe.sww.ecf.accountservice:
+    image: dfe.sww.ecf.accountservice
+    build:
+      context: .
+      dockerfile: apps/Dfe.Sww.Ecf.AccountService/Dockerfile
+    networks:
+      - dfe-sww-ecf
+    ports:
+      - 7009:8081
+    environment:
+      - ASPNETCORE_URLS=https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=devcert123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/dfe.sww.ecf.accountservice.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+networks:
+  dfe-sww-ecf: { }

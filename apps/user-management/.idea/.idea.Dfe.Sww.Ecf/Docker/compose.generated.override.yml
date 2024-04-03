@@ -1,0 +1,41 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  dfe.sww.ecf.accountservice:
+    build:
+      context: "/Users/bradpark/dev/ecf-dev-private"
+      dockerfile: "apps/Dfe.Sww.Ecf.AccountService/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Dfe.Sww.Ecf.AccountService.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "dfe.sww.ecf.accountservice:dev"
+    ports: []
+    volumes:
+    - "/Users/bradpark/.nuget/packages:/home/app/.nuget/packages"
+    - "/Users/bradpark/dev/ecf-dev-private/apps/Dfe.Sww.Ecf.AccountService:/app:rw"
+    - "/Users/bradpark/dev/ecf-dev-private:/src:rw"
+    working_dir: "/app"
+  dfe.sww.ecf.ui:
+    build:
+      context: "/Users/bradpark/dev/ecf-dev-private"
+      dockerfile: "apps/Dfe.Sww.Ecf.Ui/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Dfe.Sww.Ecf.Ui.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/Dfe.Sww.Ecf.Ui.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "dfe.sww.ecf.ui:dev"
+    ports: []
+    volumes:
+    - "/Users/bradpark/.nuget/packages:/home/app/.nuget/packages"
+    - "/Users/bradpark/dev/ecf-dev-private/apps/Dfe.Sww.Ecf.Ui:/app:rw"
+    - "/Users/bradpark/dev/ecf-dev-private:/src:rw"
+    working_dir: "/app"
