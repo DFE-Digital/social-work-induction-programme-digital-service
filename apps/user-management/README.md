@@ -25,6 +25,7 @@ CERT_PATH=${HOME}/.aspnet/https/${CERT_NAME}
 dotnet dev-certs https -ep ${CERT_PATH} -p ${CERT_PASSKEY} --trust
 
 # Set the certificate path and passkey in project user secrets
+# TODO: Remove this step and use `.env` for non-docker configuration also
 dotnet user-secrets --id e812e454-6fd2-4bba-8173-9ea4d87f32b1 set "Kestrel:Certificates:Development:Path" ${CERT_PATH}
 dotnet user-secrets --id e812e454-6fd2-4bba-8173-9ea4d87f32b1 set "Kestrel:Certificates:Development:Password" ${CERT_PASSKEY}
 ```
