@@ -404,4 +404,4 @@ nx affected:e2e</pre>
       `;
   }
 }
-customElements.define('sww-ecf-dev-private-root', AppElement);
+customElements.define('Sww-Ecf-root', AppElement);
