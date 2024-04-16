@@ -1,7 +1,11 @@
 import DfeLogo from 'dfe-frontend-alpha/packages/assets/dfe-logo.png';
 import DfeLogoAlt from 'dfe-frontend-alpha/packages/assets/dfe-logo-alt.png';
 
-function Header() {
+interface HeaderProps {
+  serviceName: string
+}
+
+function Header({ serviceName }: HeaderProps) {
   return (
     <header class="dfe-header" role="banner">
       <div class="dfe-width-container dfe-header__container">
@@ -13,7 +17,7 @@ function Header() {
           >
             <img src={DfeLogo} class="dfe-logo" alt="DfE Homepage" />
             <img src={DfeLogoAlt} class="dfe-logo-hover" alt="DfE Homepage" />
-            <span class="dfe-header__service-name">Service name</span>
+            <span class="dfe-header__service-name">{ serviceName }</span>
           </a>
         </div>
         <div class="dfe-header__content" id="content-header">
