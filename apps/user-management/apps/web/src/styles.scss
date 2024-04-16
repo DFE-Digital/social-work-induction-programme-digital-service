@@ -1,7 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 $govuk-font-family: 'Inter', sans-serif;
 
-@import 'govuk-frontend/dist/govuk/all';
+$govuk-assets-path: 'govuk-frontend/dist/govuk/assets/';
+@import 'govuk-frontend/dist/govuk/base';
+@import "govuk-frontend/dist/govuk/core/all";
+@import "govuk-frontend/dist/govuk/objects/all";
+@import "govuk-frontend/dist/govuk/utilities/all";
+@import "govuk-frontend/dist/govuk/overrides/all";
+
 @import 'dfe-frontend-alpha/packages/dfefrontend';
 
 
