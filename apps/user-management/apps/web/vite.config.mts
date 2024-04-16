@@ -17,7 +17,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [nxViteTsPaths()],
+  plugins: [ nxViteTsPaths() ],
 
   // Uncomment this if you are using workers.
   // worker: {
@@ -26,6 +26,7 @@ export default defineConfig({
 
   build: {
     outDir: '../../dist/apps/web',
+    emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -34,9 +35,6 @@ export default defineConfig({
 
   test: {
     globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
     environment: 'jsdom',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
 

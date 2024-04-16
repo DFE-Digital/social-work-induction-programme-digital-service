@@ -10,7 +10,7 @@
       "executor": "@nx/vite:build",
       "cache": true,
       "options": {
-        "outputPath": "dist/apps/web"
+        "outputPath": "{workspaceRoot}/dist/apps/web"
       }
     },
     "test": {
