@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "nx g @nx-dotnet/core:restore"
   },
   "private": true,
   "devDependencies": {
+    "@nx-dotnet/core": "^2.2.0",
     "@nx/devkit": "18.2.4",
     "@nx/eslint": "18.2.4",
     "@nx/eslint-plugin": "18.2.4",
