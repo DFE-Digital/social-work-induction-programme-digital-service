@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+$govuk-font-family: 'Inter', sans-serif;
+
+@import 'govuk-frontend/dist/govuk/all';
+@import 'dfe-frontend-alpha/packages/dfefrontend';
+
+
+html {
+  font-family: $govuk-font-family;
+}

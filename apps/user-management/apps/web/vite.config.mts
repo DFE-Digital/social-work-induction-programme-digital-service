@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
-export default defineConfig({
+export default defineConfig( {
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/web',
 
@@ -18,6 +18,20 @@ export default defineConfig({
   },
 
   plugins: [ nxViteTsPaths() ],
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true
+      }
+    }
+  },
+
+  esbuild: {
+    jsxFactory: 'h',
+    jsxFragment: 'Fragment',
+    jsxInject: `import { h, Fragment } from 'preact'`,
+  },
 
   // Uncomment this if you are using workers.
   // worker: {
@@ -36,12 +50,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    css: true,
+    include: [ 'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}' ],
 
-    reporters: ['default'],
+    reporters: [ 'default' ],
     coverage: {
       reportsDirectory: '../../coverage/apps/web',
       provider: 'v8',
     },
   },
-});
+} );
