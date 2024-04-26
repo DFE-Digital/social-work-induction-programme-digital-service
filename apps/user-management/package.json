@@ -1,5 +1,5 @@
 {
-  "name": "@sww-ecf/source",
+  "name": "@dfe-sww-ecf/source",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -9,42 +9,15 @@
   "private": true,
   "devDependencies": {
     "@nx-dotnet/core": "^2.2.0",
-    "@nx/devkit": "18.2.4",
-    "@nx/eslint": "18.2.4",
-    "@nx/eslint-plugin": "18.2.4",
     "@nx/js": "18.2.4",
-    "@nx/playwright": "18.2.4",
-    "@nx/vite": "18.2.4",
-    "@nx/web": "18.2.4",
     "@nx/workspace": "18.2.4",
-    "@playwright/test": "^1.43.1",
-    "@swc-node/register": "~1.9.0",
-    "@swc/core": "~1.4.14",
-    "@swc/helpers": "~0.5.10",
-    "@testing-library/preact": "^3.2.3",
-    "@types/node": "20.12.7",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
-    "@vitest/coverage-v8": "^1.5.0",
-    "@vitest/ui": "^1.5.0",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-playwright": "^1.6.0",
-    "jsdom": "~24.0.0",
     "nx": "18.2.4",
-    "prettier": "^3.2.5",
-    "sass": "^1.75.0",
-    "swc-loader": "0.2.6",
-    "typescript": "~5.4.5",
-    "vite": "~5.2.9",
-    "vitest": "^1.5.0"
+    "prettier": "^3.2.5"
   },
   "dependencies": {
     "dfe-frontend-alpha": "^1.0.1",
-    "govuk-frontend": "^5.3.0",
-    "preact": "^10.20.2",
-    "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat",
-    "tslib": "^2.6.2"
+    "govuk-frontend": "^5.3.0"
   }
 }

@@ -29,7 +29,7 @@ asdf install
 Tasks can either be run workspace-wide with `nx run-many -t <taskName>`, or project specific with `nx run <project>:<taskName>`.
 e.g.
 - `nx run-many -t serve`
-- `nx run web:build`
+- `nx run frontend:build`
 
 #### Task List
 
