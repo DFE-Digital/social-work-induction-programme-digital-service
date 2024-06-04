@@ -156,6 +156,9 @@ fabric.properties
 .history
 .ionide
 
+### Visual Studio state files
+.vs/
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
