@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DfeSwwEcf.NotificationServi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DfeSwwEcf.NotificationService.Models", "apps\notification-service\DfeSwwEcf.NotificationService.Models\DfeSwwEcf.NotificationService.Models.csproj", "{5A35048A-5693-4A71-9AC4-39AC798F0377}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DfeSwwEcf.NotificationService.UnitTests", "apps\notification-service\DfeSwwEcf.NotificationService.UnitTests\DfeSwwEcf.NotificationService.UnitTests.csproj", "{0D08B571-FDD7-45CF-8B1A-CCA72A550411}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DfeSwwEcf.NotificationService.UnitTests", "apps/notification-service-test\DfeSwwEcf.NotificationService.UnitTests.csproj", "{0D08B571-FDD7-45CF-8B1A-CCA72A550411}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

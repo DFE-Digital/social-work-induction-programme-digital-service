@@ -24,9 +24,9 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\DfeSwwEcf.NotificationService.Models\DfeSwwEcf.NotificationService.Models.csproj" />
-    <ProjectReference Include="..\DfeSwwEcf.NotificationService.Services\DfeSwwEcf.NotificationService.Services.csproj" />
-    <ProjectReference Include="..\DfeSwwEcf.NotificationService\DfeSwwEcf.NotificationService.csproj" />
+    <ProjectReference Include="..\notification-service\DfeSwwEcf.NotificationService.Models\DfeSwwEcf.NotificationService.Models.csproj" />
+    <ProjectReference Include="..\notification-service\DfeSwwEcf.NotificationService.Services\DfeSwwEcf.NotificationService.Services.csproj" />
+    <ProjectReference Include="..\notification-service\DfeSwwEcf.NotificationService\DfeSwwEcf.NotificationService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
