@@ -1,4 +1,5 @@
-﻿using DfeSwwEcf.NotificationService.Models;
+﻿using System.Net;
+using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
 using DfeSwwEcf.NotificationService.UnitTests.Helpers;
 using FluentAssertions;
@@ -45,24 +46,30 @@ public class RunAsyncShould
             }
         };
 
+        var expectedResponse = new NotificationResponse
+        {
+            StatusCode = HttpStatusCode.OK
+        };
+
         var json = JsonSerializer.Serialize(notificationRequest);
         var request = CreateHttpRequest(json);
 
         _mockValidator
-            .Setup(x => x.Validate(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)))
-            .Returns(new ValidationResult());
+            .Setup(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult());
 
         _mockNotificationCommand
-            .Setup(x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)));
+            .Setup(x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)))
+            .ReturnsAsync(expectedResponse);
 
         // Act
         var response = await _sut.RunAsync(request);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeOfType<OkResult>();
+        response.Should().BeOfType<StatusCodeResult>();
 
-        _mockValidator.Verify(x => x.Validate(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)), Times.Once);
+        _mockValidator.Verify(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()), Times.Once);
         _mockNotificationCommand.Verify(x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)), Times.Once);
 
         _mockValidator.VerifyNoOtherCalls();
@@ -97,8 +104,8 @@ public class RunAsyncShould
         };
 
         _mockValidator
-            .Setup(x => x.Validate(It.IsAny<NotificationRequest>()))
-            .Returns(validationResult);
+            .Setup(x => x.ValidateAsync(It.IsAny<NotificationRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(validationResult);
 
         // Act
         var response = await _sut.RunAsync(request);
@@ -107,7 +114,7 @@ public class RunAsyncShould
         response.Should().NotBeNull();
         response.Should().BeOfType<BadRequestObjectResult>();
 
-        _mockValidator.Verify(x => x.Validate(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)), Times.Once);
+        _mockValidator.Verify(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()), Times.Once);
         _mockNotificationCommand.Verify(x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()), Times.Never);
 
         _mockValidator.VerifyNoOtherCalls();

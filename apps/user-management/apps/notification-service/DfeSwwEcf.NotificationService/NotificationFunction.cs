@@ -1,17 +1,15 @@
+using System.Net;
+using System.Text.Json;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Text.Json;
 
 namespace DfeSwwEcf.NotificationService;
 
@@ -23,12 +21,8 @@ namespace DfeSwwEcf.NotificationService;
 /// <param name="notificationCommand"></param>
 public class NotificationFunction(ILogger<NotificationFunction> log, IValidator<NotificationRequest> validator, INotificationCommand notificationCommand)
 {
-    private readonly ILogger<NotificationFunction> _logger = log;
-    private readonly IValidator<NotificationRequest> _validator = validator;
-    private readonly INotificationCommand _notificationCommand = notificationCommand;
-
     [Function("Notification")]
-    [OpenApiOperation(operationId: "RunAsync", tags: new[] { "Notification Function" })]
+    [OpenApiOperation(operationId: "RunAsync", tags: ["Notification Function"])]
     [OpenApiSecurity("function_key", SecuritySchemeType.ApiKey, Name = "code", In = OpenApiSecurityLocationType.Query)]
     [OpenApiRequestBody("application/json", typeof(NotificationRequest))]
     [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "Notification Sent Successfully")]
@@ -36,7 +30,7 @@ public class NotificationFunction(ILogger<NotificationFunction> log, IValidator<
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
     {
-        _logger.LogInformation("C# HTTP trigger function processed a request.");
+        log.LogInformation("C# HTTP trigger function processed a request.");
 
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
@@ -45,7 +39,7 @@ public class NotificationFunction(ILogger<NotificationFunction> log, IValidator<
         {
             data = JsonSerializer.Deserialize<NotificationRequest>(requestBody);
         }
-        catch (System.Text.Json.JsonException)
+        catch (JsonException)
         {
             return new BadRequestObjectResult("Request body is not valid json");
         }
@@ -55,14 +49,14 @@ public class NotificationFunction(ILogger<NotificationFunction> log, IValidator<
             return new BadRequestObjectResult("Request body failed to deserialise");
         }
 
-        var validationResults = _validator.Validate(data);
+        var validationResults = await validator.ValidateAsync(data);
         if (!validationResults.IsValid)
         {
             return new BadRequestObjectResult(JsonSerializer.Serialize(validationResults.Errors));
         }
 
-        await _notificationCommand.SendNotificationAsync(data);
+        var response = await notificationCommand.SendNotificationAsync(data);
 
-        return new OkResult();
+        return new StatusCodeResult((int)response.StatusCode);
     }
 }

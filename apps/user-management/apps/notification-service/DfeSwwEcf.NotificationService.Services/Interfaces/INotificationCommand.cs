@@ -1,4 +1,4 @@
-﻿using DfeSwwEcf.NotificationService.Models;
+using DfeSwwEcf.NotificationService.Models;
 
 namespace DfeSwwEcf.NotificationService.Services.Interfaces;
 
@@ -11,5 +11,5 @@ public interface INotificationCommand
     /// Sends a notification
     /// </summary>
     /// <param name="notificationRequest"></param>
-    Task SendNotificationAsync(NotificationRequest notificationRequest);
+    Task<NotificationResponse> SendNotificationAsync(NotificationRequest notificationRequest);
 }
