@@ -99,7 +99,6 @@ public class RunAsyncShould
                     PropertyName = nameof(NotificationRequest.EmailAddress),
                     Severity = Severity.Error,
                 }
-
             }
         };
 

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\DfeSwwEcf.NotificationService.Models\DfeSwwEcf.NotificationService.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="DfeSwwEcf.NotificationService.UnitTests" />
+  </ItemGroup>
+
 </Project>
