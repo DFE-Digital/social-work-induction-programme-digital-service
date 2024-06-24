@@ -1,0 +1,25 @@
+@page "/oidc-test/signed-in"
+@using System.Text.Json
+@using TeachingRecordSystem.AuthorizeAccess.Pages.OidcTest
+@addTagHelper *, Joonasw.AspNetCore.SecurityHeaders
+@model SignedInModel
+
+@section Styles {
+    <style type="text/css" asp-add-nonce="true">
+        .claims-json {
+            font-family: monospace !important;
+            height: 260px;
+            white-space: pre-wrap;
+        }
+
+        .access-token {
+            font-family: monospace !important;
+        }
+    </style>
+}
+
+<p class="govuk-body">
+    <govuk-input asp-for="AccessToken" input-class="access-token" disabled="true" />
+
+    <govuk-textarea asp-for="ClaimsJson" textarea-class="claims-json" disabled="true" />
+</p>

@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <IsTestProject Condition="'$(IsTestProject)' == '' and $(MSBuildProjectName.EndsWith('Tests'))">true</IsTestProject>
+
+    <UserSecretsId>TeachingRecordSystem</UserSecretsId>
+    <UserSecretsId Condition="'$(IsTestProject)' == 'true'">TeachingRecordSystemTests</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="TeachingRecordSystem.Core" />
+    <Using Include="TeachingRecordSystem.Core.Events" />
+    <Using Include="TeachingRecordSystem.Core.Models" />
+    <Using Include="System.Threading.Tasks.Task" Alias="Task" />
+    <Using Include="TeachingRecordSystem.Core.Events.Models" Alias="EventModels" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <Using Include="Moq" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>
