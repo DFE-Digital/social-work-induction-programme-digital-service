@@ -2,6 +2,14 @@
 
 ## Development
 
+### Coding Conventions & Standards
+#### CSharpier
+We apply coding standards using [CSharpier](https://csharpier.com/) and `.editorconfig`. In order to apply the formatting on save you can install the extention for your chosen IDE [here](https://csharpier.com/docs/Editors), and follow the instructions in the extension overview.
+
+#### Extension Links
+- [Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=csharpier.CSharpier) - `Configure Reformat with CSharpier on Save under Tools | Options | CSharpier | General`
+- [JetBrains Rider](https://plugins.jetbrains.com/plugin/18243-csharpier) - `Configure CSharpier to Run on Save under Preferences/Settings | Tools | CSharpier`
+
 ### Tooling and Package Management
 
 #### Tool versions (`asdf`)

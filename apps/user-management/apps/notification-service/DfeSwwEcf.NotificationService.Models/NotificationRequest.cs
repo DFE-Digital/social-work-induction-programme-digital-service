@@ -26,7 +26,7 @@ public class NotificationRequest
     public Guid? EmailReplyToId { get; set; }
 
     /// <summary>
-    /// Used to replace placeholders in the template for relevant information 
+    /// Used to replace placeholders in the template for relevant information
     /// </summary>
     public Dictionary<string, string>? Personalisation { get; set; }
 }

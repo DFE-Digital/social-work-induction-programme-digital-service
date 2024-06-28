@@ -1,4 +1,4 @@
-using DfeSwwEcf.NotificationService.Installers;
+﻿using DfeSwwEcf.NotificationService.Installers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 using Microsoft.Extensions.Configuration;

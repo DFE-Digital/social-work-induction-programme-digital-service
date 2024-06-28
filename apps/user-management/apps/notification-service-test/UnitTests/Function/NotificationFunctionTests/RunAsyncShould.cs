@@ -1,6 +1,9 @@
 ﻿using System.Net;
+using System.Text;
+using System.Text.Json;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
+using DfeSwwEcf.NotificationService.Tests.UnitTests.Helpers;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -8,11 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Text;
-using System.Text.Json;
-using DfeSwwEcf.NotificationService.Tests.Helpers;
 
-namespace DfeSwwEcf.NotificationService.Tests.Function.NotificationFunctionTests;
+namespace DfeSwwEcf.NotificationService.Tests.UnitTests.Function.NotificationFunctionTests;
 
 public class RunAsyncShould
 {
@@ -23,11 +23,15 @@ public class RunAsyncShould
 
     public RunAsyncShould()
     {
-        _mockLog = new();
-        _mockValidator = new();
-        _mockNotificationCommand = new();
+        _mockLog = new Mock<ILogger<NotificationFunction>>();
+        _mockValidator = new Mock<IValidator<NotificationRequest>>();
+        _mockNotificationCommand = new Mock<INotificationCommand>();
 
-        _sut = new(_mockLog.Object, _mockValidator.Object, _mockNotificationCommand.Object);
+        _sut = new NotificationFunction(
+            _mockLog.Object,
+            _mockValidator.Object,
+            _mockNotificationCommand.Object
+        );
     }
 
     [Fact]
@@ -40,26 +44,27 @@ public class RunAsyncShould
             TemplateId = Guid.NewGuid(),
             Reference = "string",
             EmailReplyToId = Guid.NewGuid(),
-            Personalisation = new Dictionary<string, string>()
-            {
-                { "first_name", "Amala" }
-            }
+            Personalisation = new Dictionary<string, string>() { { "first_name", "Amala" } }
         };
 
-        var expectedResponse = new NotificationResponse
-        {
-            StatusCode = HttpStatusCode.OK
-        };
+        var expectedResponse = new NotificationResponse { StatusCode = HttpStatusCode.OK };
 
         var json = JsonSerializer.Serialize(notificationRequest);
         var request = CreateHttpRequest(json);
 
         _mockValidator
-            .Setup(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.ValidateAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(notificationRequest),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(new ValidationResult());
 
         _mockNotificationCommand
-            .Setup(x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)))
+            .Setup(x =>
+                x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest))
+            )
             .ReturnsAsync(expectedResponse);
 
         // Act
@@ -69,8 +74,18 @@ public class RunAsyncShould
         response.Should().NotBeNull();
         response.Should().BeOfType<StatusCodeResult>();
 
-        _mockValidator.Verify(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()), Times.Once);
-        _mockNotificationCommand.Verify(x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)), Times.Once);
+        _mockValidator.Verify(
+            x =>
+                x.ValidateAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(notificationRequest),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _mockNotificationCommand.Verify(
+            x => x.SendNotificationAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest)),
+            Times.Once
+        );
 
         _mockValidator.VerifyNoOtherCalls();
         _mockNotificationCommand.VerifyNoOtherCalls();
@@ -80,10 +95,7 @@ public class RunAsyncShould
     public async Task WhenValidationFails_ReturnsBadRequestWithErrors()
     {
         // Arrange
-        var notificationRequest = new NotificationRequest
-        {
-            EmailAddress = "NOT AN EMAIL",
-        };
+        var notificationRequest = new NotificationRequest { EmailAddress = "NOT AN EMAIL" };
 
         var json = JsonSerializer.Serialize(notificationRequest);
         var request = CreateHttpRequest(json);
@@ -97,13 +109,15 @@ public class RunAsyncShould
                     ErrorMessage = "EMAIL NOT AN EMAIL",
                     AttemptedValue = "NOT AN EMAIL",
                     PropertyName = nameof(NotificationRequest.EmailAddress),
-                    Severity = Severity.Error,
+                    Severity = Severity.Error
                 }
             }
         };
 
         _mockValidator
-            .Setup(x => x.ValidateAsync(It.IsAny<NotificationRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.ValidateAsync(It.IsAny<NotificationRequest>(), It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(validationResult);
 
         // Act
@@ -113,8 +127,18 @@ public class RunAsyncShould
         response.Should().NotBeNull();
         response.Should().BeOfType<BadRequestObjectResult>();
 
-        _mockValidator.Verify(x => x.ValidateAsync(MoqHelpers.ShouldBeEquivalentTo(notificationRequest), It.IsAny<CancellationToken>()), Times.Once);
-        _mockNotificationCommand.Verify(x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()), Times.Never);
+        _mockValidator.Verify(
+            x =>
+                x.ValidateAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(notificationRequest),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _mockNotificationCommand.Verify(
+            x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()),
+            Times.Never
+        );
 
         _mockValidator.VerifyNoOtherCalls();
         _mockNotificationCommand.VerifyNoOtherCalls();
@@ -142,7 +166,10 @@ public class RunAsyncShould
         responseObject.Value.Should().BeEquivalentTo(responseMessage);
 
         _mockValidator.Verify(x => x.Validate(It.IsAny<NotificationRequest>()), Times.Never);
-        _mockNotificationCommand.Verify(x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()), Times.Never);
+        _mockNotificationCommand.Verify(
+            x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()),
+            Times.Never
+        );
 
         _mockValidator.VerifyNoOtherCalls();
         _mockNotificationCommand.VerifyNoOtherCalls();
@@ -170,7 +197,10 @@ public class RunAsyncShould
         responseObject.Value.Should().BeEquivalentTo(responseMessage);
 
         _mockValidator.Verify(x => x.Validate(It.IsAny<NotificationRequest>()), Times.Never);
-        _mockNotificationCommand.Verify(x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()), Times.Never);
+        _mockNotificationCommand.Verify(
+            x => x.SendNotificationAsync(It.IsAny<NotificationRequest>()),
+            Times.Never
+        );
 
         _mockValidator.VerifyNoOtherCalls();
         _mockNotificationCommand.VerifyNoOtherCalls();

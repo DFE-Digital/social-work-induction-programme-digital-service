@@ -19,16 +19,32 @@ namespace DfeSwwEcf.NotificationService;
 /// <param name="log"></param>
 /// <param name="validator"></param>
 /// <param name="notificationCommand"></param>
-public class NotificationFunction(ILogger<NotificationFunction> log, IValidator<NotificationRequest> validator, INotificationCommand notificationCommand)
+public class NotificationFunction(
+    ILogger<NotificationFunction> log,
+    IValidator<NotificationRequest> validator,
+    INotificationCommand notificationCommand
+)
 {
     [Function("Notification")]
     [OpenApiOperation(operationId: "RunAsync", tags: ["Notification Function"])]
-    [OpenApiSecurity("function_key", SecuritySchemeType.ApiKey, Name = "code", In = OpenApiSecurityLocationType.Query)]
+    [OpenApiSecurity(
+        "function_key",
+        SecuritySchemeType.ApiKey,
+        Name = "code",
+        In = OpenApiSecurityLocationType.Query
+    )]
     [OpenApiRequestBody("application/json", typeof(NotificationRequest))]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "Notification Sent Successfully")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Validation Error / Invalid JSON")]
+    [OpenApiResponseWithoutBody(
+        statusCode: HttpStatusCode.OK,
+        Description = "Notification Sent Successfully"
+    )]
+    [OpenApiResponseWithoutBody(
+        statusCode: HttpStatusCode.BadRequest,
+        Description = "Validation Error / Invalid JSON"
+    )]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req
+    )
     {
         log.LogInformation("C# HTTP trigger function processed a request.");
 

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -12,21 +12,20 @@ namespace DfeSwwEcf.NotificationService.Services;
 /// <inheritdoc/>
 public class EmailNotificationCommand(
     IAsyncNotificationClient notificationClient,
-    ILogger<EmailNotificationCommand> log) : INotificationCommand
+    ILogger<EmailNotificationCommand> log
+) : INotificationCommand
 {
     /// <inheritdoc/>
-    public async Task<NotificationResponse> SendNotificationAsync(NotificationRequest notificationRequest)
+    public async Task<NotificationResponse> SendNotificationAsync(
+        NotificationRequest notificationRequest
+    )
     {
         var delay = Backoff.ExponentialBackoff(TimeSpan.FromSeconds(1), retryCount: 5);
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(delay);
+        var retryPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(delay);
 
         var result = await retryPolicy.ExecuteAndCaptureAsync(GovNotifyCall);
 
-        return result.FinalException != null
-            ? ProcessFinalException(result)
-            : result.Result;
+        return result.FinalException != null ? ProcessFinalException(result) : result.Result;
 
         /// <summary>
         /// Makes a GOV Notify Call, catches and processes any exceptions
@@ -39,9 +38,13 @@ public class EmailNotificationCommand(
                 await notificationClient.SendEmailAsync(
                     emailAddress: notificationRequest.EmailAddress,
                     templateId: notificationRequest.TemplateId.ToString(),
-                    personalisation: notificationRequest.Personalisation?.ToDictionary(kvp => kvp.Key, kvp => (dynamic)kvp.Value) ?? null,
+                    personalisation: notificationRequest.Personalisation?.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => (dynamic)kvp.Value
+                    ) ?? null,
                     clientReference: notificationRequest?.Reference ?? null,
-                    emailReplyToId: notificationRequest?.EmailReplyToId?.ToString() ?? null);
+                    emailReplyToId: notificationRequest?.EmailReplyToId?.ToString() ?? null
+                );
 
                 return new NotificationResponse { StatusCode = HttpStatusCode.OK };
             }
@@ -60,13 +63,19 @@ public class EmailNotificationCommand(
         {
             StatusCode = result.FinalException.Message switch
             {
-                { } a when a.Contains(GovNotifyExceptionConstants.EXCEPTION) => HttpStatusCode.InternalServerError,
-                { } a when a.Contains(GovNotifyExceptionConstants.RATE_LIMIT_ERROR) => HttpStatusCode.TooManyRequests,
+                { } a when a.Contains(GovNotifyExceptionConstants.EXCEPTION)
+                    => HttpStatusCode.InternalServerError,
+                { } a when a.Contains(GovNotifyExceptionConstants.RATE_LIMIT_ERROR)
+                    => HttpStatusCode.TooManyRequests,
                 _ => HttpStatusCode.InternalServerError
             }
         };
 
-        log.LogError("Maximum retries reached - {errorMessage} GovNotify error mapped to {statusCode}", result.FinalException.Message, httpResponse.StatusCode);
+        log.LogError(
+            "Maximum retries reached - {errorMessage} GovNotify error mapped to {statusCode}",
+            result.FinalException.Message,
+            httpResponse.StatusCode
+        );
 
         return httpResponse;
     }
@@ -78,21 +87,36 @@ public class EmailNotificationCommand(
         {
             StatusCode = ex.Message switch
             {
-                { } a when a.Contains(GovNotifyExceptionConstants.BAD_REQUEST_ERROR) => HttpStatusCode.BadRequest,
-                { } a when a.Contains(GovNotifyExceptionConstants.AUTH_ERROR) => HttpStatusCode.InternalServerError,
-                { } a when a.Contains(GovNotifyExceptionConstants.TOO_MANY_REQUESTS_ERROR) => HttpStatusCode.TooManyRequests,
+                { } a when a.Contains(GovNotifyExceptionConstants.BAD_REQUEST_ERROR)
+                    => HttpStatusCode.BadRequest,
+                { } a when a.Contains(GovNotifyExceptionConstants.AUTH_ERROR)
+                    => HttpStatusCode.InternalServerError,
+                { } a when a.Contains(GovNotifyExceptionConstants.TOO_MANY_REQUESTS_ERROR)
+                    => HttpStatusCode.TooManyRequests,
                 _ => HttpStatusCode.InternalServerError
             }
         };
 
-        log.LogError("{errorMessage} GovNotify error mapped to {statusCode}", ex.Message, httpResponse.StatusCode);
+        log.LogError(
+            "{errorMessage} GovNotify error mapped to {statusCode}",
+            ex.Message,
+            httpResponse.StatusCode
+        );
         return httpResponse;
     }
 
     internal void RetryRequest(NotifyClientException ex)
     {
-        if (ex.Message.Contains(GovNotifyExceptionConstants.EXCEPTION, StringComparison.InvariantCultureIgnoreCase) ||
-            ex.Message.Contains(GovNotifyExceptionConstants.RATE_LIMIT_ERROR, StringComparison.InvariantCultureIgnoreCase))
+        if (
+            ex.Message.Contains(
+                GovNotifyExceptionConstants.EXCEPTION,
+                StringComparison.InvariantCultureIgnoreCase
+            )
+            || ex.Message.Contains(
+                GovNotifyExceptionConstants.RATE_LIMIT_ERROR,
+                StringComparison.InvariantCultureIgnoreCase
+            )
+        )
         {
             // retry for 500 errors or 429 (exceeded rate limit of GOV Notify)
             log.LogInformation("Retrying request - {errorMessage}", ex.Message);

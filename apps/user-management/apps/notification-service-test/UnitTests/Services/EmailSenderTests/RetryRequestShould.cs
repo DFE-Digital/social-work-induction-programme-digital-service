@@ -1,5 +1,4 @@
 using DfeSwwEcf.NotificationService.Services;
-using DfeSwwEcf.NotificationService.UnitTests.Services.EmailSenderTests;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -17,21 +16,32 @@ public class RetryRequestShould : EmailSenderTestsTestBase
         var expectedException = new NotifyClientException(errorMessage);
 
         // Act
-        var actualException = Assert.Throws<NotifyClientException>(() => Sut.RetryRequest(expectedException));
+        var actualException = Assert.Throws<NotifyClientException>(
+            () => Sut.RetryRequest(expectedException)
+        );
 
         // Assert
         actualException.Should().BeEquivalentTo(expectedException);
 
         var expectedLog = $"Retrying request - {errorMessage}";
         MockLogger.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) =>
-                    string.Equals(expectedLog, o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            x =>
+                x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>(
+                        (o, t) =>
+                            string.Equals(
+                                expectedLog,
+                                o.ToString(),
+                                StringComparison.InvariantCultureIgnoreCase
+                            )
+                    ),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()
+                ),
+            Times.Once
+        );
 
         VerifyAllNoOtherCall();
     }

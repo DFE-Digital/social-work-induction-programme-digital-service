@@ -4,6 +4,7 @@
 
 ###Solution User Settings###
 .user
+.idea
 
 ### DotnetCore ###
 # .NET Core build folders

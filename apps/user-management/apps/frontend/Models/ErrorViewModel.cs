@@ -1,4 +1,4 @@
-namespace Dfe.Sww.Ecf.Frontend.Models;
+﻿namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class ErrorViewModel
 {

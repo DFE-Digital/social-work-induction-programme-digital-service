@@ -1,4 +1,4 @@
-namespace DfeSwwEcf.NotificationService.Services;
+﻿namespace DfeSwwEcf.NotificationService.Services;
 
 public static class GovNotifyExceptionConstants
 {

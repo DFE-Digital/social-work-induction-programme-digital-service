@@ -1,8 +1,7 @@
-using System.Net;
+﻿using System.Net;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services;
-using DfeSwwEcf.NotificationService.UnitTests.Helpers;
-using DfeSwwEcf.NotificationService.UnitTests.Services.EmailSenderTests;
+using DfeSwwEcf.NotificationService.Tests.UnitTests.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Notify.Exceptions;
@@ -14,16 +13,20 @@ public class ProcessFinalExceptionShould : EmailSenderTestsTestBase
 {
     [Theory]
     [MemberData(nameof(ExceptionTestData))]
-    public void WhenPassedException_ShouldMapExceptionToStatusCode(string errorMessage, HttpStatusCode expectedStatusCode)
+    public void WhenPassedException_ShouldMapExceptionToStatusCode(
+        string errorMessage,
+        HttpStatusCode expectedStatusCode
+    )
     {
         // Arrange
         var exception = new NotifyClientException(errorMessage);
-        var pollyResult = PolicyResult<NotificationResponse>.Failure(exception, ExceptionType.Unhandled, new Context());
+        var pollyResult = PolicyResult<NotificationResponse>.Failure(
+            exception,
+            ExceptionType.Unhandled,
+            new Context()
+        );
 
-        var expectedResponse = new NotificationResponse
-        {
-            StatusCode = expectedStatusCode
-        };
+        var expectedResponse = new NotificationResponse { StatusCode = expectedStatusCode };
 
         // Act
         var response = Sut.ProcessFinalException(pollyResult);
@@ -31,7 +34,8 @@ public class ProcessFinalExceptionShould : EmailSenderTestsTestBase
         // Assert
         response.Should().BeEquivalentTo(expectedResponse);
 
-        var expectedLog = $"Maximum retries reached - {errorMessage} GovNotify error mapped to {expectedStatusCode}";
+        var expectedLog =
+            $"Maximum retries reached - {errorMessage} GovNotify error mapped to {expectedStatusCode}";
         MockLogger.VerifyLog(expectedLog, LogLevel.Error);
 
         VerifyAllNoOtherCall();
@@ -40,8 +44,16 @@ public class ProcessFinalExceptionShould : EmailSenderTestsTestBase
     public static IEnumerable<object[]> ExceptionTestData =>
         new List<object[]>
         {
-            new object[] { GovNotifyExceptionConstants.EXCEPTION, HttpStatusCode.InternalServerError },
-            new object[] { GovNotifyExceptionConstants.RATE_LIMIT_ERROR, HttpStatusCode.TooManyRequests },
+            new object[]
+            {
+                GovNotifyExceptionConstants.EXCEPTION,
+                HttpStatusCode.InternalServerError
+            },
+            new object[]
+            {
+                GovNotifyExceptionConstants.RATE_LIMIT_ERROR,
+                HttpStatusCode.TooManyRequests
+            },
             new object[] { "UNKNOWN/ANYTHING ELSE", HttpStatusCode.InternalServerError }
         };
 }

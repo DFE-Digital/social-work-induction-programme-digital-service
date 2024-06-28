@@ -1,8 +1,8 @@
-﻿using DfeSwwEcf.NotificationService.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Validation;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DfeSwwEcf.NotificationService.Installers;
 

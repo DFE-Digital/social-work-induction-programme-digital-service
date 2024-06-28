@@ -1,7 +1,7 @@
-﻿using DfeSwwEcf.NotificationService.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfeSwwEcf.NotificationService.Services;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DfeSwwEcf.NotificationService.Installers;
 
