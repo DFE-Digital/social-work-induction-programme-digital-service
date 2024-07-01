@@ -33,8 +33,6 @@ public sealed class OneLoginAuthenticationSchemeProvider(
     private Task? _reloadSchemesTask;
     private CancellationTokenSource? _stoppingCts;
 
-    private readonly ECDsaSecurityKey _coreIdentityIssuerSigningKey = GetCoreIdentityIssuerSigningKey(configuration);
-
     public void AddScheme(AuthenticationScheme scheme) =>
         innerProvider.AddScheme(scheme);
 
@@ -80,16 +78,7 @@ public sealed class OneLoginAuthenticationSchemeProvider(
 
     public void Dispose()
     {
-        _coreIdentityIssuerSigningKey.ECDsa.Dispose();
         _stoppingCts?.Dispose();
-    }
-
-    private static ECDsaSecurityKey GetCoreIdentityIssuerSigningKey(IConfiguration configuration)
-    {
-        var coreIdentityIssuer = ECDsa.Create();
-        var coreIdentityIssuerPem = configuration.GetRequiredValue("OneLogin:CoreIdentityIssuerPem");
-        coreIdentityIssuer.ImportSubjectPublicKeyInfo(Convert.FromBase64String(coreIdentityIssuerPem), out _);
-        return new ECDsaSecurityKey(coreIdentityIssuer);
     }
 
     private async Task EnsureLoaded()
@@ -191,13 +180,6 @@ public sealed class OneLoginAuthenticationSchemeProvider(
                 await result.ExecuteAsync(context.HttpContext);
             }
         };
-
-        options.CoreIdentityClaimIssuerSigningKey = _coreIdentityIssuerSigningKey;
-        options.CoreIdentityClaimIssuer = "https://identity.integration.account.gov.uk/";
-
-        options.VectorOfTrust = @"[""Cl.Cm.P2""]";
-
-        options.Claims.Add(OneLoginClaimTypes.CoreIdentity);
 
         options.MetadataAddress = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration";
         options.ClientAssertionJwtAudience = "https://oidc.integration.account.gov.uk/token";
