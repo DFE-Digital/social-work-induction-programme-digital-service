@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Account>
+
+@{
+    ViewData["Title"] = "Manage accounts";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--l">
+                Manage accounts
+            </caption>
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                    @Html.DisplayNameFor(model => model.FullName)
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <span class="govuk-visually-hidden">Action</span>
+                </th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var item in Model)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </th>
+                    <td class="govuk-table__cell">
+                        @{
+                            var tagClass = item.Status switch
+                            {
+                                "Active" => "govuk-tag--green",
+                                "Paused" => "govuk-tag--yellow",
+                                "Pending registration" => "govuk-tag--orange",
+                                _ => "govuk-tag--yellow"
+                            };
+                        }
+                        <strong class="govuk-tag @tagClass">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </strong>
+                        @if (item.AdditionalStatusInfo is not null)
+                        {
+                            <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                                @Html.DisplayFor(modelItem => item.AdditionalStatusInfo)
+                            </span>
+                        }
+                    </td>
+                    <td class="govuk-table__cell">
+                        @if (item.Type is not null)
+                        {
+                            var accountTypes = string.Join(", ", item.Type);
+                            @Html.DisplayFor(modeItem => accountTypes)
+                        }
+                    </td>
+                    <td class="govuk-table__cell">
+                        <a title="View details of @item.FullName" class="govuk-link govuk-link--no-visited-state" asp-action="Details" asp-route-id="@item.Id">View</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <a asp-controller="Accounts" asp-action="SelectUserType" class="govuk-button">Add someone</a>
+    </div>
+</div>
