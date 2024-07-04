@@ -18,8 +18,6 @@ public class TrsDbContext : DbContext
     public static TrsDbContext Create(string connectionString, int? commandTimeout = null) =>
         new TrsDbContext(CreateOptions(connectionString, commandTimeout));
 
-    public DbSet<TrnRequest> TrnRequests => Set<TrnRequest>();
-
     public DbSet<EntityChangesJournal> EntityChangesJournals => Set<EntityChangesJournal>();
 
     public DbSet<Event> Events => Set<Event>();

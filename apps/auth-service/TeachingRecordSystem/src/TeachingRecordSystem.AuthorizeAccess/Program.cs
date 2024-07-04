@@ -19,7 +19,6 @@ using TeachingRecordSystem.AuthorizeAccess.Infrastructure.Logging;
 using TeachingRecordSystem.AuthorizeAccess.Infrastructure.Middleware;
 using TeachingRecordSystem.AuthorizeAccess.Infrastructure.Oidc;
 using TeachingRecordSystem.AuthorizeAccess.Infrastructure.Security;
-using TeachingRecordSystem.AuthorizeAccess.Pages.RequestTrn;
 using TeachingRecordSystem.AuthorizeAccess.TagHelpers;
 using TeachingRecordSystem.Core.DataStore.Postgres;
 using TeachingRecordSystem.Core.Infrastructure;
@@ -170,7 +169,6 @@ builder.Services
     .AddFormFlow(options =>
     {
         options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor);
-        options.JourneyRegistry.RegisterJourney(RequestTrnJourneyState.JourneyDescriptor);
     })
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
