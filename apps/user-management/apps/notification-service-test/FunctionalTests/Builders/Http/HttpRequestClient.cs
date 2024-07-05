@@ -4,7 +4,8 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Builders.Http
 {
     public static class HttpRequestClient
     {
-        private static ConcurrentDictionary<string, HttpClient> _httpClientList = new ConcurrentDictionary<string, HttpClient>();
+        private static ConcurrentDictionary<string, HttpClient> _httpClientList =
+            new ConcurrentDictionary<string, HttpClient>();
 
         public static HttpClient GetHttpClientInstance(string baseUrl)
         {

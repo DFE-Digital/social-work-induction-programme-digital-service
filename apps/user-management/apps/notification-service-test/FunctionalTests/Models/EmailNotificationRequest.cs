@@ -4,7 +4,7 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Models
     {
         public string EmailAddress { get; set; } = null!;
 
-        public Guid TemplateId { get; set; }
+        public string TemplateId { get; set; } = null!;
 
         public Dictionary<string, string>? Personalisation { get; set; }
     }

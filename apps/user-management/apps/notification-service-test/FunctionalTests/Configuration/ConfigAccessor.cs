@@ -11,7 +11,11 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Configuration
             if (_root == null)
             {
                 _root = new ConfigurationBuilder()
-                    .AddJsonFile("FunctionalTests/appsettings.json", optional: false, reloadOnChange:true)
+                    .AddJsonFile(
+                        "FunctionalTests/appsettings.json",
+                        optional: false,
+                        reloadOnChange: true
+                    )
                     .AddEnvironmentVariables()
                     .Build();
             }

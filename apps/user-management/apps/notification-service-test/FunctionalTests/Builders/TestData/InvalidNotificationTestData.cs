@@ -7,9 +7,11 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Builders.TestData
     {
         public IEnumerator<object[]> GetEnumerator()
         {
-            yield return NotificationTestDataBuilder.CreateNew()
+            //Invalid email address
+            yield return NotificationTestDataBuilder
+                .CreateNew()
                 .WithEmailAddress("testtest.com")
-                .WithTemplateId(new Guid("2d6ad686-b5e7-466c-a810-60709b1b091c"))
+                .WithTemplateId(new Guid("2d6ad686-b5e7-466c-a810-60709b1b091c").ToString())
                 .WithPersonalText("ABC123")
                 .WithExpectedStatusCode(HttpStatusCode.BadRequest)
                 .WithValidationFailure(
@@ -24,11 +26,13 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Builders.TestData
                         { "PropertyPath", "EmailAddress" }
                     }
                 )
-                .Build();
+                .BuildForInvalidData();
 
-            yield return NotificationTestDataBuilder.CreateNew()
+            //Empty template Id
+            yield return NotificationTestDataBuilder
+                .CreateNew()
                 .WithEmailAddress("test@test.com")
-                .WithTemplateId(Guid.Empty)
+                .WithTemplateId(Guid.Empty.ToString())
                 .WithPersonalText("ABC123")
                 .WithExpectedStatusCode(HttpStatusCode.BadRequest)
                 .WithValidationFailure(
@@ -43,7 +47,7 @@ namespace DfeSwwEcf.NotificationService.Tests.FunctionalTests.Builders.TestData
                         { "PropertyPath", "TemplateId" }
                     }
                 )
-                .Build();
+                .BuildForInvalidData();
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
