@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TeachingRecordSystem.AuthorizeAccess.Infrastructure.Security;
 using TeachingRecordSystem.Core.DataStore.Postgres;
-using TeachingRecordSystem.Core.Dqt.Models;
 using TeachingRecordSystem.Core.Services.PersonMatching;
 using TeachingRecordSystem.UiCommon.FormFlow;
 using TeachingRecordSystem.UiCommon.FormFlow.State;
@@ -204,7 +203,7 @@ public class SignInJourneyHelper(
             }
 
             var trnTokenPerson = await dbContext.Persons.SingleOrDefaultAsync(
-                p => p.Trn == trnTokenModel.Trn && p.DqtState == (int)ContactState.Active);
+                p => p.Trn == trnTokenModel.Trn);
 
             if (trnTokenPerson is null)
             {

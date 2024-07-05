@@ -1,6 +1,4 @@
-using System.Reactive.Linq;
 using System.Security.Claims;
-using FakeXrmEasy.Abstractions;
 using GovUk.OneLogin.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -8,7 +6,6 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using TeachingRecordSystem.Core.DataStore.Postgres;
 using TeachingRecordSystem.Core.DataStore.Postgres.Models;
-using TeachingRecordSystem.Core.Services.TrsDataSync;
 using TeachingRecordSystem.UiCommon.FormFlow;
 using TeachingRecordSystem.UiCommon.FormFlow.State;
 
@@ -17,7 +14,6 @@ namespace TeachingRecordSystem.AuthorizeAccess.Tests;
 public abstract class TestBase : IDisposable
 {
     private readonly TestScopedServices _testServices;
-    private readonly IDisposable _trsSyncSubscription;
 
     protected TestBase(HostFixture hostFixture)
     {
@@ -29,16 +25,6 @@ public abstract class TestBase : IDisposable
         {
             AllowAutoRedirect = false
         });
-
-        _trsSyncSubscription = hostFixture.Services.GetRequiredService<TrsDataSyncHelper>().GetSyncedEntitiesObservable()
-            .Subscribe(onNext: static (synced) =>
-            {
-                var events = synced.OfType<EventBase>();
-                foreach (var e in events)
-                {
-                    TestScopedServices.GetCurrent().EventObserver.OnEventSaved(e);
-                }
-            });
     }
 
     public HostFixture HostFixture { get; }
@@ -50,8 +36,6 @@ public abstract class TestBase : IDisposable
     public HttpClient HttpClient { get; }
 
     public TestData TestData => HostFixture.Services.GetRequiredService<TestData>();
-
-    public IXrmFakedContext XrmFakedContext => HostFixture.Services.GetRequiredService<IXrmFakedContext>();
 
     public async Task<JourneyInstance<SignInJourneyState>> CreateJourneyInstance(SignInJourneyState state)
     {
@@ -84,7 +68,6 @@ public abstract class TestBase : IDisposable
 
     public virtual void Dispose()
     {
-        _trsSyncSubscription.Dispose();
     }
 
     public virtual async Task<T> WithDbContext<T>(Func<TrsDbContext, Task<T>> action)

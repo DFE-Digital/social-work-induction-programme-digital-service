@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using TeachingRecordSystem.AuthorizeAccess.Tests.Infrastructure.Security;
 using TeachingRecordSystem.Core.Events.Processing;
 using TeachingRecordSystem.Core.Services.Files;
-using TeachingRecordSystem.Core.Services.TrsDataSync;
 using TeachingRecordSystem.TestCommon.Infrastructure;
 using TeachingRecordSystem.UiCommon.FormFlow.State;
 using TeachingRecordSystem.UiTestCommon.Infrastructure.FormFlow;
@@ -57,12 +56,9 @@ public class HostFixture : WebApplicationFactory<Program>
             services.AddSingleton<TestData>(
                 sp => ActivatorUtilities.CreateInstance<TestData>(
                     sp,
-                    (IClock)new ForwardToTestScopedClock(),
-                    TestDataSyncConfiguration.Sync(sp.GetRequiredService<TrsDataSyncHelper>())));
-            services.AddFakeXrm();
+                    (IClock)new ForwardToTestScopedClock()));
             services.AddSingleton<IUserInstanceStateProvider, InMemoryInstanceStateProvider>();
             services.AddSingleton<FakeTrnGenerator>();
-            services.AddSingleton<TrsDataSyncHelper>();
             services.AddSingleton(GetMockFileService());
 
             IFileService GetMockFileService()

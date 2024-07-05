@@ -1,6 +1,5 @@
 global using System.CommandLine;
 global using Microsoft.Extensions.Configuration;
-global using Microsoft.PowerPlatform.Dataverse.Client;
 using TeachingRecordSystem.Cli;
 
 var configuration = new ConfigurationBuilder()
@@ -11,7 +10,6 @@ var rootCommand = new RootCommand("Development tools for the Teaching Record Sys
 {
     Commands.CreateMigrateDbCommand(configuration),
     Commands.CreateCreateAdminCommand(configuration),
-    Commands.CreateSyncPersonCommand(configuration),
     Commands.CreateGenerateKeyCommand(configuration),
 };
 

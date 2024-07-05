@@ -22,22 +22,6 @@ public class TrsDbContext : DbContext
 
     public DbSet<Event> Events => Set<Event>();
 
-    public DbSet<QtsAwardedEmailsJob> QtsAwardedEmailsJobs => Set<QtsAwardedEmailsJob>();
-
-    public DbSet<QtsAwardedEmailsJobItem> QtsAwardedEmailsJobItems => Set<QtsAwardedEmailsJobItem>();
-
-    public DbSet<InternationalQtsAwardedEmailsJob> InternationalQtsAwardedEmailsJobs => Set<InternationalQtsAwardedEmailsJob>();
-
-    public DbSet<InternationalQtsAwardedEmailsJobItem> InternationalQtsAwardedEmailsJobItems => Set<InternationalQtsAwardedEmailsJobItem>();
-
-    public DbSet<EytsAwardedEmailsJob> EytsAwardedEmailsJobs => Set<EytsAwardedEmailsJob>();
-
-    public DbSet<EytsAwardedEmailsJobItem> EytsAwardedEmailsJobItems => Set<EytsAwardedEmailsJobItem>();
-
-    public DbSet<InductionCompletedEmailsJob> InductionCompletedEmailsJobs => Set<InductionCompletedEmailsJob>();
-
-    public DbSet<InductionCompletedEmailsJobItem> InductionCompletedEmailsJobItems => Set<InductionCompletedEmailsJobItem>();
-
     public DbSet<JourneyState> JourneyStates => Set<JourneyState>();
 
     public DbSet<User> Users => Set<User>();
@@ -45,12 +29,6 @@ public class TrsDbContext : DbContext
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
 
     public DbSet<Person> Persons => Set<Person>();
-
-    public DbSet<Qualification> Qualifications => Set<Qualification>();
-
-    public DbSet<MandatoryQualification> MandatoryQualifications => Set<MandatoryQualification>();
-
-    public DbSet<MandatoryQualificationProvider> MandatoryQualificationProviders => Set<MandatoryQualificationProvider>();
 
     public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 

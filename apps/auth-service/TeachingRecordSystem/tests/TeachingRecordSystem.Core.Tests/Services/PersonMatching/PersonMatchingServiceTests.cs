@@ -1,8 +1,5 @@
-using Microsoft.PowerPlatform.Dataverse.Client;
 using TeachingRecordSystem.Core.DataStore.Postgres.Models;
-using TeachingRecordSystem.Core.Dqt;
 using TeachingRecordSystem.Core.Services.PersonMatching;
-using TeachingRecordSystem.Core.Services.TrsDataSync;
 
 namespace TeachingRecordSystem.Core.Tests.Services.PersonMatching;
 
@@ -11,28 +8,16 @@ public class PersonMatchingServiceTests : IAsyncLifetime
 {
     public PersonMatchingServiceTests(
         DbFixture dbFixture,
-        IOrganizationServiceAsync2 organizationService,
-        ReferenceDataCache referenceDataCache,
         FakeTrnGenerator trnGenerator)
     {
         DbFixture = dbFixture;
         Clock = new();
 
         var dbContextFactory = dbFixture.GetDbContextFactory();
-
-        var syncHelper = new TrsDataSyncHelper(
-            dbContextFactory,
-            organizationService,
-            referenceDataCache,
-            Clock);
-
         TestData = new TestData(
             dbContextFactory,
-            organizationService,
-            referenceDataCache,
             Clock,
-            trnGenerator,
-            TestDataSyncConfiguration.Sync(syncHelper));
+            trnGenerator);
     }
 
     private DbFixture DbFixture { get; }
@@ -201,7 +186,7 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             // Person who matches on last name & DOB
             var person1 = await TestData.CreatePerson(b => b.WithLastName(lastName).WithDateOfBirth(dateOfBirth));
 
-            // Person who matches on NINO            
+            // Person who matches on NINO
             var person2 = await TestData.CreatePerson(b => b.WithNationalInsuranceNumber(usePersonNino ? nationalInsuranceNumber : alternativeNationalInsuranceNumber));
             var establishment = await TestData.CreateEstablishment(localAuthorityCode: "321", establishmentNumber: "4321", establishmentStatusCode: 1);
             var personEmployment = await TestData.CreatePersonEmployment(person2, establishment, new DateOnly(2023, 08, 03), new DateOnly(2024, 05, 25), EmploymentType.FullTime, new DateOnly(2024, 05, 25), usePersonNino ? alternativeNationalInsuranceNumber : nationalInsuranceNumber);
@@ -377,7 +362,7 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             TrnArgumentOption.SpecifiedButDifferent,
             /*expectMatch: */ true,
             _matchNameDobAndNinoAttributes
-        },        
+        },
 
         // Single name with alias, single DOB, person NINO and TRN all match
         {
@@ -457,7 +442,7 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             TrnArgumentOption.SpecifiedButDifferent,
             /*expectMatch: */ true,
             _matchNameDobAndNinoAttributes
-        },        
+        },
 
         // Multiple names with one match, single DOB, person NINO and TRN all match
         {
@@ -537,8 +522,8 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             TrnArgumentOption.SpecifiedButDifferent,
             /*expectMatch: */ true,
             _matchNameDobAndNinoAttributes
-        },        
-        
+        },
+
 
         // *** No match cases ***
 

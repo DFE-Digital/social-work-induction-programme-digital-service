@@ -1,10 +1,5 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.PowerPlatform.Dataverse.Client;
 using TeachingRecordSystem.Core.DataStore.Postgres;
-using TeachingRecordSystem.Core.Dqt;
-using TeachingRecordSystem.Core.Dqt.Models;
-using TeachingRecordSystem.Core.Services.TrsDataSync;
 
 namespace TeachingRecordSystem.TestCommon;
 
@@ -18,35 +13,23 @@ public partial class TestData
 
     public TestData(
         IDbContextFactory<TrsDbContext> dbContextFactory,
-        IOrganizationServiceAsync organizationService,
-        ReferenceDataCache referenceDataCache,
         IClock clock,
-        FakeTrnGenerator trnGenerator,
-        TestDataSyncConfiguration syncConfiguration)
+        FakeTrnGenerator trnGenerator)
         : this(
               dbContextFactory,
-              organizationService,
-              referenceDataCache,
               clock,
-              generateTrn: () => Task.FromResult(trnGenerator.GenerateTrn()),
-              syncConfiguration)
+              generateTrn: () => Task.FromResult(trnGenerator.GenerateTrn()))
     {
     }
 
     private TestData(
         IDbContextFactory<TrsDbContext> dbContextFactory,
-        IOrganizationServiceAsync organizationService,
-        ReferenceDataCache referenceDataCache,
         IClock clock,
-        Func<Task<string>> generateTrn,
-        TestDataSyncConfiguration syncConfiguration)
+        Func<Task<string>> generateTrn)
     {
         DbContextFactory = dbContextFactory;
-        OrganizationService = organizationService;
-        ReferenceDataCache = referenceDataCache;
         Clock = clock;
         _generateTrn = generateTrn;
-        SyncConfiguration = syncConfiguration;
     }
 
     // https://stackoverflow.com/a/30290754
@@ -65,21 +48,13 @@ public partial class TestData
 
     public IDbContextFactory<TrsDbContext> DbContextFactory { get; }
 
-    public IOrganizationServiceAsync OrganizationService { get; }
-
-    public ReferenceDataCache ReferenceDataCache { get; }
-
-    private TestDataSyncConfiguration SyncConfiguration { get; }
 
     public static TestData CreateWithCustomTrnGeneration(
         IDbContextFactory<TrsDbContext> dbContextFactory,
-        IOrganizationServiceAsync organizationService,
-        ReferenceDataCache referenceDataCache,
         IClock clock,
-        Func<Task<string>> generateTrn,
-        TestDataSyncConfiguration syncConfiguration)
+        Func<Task<string>> generateTrn)
     {
-        return new TestData(dbContextFactory, organizationService, referenceDataCache, clock, generateTrn, syncConfiguration);
+        return new TestData(dbContextFactory, clock, generateTrn);
     }
 
     public static async Task<string> GetBase64EncodedFileContent(Stream file)
@@ -227,8 +202,6 @@ public partial class TestData
 
     public Task<string> GenerateTrn() => _generateTrn();
 
-    public Contact_GenderCode GenerateGender() => Faker.Enum.Random<Contact_GenderCode>();
-
     public DateOnly GenerateDate(DateOnly min, DateOnly? max = null)
     {
         if (max is not null && max <= min)
@@ -268,36 +241,5 @@ public partial class TestData
     {
         using var dbContext = await DbContextFactory.CreateDbContextAsync();
         await action(dbContext);
-    }
-}
-
-public sealed class TestDataSyncConfiguration
-{
-    private TestDataSyncConfiguration(bool syncEnabled, TrsDataSyncHelper? helper)
-    {
-        SyncEnabled = syncEnabled;
-        TrsDataSyncHelper = helper;
-    }
-
-    [MemberNotNullWhen(true, nameof(TrsDataSyncHelper))]
-    public bool SyncEnabled { get; }
-
-    public TrsDataSyncHelper? TrsDataSyncHelper { get; }
-
-    public static TestDataSyncConfiguration NoSync() => new(false, null);
-
-    public static TestDataSyncConfiguration Sync(TrsDataSyncHelper helper) => new(true, helper);
-
-    public async Task SyncIfEnabled(Func<TrsDataSyncHelper, Task> action, bool? overrideSync = null)
-    {
-        if (overrideSync == true && !SyncEnabled)
-        {
-            throw new InvalidOperationException("TestData instance has not been configured to support syncing.");
-        }
-
-        if (SyncEnabled && overrideSync != false)
-        {
-            await action(TrsDataSyncHelper);
-        }
     }
 }

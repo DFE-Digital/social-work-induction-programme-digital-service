@@ -9,7 +9,6 @@ using OpenIddict.Server.AspNetCore;
 using TeachingRecordSystem.AuthorizeAccess.EndToEndTests.Infrastructure.Security;
 using TeachingRecordSystem.Core.DataStore.Postgres;
 using TeachingRecordSystem.Core.Services.Files;
-using TeachingRecordSystem.Core.Services.TrsDataSync;
 using TeachingRecordSystem.UiCommon.FormFlow.State;
 using TeachingRecordSystem.UiTestCommon.Infrastructure.FormFlow;
 
@@ -85,10 +84,8 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
 
                     services.AddSingleton<OneLoginCurrentUserProvider>();
                     services.AddSingleton<TestData>(
-                        sp => ActivatorUtilities.CreateInstance<TestData>(sp, TestDataSyncConfiguration.Sync(sp.GetRequiredService<TrsDataSyncHelper>())));
-                    services.AddFakeXrm();
+                        sp => ActivatorUtilities.CreateInstance<TestData>(sp));
                     services.AddSingleton<FakeTrnGenerator>();
-                    services.AddSingleton<TrsDataSyncHelper>();
                     services.AddSingleton<IUserInstanceStateProvider, InMemoryInstanceStateProvider>();
                     services.AddSingleton(GetMockFileService());
 
