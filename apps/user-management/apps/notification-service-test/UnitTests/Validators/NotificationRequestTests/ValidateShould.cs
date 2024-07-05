@@ -2,7 +2,7 @@
 using DfeSwwEcf.NotificationService.Validation;
 using FluentValidation.TestHelper;
 
-namespace DfeSwwEcf.NotificationService.UnitTests.Validators.NotificationRequestTests;
+namespace DfeSwwEcf.NotificationService.Tests.Validators.NotificationRequestTests;
 
 public class ValidateShould
 {

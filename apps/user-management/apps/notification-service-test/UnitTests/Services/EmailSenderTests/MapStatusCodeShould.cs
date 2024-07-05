@@ -1,12 +1,13 @@
 using System.Net;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services;
+using DfeSwwEcf.NotificationService.UnitTests.Services.EmailSenderTests;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Notify.Exceptions;
 
-namespace DfeSwwEcf.NotificationService.UnitTests.Services.EmailSenderTests;
+namespace DfeSwwEcf.NotificationService.Tests.UnitTests.Services.EmailSenderTests;
 
 public class MapStatusCodeShould : EmailSenderTestsTestBase
 {

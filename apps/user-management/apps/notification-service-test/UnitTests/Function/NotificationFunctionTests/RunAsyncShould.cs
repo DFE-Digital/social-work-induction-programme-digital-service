@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using DfeSwwEcf.NotificationService.Models;
 using DfeSwwEcf.NotificationService.Services.Interfaces;
-using DfeSwwEcf.NotificationService.UnitTests.Helpers;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -11,8 +10,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Text;
 using System.Text.Json;
+using DfeSwwEcf.NotificationService.Tests.Helpers;
 
-namespace DfeSwwEcf.NotificationService.UnitTests.Function.NotificationFunctionTests;
+namespace DfeSwwEcf.NotificationService.Tests.Function.NotificationFunctionTests;
 
 public class RunAsyncShould
 {

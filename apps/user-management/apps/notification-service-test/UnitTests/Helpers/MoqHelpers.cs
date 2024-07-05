@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 
-namespace DfeSwwEcf.NotificationService.UnitTests.Helpers;
+namespace DfeSwwEcf.NotificationService.Tests.Helpers;
 
 // TODO Move into a nuget package so it can be used in other solutions?
 internal class MoqHelpers

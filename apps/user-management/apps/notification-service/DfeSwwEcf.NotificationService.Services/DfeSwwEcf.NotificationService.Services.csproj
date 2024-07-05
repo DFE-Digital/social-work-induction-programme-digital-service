@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="DfeSwwEcf.NotificationService.UnitTests" />
+    <InternalsVisibleTo Include="DfeSwwEcf.NotificationService.Tests" />
   </ItemGroup>
 
 </Project>
