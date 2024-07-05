@@ -14,10 +14,8 @@ public class Person
     public string? EmailAddress { get; set; }
     public string? NationalInsuranceNumber { get; set; }
 
-    public Guid? DqtContactId { get; init; }
     public DateTime? DqtFirstSync { get; set; }
     public DateTime? DqtLastSync { get; set; }
-    public int? DqtState { get; set; }
     public DateTime? DqtCreatedOn { get; set; }
     public DateTime? DqtModifiedOn { get; set; }
     public string? DqtFirstName { get; set; }

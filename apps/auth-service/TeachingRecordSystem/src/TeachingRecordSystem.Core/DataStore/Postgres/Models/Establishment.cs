@@ -4,10 +4,8 @@ public class Establishment
 {
     public const string UrnIndexName = "ix_establishment_urn";
     public const string LaCodeEstablishmentNumberIndexName = "ix_establishment_la_code_establishment_number";
-    public const string EstablishmentSourceIdIndexName = "ix_establishment_establishment_source_id";
 
     public required Guid EstablishmentId { get; init; }
-    public required int EstablishmentSourceId { get; set; }
     public required int? Urn { get; init; }
     public required string LaCode { get; set; }
     public required string? LaName { get; set; }

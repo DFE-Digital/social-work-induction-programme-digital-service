@@ -9,7 +9,6 @@ public class PersonMapping : IEntityTypeConfiguration<Person>
     {
         builder.ToTable("persons");
         builder.HasKey(p => p.PersonId);
-        builder.HasIndex(p => p.DqtContactId).HasFilter("dqt_contact_id is not null").IsUnique();
         builder.HasIndex(p => p.Trn).HasFilter("trn is not null").IsUnique();
         builder.Property(p => p.Trn).HasMaxLength(7).IsFixedLength();
         builder.Property(p => p.FirstName).HasMaxLength(100).UseCollation("case_insensitive");

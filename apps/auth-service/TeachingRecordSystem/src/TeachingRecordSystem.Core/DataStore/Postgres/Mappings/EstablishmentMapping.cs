@@ -10,7 +10,6 @@ public class EstablishmentMapping : IEntityTypeConfiguration<Establishment>
     {
         builder.ToTable("establishments");
         builder.HasKey(e => e.EstablishmentId);
-        builder.Property(e => e.EstablishmentSourceId).IsRequired().HasDefaultValue(1);
         builder.HasIndex(e => e.Urn).HasDatabaseName(Establishment.UrnIndexName);
         builder.HasIndex(e => new { e.LaCode, e.EstablishmentNumber }).HasDatabaseName(Establishment.LaCodeEstablishmentNumberIndexName);
         builder.Property(e => e.Urn).HasMaxLength(6).IsFixedLength();
@@ -28,7 +27,5 @@ public class EstablishmentMapping : IEntityTypeConfiguration<Establishment>
         builder.Property(e => e.Town).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(e => e.County).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(e => e.Postcode).HasMaxLength(10).UseCollation("case_insensitive");
-        builder.HasIndex(e => e.EstablishmentSourceId).HasDatabaseName(Establishment.EstablishmentSourceIdIndexName);
-        builder.HasOne<EstablishmentSource>().WithMany().HasForeignKey(e => e.EstablishmentSourceId).HasConstraintName("fk_establishments_establishment_source_id");
     }
 }

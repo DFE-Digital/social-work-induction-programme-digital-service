@@ -18,8 +18,6 @@ public class TrsDbContext : DbContext
     public static TrsDbContext Create(string connectionString, int? commandTimeout = null) =>
         new TrsDbContext(CreateOptions(connectionString, commandTimeout));
 
-    public DbSet<EntityChangesJournal> EntityChangesJournals => Set<EntityChangesJournal>();
-
     public DbSet<Event> Events => Set<Event>();
 
     public DbSet<JourneyState> JourneyStates => Set<JourneyState>();
@@ -39,8 +37,6 @@ public class TrsDbContext : DbContext
     public DbSet<PersonSearchAttribute> PersonSearchAttributes => Set<PersonSearchAttribute>();
 
     public DbSet<Establishment> Establishments => Set<Establishment>();
-
-    public DbSet<EstablishmentSource> EstablishmentSources => Set<EstablishmentSource>();
 
     public DbSet<PersonEmployment> PersonEmployments => Set<PersonEmployment>();
 
