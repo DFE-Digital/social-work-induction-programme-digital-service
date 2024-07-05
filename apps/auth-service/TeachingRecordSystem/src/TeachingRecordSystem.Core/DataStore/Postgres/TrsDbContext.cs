@@ -64,12 +64,6 @@ public class TrsDbContext : DbContext
 
     public DbSet<EstablishmentSource> EstablishmentSources => Set<EstablishmentSource>();
 
-    public DbSet<TpsCsvExtract> TpsCsvExtracts => Set<TpsCsvExtract>();
-
-    public DbSet<TpsCsvExtractLoadItem> TpsCsvExtractLoadItems => Set<TpsCsvExtractLoadItem>();
-
-    public DbSet<TpsCsvExtractItem> TpsCsvExtractItems => Set<TpsCsvExtractItem>();
-
     public DbSet<PersonEmployment> PersonEmployments => Set<PersonEmployment>();
 
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
