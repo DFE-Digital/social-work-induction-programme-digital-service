@@ -26,31 +26,6 @@
     <None Remove="DataStore\Postgres\Triggers\trg_update_person_employments_person_search_attributes_v1.sql" />
     <None Remove="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v1.sql" />
     <None Remove="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v2.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0001_Initial.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0002_TrackingColumns.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0003_ContactSentQtsAwardedEmail.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0004_ContactAdditionalAttributes.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0005_ContactSlugId.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0006_Incident_msdyn_copilotengaged.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0007_ContactAllowpiiUpdatesFromRegister.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0008_EvergreenMissingColumns.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0009_EvergreenMissingColumns2.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0010_SanctionDetailsLink.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0011_AddHighProfileProgrammeType.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0012_FixProgrammeTypeCasing.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0013_PreviousNameTransactionId.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0014_Contact_dfeta_allowidsigninwithprohibitions.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0015_dfeta_qualification_dfeta_mq_status.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0016_dfeta_qualification_dfeta_trsdeletedevent.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0017_dfeta_qualification_dfeta_trsevent.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0018_ContactQTLSDate.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0019_dfeta_qtlsdatehasbeenset.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0020_incidentresolution_msdyn_proposeknowledge.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0021_account_msdyn_primarytimezone.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0022_contact_msdyn_primarytimezone.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0023_contact_trnrequestid.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0024_contact.sql" />
-    <None Remove="Services\DqtReporting\Migrations\0025_incident_msdyn_casesurveyinviteurl.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,31 +50,6 @@
     <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_update_person_employments_person_search_attributes_v1.sql" />
     <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v1.sql" />
     <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v2.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0001_Initial.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0002_TrackingColumns.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0003_ContactSentQtsAwardedEmail.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0004_ContactAdditionalAttributes.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0005_ContactSlugId.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0006_Incident_msdyn_copilotengaged.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0007_ContactAllowpiiUpdatesFromRegister.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0008_EvergreenMissingColumns.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0009_EvergreenMissingColumns2.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0010_SanctionDetailsLink.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0011_AddHighProfileProgrammeType.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0012_FixProgrammeTypeCasing.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0013_PreviousNameTransactionId.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0014_Contact_dfeta_allowidsigninwithprohibitions.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0015_dfeta_qualification_dfeta_mq_status.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0016_dfeta_qualification_dfeta_trsdeletedevent.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0017_dfeta_qualification_dfeta_trsevent.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0018_ContactQTLSDate.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0019_dfeta_qtlsdatehasbeenset.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0020_incidentresolution_msdyn_proposeknowledge.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0021_account_msdyn_primarytimezone.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0022_contact_msdyn_primarytimezone.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0023_contact_trnrequestid.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0024_contact.sql" />
-    <EmbeddedResource Include="Services\DqtReporting\Migrations\0025_incident_msdyn_casesurveyinviteurl.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,8 +10,6 @@ var configuration = new ConfigurationBuilder()
 var rootCommand = new RootCommand("Development tools for the Teaching Record System.")
 {
     Commands.CreateMigrateDbCommand(configuration),
-    Commands.CreateMigrateReportingDbCommand(configuration),
-    Commands.CreateGenerateReportingDbTableCommand(configuration),
     Commands.CreateCreateAdminCommand(configuration),
     Commands.CreateSyncPersonCommand(configuration),
     Commands.CreateGenerateKeyCommand(configuration),

@@ -101,21 +101,6 @@ just cli migrate-db
 
 The databases will be created automatically when running the tests.
 
-#### DQT Reporting database setup
-
-This solution contains a service that synchronises changes from CRM into a SQL Server database used for reporting (this replaces the now-deprecated Data Export Service). By default this is disabled for local development. For the tests to pass, you will need a test database and a connection string defined in user secrets e.g.
-```shell
-just set-tests-secret DqtReporting:ReportingDbConnectionString "Data Source=(local);Initial Catalog=DqtReportingTests;Integrated Security=Yes;TrustServerCertificate=True"
-```
-
-To run the service locally, override the configuration option to run the service and ensure a connection string is provided e.g.
-```shell
-just set-secret DqtReporting:RunService true
-just set-secret DqtReporting:ReportingDbConnectionString "Data Source=(local);Initial Catalog=DqtReporting;Integrated Security=Yes;TrustServerCertificate=True"
-```
-The service will now run as a background service of the `Worker` project.
-
-
 ### Admin user setup
 
 Add yourself to your local database as an administrator:
