@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsTestProject>false</IsTestProject>
+    <UserSecretsId>Dfe.Sww.EcfTests</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Dfe.Sww.Ecf.UiCommon\Dfe.Sww.Ecf.UiCommon.csproj" />
+    <ProjectReference Include="..\Dfe.Sww.Ecf.TestCommon\Dfe.Sww.Ecf.TestCommon.csproj" />
+  </ItemGroup>
+
+</Project>

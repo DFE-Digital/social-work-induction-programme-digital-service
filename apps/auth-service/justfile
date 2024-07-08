@@ -1,8 +1,8 @@
 set shell := ["pwsh", "-nop", "-c"]
 
-solution-root := "TeachingRecordSystem"
-user-secrets-id := "TeachingRecordSystem"
-test-user-secrets-id := "TeachingRecordSystemTests"
+solution-root := "Dfe.Sww.Ecf"
+user-secrets-id := "Dfe.Sww.Ecf"
+test-user-secrets-id := "Dfe.Sww.EcfTests"
 
 default:
   @just --list
@@ -15,12 +15,12 @@ install-tools:
 # Restore dependencies
 restore:
   @cd {{solution-root}} && dotnet restore
-  @cd {{solution-root / "src" / "TeachingRecordSystem.SupportUi" }} && dotnet libman restore --verbosity quiet
-  @cd {{solution-root / "src" / "TeachingRecordSystem.AuthorizeAccess" }} && dotnet libman restore --verbosity quiet
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.SupportUi" }} && dotnet libman restore --verbosity quiet
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.AuthorizeAccess" }} && dotnet libman restore --verbosity quiet
 
-# Run the trscli
+# Run the ecfcli
 cli *ARGS:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Cli"}} && dotnet {{"bin" / "Debug" / "net8.0" / "trscli.dll"}} {{ARGS}}
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.Cli"}} && dotnet {{"bin" / "Debug" / "net8.0" / "ecfcli.dll"}} {{ARGS}}
 
 # Build the .NET solution
 build:
@@ -60,27 +60,11 @@ format-changed:
 
 # Run the EF Core Command-line Tools for the Core project
 ef *ARGS:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Core"}} && dotnet dotnet-ef {{ARGS}}
-
-# Run the API project in Development mode
-run-api:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Api"}} && dotnet run
-
-# Run the API project in Development mode and watch for file changes
-watch-api:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Api"}} && dotnet watch
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.Core"}} && dotnet dotnet-ef {{ARGS}}
 
 # Run the AuthorizeAccess project in Development mode and watch for file changes
 watch-authz:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.AuthorizeAccess"}} && dotnet watch
-
-# Run the UI project in Development mode and watch for file changes
-watch-ui:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.SupportUi"}} && dotnet watch
-
-# Run the Worker project in Development mode and watch for file changes
-watch-worker:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Worker"}} && dotnet watch
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.AuthorizeAccess"}} && dotnet watch
 
 # Build the Docker image
 docker-build *ARGS: install-tools restore
@@ -96,7 +80,7 @@ set-tests-secret key value:
   @dotnet user-secrets set "{{key}}" "{{value}}" --id {{test-user-secrets-id}}
 
 create-admin email name:
-  @cd {{solution-root / "src" / "TeachingRecordSystem.Cli"}} && dotnet {{"bin" / "Debug" / "net8.0" / "trscli.dll"}} create-admin --email {{email}} --name {{quote(name)}}
+  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.Cli"}} && dotnet {{"bin" / "Debug" / "net8.0" / "ecfcli.dll"}} create-admin --email {{email}} --name {{quote(name)}}
 
 make *ARGS:
   @make {{ARGS}}

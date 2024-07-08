@@ -2,7 +2,7 @@
 SHELL				:=/bin/bash
 
 TERRAFILE_VERSION=0.8
-RG_TAGS={"Product" : "Teaching Record System"}
+RG_TAGS={"Product" : "Social Worker Workforce - Early Careers Framework"}
 ARM_TEMPLATE_TAG=1.1.10
 
 .PHONY: help
@@ -27,7 +27,7 @@ aks:
 .PHONY: dev
 dev: paas
 	$(eval DEPLOY_ENV=dev)
-	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-development)
+	$(eval AZURE_SUBSCRIPTION=s165-sww-earlycareersframework-development)
 	$(eval RESOURCE_NAME_PREFIX=s165d01)
 	$(eval ENV_SHORT=dv)
 	$(eval ENV_TAG=dev)
@@ -35,7 +35,7 @@ dev: paas
 .PHONY: test
 test: paas
 	$(eval DEPLOY_ENV=test)
-	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-test)
+	$(eval AZURE_SUBSCRIPTION=s165-sww-earlycareersframework-test)
 	$(eval RESOURCE_NAME_PREFIX=s165t01)
 	$(eval ENV_SHORT=ts)
 	$(eval ENV_TAG=test)
@@ -43,7 +43,7 @@ test: paas
 .PHONY: pre-production
 pre-production: paas
 	$(eval DEPLOY_ENV=pre-production)
-	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-test)
+	$(eval AZURE_SUBSCRIPTION=s165-sww-earlycareersframework-test)
 	$(eval RESOURCE_NAME_PREFIX=s165t01)
 	$(eval ENV_SHORT=pp)
 	$(eval ENV_TAG=pre-prod)
@@ -51,7 +51,7 @@ pre-production: paas
 .PHONY: production
 production: paas
 	$(eval DEPLOY_ENV=production)
-	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-production)
+	$(eval AZURE_SUBSCRIPTION=s165-sww-earlycareersframework-production)
 	$(eval RESOURCE_NAME_PREFIX=s165p01)
 	$(eval ENV_SHORT=pd)
 	$(eval ENV_TAG=prod)
@@ -94,7 +94,7 @@ production_aks: aks production-cluster
 .PHONY: domain
 domain:
 	$(eval DEPLOY_ENV=production)
-	$(eval AZURE_SUBSCRIPTION=s165-teachingqualificationsservice-production)
+	$(eval AZURE_SUBSCRIPTION=s165-sww-earlycareersframework-production)
 	$(eval RESOURCE_NAME_PREFIX=s165p01)
 	$(eval ENV_SHORT=pd)
 	$(eval ENV_TAG=prod)

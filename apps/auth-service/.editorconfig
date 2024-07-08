@@ -7,7 +7,7 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 
-[TeachingRecordSystem/**]
+[Dfe.Sww.Ecf/**]
 charset = utf-8
 
 [Makefile]
@@ -33,5 +33,5 @@ csharp_prefer_braces = true:warning
 [*.cshtml]
 indent_size = 4
 
-[TeachingRecordSystem/src/**/Migrations/*]
+[Dfe.Sww.Ecf/src/**/Migrations/*]
 generated_code = true

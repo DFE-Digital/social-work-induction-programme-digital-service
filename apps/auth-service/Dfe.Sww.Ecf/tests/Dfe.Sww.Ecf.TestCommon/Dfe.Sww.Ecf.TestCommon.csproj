@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsTestProject>false</IsTestProject>
+    <UserSecretsId>Dfe.Sww.EcfTests</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Faker.Net" />
+    <PackageReference Include="FakeXrmEasy.v9" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Respawn" />
+    <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="xunit.assert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj" />
+  </ItemGroup>
+
+</Project>

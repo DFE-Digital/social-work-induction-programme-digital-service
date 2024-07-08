@@ -1,63 +1,5 @@
-# teaching-record-system
+# social-worker-workforce-early-careers-framework
 Note: Any diagrams in .jpg files can be rendered using the [.dsl files and https://structurizr.com/dsl](docs/c4-diagrams-as-code/)
-
-Provides an API over the Database of Qualified Teachers (DQT). Provides the core Teaching record and will eventually replace the Database of Qualified Teachers (DQT).
-
-# High level architecture (showing one of the citizen facing services that make use of the TRS API)
-* [Teaching Record System High Level Architecture (just showing core components)](docs/c4-diagrams-as-code/trs-core-containers.jpg)
-
-# Data Integrations **
-TRS provides the the core teaching record data to a number of internal and external facing digital services:
-* Register Trainee Teachers
-* Apply For QTS
-* Access Your Teaching Qualifications
-* Check a Teachers Record
-* Register for an National Professional Qualification
-* Claim Teacher Payments
-* Teaching Councils and Societies (Wales, NI, Scotland)
-* [Teaching Record System : Data Integrations Pattern](docs/c4-diagrams-as-code/trs-core-containers.jpg)
-* [Teaching Record System : Teacher Pensions Integrations](docs/c4-diagrams-as-code/trs-tps.jpg)
-
-** None exhaustive list
-## What does it do?
-
-It is the primary source of teaching records for DfE. It holds data to meet UK Government statutory obligations as well as allow individuals working in the UK education system (including, but not limited to) teachers in schools withing England, Wales, Scotland and Northern Ireland to access digital services provided by the DfE.
-
-## Authorising Access using GOV.UK One Login
-All DfE services will adopt the standard GOV.UK One-Login service to provide standard access to citizen facing services. However, for Teacher Services digital services, it is sometime necessary to implement further authorisation to access a teaching record (e.g. for a teacher to view certificates). TRS will provide this authorisation seamlessly (from a user POV) by handling the redirection between calling service --> GOV.UK OneLogin sign in screen -->TRS (to check access) and back to the calling service.
-
-* [Authorisation flow for services using GOVUK.One Login](docs/trs-gov.one-login-flow.md)
-
-## Calling the API
-
-The API is versioned and each endpoint is prefixed with the version number e.g. `/v3/`. V3 is further split into minor versions; a header should be added to your requests indicating which minor version you want e.g.
-```
-X-Api-Version: 20240101
-```
-
-Wherever possible you should call the latest version.
-
-You can view the API specifications for each version by visiting `/swagger` (see [Environments](#environments) below for the base addresses).
-
-An API key is required for calling the API; speak to one of the developers to get one. The key must be passed in an `Authorization` header e.g.
-```
-Authorization: Bearer your_api_key
-```
-
-### Upgrading V3 versions
-
-See the [changelog](CHANGELOG.md) for the details of what has changed between versions.
-
-
-## Environments
-
-| Name           | URL                                                         |
-| -------------- | ----------------------------------------------------------- |
-| Production     | https://teacher-qualifications-api.education.gov.uk         |
-| Pre-production | https://preprod.teacher-qualifications-api.education.gov.uk |
-| Test           | https://test.teacher-qualifications-api.education.gov.uk/   |
-| Development    | https://dev.teacher-qualifications-api.education.gov.uk/    |
-
 
 ## Developer setup
 
@@ -89,8 +31,8 @@ Note you should use a different database for tests as the test database will be 
 
 e.g.
 ```shell
-just set-secret ConnectionStrings:DefaultConnection "Host=localhost;Username=postgres;Password=your_postgres_password;Database=trs"
-just set-tests-secret ConnectionStrings:DefaultConnection "Host=localhost;Username=postgres;Password=your_postgres_password;Database=trs_tests"
+just set-secret ConnectionStrings:DefaultConnection "Host=localhost;Username=postgres;Password=your_postgres_password;Database=sww-ecf"
+just set-tests-secret ConnectionStrings:DefaultConnection "Host=localhost;Username=postgres;Password=your_postgres_password;Database=sww-ecf_tests"
 ```
 
 To set up the initial database schema run:
@@ -107,36 +49,6 @@ Add yourself to your local database as an administrator:
 ```shell
 just create-admin "your.name@education.gov.uk" "Your Name"
 ```
-
-
-### External dependencies
-
-There are several external dependencies required for local development; these are listed below.
-Ask a developer on the team for the user secrets for these dependencies.
-
-#### Dynamics CRM
-
-The `build` CRM environment is used for local development and automated tests.
-
-#### TRN Generation API
-
-The API calls the TRN Generation API to generate a TRNs.
-
-#### Azure AD
-
-Azure AD is used for authenticating users in the Support UI.
-
-
-## CRM code generation
-
-A tool is used to generated proxy classes for the entities defined within the DQT CRM.
-The tool generates the `TeachingRecordSystem.Dqt.Models.GeneratedCode.cs` and `TeachingRecordSystem.Dqt.Models.GeneratedOptionSets.cs` files.
-A configuration file at `crm_attributes.json` whitelists the entities and their attributes which are included on the generated types.
-
-Run `just generate-crm-models` to run the code generator against the `build` environment using the configuration file above.
-The CRM user secrets described within [Developer setup](#dynamics-crm) must be correctly set for the tool to run successfully.
-The tool is a .NET Framework application and requires .NET 4.6.
-
 
 ## Environment configuration
 
