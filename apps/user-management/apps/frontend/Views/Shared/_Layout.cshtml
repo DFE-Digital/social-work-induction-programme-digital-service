@@ -45,9 +45,9 @@
             <p class="dfe-header__navigation-title">
                 <span id="label-navigation">
                     Menu
-                    <div id="extwaiokist" style="display:none" v="bmmch" q="f0ae2e3d" c="594.5" i="601" u="0.751" s="04272401" sg="svr_09102316-ga_04272401-bai_04252415" d="1" w="false" e="}" a="2" m="BMe=" vn="9colr">
-                        <div id="extwaigglbit" style="display:none" v="bmmch" q="f0ae2e3d" c="594.5" i="601" u="0.751" s="04272401" sg="svr_09102316-ga_04272401-bai_04252415" d="1" w="false" e="}" a="2" m="BMe="></div>
-                    </div>
+                    <span id="extwaiokist" style="display:none" v="bmmch" q="f0ae2e3d" c="594.5" i="601" u="0.751" s="04272401" sg="svr_09102316-ga_04272401-bai_04252415" d="1" w="false" e="}" a="2" m="BMe=" vn="9colr">
+                        <span id="extwaigglbit" style="display:none" v="bmmch" q="f0ae2e3d" c="594.5" i="601" u="0.751" s="04272401" sg="svr_09102316-ga_04272401-bai_04252415" d="1" w="false" e="}" a="2" m="BMe="></span>
+                    </span>
                 </span>
                 <button class="dfe-header__navigation-close" id="close-menu">
                     <svg class="dfe-icon dfe-icon__close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="27" height="27">
@@ -97,6 +97,15 @@
             </span>
         </p>
     </div>
+
+    @{
+        var referer = ViewData["Referer"]?.ToString();
+    }
+
+    @if (!string.IsNullOrWhiteSpace(referer))
+    {
+        <a class="govuk-back-link" href="@referer">Back</a>
+    }
 </div>
 
 <div class="govuk-width-container">

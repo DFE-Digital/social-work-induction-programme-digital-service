@@ -8,27 +8,40 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 public class Account
 {
     /// <summary>
-    /// Full name of user
+    /// First Name
     /// </summary>
-    [Display(Name = "Name")]
-    public string? FullName { get; set; }
+    [Display(Name = "First name")]
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// Last Name
+    /// </summary>
+    [Display(Name = "Last name")]
+    public string? LastName { get; set; }
+
+    /// <summary>
+    /// FullName
+    /// </summary>
+    [Display(Name = "Full name")]
+    public string FullName => $"{FirstName} {LastName}";
+
+    /// <summary>
+    /// Email
+    /// </summary>
+    [Display(Name = "Email address")]
+    public string? Email { get; set; }
 
     /// <summary>
     /// Account status
     /// </summary>
     [Display(Name = "Status")]
-    public string? Status { get; set; }
+    public AccountStatus? Status { get; set; }
 
     /// <summary>
-    /// Additional status-related data (optional)
-    /// </summary>
-    public string? AdditionalStatusInfo { get; set; }
-
-    /// <summary>
-    /// Account type
+    /// Account types
     /// </summary>
     [Display(Name = "Account type")]
-    public List<string>? Type { get; set; }
+    public List<AccountType>? Types { get; set; }
 
     /// <summary>
     /// Account ID

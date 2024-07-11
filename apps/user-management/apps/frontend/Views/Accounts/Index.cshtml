@@ -2,10 +2,28 @@
 
 @{
     ViewData["Title"] = "Manage accounts";
+    var accountAddedMessage = TempData["AccountAddedMessage"]?.ToString();
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+
+        @if (!string.IsNullOrWhiteSpace(accountAddedMessage))
+        {
+            <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        Account was successfully added
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <p class="govuk-notification-banner__heading">
+                        An email notification was sent to @accountAddedMessage
+                    </p>
+                </div>
+            </div>
+        }
+
         <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--l">
                 Manage accounts
@@ -19,7 +37,7 @@
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
                 <th scope="col" class="govuk-table__header">
-                    @Html.DisplayNameFor(model => model.Type)
+                    @Html.DisplayNameFor(model => model.Types)
                 </th>
                 <th scope="col" class="govuk-table__header">
                     <span class="govuk-visually-hidden">Action</span>
@@ -31,32 +49,32 @@
             {
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">
-                        @Html.DisplayFor(modelItem => item.FullName)
+                        @item.FullName
                     </th>
                     <td class="govuk-table__cell">
                         @{
                             var tagClass = item.Status switch
                             {
-                                "Active" => "govuk-tag--green",
-                                "Paused" => "govuk-tag--yellow",
-                                "Pending registration" => "govuk-tag--orange",
+                                AccountStatus.Active => "govuk-tag--green",
+                                AccountStatus.Paused => "govuk-tag--yellow",
+                                AccountStatus.PendingRegistration => "govuk-tag--orange",
                                 _ => "govuk-tag--yellow"
                             };
                         }
-                        <strong class="govuk-tag @tagClass">
-                            @Html.DisplayFor(modelItem => item.Status)
-                        </strong>
-                        @if (item.AdditionalStatusInfo is not null)
+                        @if (item.Status is not null)
                         {
+                            <strong class="govuk-tag @tagClass">
+                                @item.Status.GetDisplayName()
+                            </strong>
                             <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
-                                @Html.DisplayFor(modelItem => item.AdditionalStatusInfo)
+                                @item.Status.GetDescription()
                             </span>
                         }
                     </td>
                     <td class="govuk-table__cell">
-                        @if (item.Type is not null)
+                        @if (item.Types is not null)
                         {
-                            var accountTypes = string.Join(", ", item.Type);
+                            var accountTypes = string.Join(", ", item.Types.Select(type => type.GetDisplayName()));
                             @Html.DisplayFor(modeItem => accountTypes)
                         }
                     </td>

@@ -1,0 +1,47 @@
+﻿@model Account
+
+@{
+    var errorProperties = ViewData.ModelState.Keys.Where(k => ViewData.ModelState[k]?.Errors.Count > 0);
+
+    ViewData["Title"] = "Add User Details";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Enter their details</h1>
+
+        <form asp-controller="Accounts" asp-action="AddUserDetails">
+            <div class="govuk-form-group">
+                <govuk-input asp-for="FirstName" autocomplete="given-name" spellcheck="false" type="text" input-class="govuk-input--width-20">
+                    <govuk-input-label class="govuk-label"/>
+                    @if (errorProperties.Contains(nameof(Model.FirstName)))
+                    {
+                        <govuk-input-error-message>Enter a first name</govuk-input-error-message>
+                    }
+                </govuk-input>
+            </div>
+
+            <div class="govuk-form-group">
+                <govuk-input asp-for="LastName" autocomplete="family-name" spellcheck="false" type="text" input-class="govuk-input--width-20">
+                    <govuk-input-label class="govuk-label"/>
+                    @if (errorProperties.Contains(nameof(Model.LastName)))
+                    {
+                        <govuk-input-error-message>Enter a last name</govuk-input-error-message>
+                    }
+                </govuk-input>
+            </div>
+
+            <div class="govuk-form-group">
+                <govuk-input asp-for="Email" autocomplete="email" spellcheck="false" type="email" input-class="govuk-input--width-20">
+                    <govuk-input-label class="govuk-label"/>
+                    @if (errorProperties.Contains(nameof(Model.Email)))
+                    {
+                        <govuk-input-error-message>Enter an email</govuk-input-error-message>
+                    }
+                </govuk-input>
+            </div>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+    </div>
+</div>

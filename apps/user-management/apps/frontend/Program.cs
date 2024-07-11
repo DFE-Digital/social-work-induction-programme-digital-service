@@ -1,7 +1,15 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Dfe.Sww.Ecf.Frontend.Installers;
+using GovUk.Frontend.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddGovUkFrontend();
+
+// Dependencies
+builder.Services.AddValidators();
+builder.Services.AddRepositories();
 
 var app = builder.Build();
 
@@ -20,6 +28,6 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

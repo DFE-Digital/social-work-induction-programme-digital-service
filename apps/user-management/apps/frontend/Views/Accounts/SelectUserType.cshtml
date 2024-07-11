@@ -1,0 +1,30 @@
+﻿@using GovUk.Frontend.AspNetCore.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Views.Accounts.SelectUserTypeModel
+@{
+    ViewData["Title"] = "Choose Account Type";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form asp-controller="Accounts" asp-action="SelectUserType">
+            <div class="govuk-form-group">
+
+                <govuk-radios asp-for="AccountType">
+                    <govuk-radios-fieldset>
+                        <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                            What do they need to do?
+                        </govuk-radios-fieldset-legend>
+
+                        <govuk-radios-item value="@AccountType.EarlyCareerSocialWorker">Take part in the PQP programme as an early career social worker</govuk-radios-item>
+                        <govuk-radios-item value="@AccountType.Assessor">Assess work and provide feedback to early career social workers</govuk-radios-item>
+                        <govuk-radios-item value="@AccountType.Coordinator">Add, remove and manage accounts for your organisation</govuk-radios-item>
+                    </govuk-radios-fieldset>
+                </govuk-radios>
+            </div>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+
+    </div>
+</div>
