@@ -1,15 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Dfe.Analytics;
 using Dfe.Analytics.AspNetCore;
 using GovUk.Frontend.AspNetCore;
 using GovUk.OneLogin.AspNetCore;
 using Joonasw.AspNetCore.SecurityHeaders;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Dfe.Sww.Ecf;
 using Dfe.Sww.Ecf.AuthorizeAccess;
@@ -29,6 +27,8 @@ using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Filters;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Middleware;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,36 +46,97 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = AuthenticationSchemes.MatchToTeachingRecord;
 
-    options.AddScheme(AuthenticationSchemes.FormFlowJourney, scheme =>
-    {
-        scheme.HandlerType = typeof(FormFlowJourneySignInHandler);
-    });
+    options.AddScheme(AuthenticationSchemes.FormFlowJourney,
+        scheme => { scheme.HandlerType = typeof(FormFlowJourneySignInHandler); });
 
-    options.AddScheme(AuthenticationSchemes.MatchToTeachingRecord, scheme =>
-    {
-        scheme.HandlerType = typeof(MatchToTeachingRecordAuthenticationHandler);
-    });
-});
-
-if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
+    options.AddScheme(AuthenticationSchemes.MatchToTeachingRecord,
+        scheme => { scheme.HandlerType = typeof(MatchToTeachingRecordAuthenticationHandler); });
+}).AddOneLogin(options =>
 {
-    builder.Services
-        .TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OneLoginOptions>, OneLoginPostConfigureOptions>());
+    options.SignInScheme = AuthenticationSchemes.FormFlowJourney;
 
-    builder.Services
-        .Decorate<IAuthenticationSchemeProvider, OneLoginAuthenticationSchemeProvider>()
-        .AddSingleton<OneLoginAuthenticationSchemeProvider>(sp => (OneLoginAuthenticationSchemeProvider)sp.GetRequiredService<IAuthenticationSchemeProvider>())
-        .AddSingleton<IConfigureOptions<OneLoginOptions>>(sp => sp.GetRequiredService<OneLoginAuthenticationSchemeProvider>())
-        .AddSingleton<IHostedService>(sp => sp.GetRequiredService<OneLoginAuthenticationSchemeProvider>());
-}
+    options.Events.OnRedirectToIdentityProviderForSignOut = context =>
+    {
+        // The standard sign out process will call Authenticate() on SignInScheme then try to extract the id_token from the Principal.
+        // That won't work in our case most of the time since sign out journeys won't have the FormFlow instance around that has the AuthenticationTicket.
+        // Instead, we'll get it passed to us in explicitly in AuthenticationProperties.Items.
+
+        if (context.ProtocolMessage.IdTokenHint is null &&
+            context.Properties.Parameters.TryGetValue(OpenIdConnectParameterNames.IdToken, out var idToken) &&
+            idToken is string idTokenString)
+        {
+            context.ProtocolMessage.IdTokenHint = idTokenString;
+        }
+
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnAccessDenied = async context =>
+    {
+        // This handles the scenario where we've requested ID verification but One Login couldn't do it.
+
+        if (context.Properties!.TryGetVectorOfTrust(out var vtr) &&
+            vtr == SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr &&
+            TryGetJourneyInstanceId(context.Properties, out var journeyInstanceId))
+        {
+            context.HandleResponse();
+
+            var signInJourneyHelper = context.HttpContext.RequestServices.GetRequiredService<SignInJourneyHelper>();
+            var journeyInstance =
+                (await signInJourneyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(context.HttpContext,
+                    journeyInstanceId))!;
+
+            var result = await signInJourneyHelper.OnVerificationFailed(journeyInstance);
+            await result.ExecuteAsync(context.HttpContext);
+        }
+    };
+
+    options.MetadataAddress = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration";
+    options.ClientAssertionJwtAudience = "https://oidc.integration.account.gov.uk/token";
+
+    using (var rsa = RSA.Create())
+    {
+        var privateKeyPem = builder.Configuration["OneLogin:PrivateKeyPem"];
+        rsa.ImportFromPem(privateKeyPem);
+
+        options.ClientAuthenticationCredentials = new SigningCredentials(
+            new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
+            SecurityAlgorithms.RsaSha256);
+    }
+
+    options.ClientId = builder.Configuration["OneLogin:ClientId"] ??
+                       throw new InvalidOperationException("Missing OneLogin:ClientId");
+    options.CallbackPath = "/_onelogin/callback";
+    options.SignedOutCallbackPath = "/_onelogin/logout-callback";
+
+    options.CorrelationCookie.Name = "onelogin-correlation.";
+    options.NonceCookie.Name = "onelogin-nonce.";
+    return;
+
+    static bool TryGetJourneyInstanceId(
+        AuthenticationProperties? properties,
+        [NotNullWhen(true)] out JourneyInstanceId? journeyInstanceId)
+    {
+        if (properties?.Items.TryGetValue(FormFlowJourneySignInHandler.PropertyKeys.JourneyInstanceId,
+                out var serializedInstanceId) == true
+            && serializedInstanceId is not null)
+        {
+            journeyInstanceId = JourneyInstanceId.Deserialize(serializedInstanceId);
+            return true;
+        }
+
+        journeyInstanceId = default;
+        return false;
+    }
+});
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
     {
         options
             .UseEntityFrameworkCore()
-                .UseDbContext<EcfDbContext>()
-                .ReplaceDefaultEntities<Guid>();
+            .UseDbContext<EcfDbContext>()
+            .ReplaceDefaultEntities<Guid>();
 
         options.ReplaceApplicationManager<ApplicationManager>();
     })
@@ -154,7 +215,8 @@ builder.Services
 
 if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
 {
-    builder.Services.AddDbContext<IdDbContext>(options => options.UseNpgsql(builder.Configuration.GetRequiredConnectionString("Id")));
+    builder.Services.AddDbContext<IdDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetRequiredConnectionString("Id")));
 }
 
 builder.AddBlobStorage();
@@ -166,10 +228,7 @@ builder.Services
     .AddTransient<MatchToTeachingRecordAuthenticationHandler>()
     .AddHttpContextAccessor()
     .AddSingleton<IStartupFilter, FormFlowSessionMiddlewareStartupFilter>()
-    .AddFormFlow(options =>
-    {
-        options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor);
-    })
+    .AddFormFlow(options => { options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor); })
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
@@ -247,7 +306,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 
-if (builder.Configuration["RootRedirect"] is string rootRedirect)
+if (builder.Configuration["RootRedirect"] is { } rootRedirect)
 {
     app.MapGet("/", ctx =>
     {
@@ -258,4 +317,6 @@ if (builder.Configuration["RootRedirect"] is string rootRedirect)
 
 app.Run();
 
-public partial class Program { }
+public partial class Program
+{
+}

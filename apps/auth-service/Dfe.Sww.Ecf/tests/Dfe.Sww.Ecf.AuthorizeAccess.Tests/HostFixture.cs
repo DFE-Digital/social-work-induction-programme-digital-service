@@ -1,10 +1,7 @@
-using GovUk.OneLogin.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Dfe.Sww.Ecf.AuthorizeAccess.Tests.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.Events.Processing;
 using Dfe.Sww.Ecf.Core.Services.Files;
 using Dfe.Sww.Ecf.TestCommon.Infrastructure;
@@ -36,13 +33,6 @@ public class HostFixture : WebApplicationFactory<Program>
             DbHelper.ConfigureDbServices(services, context.Configuration.GetRequiredConnectionString("DefaultConnection"));
 
             services.AddDbContext<IdDbContext>(options => options.UseInMemoryDatabase("TeacherAuthId"), contextLifetime: ServiceLifetime.Transient);
-
-            services
-                .Configure<AuthenticationOptions>(options =>
-                {
-                    options.AddScheme(OneLoginDefaults.AuthenticationScheme, b => b.HandlerType = typeof(DummyOneLoginHandler));
-                })
-                .AddSingleton<DummyOneLoginHandler>();
 
             // Remove the built-in antiforgery filters
             // (we want to be able to POST directly from a test without having to set antiforgery cookies etc.)

@@ -2,6 +2,7 @@
 @inject Joonasw.AspNetCore.SecurityHeaders.Csp.ICspNonceService NonceService
 @addTagHelper *, Joonasw.AspNetCore.SecurityHeaders
 @{
+    // ReSharper disable once Razor.LayoutNotResolved
     Layout = "_GovUkPageTemplate";
 
     if (ViewBag.Title is null)
@@ -15,6 +16,7 @@
     }
 }
 
+@* ReSharper disable once Razor.SectionNotResolved *@
 @section Head {
     <meta name="robots" content="noindex">
     <link rel="stylesheet" asp-href-include="~/Styles/*.css" asp-append-version="true">
@@ -24,12 +26,12 @@
 @section Header {
     @if (IsSectionDefined("Header"))
     {
-        RenderSection("Header");
+        @(await RenderSectionAsync("Header"))
     }
     else
     {
         var serviceName = ViewBag.ServiceName ?? throw new InvalidOperationException("ViewBag.ServiceName is not set.");
-        var serviceUrl = ViewBag.ServiceUrl ?? throw new InvalidOperationException("ViewBag.ServiceUrl is not set.");
+        _ = ViewBag.ServiceUrl ?? throw new InvalidOperationException("ViewBag.ServiceUrl is not set.");
         var signOutLink = ViewBag.SignOutLink ?? throw new InvalidOperationException("ViewBag.SignOutLink is not set.");
 
         <header class="cross-service-header" role="banner" data-module="one-login-header">
@@ -144,6 +146,7 @@
 
 @RenderBody()
 
+@* ReSharper disable once Razor.SectionNotResolved *@
 @section Footer {
     <footer class="govuk-footer" role="contentinfo">
         <div class="govuk-width-container ">
@@ -158,6 +161,7 @@
     </footer>
 }
 
+@* ReSharper disable once Razor.SectionNotResolved *@
 @section BodyEnd {
     @Html.GovUkFrontendScriptImports(cspNonce: NonceService.GetNonce(), appendVersion: true)
     <script src="~/Scripts/service-header.js" asp-add-nonce="true" asp-append-version="true"></script>
