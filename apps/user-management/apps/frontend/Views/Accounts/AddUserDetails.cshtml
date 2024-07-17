@@ -12,7 +12,7 @@
 
         <form asp-controller="Accounts" asp-action="AddUserDetails">
             <div class="govuk-form-group">
-                <govuk-input asp-for="FirstName" autocomplete="given-name" spellcheck="false" type="text" input-class="govuk-input--width-20">
+                <govuk-input asp-for="FirstName" autocomplete="given-name" spellcheck="false" type="text" input-class="govuk-!-width-two-thirds">
                     <govuk-input-label class="govuk-label"/>
                     @if (errorProperties.Contains(nameof(Model.FirstName)))
                     {
@@ -22,7 +22,7 @@
             </div>
 
             <div class="govuk-form-group">
-                <govuk-input asp-for="LastName" autocomplete="family-name" spellcheck="false" type="text" input-class="govuk-input--width-20">
+                <govuk-input asp-for="LastName" autocomplete="family-name" spellcheck="false" type="text" input-class="govuk-!-width-two-thirds">
                     <govuk-input-label class="govuk-label"/>
                     @if (errorProperties.Contains(nameof(Model.LastName)))
                     {
@@ -32,7 +32,7 @@
             </div>
 
             <div class="govuk-form-group">
-                <govuk-input asp-for="Email" autocomplete="email" spellcheck="false" type="email" input-class="govuk-input--width-20">
+                <govuk-input asp-for="Email" autocomplete="email" spellcheck="false" type="email" input-class="govuk-!-width-two-thirds">
                     <govuk-input-label class="govuk-label"/>
                     @if (errorProperties.Contains(nameof(Model.Email)))
                     {

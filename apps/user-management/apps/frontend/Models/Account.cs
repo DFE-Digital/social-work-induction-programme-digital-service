@@ -47,4 +47,10 @@ public class Account
     /// Account ID
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Social Work England number
+    /// </summary>
+    [Display(Name = "Social Work England number")]
+    public string? SocialWorkEnglandNumber { get; set; }
 }

@@ -41,18 +41,19 @@
                 </dd>
             </div>
         </dl>
-
-        <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    Social Work England registration number (optional)
-                </dt>
-                <dd class="govuk-summary-list__value"></dd>
-                <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"> Social Work England registration number (optional)</span></a>
-                </dd>
-            </div>
-        </dl>
+        @if (@Model.SocialWorkEnglandNumber is not null) {
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Social Work England registration number (optional)
+                    </dt>
+                    <dd class="govuk-summary-list__value"></dd>
+                    <dd class="govuk-summary-list__actions">
+                        <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"> Social Work England registration number (optional)</span></a>
+                    </dd>
+                </div>
+            </dl>
+        }
 
         <form asp-controller="Accounts" asp-action="ConfirmUserDetails">
             <button class="govuk-button" type="submit">Add</button>
