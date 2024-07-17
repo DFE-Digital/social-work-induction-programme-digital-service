@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
+/// <summary>
+/// Account Type
+/// </summary>
 public enum AccountType
 {
     [Display(Name = "Coordinator")]

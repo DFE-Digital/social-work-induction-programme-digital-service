@@ -1,6 +1,7 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.DAL;
-using Dfe.Sww.Ecf.Frontend.Validation;
+﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,24 +10,11 @@ namespace Dfe.Sww.Ecf.Frontend.Controllers;
 /// <summary>
 /// Controller for user account related functionality
 /// </summary>
-public class AccountsController : Controller
+public class AccountsController(IValidator<AddUserDetailsModel> validator, IAccountRepository accountRepository, ICreateAccountJourneyService createAccountJourneyService) : Controller
 {
-    private readonly IValidator<Account> _validator;
-
-    private readonly AccountsRepository _accountsRepository;
-
-    private static Account? AddedAccount { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AccountsController"/> class
-    /// </summary>
-    /// <param name="validator"></param>
-    /// <param name="accountsRepository"></param>
-    public AccountsController(IValidator<Account> validator, AccountsRepository accountsRepository)
-    {
-        _validator = validator;
-        _accountsRepository = accountsRepository;
-    }
+    private readonly IValidator<AddUserDetailsModel> _validator = validator;
+    private readonly IAccountRepository _accountRepository = accountRepository;
+    private readonly ICreateAccountJourneyService _createAccountJourneyService = createAccountJourneyService;
 
     /// <summary>
     /// Action to get all accounts
@@ -34,8 +22,9 @@ public class AccountsController : Controller
     /// <returns>A list of user accounts</returns>
     public IActionResult Index()
     {
-        var allAccounts = _accountsRepository.GetAll();
-        return View(allAccounts);
+        var response = _accountRepository.GetAll();
+
+        return View(response);
     }
 
     /// <summary>
@@ -54,15 +43,9 @@ public class AccountsController : Controller
     /// </summary>
     /// <returns>A form for adding user details</returns>
     [HttpPost]
-    public IActionResult SelectUserType(AccountType accountType)
+    public IActionResult SelectUserType(SelectUserTypeModel selectUserType)
     {
-        // TODO Add/store session data here
-        AddedAccount = new Account
-        {
-            Id = _accountsRepository.Count(),
-            Status = AccountStatus.Active,
-            Types = [accountType]
-        };
+        _createAccountJourneyService.SetAccountType(selectUserType);
 
         return RedirectToAction(nameof(AddUserDetails));
     }
@@ -74,8 +57,10 @@ public class AccountsController : Controller
     [HttpGet]
     public IActionResult AddUserDetails()
     {
-        ViewData["Referer"] = Request.Headers["Referer"];
-        return View();
+        ViewData["Referer"] = Request.Headers.Referer;
+
+        var userDetails = _createAccountJourneyService.GetUserDetails();
+        return View(userDetails);
     }
 
     /// <summary>
@@ -83,23 +68,16 @@ public class AccountsController : Controller
     /// </summary>
     /// <returns>A form for adding user details</returns>
     [HttpPost]
-    public async Task<IActionResult> AddUserDetails(Account account)
+    public async Task<IActionResult> AddUserDetails(AddUserDetailsModel userDetails)
     {
-        var result = await _validator.ValidateAsync(account);
+        var result = await _validator.ValidateAsync(userDetails);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            return View(nameof(AddUserDetails), account);
+            return View(nameof(AddUserDetails), userDetails);
         }
 
-        if (AddedAccount is null)
-        {
-            throw new NullReferenceException();
-        }
-
-        AddedAccount.FirstName = account.FirstName;
-        AddedAccount.LastName = account.LastName;
-        AddedAccount.Email = account.Email;
+        _createAccountJourneyService.SetUserDetails(userDetails);
 
         return RedirectToAction(nameof(ConfirmUserDetails));
     }
@@ -111,9 +89,11 @@ public class AccountsController : Controller
     [HttpGet]
     public IActionResult ConfirmUserDetails()
     {
-        ViewData["Referer"] = Request.Headers["Referer"];
+        ViewData["Referer"] = Request.Headers.Referer;
 
-        return View(AddedAccount);
+        var userDetailsModel = _createAccountJourneyService.GetUserDetails();
+
+        return View(userDetailsModel);
     }
 
     /// <summary>
@@ -124,16 +104,15 @@ public class AccountsController : Controller
     [ActionName("ConfirmUserDetails")]
     public IActionResult ConfirmUserDetails_Post()
     {
-        if (AddedAccount is null)
+        var userDetails = _createAccountJourneyService.GetUserDetails();
+        if (userDetails is null)
         {
             throw new NullReferenceException();
         }
 
-        // TODO Store in DB user account record
+        _createAccountJourneyService.CompleteJourney();
 
-        // TODO replace with chosen state management tool
-        TempData["AccountAddedMessage"] = AddedAccount.Email;
-        _accountsRepository.Add(AddedAccount);
+        TempData["CreatedAccountEmail"] = userDetails.Email;
 
         return RedirectToAction(nameof(Index));
     }

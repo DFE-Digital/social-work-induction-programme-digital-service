@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -26,11 +27,10 @@ public class AddUserDetailsShould : AccountsControllerTestBase
     {
         // Arrange
         var account = AccountFaker.GenerateNewUser();
-
-        Sut.SelectUserType(account.Types!.First());
+        var userDetailsModel = AddUserDetailsModel.FromAccount(account);
 
         // Act
-        var result = await Sut.AddUserDetails(account);
+        var result = await Sut.AddUserDetails(userDetailsModel);
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();
@@ -43,12 +43,16 @@ public class AddUserDetailsShould : AccountsControllerTestBase
     [Fact]
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddUserDetails()
     {
-        // Arrange
         var account = AccountFaker.GenerateNewUser();
-        account.Email = null;
+        var userDetailsModel = new AddUserDetailsModel
+        {
+            FirstName = account.FirstName!,
+            LastName = account.LastName!,
+            Email = string.Empty
+        };
 
         // Act
-        var result = await Sut.AddUserDetails(account);
+        var result = await Sut.AddUserDetails(userDetailsModel);
 
         // Assert
         result.Should().BeOfType<ViewResult>();
@@ -58,7 +62,8 @@ public class AddUserDetailsShould : AccountsControllerTestBase
         var modelState = viewResult.ViewData.ModelState;
         modelState.Keys.Count().Should().Be(1);
         modelState.Keys.Should().Contain("Email");
-        modelState["Email"]!.Errors.Count.Should().Be(1);
-        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("'Email' must not be empty.");
+        modelState["Email"]!.Errors.Count.Should().Be(2);
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Oops Email is empty");
+        modelState["Email"]!.Errors[1].ErrorMessage.Should().Be("Oops that isn't an email");
     }
 }

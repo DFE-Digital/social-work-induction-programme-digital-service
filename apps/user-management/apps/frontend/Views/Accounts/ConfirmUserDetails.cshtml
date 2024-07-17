@@ -1,4 +1,4 @@
-﻿@model Account
+﻿@model Dfe.Sww.Ecf.Frontend.Views.Accounts.AddUserDetailsModel
 
 @{
     ViewData["Title"] = "Confirm User Details";
@@ -17,7 +17,7 @@
                 </dt>
                 <dd class="govuk-summary-list__value">@Model.FirstName</dd>
                 <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"> first Name</span></a>
+                    <a class="govuk-link" href="@Url.Action("AddUserDetails")">Change<span class="govuk-visually-hidden"> first Name</span></a>
                 </dd>
             </div>
 
@@ -27,7 +27,7 @@
                 </dt>
                 <dd class="govuk-summary-list__value">@Model.LastName</dd>
                 <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"> last name</span></a>
+                    <a class="govuk-link" href="@Url.Action("AddUserDetails")">Change<span class="govuk-visually-hidden"> last name</span></a>
                 </dd>
             </div>
 
@@ -37,11 +37,11 @@
                 </dt>
                 <dd class="govuk-summary-list__value">@Model.Email</dd>
                 <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"> email address</span></a>
+                    <a class="govuk-link" href="@Url.Action("AddUserDetails")">Change<span class="govuk-visually-hidden"> email address</span></a>
                 </dd>
             </div>
         </dl>
-        @if (@Model.SocialWorkEnglandNumber is not null) {
+        @if (Model.SocialWorkEnglandNumber is not null) {
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">

@@ -1,4 +1,6 @@
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -18,30 +20,22 @@ public class IndexShould : AccountsControllerTestBase
     }
 
     [Fact]
-    public async Task Get_WhenUserIsAdded_DisplayAddedUserInView()
+    public void Get_WhenUserIsAdded_DisplayAddedUserInView()
     {
         // Arrange
-        var accounts = AccountsRepository.GetAll();
         var newAccount = AccountFaker.GenerateNewUser();
-        newAccount.Id = accounts.Count;
 
-        Sut.SelectUserType(newAccount.Types!.First());
-        await Sut.AddUserDetails(newAccount);
-
-        Sut.SelectUserType(newAccount.Types!.First());
-        await Sut.AddUserDetails(newAccount);
-        Sut.ConfirmUserDetails_Post();
+        CreateAccountJourneyService.SetAccountType(new SelectUserTypeModel { AccountType = newAccount.Types!.First() });
+        CreateAccountJourneyService.SetUserDetails(AddUserDetailsModel.FromAccount(newAccount));
+        newAccount = CreateAccountJourneyService.CompleteJourney();
 
         // Act
         var result = Sut.Index();
 
         // Assert
         result.Should().BeOfType<ViewResult>();
-        var updatedAccounts = AccountsRepository.GetAll();
-        updatedAccounts.Should().ContainEquivalentOf(newAccount);
-
         var viewResult = result as ViewResult;
-        viewResult!.ViewData.Model.Should().BeEquivalentTo(updatedAccounts);
-        viewResult.TempData["AccountAddedMessage"].Should().Be(newAccount.Email);
+        var viewModel = (IEnumerable<Account>)viewResult!.ViewData.Model!;
+        viewModel.Should().ContainEquivalentOf(newAccount);
     }
 }

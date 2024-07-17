@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -8,12 +9,12 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Controllers.AccountsControllerTest
 public class ConfirmUserDetailsShould : AccountsControllerTestBase
 {
     [Fact]
-    public async Task Get_WhenCalled_LoadsTheView()
+    public void Get_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var expectedAccount = AccountFaker.GenerateNewUser();
-        Sut.SelectUserType(expectedAccount.Types!.First());
-        await Sut.AddUserDetails(expectedAccount);
+        var account = AccountFaker.GenerateNewUser();
+        var expectedUserDetails = AddUserDetailsModel.FromAccount(account);
+        CreateAccountJourneyService.SetUserDetails(expectedUserDetails);
 
         // Act
         var result = Sut.ConfirmUserDetails();
@@ -25,17 +26,17 @@ public class ConfirmUserDetailsShould : AccountsControllerTestBase
         var requestHeader = viewResult!.ViewData["Referer"]?.ToString();
         requestHeader.Should().Be("test-referer");
 
-        viewResult.ViewData.Model.Should().BeEquivalentTo(expectedAccount);
+        viewResult.ViewData.Model.Should().BeEquivalentTo(expectedUserDetails);
     }
 
     [Fact]
-    public async Task Post_WhenCalled_RedirectsToAccountsIndex()
+    public void Post_WhenCalled_RedirectsToAccountsIndex()
     {
         // Arrange
-        var expectedAccount = AccountFaker.GenerateNewUser();
+        var account = AccountFaker.GenerateNewUser();
 
-        Sut.SelectUserType(expectedAccount.Types!.First());
-        await Sut.AddUserDetails(expectedAccount);
+        CreateAccountJourneyService.SetAccountType(new SelectUserTypeModel { AccountType = account.Types!.First() });
+        CreateAccountJourneyService.SetUserDetails(AddUserDetailsModel.FromAccount(account));
 
         // Act
         var result = Sut.ConfirmUserDetails_Post();

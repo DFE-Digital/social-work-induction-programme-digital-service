@@ -8,6 +8,11 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 public class Account
 {
     /// <summary>
+    /// Account ID
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
     /// First Name
     /// </summary>
     [Display(Name = "First name")]
@@ -40,13 +45,8 @@ public class Account
     /// <summary>
     /// Account types
     /// </summary>
-    [Display(Name = "Account type")]
+    [Display(Name = "Account types")]
     public List<AccountType>? Types { get; set; }
-
-    /// <summary>
-    /// Account ID
-    /// </summary>
-    public int Id { get; set; }
 
     /// <summary>
     /// Social Work England number

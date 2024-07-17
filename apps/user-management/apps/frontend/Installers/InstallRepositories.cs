@@ -1,16 +1,26 @@
 using System.Diagnostics.CodeAnalysis;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.DAL;
+using Dfe.Sww.Ecf.Frontend.Repositories;
+using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Dfe.Sww.Ecf.Frontend.Installers;
 
+/// <summary>
+/// Install Repository Dependencies
+/// </summary>
 [ExcludeFromCodeCoverage]
-public static class InstallRepositories
+public static class InstallServices
 {
-    public static void AddRepositories(this IServiceCollection services)
+    /// <summary>
+    /// Add Repository Dependencies
+    /// </summary>
+    /// <param name="services"></param>
+    public static void AddRepository(this IServiceCollection services)
     {
-        var accountsRepository = new AccountsRepository();
-        services.AddSingleton(accountsRepository);
+        var accountsRepository = new AccountRepository();
 
         // TODO: Remove this once the DAL is in place
         accountsRepository.AddRange(
@@ -21,7 +31,7 @@ public static class InstallRepositories
                 LastName = "Ripley",
                 Status = AccountStatus.Paused,
                 Types = [AccountType.EarlyCareerSocialWorker],
-                Id = 0
+                Id = Guid.NewGuid()
             },
             new Account
             {
@@ -29,7 +39,7 @@ public static class InstallRepositories
                 LastName = "Bloggs",
                 Status = AccountStatus.Active,
                 Types = [AccountType.Coordinator],
-                Id = 1
+                Id = Guid.NewGuid()
             },
             new Account
             {
@@ -37,7 +47,7 @@ public static class InstallRepositories
                 LastName = "Barn",
                 Status = AccountStatus.PendingRegistration,
                 Types = [AccountType.EarlyCareerSocialWorker],
-                Id = 2
+                Id = Guid.NewGuid()
             },
             new Account
             {
@@ -45,7 +55,7 @@ public static class InstallRepositories
                 LastName = "Athanasopoulos",
                 Status = AccountStatus.Active,
                 Types = [AccountType.Assessor, AccountType.Coordinator],
-                Id = 3
+                Id = Guid.NewGuid()
             },
             new Account
             {
@@ -53,7 +63,7 @@ public static class InstallRepositories
                 LastName = "Newman",
                 Status = AccountStatus.Active,
                 Types = [AccountType.EarlyCareerSocialWorker],
-                Id = 4
+                Id = Guid.NewGuid()
             },
             new Account
             {
@@ -61,8 +71,10 @@ public static class InstallRepositories
                 LastName = "Karci",
                 Status = AccountStatus.Active,
                 Types = [AccountType.EarlyCareerSocialWorker],
-                Id = 5
+                Id = Guid.NewGuid()
             }
         ]);
+
+        services.AddSingleton<IAccountRepository>(accountsRepository);
     }
 }

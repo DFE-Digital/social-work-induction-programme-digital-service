@@ -1,14 +1,15 @@
-﻿@model IEnumerable<Account>
+﻿@model IEnumerable<Account>;
 
 @{
     ViewData["Title"] = "Manage accounts";
-    var accountAddedMessage = TempData["AccountAddedMessage"]?.ToString();
+
+    var createdAccountEmail = TempData["CreatedAccountEmail"]?.ToString();
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-        @if (!string.IsNullOrWhiteSpace(accountAddedMessage))
+        @if (!string.IsNullOrWhiteSpace(createdAccountEmail))
         {
             <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
                 <div class="govuk-notification-banner__header">
@@ -18,7 +19,7 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <p class="govuk-notification-banner__heading">
-                        An email notification was sent to @accountAddedMessage
+                        An email notification was sent to @createdAccountEmail
                     </p>
                 </div>
             </div>
@@ -31,13 +32,13 @@
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">
-                    @Html.DisplayNameFor(model => model.FullName)
+                    <label asp-for="@Model.First().FullName"></label>
                 </th>
                 <th scope="col" class="govuk-table__header">
-                    @Html.DisplayNameFor(model => model.Status)
+                    <label asp-for="@Model.First().Status"></label>
                 </th>
                 <th scope="col" class="govuk-table__header">
-                    @Html.DisplayNameFor(model => model.Types)
+                    <label asp-for="@Model.First().Types"></label>
                 </th>
                 <th scope="col" class="govuk-table__header">
                     <span class="govuk-visually-hidden">Action</span>

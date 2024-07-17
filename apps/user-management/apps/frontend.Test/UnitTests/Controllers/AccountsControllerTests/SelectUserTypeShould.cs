@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -25,8 +26,11 @@ public class SelectUserTypeShould : AccountsControllerTestBase
     public void Post_WhenCalled_RedirectsToAddUserDetails()
     {
         // Act
-        var accountType = AccountType.Coordinator;
-        var result = Sut.SelectUserType(accountType);
+        var selectUserTypeModel = new SelectUserTypeModel
+        {
+            AccountType = AccountType.Coordinator
+        };
+        var result = Sut.SelectUserType(selectUserTypeModel);
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();

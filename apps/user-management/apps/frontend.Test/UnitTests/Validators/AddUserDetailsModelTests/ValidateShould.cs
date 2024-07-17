@@ -1,5 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Validation;
+﻿using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentValidation.TestHelper;
 using Xunit;
 
@@ -7,18 +7,18 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Validators.AccountTests;
 
 public class ValidateShould
 {
-    private readonly AccountValidator _validator;
+    private readonly AddUserDetailsModelValidator _validator;
 
     public ValidateShould()
     {
-        _validator = new AccountValidator();
+        _validator = new AddUserDetailsModelValidator();
     }
 
     [Fact]
     public void WhenRequiredPropertiesAreSupplied_PassesValidation()
     {
         // Arrange
-        var account = new Account
+        var account = new AddUserDetailsModel
         {
             FirstName = "John",
             LastName = "Doe",
@@ -36,7 +36,7 @@ public class ValidateShould
     public void WhenEmailAndFirstNameAndLastNameAreNotSupplied_HasValidationErrors()
     {
         // Arrange
-        var account = new Account
+        var account = new AddUserDetailsModel
         {
             FirstName = string.Empty,
             LastName = string.Empty,
