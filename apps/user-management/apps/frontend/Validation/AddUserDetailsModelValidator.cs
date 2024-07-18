@@ -12,9 +12,17 @@ public class AddUserDetailsModelValidator : AbstractValidator<AddUserDetailsMode
 {
     public AddUserDetailsModelValidator()
     {
-        RuleFor(x => x.FirstName).FirstNameValidation();
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(y => y.LastName).LastNameValidation();
+        When(x => string.IsNullOrWhiteSpace(x.LastName), () =>
+        {
+            RuleFor(y => y.FirstName).FirstNameValidation();
+        });
+
+        When(x => string.IsNullOrWhiteSpace(x.FirstName), () =>
+        {
+            RuleFor(y => y.LastName).LastNameValidation();
+        });
 
         RuleFor(y => y.Email).EmailValidation();
     }

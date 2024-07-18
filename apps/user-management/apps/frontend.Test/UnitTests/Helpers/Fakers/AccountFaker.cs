@@ -1,7 +1,7 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 
 public sealed class AccountFaker : Faker<Account>
 {

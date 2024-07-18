@@ -13,7 +13,7 @@ namespace Dfe.Sww.Ecf.Frontend.Installers;
 public static class InstallValidators
 {
     /// <summary>
-    /// Add Validator Dependecies.
+    /// Add Validator Dependencies.
     /// </summary>
     /// <param name="services"></param>
     public static void AddValidators(this IServiceCollection services)

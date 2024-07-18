@@ -28,7 +28,7 @@ public class Account
     /// FullName
     /// </summary>
     [Display(Name = "Full name")]
-    public string FullName => $"{FirstName} {LastName}";
+    public string FullName => $"{FirstName} {LastName}".Trim();
 
     /// <summary>
     /// Email

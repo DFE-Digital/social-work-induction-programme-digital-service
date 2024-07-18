@@ -2,13 +2,13 @@ using Dfe.Sww.Ecf.Frontend.Controllers;
 using Dfe.Sww.Ecf.Frontend.Repositories;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Controllers.AccountsControllerTests;
@@ -17,9 +17,9 @@ public abstract class AccountsControllerTestBase
 {
     private protected IAccountRepository AccountRepository { get; }
 
-    private protected CreateAccountJourneyService CreateAccountJourneyService { get; }
-
     private protected AccountFaker AccountFaker { get; }
+
+    private protected CreateAccountJourneyService CreateAccountJourneyService { get; }
 
     private protected AccountsController Sut { get; }
 

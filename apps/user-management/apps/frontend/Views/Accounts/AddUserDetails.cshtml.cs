@@ -12,26 +12,25 @@ public class AddUserDetailsModel
     /// First Name
     /// </summary>
     [Display(Name = "First name")]
-    public string FirstName { get; init; } = null!;
+    public string? FirstName { get; init; }
 
     /// <summary>
     /// Last Name
     /// </summary>
     [Display(Name = "Last name")]
-    public string LastName { get; init; } = null!;
+    public string? LastName { get; init; }
 
     /// <summary>
     /// Email
     /// </summary>
     [Display(Name = "Email address")]
-    public string Email { get; init; } = null!;
+    public string? Email { get; init; }
 
     /// <summary>
     /// Social Work England number
     /// </summary>
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
-
 
     public static AddUserDetailsModel FromAccount(Account account)
     {

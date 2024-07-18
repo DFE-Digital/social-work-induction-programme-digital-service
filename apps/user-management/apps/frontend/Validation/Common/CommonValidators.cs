@@ -4,21 +4,20 @@ namespace Dfe.Sww.Ecf.Frontend.Validation.Common;
 
 public static class CommonValidators
 {
-    // TO DO - Update these in validation task
-    public static void FirstNameValidation<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static void FirstNameValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
-        ruleBuilder.NotEmpty().WithMessage("Oops First Name is empty");
+        ruleBuilder.NotEmpty().WithMessage("Enter a first or last name");
     }
 
-    public static void LastNameValidation<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static void LastNameValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
-        ruleBuilder.NotEmpty().WithMessage("Oops Last Name is empty");
+        ruleBuilder.NotEmpty().WithMessage("Enter a first or last name");
     }
 
-    public static void EmailValidation<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
         ruleBuilder
-            .NotEmpty().WithMessage("Oops Email is empty")
-            .EmailAddress().WithMessage("Oops that isn't an email");
+            .NotEmpty().WithMessage("Enter an email")
+            .EmailAddress().WithMessage("Enter an email address in the correct format, like name@example.com");
     }
 }

@@ -1,4 +1,4 @@
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +43,7 @@ public class AddUserDetailsShould : AccountsControllerTestBase
     [Fact]
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddUserDetails()
     {
+        // Arrange
         var account = AccountFaker.GenerateNewUser();
         var userDetailsModel = new AddUserDetailsModel
         {
@@ -62,8 +63,7 @@ public class AddUserDetailsShould : AccountsControllerTestBase
         var modelState = viewResult.ViewData.ModelState;
         modelState.Keys.Count().Should().Be(1);
         modelState.Keys.Should().Contain("Email");
-        modelState["Email"]!.Errors.Count.Should().Be(2);
-        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Oops Email is empty");
-        modelState["Email"]!.Errors[1].ErrorMessage.Should().Be("Oops that isn't an email");
+        modelState["Email"]!.Errors.Count.Should().Be(1);
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
     }
 }
