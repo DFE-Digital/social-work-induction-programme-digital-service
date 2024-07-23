@@ -196,3 +196,7 @@ $RECYCLE.BIN/
 dist
 .nx/cache
 *.user
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

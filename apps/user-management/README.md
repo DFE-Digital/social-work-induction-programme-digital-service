@@ -29,6 +29,7 @@ asdf install
 - *Optionally*:
   - Install `nx` globally: `pnpm i -g nx`
   - **Or:** wherever the documentation refers to `nx ...`, just use `pnpx nx ...` instead.
+- Install playwright dependencies: `pnpx playwright install`
 
 ### Tasks
 
