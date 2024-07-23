@@ -25,8 +25,8 @@ public class IndexShould : AccountsControllerTestBase
         // Arrange
         var newAccount = AccountFaker.GenerateNewUser();
 
-        CreateAccountJourneyService.SetAccountType(new SelectUserTypeModel { AccountType = newAccount.Types!.First() });
-        CreateAccountJourneyService.SetUserDetails(AddUserDetailsModel.FromAccount(newAccount));
+        CreateAccountJourneyService.SetAccountTypes(new List<AccountType> { newAccount.Types!.First() });
+        CreateAccountJourneyService.SetAccountDetails(AddAccountDetailsModel.FromAccount(newAccount));
         newAccount = CreateAccountJourneyService.CompleteJourney();
 
         // Act

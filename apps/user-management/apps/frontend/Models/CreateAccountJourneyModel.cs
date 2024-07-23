@@ -4,9 +4,9 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class CreateAccountJourneyModel
 {
-    public SelectUserTypeModel? UserType { get; set; }
+    public IList<AccountType>? AccountTypes { get; set; }
 
-    public AddUserDetailsModel? UserDetails { get; set; }
+    public AddAccountDetailsModel? AccountDetails { get; set; }
 
     public Account ToAccount()
     {
@@ -14,10 +14,10 @@ public class CreateAccountJourneyModel
         {
             Id = Guid.NewGuid(),
             Status = AccountStatus.Active,
-            Email = UserDetails?.Email,
-            FirstName = UserDetails?.FirstName,
-            LastName = UserDetails?.LastName,
-            Types = UserType is null ? null : [UserType.AccountType]
+            Email = AccountDetails?.Email,
+            FirstName = AccountDetails?.FirstName,
+            LastName = AccountDetails?.LastName,
+            Types = AccountTypes
         };
     }
 }

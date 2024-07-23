@@ -13,4 +13,6 @@ public enum AccountType
     Assessor,
     [Display(Name = "Early career social worker")]
     EarlyCareerSocialWorker,
+    [Display(Name = "Assessor, Coordinator")]
+    AssessorCoordinator,
 }

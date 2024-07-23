@@ -8,7 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Validation;
 /// <summary>
 /// Validation for the account model
 /// </summary>
-public class AddUserDetailsModelValidator : AbstractValidator<AddUserDetailsModel>
+public class AddUserDetailsModelValidator : AbstractValidator<AddAccountDetailsModel>
 {
     public AddUserDetailsModelValidator()
     {

@@ -1,4 +1,5 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Views.Accounts;
@@ -10,9 +11,9 @@ namespace Dfe.Sww.Ecf.Frontend.Controllers;
 /// <summary>
 /// Controller for user account related functionality
 /// </summary>
-public class AccountsController(IValidator<AddUserDetailsModel> validator, IAccountRepository accountRepository, ICreateAccountJourneyService createAccountJourneyService) : Controller
+public class AccountsController(IValidator<AddAccountDetailsModel> validator, IAccountRepository accountRepository, ICreateAccountJourneyService createAccountJourneyService) : Controller
 {
-    private readonly IValidator<AddUserDetailsModel> _validator = validator;
+    private readonly IValidator<AddAccountDetailsModel> _validator = validator;
     private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly ICreateAccountJourneyService _createAccountJourneyService = createAccountJourneyService;
 
@@ -43,9 +44,50 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
     /// </summary>
     /// <returns>A form for adding user details</returns>
     [HttpPost]
-    public IActionResult SelectUserType(SelectUserTypeModel selectUserType)
+    public IActionResult SelectUserType(SelectUserTypeModel selectUserTypeModel)
     {
-        _createAccountJourneyService.SetAccountType(selectUserType);
+        if (selectUserTypeModel?.AccountType is null)
+        {
+            ViewData["Referer"] = Request.Headers.Referer;
+            return View();
+        }
+
+        if (selectUserTypeModel.AccountType == AccountType.AssessorCoordinator)
+        {
+            return RedirectToAction(nameof(SelectUseCase));
+        }
+
+        var accountTypes = new List<AccountType> { selectUserTypeModel.AccountType.Value };
+        _createAccountJourneyService.SetAccountTypes(accountTypes);
+
+        return RedirectToAction(nameof(AddUserDetails));
+    }
+
+    /// <summary>
+    /// Action to select what type of user account to add
+    /// </summary>
+    /// <returns>A list of account types</returns>
+    [HttpGet]
+    public IActionResult SelectUseCase()
+    {
+        ViewData["Referer"] = Request.Headers.Referer;
+        return View();
+    }
+
+    /// <summary>
+    /// Action to store selected user account type
+    /// </summary>
+    /// <returns>A form for adding user details</returns>
+    [HttpPost]
+    public IActionResult SelectUseCase(SelectUseCaseModel selectUseCaseModel)
+    {
+        if (selectUseCaseModel?.AccountTypes is null)
+        {
+            ViewData["Referer"] = Request.Headers.Referer;
+            return View();
+        }
+
+        _createAccountJourneyService.SetAccountTypes(selectUseCaseModel.AccountTypes);
 
         return RedirectToAction(nameof(AddUserDetails));
     }
@@ -59,7 +101,7 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
     {
         ViewData["Referer"] = Request.Headers.Referer;
 
-        var userDetails = _createAccountJourneyService.GetUserDetails();
+        var userDetails = _createAccountJourneyService.GetAccountDetails();
         return View(userDetails);
     }
 
@@ -68,7 +110,7 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
     /// </summary>
     /// <returns>A form for adding user details</returns>
     [HttpPost]
-    public async Task<IActionResult> AddUserDetails(AddUserDetailsModel userDetails)
+    public async Task<IActionResult> AddUserDetails(AddAccountDetailsModel userDetails)
     {
         var result = await _validator.ValidateAsync(userDetails);
         if (!result.IsValid)
@@ -77,7 +119,7 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
             return View(nameof(AddUserDetails), userDetails);
         }
 
-        _createAccountJourneyService.SetUserDetails(userDetails);
+        _createAccountJourneyService.SetAccountDetails(userDetails);
 
         return RedirectToAction(nameof(ConfirmUserDetails));
     }
@@ -91,7 +133,7 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
     {
         ViewData["Referer"] = Request.Headers.Referer;
 
-        var userDetailsModel = _createAccountJourneyService.GetUserDetails();
+        var userDetailsModel = _createAccountJourneyService.GetAccountDetails();
 
         return View(userDetailsModel);
     }
@@ -104,7 +146,7 @@ public class AccountsController(IValidator<AddUserDetailsModel> validator, IAcco
     [ActionName("ConfirmUserDetails")]
     public IActionResult ConfirmUserDetails_Post()
     {
-        var userDetails = _createAccountJourneyService.GetUserDetails();
+        var userDetails = _createAccountJourneyService.GetAccountDetails();
         if (userDetails is null)
         {
             throw new NullReferenceException();

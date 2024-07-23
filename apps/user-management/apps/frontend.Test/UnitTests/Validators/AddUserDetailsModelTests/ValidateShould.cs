@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Validators.AddUserDetailsModelTests;
 
-public class ValidateShould : ValidatorTestBase<AddUserDetailsModelValidator, AddUserDetailsModel, AddUserDetailsModelFaker>
+public class ValidateShould : ValidatorTestBase<AddUserDetailsModelValidator, AddAccountDetailsModel, AddUserDetailsModelFaker>
 {
     public ValidateShould() : base(new AddUserDetailsModelValidator(), new AddUserDetailsModelFaker()) { }
 
@@ -45,7 +45,7 @@ public class ValidateShould : ValidatorTestBase<AddUserDetailsModelValidator, Ad
     public void WhenEmailAndFirstNameAndLastNameAreNotSupplied_HasValidationErrors(string? value)
     {
         // Arrange
-        var account = new AddUserDetailsModel
+        var account = new AddAccountDetailsModel
         {
             FirstName = value,
             LastName = value,

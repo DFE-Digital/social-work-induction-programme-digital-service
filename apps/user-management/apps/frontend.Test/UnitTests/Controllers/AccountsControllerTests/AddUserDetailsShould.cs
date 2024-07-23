@@ -27,7 +27,7 @@ public class AddUserDetailsShould : AccountsControllerTestBase
     {
         // Arrange
         var account = AccountFaker.GenerateNewUser();
-        var userDetailsModel = AddUserDetailsModel.FromAccount(account);
+        var userDetailsModel = AddAccountDetailsModel.FromAccount(account);
 
         // Act
         var result = await Sut.AddUserDetails(userDetailsModel);
@@ -45,7 +45,7 @@ public class AddUserDetailsShould : AccountsControllerTestBase
     {
         // Arrange
         var account = AccountFaker.GenerateNewUser();
-        var userDetailsModel = new AddUserDetailsModel
+        var userDetailsModel = new AddAccountDetailsModel
         {
             FirstName = account.FirstName!,
             LastName = account.LastName!,

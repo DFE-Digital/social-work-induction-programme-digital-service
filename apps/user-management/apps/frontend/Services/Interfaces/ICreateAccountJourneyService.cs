@@ -7,13 +7,13 @@ public interface ICreateAccountJourneyService
 {
     CreateAccountJourneyModel GetCreateAccountJourneyModel();
 
-    SelectUserTypeModel? GetUserType();
+    IList<AccountType>? GetAccountTypes();
 
-    AddUserDetailsModel? GetUserDetails();
+    AddAccountDetailsModel? GetAccountDetails();
 
-    void SetUserDetails(AddUserDetailsModel userDetails);
+    void SetAccountDetails(AddAccountDetailsModel accountDetails);
 
-    void SetAccountType(SelectUserTypeModel userType);
+    void SetAccountTypes(IList<AccountType> accountTypes);
 
     void ResetCreateAccountJourneyModel();
 

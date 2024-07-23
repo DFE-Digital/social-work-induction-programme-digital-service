@@ -6,7 +6,7 @@ namespace Dfe.Sww.Ecf.Frontend.Views.Accounts;
 /// <summary>
 /// Add User Details View Model
 /// </summary>
-public class AddUserDetailsModel
+public class AddAccountDetailsModel
 {
     /// <summary>
     /// First Name
@@ -32,9 +32,9 @@ public class AddUserDetailsModel
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
-    public static AddUserDetailsModel FromAccount(Account account)
+    public static AddAccountDetailsModel FromAccount(Account account)
     {
-        return new AddUserDetailsModel
+        return new AddAccountDetailsModel
         {
             FirstName = account.FirstName,
             LastName = account.LastName,

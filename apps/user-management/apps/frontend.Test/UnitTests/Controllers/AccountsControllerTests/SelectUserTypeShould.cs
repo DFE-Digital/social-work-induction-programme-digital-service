@@ -39,4 +39,24 @@ public class SelectUserTypeShould : AccountsControllerTestBase
         redirectToActionResult!.ControllerName.Should().BeNull();
         redirectToActionResult.ActionName.Should().Be("AddUserDetails");
     }
+
+    [Fact]
+    public void Post_WhenPassedAssessorCoordinator_RedirectsToSelectUseCase()
+    {
+        // Arrange
+        var selectUserTypeModel = new SelectUserTypeModel
+        {
+            AccountType = AccountType.AssessorCoordinator
+        };
+
+        // Act
+        var result = Sut.SelectUserType(selectUserTypeModel);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>();
+
+        var redirectToActionResult = result as RedirectToActionResult;
+        redirectToActionResult!.ControllerName.Should().BeNull();
+        redirectToActionResult.ActionName.Should().Be("SelectUseCase");
+    }
 }

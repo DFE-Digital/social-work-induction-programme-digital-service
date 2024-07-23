@@ -18,6 +18,6 @@ public static class InstallValidators
     /// <param name="services"></param>
     public static void AddValidators(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<AddUserDetailsModel>, AddUserDetailsModelValidator>();
+        services.AddScoped<IValidator<AddAccountDetailsModel>, AddUserDetailsModelValidator>();
     }
 }

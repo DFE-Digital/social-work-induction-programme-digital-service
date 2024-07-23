@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 using FluentAssertions;
@@ -13,8 +14,8 @@ public class ConfirmUserDetailsShould : AccountsControllerTestBase
     {
         // Arrange
         var account = AccountFaker.GenerateNewUser();
-        var expectedUserDetails = AddUserDetailsModel.FromAccount(account);
-        CreateAccountJourneyService.SetUserDetails(expectedUserDetails);
+        var expectedUserDetails = AddAccountDetailsModel.FromAccount(account);
+        CreateAccountJourneyService.SetAccountDetails(expectedUserDetails);
 
         // Act
         var result = Sut.ConfirmUserDetails();
@@ -35,8 +36,8 @@ public class ConfirmUserDetailsShould : AccountsControllerTestBase
         // Arrange
         var account = AccountFaker.GenerateNewUser();
 
-        CreateAccountJourneyService.SetAccountType(new SelectUserTypeModel { AccountType = account.Types!.First() });
-        CreateAccountJourneyService.SetUserDetails(AddUserDetailsModel.FromAccount(account));
+        CreateAccountJourneyService.SetAccountTypes(new List<AccountType> { account.Types!.First() });
+        CreateAccountJourneyService.SetAccountDetails(AddAccountDetailsModel.FromAccount(account));
 
         // Act
         var result = Sut.ConfirmUserDetails_Post();

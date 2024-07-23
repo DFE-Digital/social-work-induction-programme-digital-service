@@ -46,7 +46,7 @@ public class Account
     /// Account types
     /// </summary>
     [Display(Name = "Account types")]
-    public List<AccountType>? Types { get; set; }
+    public IList<AccountType>? Types { get; set; }
 
     /// <summary>
     /// Social Work England number

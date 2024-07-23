@@ -20,29 +20,29 @@ public class CreateAccountJourneyService(IHttpContextAccessor httpContextAccesso
         return createAccountJourneyModel ?? new CreateAccountJourneyModel();
     }
 
-    public SelectUserTypeModel? GetUserType()
+    public IList<AccountType>? GetAccountTypes()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        return createAccountJourneyModel.UserType;
+        return createAccountJourneyModel.AccountTypes;
     }
 
-    public AddUserDetailsModel? GetUserDetails()
+    public AddAccountDetailsModel? GetAccountDetails()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        return createAccountJourneyModel.UserDetails;
+        return createAccountJourneyModel.AccountDetails;
     }
 
-    public void SetUserDetails(AddUserDetailsModel userDetails)
+    public void SetAccountDetails(AddAccountDetailsModel accountDetails)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        createAccountJourneyModel.UserDetails = userDetails;
+        createAccountJourneyModel.AccountDetails = accountDetails;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
-    public void SetAccountType(SelectUserTypeModel userType)
+    public void SetAccountTypes(IList<AccountType> accountTypes)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        createAccountJourneyModel.UserType = userType;
+        createAccountJourneyModel.AccountTypes = accountTypes;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 

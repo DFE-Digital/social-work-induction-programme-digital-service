@@ -3,12 +3,12 @@ using Dfe.Sww.Ecf.Frontend.Models;
 namespace Dfe.Sww.Ecf.Frontend.Views.Accounts;
 
 /// <summary>
-/// Select User Type Model
+/// Select Use Case Model
 /// </summary>
-public class SelectUserTypeModel
+public class SelectUseCaseModel
 {
     /// <summary>
-    /// Account Type
+    /// Account Types
     /// </summary>
-    public AccountType? AccountType { get; init; }
+    public IList<AccountType>? AccountTypes { get; init; }
 }
