@@ -17,16 +17,14 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(person);
             Clock.Advance();
 
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(vtr: SignInJourneyHelper.AuthenticationOnlyVtr, sub: user.Subject);
@@ -37,11 +35,11 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Assert
             Assert.NotNull(state.AuthenticationTicket);
 
-            user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
-            Assert.NotEqual(Clock.UtcNow, user.FirstOneLoginSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastOneLoginSignIn);
-            Assert.NotEqual(Clock.UtcNow, user.FirstSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastSignIn);
+            var oneLoginUser = await WithDbContext(ctx => ctx.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstOneLoginSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastOneLoginSignIn);
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastSignIn);
 
             var redirectResult = Assert.IsType<RedirectHttpResult>(result);
             Assert.Equal($"{state.RedirectUri}?{journeyInstance.GetUniqueIdQueryParameter()}", redirectResult.Url);
@@ -60,9 +58,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(vtr: SignInJourneyHelper.AuthenticationOnlyVtr, sub: user.Subject);
@@ -74,11 +70,11 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             Assert.NotNull(state.OneLoginAuthenticationTicket);
             Assert.Null(state.AuthenticationTicket);
 
-            user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
-            Assert.NotEqual(Clock.UtcNow, user.FirstOneLoginSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastOneLoginSignIn);
-            Assert.NotEqual(Clock.UtcNow, user.FirstSignIn);
-            Assert.NotEqual(Clock.UtcNow, user.LastSignIn);
+            var oneLoginUser = await WithDbContext(ctx => ctx.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstOneLoginSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastOneLoginSignIn);
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstSignIn);
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.LastSignIn);
 
             var challengeResult = Assert.IsType<ChallengeHttpResult>(result);
             Assert.Equal(SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr, challengeResult.Properties?.GetVectorOfTrust());
@@ -94,9 +90,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var subject = TestData.CreateOneLoginUserSubject();
@@ -109,7 +103,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             Assert.NotNull(state.OneLoginAuthenticationTicket);
             Assert.Null(state.AuthenticationTicket);
 
-            var user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleOrDefaultAsync(u => u.Subject == subject));
+            var user = await WithDbContext(ctx => ctx.OneLoginUsers.SingleOrDefaultAsync(u => u.Subject == subject));
             Assert.NotNull(user);
             Assert.Equal(Clock.UtcNow, user.FirstOneLoginSignIn);
             Assert.Null(user.FirstSignIn);
@@ -133,9 +127,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(
@@ -153,11 +145,11 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             Assert.NotNull(state.OneLoginAuthenticationTicket);
             Assert.Null(state.AuthenticationTicket);
 
-            user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
-            Assert.NotEqual(Clock.UtcNow, user.FirstOneLoginSignIn);
-            Assert.Null(user.FirstSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastOneLoginSignIn);
-            Assert.NotEqual(Clock.UtcNow, user.LastSignIn);
+            var oneLoginUser = await WithDbContext(ctx => ctx.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstOneLoginSignIn);
+            Assert.Null(oneLoginUser.FirstSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastOneLoginSignIn);
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.LastSignIn);
 
             var redirectResult = Assert.IsType<RedirectHttpResult>(result);
             Assert.Equal($"/NotVerified?{journeyInstance.GetUniqueIdQueryParameter()}", redirectResult.Url);
@@ -180,9 +172,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(
@@ -208,17 +198,17 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             Assert.NotNull(state.OneLoginAuthenticationTicket);
             Assert.Null(state.AuthenticationTicket);
 
-            user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
-            Assert.NotEqual(Clock.UtcNow, user.FirstOneLoginSignIn);
-            Assert.Null(user.FirstSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastOneLoginSignIn);
-            Assert.NotEqual(Clock.UtcNow, user.LastSignIn);
-            Assert.Equal(Clock.UtcNow, user.VerifiedOn);
-            Assert.Equal(OneLoginUserVerificationRoute.OneLogin, user.VerificationRoute);
-            Assert.NotNull(user.VerifiedNames);
-            Assert.Collection(user.VerifiedNames, names => Assert.Collection(names, n => Assert.Equal(firstName, n), n => Assert.Equal(lastName, n)));
-            Assert.NotNull(user.VerifiedDatesOfBirth);
-            Assert.Collection(user.VerifiedDatesOfBirth, dob => Assert.Equal(dateOfBirth, dob));
+            var oneLoginUser = await WithDbContext(ctx => ctx.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstOneLoginSignIn);
+            Assert.Null(oneLoginUser.FirstSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastOneLoginSignIn);
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.LastSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.VerifiedOn);
+            Assert.Equal(OneLoginUserVerificationRoute.OneLogin, oneLoginUser.VerificationRoute);
+            Assert.NotNull(oneLoginUser.VerifiedNames);
+            Assert.Collection(oneLoginUser.VerifiedNames, names => Assert.Collection(names, n => Assert.Equal(firstName, n), n => Assert.Equal(lastName, n)));
+            Assert.NotNull(oneLoginUser.VerifiedDatesOfBirth);
+            Assert.Collection(oneLoginUser.VerifiedDatesOfBirth, dob => Assert.Equal(dateOfBirth, dob));
 
             var redirectResult = Assert.IsType<RedirectHttpResult>(result);
             Assert.Equal($"/Connect?{journeyInstance.GetUniqueIdQueryParameter()}", redirectResult.Url);
@@ -231,7 +221,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -245,8 +235,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -272,12 +260,12 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Assert
             Assert.NotNull(state.AuthenticationTicket);
 
-            user = await WithDbContext(dbContext => dbContext.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
-            Assert.NotEqual(Clock.UtcNow, user.FirstOneLoginSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastOneLoginSignIn);
-            Assert.Equal(Clock.UtcNow, user.FirstSignIn);
-            Assert.Equal(Clock.UtcNow, user.LastSignIn);
-            Assert.Equal(OneLoginUserMatchRoute.TrnToken, user.MatchRoute);
+            var oneLoginUser = await WithDbContext(ctx => ctx.OneLoginUsers.SingleAsync(u => u.Subject == user.Subject));
+            Assert.NotEqual(Clock.UtcNow, oneLoginUser.FirstOneLoginSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastOneLoginSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.FirstSignIn);
+            Assert.Equal(Clock.UtcNow, oneLoginUser.LastSignIn);
+            Assert.Equal(OneLoginUserMatchRoute.TrnToken, oneLoginUser.MatchRoute);
 
             var redirectResult = Assert.IsType<RedirectHttpResult>(result);
             Assert.Equal($"{state.RedirectUri}?{journeyInstance.GetUniqueIdQueryParameter()}", redirectResult.Url);
@@ -290,7 +278,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -304,8 +292,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -340,7 +326,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -354,8 +340,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -390,7 +374,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -400,8 +384,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -436,7 +418,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -450,8 +432,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -486,7 +466,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             // Arrange
             var helper = CreateHelper(dbContext);
 
-            var person = await TestData.CreatePerson(b => b.WithTrn(true));
+            var person = await TestData.CreatePerson(b => b.WithTrn());
             var user = await TestData.CreateOneLoginUser(personId: null);
             Clock.Advance();
 
@@ -500,8 +480,6 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 redirectUri: "/",
                 serviceName: "Test Service",
                 serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default,
                 trnToken);
             var journeyInstance = await CreateJourneyInstance(state);
 
@@ -546,9 +524,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(
@@ -558,7 +534,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             await helper.OnOneLoginCallback(journeyInstance,
                 authenticationTicket);
 
-            await journeyInstance.UpdateStateAsync(state => state.SetNationalInsuranceNumber(true,
+            await journeyInstance.UpdateStateAsync(signInJourneyState => signInJourneyState.SetNationalInsuranceNumber(true,
                 Faker.Identification.UkNationalInsuranceNumber()));
 
             personMatchingServiceMock
@@ -600,9 +576,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(
@@ -611,7 +585,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 createCoreIdentityVc: false);
             await helper.OnOneLoginCallback(journeyInstance, authenticationTicket);
 
-            await journeyInstance.UpdateStateAsync(state => state.SetNationalInsuranceNumber(true, person.NationalInsuranceNumber));
+            await journeyInstance.UpdateStateAsync(signInJourneyState => signInJourneyState.SetNationalInsuranceNumber(true, person.NationalInsuranceNumber));
 
             personMatchingServiceMock
                 .Setup(mock => mock.Match(It.Is<MatchRequest>(r =>
@@ -659,9 +633,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             var state = new SignInJourneyState(
                 redirectUri: "/",
                 serviceName: "Test Service",
-                serviceUrl: "https://service",
-                oneLoginAuthenticationScheme: "dummy",
-                clientApplicationUserId: default);
+                serviceUrl: "https://service");
             var journeyInstance = await CreateJourneyInstance(state);
 
             var authenticationTicket = CreateOneLoginAuthenticationTicket(
@@ -670,7 +642,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 createCoreIdentityVc: false);
             await helper.OnOneLoginCallback(journeyInstance, authenticationTicket);
 
-            await journeyInstance.UpdateStateAsync(state => state.SetNationalInsuranceNumber(true, person.NationalInsuranceNumber));
+            await journeyInstance.UpdateStateAsync(signInJourneyState => signInJourneyState.SetNationalInsuranceNumber(true, person.NationalInsuranceNumber));
 
             personMatchingServiceMock
                 .Setup(mock => mock.Match(It.Is<MatchRequest>(r =>

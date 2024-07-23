@@ -78,7 +78,7 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         await GetSignInJourneyHelper().OnOneLoginCallback(journeyInstance, ticket);
 
         Debug.Assert(state.NationalInsuranceNumber is null);
-        await journeyInstance.UpdateStateAsync(state => state.SetNationalInsuranceNumber(true, TestData.GenerateNationalInsuranceNumber()));
+        await journeyInstance.UpdateStateAsync(signInJourneyState => signInJourneyState.SetNationalInsuranceNumber(true, TestData.GenerateNationalInsuranceNumber()));
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"/check-answers?{journeyInstance.GetUniqueIdQueryParameter()}");
 
@@ -128,10 +128,10 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         var nationalInsuranceNumber = TestData.GenerateNationalInsuranceNumber();
         var trn = await TestData.GenerateTrn();
 
-        await journeyInstance.UpdateStateAsync(state =>
+        await journeyInstance.UpdateStateAsync(signInJourneyState =>
         {
-            state.SetNationalInsuranceNumber(true, nationalInsuranceNumber);
-            state.SetTrn(true, trn);
+            signInJourneyState.SetNationalInsuranceNumber(true, nationalInsuranceNumber);
+            signInJourneyState.SetTrn(true, trn);
         });
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"/check-answers?{journeyInstance.GetUniqueIdQueryParameter()}");
@@ -217,7 +217,7 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         await GetSignInJourneyHelper().OnOneLoginCallback(journeyInstance, ticket);
 
         Debug.Assert(state.NationalInsuranceNumber is null);
-        await journeyInstance.UpdateStateAsync(state => state.SetNationalInsuranceNumber(true, TestData.GenerateNationalInsuranceNumber()));
+        await journeyInstance.UpdateStateAsync(signInJourneyState => signInJourneyState.SetNationalInsuranceNumber(true, TestData.GenerateNationalInsuranceNumber()));
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"/check-answers?{journeyInstance.GetUniqueIdQueryParameter()}");
 
@@ -258,8 +258,7 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         // Arrange
         var person = await TestData.CreatePerson(b => b.WithTrn());
         var trnToken = await CreateTrnToken(person.Trn!);
-        var applicationUser = await TestData.CreateApplicationUser(isOidcClient: true);
-        var state = CreateNewState(clientApplicationUserId: applicationUser.UserId, trnToken: trnToken);
+        var state = CreateNewState(trnToken: trnToken);
         var journeyInstance = await CreateJourneyInstance(state);
 
         var oneLoginUser = await TestData.CreateOneLoginUser(verified: true);
@@ -270,10 +269,10 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         var nationalInsuranceNumber = TestData.GenerateNationalInsuranceNumber();
         var trn = await TestData.GenerateTrn();
 
-        await journeyInstance.UpdateStateAsync(state =>
+        await journeyInstance.UpdateStateAsync(signInJourneyState =>
         {
-            state.SetNationalInsuranceNumber(true, nationalInsuranceNumber);
-            state.SetTrn(true, trn);
+            signInJourneyState.SetNationalInsuranceNumber(true, nationalInsuranceNumber);
+            signInJourneyState.SetTrn(true, trn);
         });
 
         EventObserver.Clear();
@@ -303,7 +302,6 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
         Assert.Equal(nationalInsuranceNumber, data.StatedNationalInsuranceNumber);
         Assert.Equal(trn, data.StatedTrn);
         Assert.Equal(trnToken.Trn, data.TrnTokenTrn);
-        Assert.Equal(applicationUser.UserId, data.ClientApplicationUserId);
 
         EventObserver.AssertEventsSaved(e =>
         {
@@ -323,7 +321,6 @@ public class CheckAnswersTests(HostFixture hostFixture) : TestBase(hostFixture)
             Assert.Equal(nationalInsuranceNumber, eventData.StatedNationalInsuranceNumber);
             Assert.Equal(trn, eventData.StatedTrn);
             Assert.Equal(trnToken.Trn, eventData.TrnTokenTrn);
-            Assert.Equal(applicationUser.UserId, eventData.ClientApplicationUserId);
         });
     }
 }

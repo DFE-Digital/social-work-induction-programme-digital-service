@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
+using GovUk.OneLogin.AspNetCore;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Pages;
 
@@ -22,5 +23,5 @@ public class SignOutModel : PageModel
             {
                 RedirectUri = JourneyInstance!.State.ServiceUrl
             },
-            JourneyInstance.State.OneLoginAuthenticationScheme);
+            OneLoginDefaults.AuthenticationScheme);
 }

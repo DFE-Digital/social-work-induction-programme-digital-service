@@ -50,7 +50,6 @@ public class CheckAnswersModel(SignInJourneyHelper helper, EcfDbContext dbContex
                 VerifiedDatesOfBirth = JourneyInstance.State.VerifiedDatesOfBirth,
                 StatedNationalInsuranceNumber = JourneyInstance.State.NationalInsuranceNumber,
                 StatedTrn = JourneyInstance.State.Trn,
-                ClientApplicationUserId = JourneyInstance.State.ClientApplicationUserId,
                 TrnTokenTrn = JourneyInstance.State.TrnTokenTrn
             },
             OneLoginUserSubject = subject
@@ -75,7 +74,6 @@ public class CheckAnswersModel(SignInJourneyHelper helper, EcfDbContext dbContex
             catch (Exception ex) when (ex.InnerException is PostgresException postgresException && postgresException.SqlState == PostgresErrorCodes.UniqueViolation)
             {
                 supportTask.SupportTaskReference = SupportTask.GenerateSupportTaskReference();
-                continue;
             }
         }
 

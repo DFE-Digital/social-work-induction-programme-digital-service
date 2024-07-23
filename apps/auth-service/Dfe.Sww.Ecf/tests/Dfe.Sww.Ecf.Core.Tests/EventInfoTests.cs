@@ -16,7 +16,6 @@ public class EventInfoTests
             RaisedBy = SystemUser.SystemUserId,
             User = new()
             {
-                AzureAdUserId = "ad-user-id",
                 Email = "test.user@place.com",
                 Name = "Test User",
                 Roles = ["Administrator"],
@@ -34,7 +33,6 @@ public class EventInfoTests
         var roundTripped = Assert.IsType<EventInfo<UserActivatedEvent>>(deserialized);
         Assert.Equal(e.CreatedUtc, roundTripped.Event.CreatedUtc);
         Assert.Equal(e.RaisedBy.UserId, roundTripped.Event.RaisedBy.UserId);
-        Assert.Equal(e.User.AzureAdUserId, roundTripped.Event.User.AzureAdUserId);
         Assert.Equal(e.User.Email, roundTripped.Event.User.Email);
         Assert.Equal(e.User.Name, roundTripped.Event.User.Name);
         Assert.Equal(e.User.Roles, roundTripped.Event.User.Roles);
@@ -52,7 +50,6 @@ public class EventInfoTests
             RaisedBy = RaisedByUserInfo.FromDqtUser(Guid.NewGuid(), "A DQT User"),
             User = new()
             {
-                AzureAdUserId = "ad-user-id",
                 Email = "test.user@place.com",
                 Name = "Test User",
                 Roles = ["Administrator"],

@@ -110,7 +110,7 @@ public class DebugIdentityModel(
 
         if (_oneLoginUser!.PersonId is not null && !DetachPerson)
         {
-            await JourneyInstance!.UpdateStateAsync(state => helper.Complete(state, _oneLoginUser.Person!.Trn!));
+            await JourneyInstance!.UpdateStateAsync(state => SignInJourneyHelper.Complete(state, _oneLoginUser.Person!.Trn!));
             return GetNextPage();
         }
 

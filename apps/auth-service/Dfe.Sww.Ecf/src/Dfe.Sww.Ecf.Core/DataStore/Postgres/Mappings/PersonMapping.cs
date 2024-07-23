@@ -16,8 +16,5 @@ public class PersonMapping : IEntityTypeConfiguration<Person>
         builder.Property(p => p.LastName).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(p => p.EmailAddress).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(p => p.NationalInsuranceNumber).HasMaxLength(9).IsFixedLength();
-        builder.Property(p => p.DqtFirstName).HasMaxLength(100).UseCollation("case_insensitive");
-        builder.Property(p => p.DqtMiddleName).HasMaxLength(100).UseCollation("case_insensitive");
-        builder.Property(p => p.DqtLastName).HasMaxLength(100).UseCollation("case_insensitive");
     }
 }

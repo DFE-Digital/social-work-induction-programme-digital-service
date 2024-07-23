@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.PersonMatching;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
@@ -22,23 +23,19 @@ public class SignInJourneyHelper(
     IUserInstanceStateProvider userInstanceStateProvider,
     IClock clock)
 {
-    public const string AuthenticationOnlyVtr = @"[""Cl.Cm""]";
-    public const string AuthenticationAndIdentityVerificationVtr = @"[""Cl.Cm.P2""]";
-
-    // ID's database has a user_id column to indicate that a TRN token has been used already.
-    // This sentinel value indicates the token has been used by us, rather than a teacher ID user.
-    private static readonly Guid _teacherAuthIdUserIdSentinel = Guid.Empty;
+    public const string AuthenticationOnlyVtr = """["Cl.Cm"]""";
+    public const string AuthenticationAndIdentityVerificationVtr = """["Cl.Cm.P2"]""";
 
     public AuthorizeAccessLinkGenerator LinkGenerator { get; } = linkGenerator;
 
     public IUserInstanceStateProvider UserInstanceStateProvider { get; } = userInstanceStateProvider;
 
-    public bool ShowDebugPages => optionsAccessor.Value.ShowDebugPages;
+    private bool ShowDebugPages => optionsAccessor.Value.ShowDebugPages;
 
     public IResult SignInWithOneLogin(JourneyInstance<SignInJourneyState> journeyInstance) =>
         OneLoginChallenge(journeyInstance, AuthenticationOnlyVtr);
 
-    public IResult VerifyIdentityWithOneLogin(JourneyInstance<SignInJourneyState> journeyInstance) =>
+    private IResult VerifyIdentityWithOneLogin(JourneyInstance<SignInJourneyState> journeyInstance) =>
         OneLoginChallenge(journeyInstance, AuthenticationAndIdentityVerificationVtr);
 
     public async Task<IResult> OnOneLoginCallback(JourneyInstance<SignInJourneyState> journeyInstance, AuthenticationTicket ticket)
@@ -59,12 +56,7 @@ public class SignInJourneyHelper(
             await OnUserVerified(journeyInstance, ticket);
         }
 
-        if (ShowDebugPages)
-        {
-            return Results.Redirect(LinkGenerator.DebugIdentity(journeyInstance.InstanceId));
-        }
-
-        return GetNextPage(journeyInstance);
+        return ShowDebugPages ? Results.Redirect(LinkGenerator.DebugIdentity(journeyInstance.InstanceId)) : GetNextPage(journeyInstance);
     }
 
     public async Task OnUserAuthenticated(JourneyInstance<SignInJourneyState> journeyInstance, AuthenticationTicket ticket)
@@ -78,7 +70,7 @@ public class SignInJourneyHelper(
 
         if (oneLoginUser is null)
         {
-            oneLoginUser = new()
+            oneLoginUser = new OneLoginUser
             {
                 Subject = sub,
                 Email = email,
@@ -115,7 +107,7 @@ public class SignInJourneyHelper(
                 state.SetVerified(oneLoginUser.VerifiedNames!, oneLoginUser.VerifiedDatesOfBirth!);
             }
 
-            if (oneLoginUser.Person?.Trn is string trn && !ShowDebugPages)
+            if (oneLoginUser.Person?.Trn is { } trn && !ShowDebugPages)
             {
                 Complete(state, trn);
             }
@@ -155,7 +147,7 @@ public class SignInJourneyHelper(
         string? trn = null;
         string? trnTokenTrn = null;
 
-        if (await TryApplyTrnToken() is TryApplyTrnTokenResult result)
+        if (await TryApplyTrnToken() is { } result)
         {
             trnTokenTrn = result.Trn;
 
@@ -189,7 +181,7 @@ public class SignInJourneyHelper(
 
         async Task<TryApplyTrnTokenResult?> TryApplyTrnToken()
         {
-            if (journeyInstance.State.TrnToken is not string trnToken)
+            if (journeyInstance.State.TrnToken is not { } trnToken)
             {
                 return null;
             }
@@ -215,7 +207,7 @@ public class SignInJourneyHelper(
             var matchedDateOfBirth = verifiedDatesOfBirth.FirstOrDefault(dob => dob == trnTokenPerson.DateOfBirth);
             if (matchedLastName == default || matchedDateOfBirth == default)
             {
-                return new(trnTokenPerson.PersonId, trnTokenModel.Trn, Matched: false, MatchedAttributes: null);
+                return new TryApplyTrnTokenResult(trnTokenPerson.PersonId, trnTokenModel.Trn, Matched: false, MatchedAttributes: null);
             }
             var matchedAttributes = new Dictionary<OneLoginUserMatchedAttribute, string>()
             {
@@ -224,10 +216,10 @@ public class SignInJourneyHelper(
             };
 
             // Invalidate the token
-            trnTokenModel.UserId = _teacherAuthIdUserIdSentinel;
+            trnTokenModel.UserId = Guid.Empty;
             await idDbContext.SaveChangesAsync();
 
-            return new(trnTokenPerson.PersonId, trnTokenModel.Trn, Matched: true, matchedAttributes);
+            return new TryApplyTrnTokenResult(trnTokenPerson.PersonId, trnTokenModel.Trn, Matched: true, matchedAttributes);
         }
     }
 
@@ -277,36 +269,37 @@ public class SignInJourneyHelper(
         var nationalInsuranceNumber = state.NationalInsuranceNumber;
         var trn = state.Trn;
 
-        var matchResult = await personMatchingService.Match(new(names!, datesOfBirth!, nationalInsuranceNumber, trn));
+        var matchResult = await personMatchingService.Match(new MatchRequest(names!, datesOfBirth!, nationalInsuranceNumber, trn));
 
-        if (matchResult is var (matchedPersonId, matchedTrn, matchedAttributes))
+        if (matchResult is not var (matchedPersonId, matchedTrn, matchedAttributes))
         {
-            // It's possible we match on a record that doesn't have a TRN; we don't want to proceed in that case;
-            // downstream consumers can't do anything without a TRN
-            if (matchedTrn is null)
-            {
-                return false;
-            }
-
-            var subject = state.OneLoginAuthenticationTicket.Principal.FindFirstValue("sub") ?? throw new InvalidOperationException("No sub claim.");
-
-            var oneLoginUser = await dbContext.OneLoginUsers.SingleAsync(o => o.Subject == subject);
-            oneLoginUser.PersonId = matchedPersonId;
-            oneLoginUser.FirstSignIn = clock.UtcNow;
-            oneLoginUser.LastSignIn = clock.UtcNow;
-            oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Interactive;
-            oneLoginUser.MatchedAttributes = matchedAttributes.ToArray();
-            await dbContext.SaveChangesAsync();
-
-            await journeyInstance.UpdateStateAsync(state => Complete(state, matchedTrn));
-
-            return true;
+            return false;
         }
 
-        return false;
+        // It's possible we match on a record that doesn't have a TRN; we don't want to proceed in that case;
+        // downstream consumers can't do anything without a TRN
+        if (matchedTrn is null)
+        {
+            return false;
+        }
+
+        var subject = state.OneLoginAuthenticationTicket.Principal.FindFirstValue("sub") ?? throw new InvalidOperationException("No sub claim.");
+
+        var oneLoginUser = await dbContext.OneLoginUsers.SingleAsync(o => o.Subject == subject);
+        oneLoginUser.PersonId = matchedPersonId;
+        oneLoginUser.FirstSignIn = clock.UtcNow;
+        oneLoginUser.LastSignIn = clock.UtcNow;
+        oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Interactive;
+        oneLoginUser.MatchedAttributes = matchedAttributes.ToArray();
+        await dbContext.SaveChangesAsync();
+
+        await journeyInstance.UpdateStateAsync(signInJourneyState => Complete(signInJourneyState, matchedTrn));
+
+        return true;
+
     }
 
-    public void Complete(SignInJourneyState state, string trn)
+    public static void Complete(SignInJourneyState state, string trn)
     {
         if (state.OneLoginAuthenticationTicket is null)
         {
@@ -346,12 +339,12 @@ public class SignInJourneyHelper(
         }
     }
 
-    private IResult OneLoginChallenge(JourneyInstance<SignInJourneyState> journeyInstance, string vtr)
+    private static IResult OneLoginChallenge(JourneyInstance<SignInJourneyState> journeyInstance, string vtr)
     {
         var delegatedProperties = new AuthenticationProperties();
         delegatedProperties.SetVectorOfTrust(vtr);
         delegatedProperties.Items.Add(FormFlowJourneySignInHandler.PropertyKeys.JourneyInstanceId, journeyInstance.InstanceId.Serialize());
-        return Results.Challenge(delegatedProperties, authenticationSchemes: [journeyInstance.State.OneLoginAuthenticationScheme]);
+        return Results.Challenge(delegatedProperties, authenticationSchemes: [OneLoginDefaults.AuthenticationScheme]);
     }
 
     private record TryApplyTrnTokenResult(

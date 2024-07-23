@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Playwright;
-using OpenIddict.Server.AspNetCore;
 using Dfe.Sww.Ecf.AuthorizeAccess.EndToEndTests.Infrastructure.Security;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.Services.Files;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
 using Dfe.Sww.Ecf.UiTestCommon.Infrastructure.FormFlow;
@@ -19,8 +17,8 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
     public const string BaseUrl = "http://localhost:55649";
     public const string FakeOneLoginAuthenticationScheme = "FakeOneLogin";
 
-    private bool _initialized = false;
-    private bool _disposed = false;
+    private bool _initialized;
+    private bool _disposed;
     private Host<Program>? _host;
     private IPlaywright? _playwright;
     private IBrowser? _browser;
@@ -80,8 +78,6 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
                             options.RequireHttpsMetadata = false;
                         });
 
-                    services.Configure<OpenIddictServerAspNetCoreOptions>(options => options.DisableTransportSecurityRequirement = true);
-
                     services.AddSingleton<OneLoginCurrentUserProvider>();
                     services.AddSingleton<TestData>(
                         sp => ActivatorUtilities.CreateInstance<TestData>(sp));
@@ -115,25 +111,6 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
         }
     }
 
-    private async Task AddTestAppToApplicationUsers()
-    {
-        await using var dbContext = await Services.GetRequiredService<IDbContextFactory<EcfDbContext>>().CreateDbContextAsync();
-
-        dbContext.ApplicationUsers.Add(new Core.DataStore.Postgres.Models.ApplicationUser()
-        {
-            UserId = Guid.NewGuid(),
-            Name = "Test App",
-            IsOidcClient = true,
-            ClientId = TestAppConfiguration.ClientId,
-            ClientSecret = TestAppConfiguration.ClientSecret,
-            RedirectUris = [BaseUrl + TestAppConfiguration.RedirectUriPath],
-            PostLogoutRedirectUris = [BaseUrl + TestAppConfiguration.PostLogoutRedirectUriPath],
-            OneLoginAuthenticationSchemeName = FakeOneLoginAuthenticationScheme
-        });
-
-        await dbContext.SaveChangesAsync();
-    }
-
     async Task IStartupTask.Execute()
     {
         _host = CreateHost();
@@ -156,8 +133,6 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
         _browser = await _playwright.Chromium.LaunchAsync(browserOptions);
 
         _initialized = true;
-
-        await AddTestAppToApplicationUsers();
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
@@ -169,10 +144,7 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
 
         _disposed = true;
 
-        if (Browser != null)
-        {
-            await Browser.DisposeAsync();
-        }
+        await Browser.DisposeAsync();
 
         _playwright?.Dispose();
 
@@ -223,11 +195,11 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
                 get
                 {
                     EnsureServer();
-                    return _host!.Services!;
+                    return _host!.Services;
                 }
             }
 
-            public string Url { get; }
+            private string Url { get; }
 
             protected override void ConfigureWebHost(IWebHostBuilder builder)
             {
@@ -243,7 +215,7 @@ public sealed class HostFixture(IConfiguration configuration) : IAsyncDisposable
                 // We need to return a host configured with TestServer, even though we're not going to use it.
                 // Configure an empty dummy web app with TestServer.
                 var dummyBuilder = new HostBuilder();
-                dummyBuilder.ConfigureWebHost(webBuilder => webBuilder.Configure(app => { }).UseTestServer());
+                dummyBuilder.ConfigureWebHost(webBuilder => webBuilder.Configure(_ => { }).UseTestServer());
                 var testHost = dummyBuilder.Build();
                 testHost.Start();
 

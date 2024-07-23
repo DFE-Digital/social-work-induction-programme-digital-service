@@ -10,15 +10,7 @@ public class Person
     public required string FirstName { get; set; }
     public required string MiddleName { get; set; }
     public required string LastName { get; set; }
-    public required DateOnly? DateOfBirth { get; set; }  // A few DQT records in prod have a null DOB
+    public required DateOnly? DateOfBirth { get; set; }
     public string? EmailAddress { get; set; }
     public string? NationalInsuranceNumber { get; set; }
-
-    public DateTime? DqtFirstSync { get; set; }
-    public DateTime? DqtLastSync { get; set; }
-    public DateTime? DqtCreatedOn { get; set; }
-    public DateTime? DqtModifiedOn { get; set; }
-    public string? DqtFirstName { get; set; }
-    public string? DqtMiddleName { get; set; }
-    public string? DqtLastName { get; set; }
 }

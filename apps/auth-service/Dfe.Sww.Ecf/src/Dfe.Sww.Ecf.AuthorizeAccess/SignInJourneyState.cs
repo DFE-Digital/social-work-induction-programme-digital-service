@@ -10,24 +10,18 @@ public class SignInJourneyState(
     string redirectUri,
     string serviceName,
     string serviceUrl,
-    string oneLoginAuthenticationScheme,
-    Guid clientApplicationUserId,
     string? trnToken = null)
 {
     public const string JourneyName = "SignInJourney";
 
     public static JourneyDescriptor JourneyDescriptor { get; } =
-        new JourneyDescriptor(JourneyName, typeof(SignInJourneyState), requestDataKeys: [], appendUniqueKey: true);
+        new(JourneyName, typeof(SignInJourneyState), requestDataKeys: [], appendUniqueKey: true);
 
     public string RedirectUri { get; } = redirectUri;
 
     public string ServiceName { get; } = serviceName;
 
     public string ServiceUrl { get; } = serviceUrl;
-
-    public string OneLoginAuthenticationScheme { get; } = oneLoginAuthenticationScheme;
-
-    public Guid ClientApplicationUserId { get; } = clientApplicationUserId;
 
     public string? TrnToken { get; } = trnToken;
 
