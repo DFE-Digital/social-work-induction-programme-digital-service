@@ -2,6 +2,7 @@ set shell := ["pwsh", "-nop", "-c"]
 
 solution-root := "Dfe.Sww.Ecf"
 user-secrets-id := "Dfe.Sww.Ecf"
+cli-user-secrets-id := "Dfe.Sww.Ecf.Cli"
 test-user-secrets-id := "Dfe.Sww.EcfTests"
 
 default:
@@ -71,6 +72,14 @@ docker-build *ARGS: install-tools restore
   @cd {{solution-root}} && dotnet publish -c Release --no-restore
   @cd {{solution-root}} && docker build . {{ARGS}}
 
+set-db-connection value:
+  @dotnet user-secrets set ConnectionStrings:DefaultConnection "{{value}}" --id {{user-secrets-id}}
+  @dotnet user-secrets set ConnectionStrings:DefaultConnection "{{value}}" --id {{cli-user-secrets-id}}
+
+set-test-db-connection value:
+  @dotnet user-secrets set ConnectionStrings:DefaultConnection "{{value}}" --id {{test-user-secrets-id}}
+  @dotnet user-secrets set ConnectionStrings:TestDbConnection "{{value}}" --id {{cli-user-secrets-id}}
+
 # Set a configuration entry in user secrets for running the apps
 set-secret key value:
   @dotnet user-secrets set "{{key}}" "{{value}}" --id {{user-secrets-id}}
@@ -84,10 +93,6 @@ create-admin email name:
 
 make *ARGS:
   @make {{ARGS}}
-
-# Generates CRM model types
-generate-crm-models *ARGS:
-  @scripts/Generate-CrmModels.ps1 {{ARGS}}
 
 # Removes the cached DB schema version file for tests
 remove-tests-schema-cache:

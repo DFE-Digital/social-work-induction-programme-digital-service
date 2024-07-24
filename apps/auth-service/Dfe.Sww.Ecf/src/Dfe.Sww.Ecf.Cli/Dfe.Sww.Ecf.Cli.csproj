@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>ecfcli</AssemblyName>
+    <UserSecretsId>Dfe.Sww.Ecf.Cli</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

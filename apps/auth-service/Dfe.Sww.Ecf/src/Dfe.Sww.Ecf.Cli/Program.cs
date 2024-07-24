@@ -3,7 +3,7 @@ global using Microsoft.Extensions.Configuration;
 using Dfe.Sww.Ecf.Cli;
 
 var configuration = new ConfigurationBuilder()
-    .AddUserSecrets(typeof(Program).Assembly)
+    .AddUserSecrets<Program>()
     .Build();
 
 var rootCommand = new RootCommand("Development tools for the Social Worker Workforce - Early Careers Framework.")
