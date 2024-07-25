@@ -200,3 +200,6 @@ dist
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+### Config Files ###
+**/appsettings.Development.json
