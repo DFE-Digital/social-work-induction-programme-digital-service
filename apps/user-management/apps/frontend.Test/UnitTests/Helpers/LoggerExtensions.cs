@@ -14,7 +14,7 @@ public static class LoggerExtensions
     {
         times ??= Times.Once();
 
-        Func<object, Type, bool> state = (o, t) =>
+        Func<object, Type, bool> state = (o, _) =>
             string.Equals(o.ToString(), expectedMessage, StringComparison.Ordinal);
 
         logger.Verify(

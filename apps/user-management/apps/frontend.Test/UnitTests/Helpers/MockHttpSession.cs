@@ -46,7 +46,7 @@ public class MockHttpSession : ISession
             return true;
         }
 
-        value = null;
+        value = null!;
         return false;
     }
 }

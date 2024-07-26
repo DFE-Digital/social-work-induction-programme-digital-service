@@ -24,10 +24,4 @@ public interface IAccountRepository
     /// </summary>
     /// <param name="accounts"></param>
     void AddRange(List<Account> accounts);
-
-    /// <summary>
-    /// Get accounts count
-    /// </summary>
-    /// <returns>Number of accounts</returns>
-    int Count();
 }

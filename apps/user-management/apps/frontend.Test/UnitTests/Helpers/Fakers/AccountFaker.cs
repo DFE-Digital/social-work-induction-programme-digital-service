@@ -12,17 +12,14 @@ public sealed class AccountFaker : Faker<Account>
         RuleFor(a => a.LastName, f => f.Name.LastName());
         RuleFor(a => a.Status, f => f.PickRandom<AccountStatus>());
         RuleFor(a => a.Email, f => f.Internet.Email());
-        RuleFor(a => a.Types,
-            f => [f.PickRandom<AccountType>()]);
+        RuleFor(a => a.Types, f => [f.PickRandom<AccountType>()]);
     }
 }
 
 public static class AccountFakerExtensions
 {
-    public static Account GenerateNewUser(this AccountFaker accountFaker)
+    public static Account GenerateNewAccount(this AccountFaker accountFaker)
     {
-        return accountFaker
-            .RuleFor(a => a.Status, _ => AccountStatus.Active)
-            .Generate();
+        return accountFaker.RuleFor(a => a.Status, _ => AccountStatus.Active).Generate();
     }
 }

@@ -25,10 +25,4 @@ public class AccountRepository : IAccountRepository
     {
         _accounts.AddRange(accounts);
     }
-
-    /// <inheritdoc />
-    public int Count()
-    {
-        return _accounts.Count;
-    }
 }

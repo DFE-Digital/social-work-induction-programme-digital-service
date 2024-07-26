@@ -2,21 +2,25 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 
 namespace Dfe.Sww.Ecf.Frontend.Services;
 
-public class CreateAccountJourneyService(IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository) : ICreateAccountJourneyService
+public class CreateAccountJourneyService(
+    IHttpContextAccessor httpContextAccessor,
+    IAccountRepository accountRepository
+) : ICreateAccountJourneyService
 {
     private const string CreateAccountSessionKey = "_createAccount";
 
-    private readonly IAccountRepository _accountRepository = accountRepository;
-
-    private ISession Session => httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+    private ISession Session =>
+        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     public CreateAccountJourneyModel GetCreateAccountJourneyModel()
     {
-        Session.TryGet(CreateAccountSessionKey, out CreateAccountJourneyModel? createAccountJourneyModel);
+        Session.TryGet(
+            CreateAccountSessionKey,
+            out CreateAccountJourneyModel? createAccountJourneyModel
+        );
         return createAccountJourneyModel ?? new CreateAccountJourneyModel();
     }
 
@@ -26,13 +30,13 @@ public class CreateAccountJourneyService(IHttpContextAccessor httpContextAccesso
         return createAccountJourneyModel.AccountTypes;
     }
 
-    public AddAccountDetailsModel? GetAccountDetails()
+    public AccountDetails? GetAccountDetails()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         return createAccountJourneyModel.AccountDetails;
     }
 
-    public void SetAccountDetails(AddAccountDetailsModel accountDetails)
+    public void SetAccountDetails(AccountDetails accountDetails)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.AccountDetails = accountDetails;
@@ -61,7 +65,7 @@ public class CreateAccountJourneyService(IHttpContextAccessor httpContextAccesso
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
-        _accountRepository.Add(account);
+        accountRepository.Add(account);
 
         ResetCreateAccountJourneyModel();
 

@@ -8,6 +8,8 @@ internal static class MoqHelpers
 {
     internal static T ShouldBeEquivalentTo<T>(T expected)
     {
+        return Match.Create<T>(Validate);
+
         bool Validate(T actual)
         {
             try
@@ -21,7 +23,5 @@ internal static class MoqHelpers
 
             return true;
         }
-
-        return Match.Create<T>(Validate);
     }
 }

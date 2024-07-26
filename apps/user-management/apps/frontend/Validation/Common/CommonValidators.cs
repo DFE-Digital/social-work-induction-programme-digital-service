@@ -17,7 +17,9 @@ public static class CommonValidators
     public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
         ruleBuilder
-            .NotEmpty().WithMessage("Enter an email")
-            .EmailAddress().WithMessage("Enter an email address in the correct format, like name@example.com");
+            .NotEmpty()
+            .WithMessage("Enter an email")
+            .EmailAddress()
+            .WithMessage("Enter an email address in the correct format, like name@example.com");
     }
 }

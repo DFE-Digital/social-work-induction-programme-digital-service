@@ -1,0 +1,61 @@
+﻿@page
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.ConfirmAccountDetails
+
+@{
+    ViewData["Title"] = "Confirm User Details";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form asp-page="ConfirmAccountDetails" method="post">
+
+            <h1 class="govuk-heading-xl">
+                Check user details before adding them
+            </h1>
+
+            <govuk-summary-list>
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.FirstName)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.FirstName</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@Url.Page("AddAccountDetails")" visually-hidden-text="first name">Change</govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>
+                        @Html.DisplayNameFor(model => model.LastName)
+                    </govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.LastName</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@Url.Page("AddAccountDetails")" visually-hidden-text="last name">Change</govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Email</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@Url.Page("AddAccountDetails")" visually-hidden-text="email address">Change</govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            </govuk-summary-list>
+            @if (Model.SocialWorkEnglandNumber is not null)
+            {
+                <govuk-summary-list>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.SocialWorkEnglandNumber</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Url.Page("AddAccountDetails")" visually-hidden-text="social work england number">Change</govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                </govuk-summary-list>
+            }
+
+            <govuk-button type="submit">Add</govuk-button>
+        </form>
+    </div>
+</div>

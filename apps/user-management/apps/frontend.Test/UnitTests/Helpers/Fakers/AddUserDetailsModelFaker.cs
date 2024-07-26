@@ -1,10 +1,9 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Views.Accounts;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 
-public sealed class AddUserDetailsModelFaker : Faker<AddAccountDetailsModel>
+public sealed class AddUserDetailsModelFaker : Faker<AccountDetails>
 {
     public AddUserDetailsModelFaker()
     {
@@ -17,14 +16,19 @@ public sealed class AddUserDetailsModelFaker : Faker<AddAccountDetailsModel>
 
 public static class AddUserDetailsModelFakerExtensions
 {
-    public static AddAccountDetailsModel GenerateWithInvalidEmail(this AddUserDetailsModelFaker addUserDetailsModelFaker, string? email = null)
+    public static AccountDetails GenerateWithInvalidEmail(
+        this AddUserDetailsModelFaker addUserDetailsModelFaker,
+        string? email = null
+    )
     {
-        return addUserDetailsModelFaker
-            .RuleFor(a => a.Email, _ => email)
-            .Generate();
+        return addUserDetailsModelFaker.RuleFor(a => a.Email, _ => email).Generate();
     }
 
-    public static AddAccountDetailsModel GenerateWithCustomName(this AddUserDetailsModelFaker addUserDetailsModelFaker, string? firstName, string? lastName)
+    public static AccountDetails GenerateWithCustomName(
+        this AddUserDetailsModelFaker addUserDetailsModelFaker,
+        string? firstName,
+        string? lastName
+    )
     {
         return addUserDetailsModelFaker
             .RuleFor(a => a.FirstName, _ => firstName)

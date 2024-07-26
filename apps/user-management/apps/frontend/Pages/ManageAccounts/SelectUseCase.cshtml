@@ -1,0 +1,31 @@
+﻿@page
+@using Dfe.Sww.Ecf.Frontend.Models
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.SelectUseCase
+@{
+    ViewData["Title"] = "Choose Account Type";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form asp-controller="Accounts" asp-action="SelectUseCase">
+            <div class="govuk-form-group">
+
+                <govuk-checkboxes asp-for="SelectedAccountTypes">
+                    <govuk-checkboxes-fieldset>
+                        <govuk-checkboxes-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                            What do they need to do?
+                        </govuk-checkboxes-fieldset-legend>
+
+                        <govuk-checkboxes-item value="@AccountType.Assessor">Assess work and provide feedback to early career social workers</govuk-checkboxes-item>
+                        <govuk-checkboxes-item value="@AccountType.Coordinator">Add, remove and manage accounts for your organisation</govuk-checkboxes-item>
+                    </govuk-checkboxes-fieldset>
+                </govuk-checkboxes>
+            </div>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+
+    </div>
+</div>

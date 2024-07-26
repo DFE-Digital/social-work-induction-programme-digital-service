@@ -10,19 +10,19 @@ public class Account
     /// <summary>
     /// Account ID
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// First Name
     /// </summary>
     [Display(Name = "First name")]
-    public string? FirstName { get; set; }
+    public string? FirstName { get; init; }
 
     /// <summary>
     /// Last Name
     /// </summary>
     [Display(Name = "Last name")]
-    public string? LastName { get; set; }
+    public string? LastName { get; init; }
 
     /// <summary>
     /// FullName
@@ -34,19 +34,19 @@ public class Account
     /// Email
     /// </summary>
     [Display(Name = "Email address")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     /// <summary>
     /// Account status
     /// </summary>
     [Display(Name = "Status")]
-    public AccountStatus? Status { get; set; }
+    public AccountStatus? Status { get; init; }
 
     /// <summary>
     /// Account types
     /// </summary>
     [Display(Name = "Account types")]
-    public IList<AccountType>? Types { get; set; }
+    public IList<AccountType>? Types { get; init; }
 
     /// <summary>
     /// Social Work England number

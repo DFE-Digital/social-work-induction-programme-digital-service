@@ -1,0 +1,90 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index
+
+@{
+    ViewData["Title"] = "Manage accounts";
+
+    var createdAccountEmail = TempData["CreatedAccountEmail"]?.ToString();
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        @if (!string.IsNullOrWhiteSpace(createdAccountEmail))
+        {
+            <govuk-notification-banner>
+                <govuk-notification-banner-title heading-level="2" id="banner-title">
+                    Account was successfully added
+                </govuk-notification-banner-title>
+                <p class="govuk-notification-banner__heading">
+                    An email notification was sent to @createdAccountEmail
+                </p>
+            </govuk-notification-banner>
+        }
+
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--l">
+                Manage accounts
+            </caption>
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].FullName"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].Status"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].Types"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <span class="govuk-visually-hidden">Action</span>
+                </th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var account in Model.Accounts)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">
+                        @Html.DisplayFor(model => account.FullName)
+                    </th>
+                    <td class="govuk-table__cell">
+                        @{
+                            var tagClass = account.Status switch
+                            {
+                                AccountStatus.Active => "govuk-tag--green",
+                                AccountStatus.Paused => "govuk-tag--yellow",
+                                AccountStatus.PendingRegistration => "govuk-tag--orange",
+                                _ => "govuk-tag--yellow"
+                            };
+                        }
+                        @if (account.Status is not null)
+                        {
+                            <strong class="govuk-tag @tagClass">
+                                @account.Status.GetDisplayName()
+                            </strong>
+                            <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                                @account.Status.GetDescription()
+                            </span>
+                        }
+                    </td>
+                    <td class="govuk-table__cell">
+                        @if (account.Types is not null)
+                        {
+                            var accountTypes = string.Join(", ", account.Types.Select(type => type.GetDisplayName()));
+                            @Html.DisplayFor(modeItem => accountTypes)
+                        }
+                    </td>
+                    <td class="govuk-table__cell">
+                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="AccountDetails" asp-route-id="@account.Id">View</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <govuk-button-link asp-page="./SelectAccountType">Add someone</govuk-button-link>
+    </div>
+</div>

@@ -1,12 +1,10 @@
-﻿using Dfe.Sww.Ecf.Frontend.Views.Accounts;
-
-namespace Dfe.Sww.Ecf.Frontend.Models;
+﻿namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class CreateAccountJourneyModel
 {
     public IList<AccountType>? AccountTypes { get; set; }
 
-    public AddAccountDetailsModel? AccountDetails { get; set; }
+    public AccountDetails? AccountDetails { get; set; }
 
     public Account ToAccount()
     {
