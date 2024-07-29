@@ -26,6 +26,8 @@ public static class InstallServices
                 {
                     FirstName = "Ellen",
                     LastName = "Ripley",
+                    Email = "ellen@rbcouncil.org.uk",
+                    SocialWorkEnglandNumber = "SW798",
                     Status = AccountStatus.Paused,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
@@ -34,6 +36,7 @@ public static class InstallServices
                 {
                     FirstName = "Joe",
                     LastName = "Bloggs",
+                    Email = "joe@rbcouncil.org.uk",
                     Status = AccountStatus.Active,
                     Types = [AccountType.Coordinator],
                     Id = Guid.NewGuid()
@@ -42,6 +45,7 @@ public static class InstallServices
                 {
                     FirstName = "Laura",
                     LastName = "Barn",
+                    Email = "laura@rbcouncil.org.uk",
                     Status = AccountStatus.PendingRegistration,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
@@ -50,6 +54,7 @@ public static class InstallServices
                 {
                     FirstName = "Ricardo",
                     LastName = "Athanasopoulos",
+                    Email = "ricardo@rbcouncil.org.uk",
                     Status = AccountStatus.Active,
                     Types = [AccountType.Assessor, AccountType.Coordinator],
                     Id = Guid.NewGuid()
@@ -58,7 +63,9 @@ public static class InstallServices
                 {
                     FirstName = "Sheena",
                     LastName = "Newman",
-                    Status = AccountStatus.Active,
+                    Email = "sheena@rbcouncil.org.uk",
+                    SocialWorkEnglandNumber = "SW2478",
+                    Status = AccountStatus.Inactive,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
@@ -66,6 +73,8 @@ public static class InstallServices
                 {
                     FirstName = "Yavuz",
                     LastName = "Karci",
+                    Email = "Yavuz@rbcouncil.org.uk",
+                    SocialWorkEnglandNumber = "SW142",
                     Status = AccountStatus.Active,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()

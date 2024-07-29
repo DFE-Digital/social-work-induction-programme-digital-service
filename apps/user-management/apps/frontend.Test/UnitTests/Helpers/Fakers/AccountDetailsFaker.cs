@@ -3,9 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 
-public sealed class AddUserDetailsModelFaker : Faker<AccountDetails>
+public sealed class AccountDetailsFaker : Faker<AccountDetails>
 {
-    public AddUserDetailsModelFaker()
+    public AccountDetailsFaker()
     {
         RuleFor(a => a.FirstName, f => f.Name.FirstName());
         RuleFor(a => a.LastName, f => f.Name.LastName());
@@ -14,23 +14,23 @@ public sealed class AddUserDetailsModelFaker : Faker<AccountDetails>
     }
 }
 
-public static class AddUserDetailsModelFakerExtensions
+public static class AccountDetailsFakerExtensions
 {
     public static AccountDetails GenerateWithInvalidEmail(
-        this AddUserDetailsModelFaker addUserDetailsModelFaker,
+        this AccountDetailsFaker accountDetailsFaker,
         string? email = null
     )
     {
-        return addUserDetailsModelFaker.RuleFor(a => a.Email, _ => email).Generate();
+        return accountDetailsFaker.RuleFor(a => a.Email, _ => email).Generate();
     }
 
     public static AccountDetails GenerateWithCustomName(
-        this AddUserDetailsModelFaker addUserDetailsModelFaker,
+        this AccountDetailsFaker accountDetailsFaker,
         string? firstName,
         string? lastName
     )
     {
-        return addUserDetailsModelFaker
+        return accountDetailsFaker
             .RuleFor(a => a.FirstName, _ => firstName)
             .RuleFor(a => a.LastName, _ => lastName)
             .Generate();

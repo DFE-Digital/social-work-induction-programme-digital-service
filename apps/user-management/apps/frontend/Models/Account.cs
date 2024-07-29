@@ -45,7 +45,7 @@ public class Account
     /// <summary>
     /// Account types
     /// </summary>
-    [Display(Name = "Account types")]
+    [Display(Name = "Account type")]
     public IList<AccountType>? Types { get; init; }
 
     /// <summary>

@@ -56,6 +56,7 @@
                             var tagClass = account.Status switch
                             {
                                 AccountStatus.Active => "govuk-tag--green",
+                                AccountStatus.Inactive => "govuk-tag--grey",
                                 AccountStatus.Paused => "govuk-tag--yellow",
                                 AccountStatus.PendingRegistration => "govuk-tag--orange",
                                 _ => "govuk-tag--yellow"
@@ -72,14 +73,10 @@
                         }
                     </td>
                     <td class="govuk-table__cell">
-                        @if (account.Types is not null)
-                        {
-                            var accountTypes = string.Join(", ", account.Types.Select(type => type.GetDisplayName()));
-                            @Html.DisplayFor(modeItem => accountTypes)
-                        }
+                        <account-types types="account.Types" />
                     </td>
                     <td class="govuk-table__cell">
-                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="AccountDetails" asp-route-id="@account.Id">View</a>
+                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">View</a>
                     </td>
                 </tr>
             }

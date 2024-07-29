@@ -9,11 +9,11 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class AddAccountDetailsShould : ManageAccountsTestBase
+public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
 {
     private AddAccountDetails Sut { get; }
 
-    public AddAccountDetailsShould()
+    public AddAccountDetailsPageTests()
     {
         Sut = new AddAccountDetails(CreateAccountJourneyService, new AccountDetailsValidator());
     }

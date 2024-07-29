@@ -13,6 +13,13 @@ public sealed class AccountFaker : Faker<Account>
         RuleFor(a => a.Status, f => f.PickRandom<AccountStatus>());
         RuleFor(a => a.Email, f => f.Internet.Email());
         RuleFor(a => a.Types, f => [f.PickRandom<AccountType>()]);
+        RuleFor(
+            a => a.SocialWorkEnglandNumber,
+            (f, current) =>
+                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
+                    ? $"SW{f.Random.Number()}"
+                    : null
+        );
     }
 }
 
@@ -21,5 +28,34 @@ public static class AccountFakerExtensions
     public static Account GenerateNewAccount(this AccountFaker accountFaker)
     {
         return accountFaker.RuleFor(a => a.Status, _ => AccountStatus.Active).Generate();
+    }
+
+    private static Faker<Account> GetSocialWorkerAccountFaker(this AccountFaker accountFaker)
+    {
+        return accountFaker.RuleFor(
+            a => a.Types,
+            _ => new List<AccountType> { AccountType.EarlyCareerSocialWorker }
+        );
+    }
+
+    public static Account GenerateSocialWorkerWithNoSweNumber(this AccountFaker accountFaker)
+    {
+        return accountFaker
+            .GetSocialWorkerAccountFaker()
+            .RuleFor(a => a.SocialWorkEnglandNumber, _ => null)
+            .Generate();
+    }
+
+    public static Account GenerateSocialWorker(this AccountFaker accountFaker)
+    {
+        return accountFaker.GetSocialWorkerAccountFaker().Generate();
+    }
+
+    public static Account GenerateAccountWithTypes(
+        this AccountFaker accountFaker,
+        params AccountType[] accountTypes
+    )
+    {
+        return accountFaker.RuleFor(a => a.Types, _ => accountTypes).Generate();
     }
 }

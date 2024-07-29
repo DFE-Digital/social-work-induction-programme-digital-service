@@ -7,9 +7,9 @@ using Xunit;
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Validators.AccountDetailsTests;
 
 public class ValidateShould()
-    : ValidatorTestBase<AccountDetailsValidator, AccountDetails, AddUserDetailsModelFaker>(
+    : ValidatorTestBase<AccountDetailsValidator, AccountDetails, AccountDetailsFaker>(
         new AccountDetailsValidator(),
-        new AddUserDetailsModelFaker()
+        new AccountDetailsFaker()
     )
 {
     [Fact]

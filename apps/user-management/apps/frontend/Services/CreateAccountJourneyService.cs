@@ -10,10 +10,13 @@ public class CreateAccountJourneyService(
     IAccountRepository accountRepository
 ) : ICreateAccountJourneyService
 {
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IAccountRepository _accountRepository = accountRepository;
+
     private const string CreateAccountSessionKey = "_createAccount";
 
     private ISession Session =>
-        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     public CreateAccountJourneyModel GetCreateAccountJourneyModel()
     {
@@ -65,7 +68,7 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
-        accountRepository.Add(account);
+        _accountRepository.Add(account);
 
         ResetCreateAccountJourneyModel();
 

@@ -1,0 +1,50 @@
+@page "{id:Guid}"
+@using Dfe.Sww.Ecf.Frontend.Models
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.ViewAccountDetails
+
+@{
+    ViewData["Title"] = "View account details ";
+    var isAccountInactive = Model.Account.Status == AccountStatus.Inactive;
+    var isAccountPaused = Model.Account.Status == AccountStatus.Paused;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-l">
+            Change details
+        </h1>
+
+        <govuk-summary-list>
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Account.Types)</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>
+                    <account-types types="Model.Account.Types" />
+                </govuk-summary-list-row-value>
+                <govuk-summary-list-row-actions>
+                    <govuk-summary-list-row-action href="#" visually-hidden-text="account type">Change</govuk-summary-list-row-action>
+                </govuk-summary-list-row-actions>
+            </govuk-summary-list-row>
+
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>Account details</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>
+                    <account-details account="Model.Account"></account-details>
+                </govuk-summary-list-row-value>
+                <govuk-summary-list-row-actions>
+                    <govuk-summary-list-row-action href="#" visually-hidden-text="account details">Change</govuk-summary-list-row-action>
+                </govuk-summary-list-row-actions>
+            </govuk-summary-list-row>
+        </govuk-summary-list>
+
+        <h1 class="govuk-heading-l">
+            Change status
+        </h1>
+
+        <link-account-link condition="isAccountInactive" account-name="@Model.Account.FullName" href="#" />
+        <set-account-inactive-link condition="!isAccountInactive" account-name="@Model.Account.FullName" href="#" />
+        <unpause-account-link condition="isAccountPaused" account-name="@Model.Account.FullName" href="#" />
+        <pause-account-link condition="!isAccountPaused && !isAccountInactive" account-name="@Model.Account.FullName" href="#" />
+    </div>
+</div>

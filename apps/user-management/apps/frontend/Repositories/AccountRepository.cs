@@ -15,6 +15,12 @@ public class AccountRepository : IAccountRepository
     }
 
     /// <inheritdoc />
+    public Account? GetById(Guid? id)
+    {
+        return id is null ? null : _accounts.FirstOrDefault(account => account.Id == id);
+    }
+
+    /// <inheritdoc />
     public void Add(Account account)
     {
         _accounts.Add(account);

@@ -10,7 +10,10 @@ public enum AccountStatus
     [Display(Name = "Active")]
     Active,
 
-    [Display(Name = "Inactive")]
+    [Display(
+        Name = "Inactive",
+        Description = "This account is no longer linked to this organisation"
+    )]
     Inactive,
 
     [Display(
