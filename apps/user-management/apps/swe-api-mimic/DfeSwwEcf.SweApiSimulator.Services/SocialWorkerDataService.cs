@@ -27,7 +27,7 @@ public class SocialWorkerDataService : ISocialWorkerDataService
     }
 
     /// <inheritdoc />
-    public SocialWorker? GetById(int swId)
+    public SocialWorker? GetById(string? swId)
     {
         var socialWorker = _socialWorkers.FirstOrDefault(x => x.Id == swId);
 

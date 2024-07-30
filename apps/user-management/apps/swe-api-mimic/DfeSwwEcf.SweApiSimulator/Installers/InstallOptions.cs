@@ -13,6 +13,9 @@ public static class InstallOptions
     {
         services
             .AddOptions<CsvFileOptions>()
-            .Configure<IConfiguration>((settings, configuration) => configuration.GetSection(nameof(CsvFileOptions)).Bind(settings));
+            .Configure<IConfiguration>(
+                (settings, configuration) =>
+                    configuration.GetSection(nameof(CsvFileOptions)).Bind(settings)
+            );
     }
 }

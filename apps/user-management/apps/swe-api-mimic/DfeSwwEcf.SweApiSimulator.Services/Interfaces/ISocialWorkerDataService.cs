@@ -12,5 +12,5 @@ public interface ISocialWorkerDataService
     /// </summary>
     /// <param name="swId"></param>
     /// <returns>A single social worker record</returns>
-    public SocialWorker? GetById(int swId);
+    public SocialWorker? GetById(string? swId);
 }

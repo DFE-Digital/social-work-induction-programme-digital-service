@@ -12,9 +12,10 @@ public class SocialWorker
     /// The SWE ID
     /// </summary>
     [JsonIgnore]
-    public int Id => RegistrationNumber.StartsWith("SW")
-        ? Convert.ToInt32(RegistrationNumber?.Remove(0, 2))
-        : Convert.ToInt32(RegistrationNumber);
+    public string? Id =>
+        RegistrationNumber is not null && RegistrationNumber.StartsWith("SW")
+            ? RegistrationNumber.Remove(0, 2)
+            : RegistrationNumber;
 
     /// <summary>
     /// Registration Number

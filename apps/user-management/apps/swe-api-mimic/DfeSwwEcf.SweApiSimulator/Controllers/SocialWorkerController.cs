@@ -1,3 +1,4 @@
+using System.Net;
 using DfeSwwEcf.SweApiSimulator.Models;
 using DfeSwwEcf.SweApiSimulator.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,24 @@ public class SocialWorkerController(ISocialWorkerService socialWorkerService) : 
     /// </summary>
     /// <param name="id"></param>
     /// <returns>A single social worker record</returns>
-    [HttpGet("id")]
-    public SocialWorker? GetById(int id)
+    [HttpGet("{id?}")]
+    public IActionResult GetById(string? id)
     {
         var response = _socialWorkerService.GetById(id);
 
-        return response;
+        if (response?.ErrorDetails is not null)
+        {
+            object? result =
+                response.ErrorDetails.HttpStatusCode == HttpStatusCode.UnprocessableEntity
+                    ? new NonIntSweIdResponse { Error = response.ErrorDetails.ErrorMessage }
+                    : response.ErrorDetails.ErrorMessage;
+
+            return new ObjectResult(result)
+            {
+                StatusCode = (int)response.ErrorDetails.HttpStatusCode
+            };
+        }
+
+        return new OkObjectResult(response?.SocialWorker);
     }
 }

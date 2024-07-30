@@ -1,4 +1,5 @@
 ﻿using DfeSwwEcf.SweApiSimulator.Models;
+using DfeSwwEcf.SweApiSimulator.Services.ResponsesGenerator;
 using FluentAssertions;
 using Moq;
 
@@ -10,32 +11,35 @@ public class GetByIdShould : SocialWorkerTestsTestBase
     public void WhenCalled_ReturnSocialWorker()
     {
         // Arrange
-        var socialWorkerId = 5604;
-
-        var expectedResponse = new SocialWorker
+        var expectedResponse = new SocialWorkerResponse
         {
-            RegistrationNumber = $"SW{socialWorkerId}",
-            RegisteredName = "Ralph Cormier",
-            Status = "Registered",
-            TownOfEmployment = "Workington",
-            RegisteredFrom = new DateTime(2012, 8, 1),
-            RegisteredUntil = new DateTime(2024, 11, 30),
-            Registered = true
+            SocialWorker = SocialWorkerFaker.Generate()
         };
 
         MockSocialWorkerDataService
-            .Setup(x => x.GetById(socialWorkerId))
-            .Returns(expectedResponse);
+            .Setup(x => x.GetById(expectedResponse.SocialWorker.Id))
+            .Returns(expectedResponse.SocialWorker);
+
+        MockSocialWorkerResponseFactory
+            .Setup(x => x.Create(expectedResponse.SocialWorker.Id, expectedResponse.SocialWorker))
+            .Returns(new ValidResponse());
 
         // Act
-        var response = Sut.GetById(socialWorkerId);
+        var response = Sut.GetById(expectedResponse.SocialWorker.Id);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeOfType<SocialWorker>();
+        response.Should().BeOfType<SocialWorkerResponse>();
         response.Should().BeEquivalentTo(expectedResponse);
 
-        MockSocialWorkerDataService.Verify(x => x.GetById(socialWorkerId), Times.Once);
+        MockSocialWorkerDataService.Verify(
+            x => x.GetById(expectedResponse.SocialWorker.Id),
+            Times.Once
+        );
+        MockSocialWorkerResponseFactory.Verify(
+            x => x.Create(expectedResponse.SocialWorker.Id, expectedResponse.SocialWorker),
+            Times.Once
+        );
         VerifyAllNoOtherCall();
     }
 }
