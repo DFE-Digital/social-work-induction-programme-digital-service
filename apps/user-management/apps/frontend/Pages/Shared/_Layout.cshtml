@@ -1,15 +1,16 @@
-﻿@using GovUk.Frontend.AspNetCore
+﻿@model BasePageModel
+@using GovUk.Frontend.AspNetCore
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     // ReSharper disable once Razor.LayoutNotResolved
     Layout = "_GovUkPageTemplate";
 
-    if (ViewBag.Title is null)
+    if (Model.Title is null)
     {
-        throw new InvalidOperationException("ViewBag.Title must be set.");
+        throw new InvalidOperationException("Model.Title must be set.");
     }
 
-    ViewBag.Title += " - Post qualifying pathway";
+    ViewBag.Title = Model.Title + " - Post qualifying pathway";
 }
 
 @* ReSharper disable once Razor.SectionNotResolved *@
@@ -111,6 +112,10 @@
         <govuk-phase-banner-tag>Private Beta</govuk-phase-banner-tag>
         This is a new service - your <a href="#" class="govuk-link">feedback</a> will help us to improve it.
     </govuk-phase-banner>
+
+    @if (Model.BackLinkPath is not null) {
+        <govuk-back-link href="@Model.BackLinkPath" />
+    }
 
     @await RenderSectionAsync("BeforeContent", required: false)
 }

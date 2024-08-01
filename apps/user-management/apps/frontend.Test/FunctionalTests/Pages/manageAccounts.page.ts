@@ -14,5 +14,5 @@ export const manageAccountsCaption = () =>
 
 export const addSomeoneButton = () =>
     PageElement.located(
-        By.css('a.govuk-button[href="/manage-accounts/select-account-type"]'),
+        By.css('a.govuk-button[href="/manage-accounts/select-account-type?handler=New"]'),
     ).describedAs('Add someone button');

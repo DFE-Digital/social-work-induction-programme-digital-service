@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator
-) : PageModel
+) : BasePageModel
 {
     /// <summary>
     /// First Name
@@ -44,6 +45,8 @@ public class AddAccountDetails(
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
+    public bool IsStaff = createAccountJourneyService.GetIsStaff() ?? false;
+
     public PageResult OnGet()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
@@ -56,7 +59,7 @@ public class AddAccountDetails(
         return Page();
     }
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
         var accountDetails = new AccountDetails
         {

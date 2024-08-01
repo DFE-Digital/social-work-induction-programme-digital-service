@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ConfirmAccountDetails(ICreateAccountJourneyService createAccountJourneyService)
-    : PageModel
+    : BasePageModel
 {
     /// <summary>
     /// First Name
@@ -34,11 +34,6 @@ public class ConfirmAccountDetails(ICreateAccountJourneyService createAccountJou
     public string? SocialWorkEnglandNumber { get; set; }
 
     /// <summary>
-    /// Account Types
-    /// </summary>
-    public IList<AccountType>? AccountTypes { get; set; }
-
-    /// <summary>
     /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
@@ -50,8 +45,6 @@ public class ConfirmAccountDetails(ICreateAccountJourneyService createAccountJou
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
-
-        AccountTypes = createAccountJourneyService.GetAccountTypes();
 
         return Page();
     }

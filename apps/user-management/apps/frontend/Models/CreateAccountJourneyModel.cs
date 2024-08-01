@@ -6,6 +6,8 @@ public class CreateAccountJourneyModel
 
     public AccountDetails? AccountDetails { get; set; }
 
+    public bool? IsStaff { get; set; }
+
     public Account ToAccount()
     {
         return new Account

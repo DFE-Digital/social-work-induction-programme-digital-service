@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,7 +14,7 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase
 
     public SelectUseCasePageTests()
     {
-        Sut = new SelectUseCase(CreateAccountJourneyService);
+        Sut = new SelectUseCase(CreateAccountJourneyService, new SelectUseCaseValidator());
     }
 
     [Fact]
@@ -26,19 +27,46 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase
         result.Should().BeOfType<PageResult>();
     }
 
-    [Fact]
-    public void Post_WhenCalled_RedirectsToAddUserDetails()
+    [Theory]
+    [InlineData(AccountType.Coordinator)]
+    [InlineData(AccountType.Coordinator, AccountType.Assessor)]
+    public async Task Post_WhenCalledWithValidSelection_RedirectsToAddUserDetails(
+        params AccountType[] accountTypes
+    )
     {
         // Arrange
-        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
+        Sut.SelectedAccountTypes = accountTypes;
 
         // Act
-        var result = Sut.OnPost();
+        var result = await Sut.OnPostAsync();
 
         // Assert
         result.Should().BeOfType<RedirectToPageResult>();
 
         var redirectToPageResult = result as RedirectToPageResult;
         redirectToPageResult!.PageName.Should().Be(nameof(AddAccountDetails));
+    }
+
+    [Fact]
+    public async Task Post_WhenSelectedAccountTypesIsEmpty_AddsErrorsToModelState()
+    {
+        // Arrange
+        Sut.SelectedAccountTypes = new List<AccountType>();
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Should().Contain("SelectedAccountTypes");
+        modelState["SelectedAccountTypes"]!.Errors.Count.Should().Be(1);
+        modelState["SelectedAccountTypes"]!
+            .Errors[0]
+            .ErrorMessage.Should()
+            .Be("Select what they need to do");
     }
 }

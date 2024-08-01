@@ -2,12 +2,13 @@
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.ConfirmAccountDetails
 
 @{
-    ViewData["Title"] = "Confirm account details";
+    Model.Title = "Confirm account details";
+    Model.BackLinkPath = Url.Page(nameof(AddAccountDetails));
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form asp-page="ConfirmAccountDetails" method="post">
+        <form method="post">
 
             <h1 class="govuk-heading-xl">
                 Check user details before adding them

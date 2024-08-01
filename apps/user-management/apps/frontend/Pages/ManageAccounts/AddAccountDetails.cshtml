@@ -2,12 +2,13 @@
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.AddAccountDetails
 
 @{
-    ViewData["Title"] = "Add account details";
+    Model.Title = "Add account details";
+    Model.BackLinkPath = Model.IsStaff ? Url.Page(nameof(SelectUseCase)) : Url.Page(nameof(SelectAccountType));
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form asp-page="AddAccountDetails" method="post">
+        <form method="post">
             <govuk-fieldset>
                 <govuk-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">Enter their details</govuk-fieldset-legend>
 

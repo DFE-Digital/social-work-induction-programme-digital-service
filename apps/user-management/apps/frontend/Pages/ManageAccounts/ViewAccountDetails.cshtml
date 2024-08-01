@@ -4,7 +4,9 @@
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.ViewAccountDetails
 
 @{
-    ViewData["Title"] = "View account details ";
+    Model.Title = "View account details ";
+    Model.BackLinkPath = Url.Page(nameof(Index));
+
     var isAccountInactive = Model.Account.Status == AccountStatus.Inactive;
     var isAccountPaused = Model.Account.Status == AccountStatus.Paused;
 }

@@ -29,7 +29,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
     }
 
     [Fact]
-    public async Task Post_WhenCalled_RedirectsToConfirmUserDetails()
+    public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
     {
         // Arrange
         var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
@@ -39,7 +39,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
         Sut.SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
 
         // Act
-        var result = await Sut.OnPost();
+        var result = await Sut.OnPostAsync();
 
         // Assert
         result.Should().BeOfType<RedirectToPageResult>();
@@ -49,7 +49,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddUserDetails()
+    public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddAccountDetails()
     {
         // Arrange
         var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
@@ -58,7 +58,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
         Sut.Email = string.Empty;
 
         // Act
-        var result = await Sut.OnPost();
+        var result = await Sut.OnPostAsync();
 
         // Assert
         result.Should().BeOfType<PageResult>();

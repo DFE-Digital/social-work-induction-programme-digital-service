@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using System.Reflection;
 using FluentValidation;
 
 namespace Dfe.Sww.Ecf.Frontend.Installers;
@@ -17,6 +16,6 @@ public static class InstallValidators
     /// <param name="services"></param>
     public static void AddValidators(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<AccountDetails>, AccountDetailsValidator>();
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

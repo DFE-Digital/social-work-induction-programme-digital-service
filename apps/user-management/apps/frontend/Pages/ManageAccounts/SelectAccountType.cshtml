@@ -1,26 +1,26 @@
 ﻿@page
-@using Dfe.Sww.Ecf.Frontend.Models
 @using GovUk.Frontend.AspNetCore.TagHelpers
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.SelectAccountType
 
 @{
-    ViewData["Title"] = "Choose account type";
+    Model.Title = "Choose account type";
+    Model.BackLinkPath = Url.Page(nameof(Index));
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        <form asp-controller="Accounts" asp-action="SelectUserType">
+        <form method="post">
             <div class="govuk-form-group">
 
-                <govuk-radios asp-for="SelectedAccountType">
+                <govuk-radios asp-for="IsStaff">
                     <govuk-radios-fieldset>
                         <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
                             Who do you want to add?
                         </govuk-radios-fieldset-legend>
 
-                        <govuk-radios-item value="@AccountType.EarlyCareerSocialWorker">An early career social worker taking part in the PQP programme</govuk-radios-item>
-                        <govuk-radios-item value="@AccountType.AssessorCoordinator">A staff member supporting the PQP programme</govuk-radios-item>
+                        <govuk-radios-item value="@false">An early career social worker taking part in the PQP programme</govuk-radios-item>
+                        <govuk-radios-item value="@true">A staff member supporting the PQP programme</govuk-radios-item>
                     </govuk-radios-fieldset>
                 </govuk-radios>
             </div>

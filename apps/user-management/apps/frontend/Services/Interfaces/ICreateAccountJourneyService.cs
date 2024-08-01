@@ -8,9 +8,15 @@ public interface ICreateAccountJourneyService
 
     AccountDetails? GetAccountDetails();
 
+    bool? GetIsStaff();
+
     void SetAccountDetails(AccountDetails accountDetails);
 
     void SetAccountTypes(IList<AccountType> accountTypes);
 
+    void SetIsStaff(bool? isStaff);
+
     Account CompleteJourney();
+
+    void ResetCreateAccountJourneyModel();
 }

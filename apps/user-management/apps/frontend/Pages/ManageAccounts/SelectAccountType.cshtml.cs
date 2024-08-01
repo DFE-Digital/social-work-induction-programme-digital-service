@@ -1,45 +1,47 @@
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Select User Type Model
-/// </summary>
-public class SelectAccountType(ICreateAccountJourneyService createAccountJourneyService) : PageModel
+public class SelectAccountType(ICreateAccountJourneyService createAccountJourneyService)
+    : BasePageModel
 {
-    /// <summary>
-    /// Selected Account Type
-    /// </summary>
     [BindProperty]
     [Required(ErrorMessage = "Select who you want to add")]
-    public AccountType? SelectedAccountType { get; set; }
+    public bool? IsStaff { get; set; }
+
+    public IActionResult OnGetNew()
+    {
+        createAccountJourneyService.ResetCreateAccountJourneyModel();
+        return RedirectToPage(nameof(SelectAccountType));
+    }
 
     public PageResult OnGet()
     {
+        IsStaff = createAccountJourneyService.GetIsStaff();
         return Page();
     }
 
     public IActionResult OnPost()
     {
-        switch (SelectedAccountType)
+        if (!ModelState.IsValid)
         {
-            case null:
-                return Page();
-            case AccountType.AssessorCoordinator:
-                return RedirectToPage(nameof(SelectUseCase));
-            case AccountType.Coordinator:
-            case AccountType.Assessor:
-            case AccountType.EarlyCareerSocialWorker:
-                var accountTypes = new List<AccountType> { SelectedAccountType.Value };
-                createAccountJourneyService.SetAccountTypes(accountTypes);
-
-                return RedirectToPage(nameof(AddAccountDetails));
-            default:
-                throw new ArgumentOutOfRangeException();
+            return Page();
         }
+
+        if (IsStaff is false)
+        {
+            createAccountJourneyService.SetAccountTypes(
+                new List<AccountType> { AccountType.EarlyCareerSocialWorker }
+            );
+        }
+
+        createAccountJourneyService.SetIsStaff(IsStaff);
+
+        return RedirectToPage(IsStaff is true ? nameof(SelectUseCase) : nameof(AddAccountDetails));
     }
 }

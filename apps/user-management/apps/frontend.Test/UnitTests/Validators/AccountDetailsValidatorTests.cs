@@ -4,9 +4,9 @@ using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentValidation.TestHelper;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Validators.AccountDetailsTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Validators;
 
-public class ValidateShould()
+public class AccountDetailsValidatorTests()
     : ValidatorTestBase<AccountDetailsValidator, AccountDetails, AccountDetailsFaker>(
         new AccountDetailsValidator(),
         new AccountDetailsFaker()

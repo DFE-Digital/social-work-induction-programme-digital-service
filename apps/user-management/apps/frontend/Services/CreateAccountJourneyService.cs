@@ -39,6 +39,12 @@ public class CreateAccountJourneyService(
         return createAccountJourneyModel.AccountDetails;
     }
 
+    public bool? GetIsStaff()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsStaff;
+    }
+
     public void SetAccountDetails(AccountDetails accountDetails)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
@@ -50,6 +56,13 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.AccountTypes = accountTypes;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public void SetIsStaff(bool? isStaff)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.IsStaff = isStaff;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
