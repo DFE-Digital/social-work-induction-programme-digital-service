@@ -1,17 +1,22 @@
 import { devices } from '@playwright/test';
 import type { PlaywrightTestConfig } from '@serenity-js/playwright-test';
+import dotenv from 'dotenv';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+// Load environment variables from .env file if available
+dotenv.config();
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+// Define environment variables for spec directories
+const FRONTEND_SPEC_DIR = process.env.FRONTEND_SPEC_DIR || './apps/frontend.Test/FunctionalTests';
+const SWE_API_SPEC_DIR = process.env.SWE_API_SPEC_DIR || './apps/swe-api-mimic-test/DfeSwwEcf.SweApiSimulator.Tests/FunctionalTests';
+
+// Check command line arguments to determine the project
+const isFrontend = process.argv.includes('--project=frontend');
+const isSweApi = process.argv.includes('--project=swe_api');
+
+// Set specDirectory based on the project being run
+const specDirectory = isFrontend ? FRONTEND_SPEC_DIR : isSweApi ? SWE_API_SPEC_DIR : FRONTEND_SPEC_DIR;
+
 const config: PlaywrightTestConfig = {
-    testDir: './apps/frontend.Test/FunctionalTests',
     /* Maximum time one test can run for. */
     timeout: 30_000,
     expect: {
@@ -36,9 +41,8 @@ const config: PlaywrightTestConfig = {
         ['@serenity-js/playwright-test', {
             crew: [
                 '@serenity-js/console-reporter',
-                [ '@serenity-js/serenity-bdd', { specDirectory: './apps/frontend.Test/FunctionalTests' } ],
-                ['@serenity-js/core:ArtifactArchiver', { outputDirectory: 'test-results/serenity' }],
-                // '@serenity-js/core:StreamReporter',  // use for debugging
+                ['@serenity-js/serenity-bdd', { specDirectory }],
+                ['@serenity-js/core:ArtifactArchiver', { outputDirectory: `./test-results/serenity/${isFrontend ? 'frontend' : 'api'}` }],
             ],
         }],
     ],
@@ -53,10 +57,7 @@ const config: PlaywrightTestConfig = {
         defaultActorName: 'Alice',
         crew: [
             // Take screenshots of failed Serenity/JS Activities, such as a failed assertion, or o failed interaction
-            [ '@serenity-js/web:Photographer', { strategy: 'TakePhotosOfFailures' }],
-
-            // Take screenshots of all the Activities, both successful and failed
-            // [ '@serenity-js/web:Photographer', { strategy: 'TakePhotosOfInteractions' }],
+            ['@serenity-js/web:Photographer', { strategy: 'TakePhotosOfFailures' }],
         ],
 
         /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -69,12 +70,21 @@ const config: PlaywrightTestConfig = {
     /* Configure projects for major browsers */
     projects: [
         {
-            name: 'chromium',
+            name: 'frontend',
+            testDir: FRONTEND_SPEC_DIR,
             use: {
                 ...devices['Desktop Chrome'],
+                baseURL: 'http://localhost:5023',
             },
-        }
-    ]
+        },
+        {
+            name: 'swe_api',
+            testDir: SWE_API_SPEC_DIR,
+            use: {
+                baseURL: 'https://localhost:7244',
+            },
+        },
+    ],
 };
 
 export default config;

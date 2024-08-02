@@ -8,29 +8,31 @@
   },
   "private": true,
   "devDependencies": {
-    "@nx-dotnet/core": "^2.2.0",
+    "@nx-dotnet/core": "^2.4.2",
     "@nx/js": "18.2.4",
     "@nx/playwright": "18.2.4",
     "@nx/workspace": "18.2.4",
-    "@playwright/test": "^1.45.2",
-    "@serenity-js/assertions": "^3.25.2",
-    "@serenity-js/console-reporter": "^3.25.2",
-    "@serenity-js/core": "^3.25.2",
-    "@serenity-js/playwright": "^3.25.2",
-    "@serenity-js/playwright-test": "^3.25.2",
-    "@serenity-js/serenity-bdd": "^3.25.2",
-    "@serenity-js/web": "^3.25.2",
-    "@types/node": "^20.14.11",
+    "@playwright/test": "^1.45.3",
+    "@serenity-js/assertions": "^3.25.3",
+    "@serenity-js/console-reporter": "^3.25.3",
+    "@serenity-js/core": "^3.25.3",
+    "@serenity-js/playwright": "^3.25.3",
+    "@serenity-js/playwright-test": "^3.25.3",
+    "@serenity-js/rest": "^3.25.3",
+    "@serenity-js/serenity-bdd": "^3.25.3",
+    "@serenity-js/web": "^3.25.3",
+    "@types/node": "^20.14.13",
+    "dotenv": "^16.4.5",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "nx": "18.2.4",
-    "prettier": "^3.2.5"
+    "prettier": "^3.3.3"
   },
   "dependencies": {
     "dfe-frontend": "^2.0.1",
     "dfe-frontend-alpha": "^1.0.1",
-    "govuk-frontend": "^5.4.0",
+    "govuk-frontend": "^5.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }

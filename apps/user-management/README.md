@@ -48,3 +48,8 @@ e.g.
 | `serve`   | Builds and runs a live development server |
 | `test`    | Runs unit tests                           |
 | `e2e`     | Runs E2E tests                            |
+
+###### Running Tests
+
+To run API Tests use- `pnpm playwright test --project=swe_api`
+To run Frontend Tests use- `pnpm playwright test --project=frontend`

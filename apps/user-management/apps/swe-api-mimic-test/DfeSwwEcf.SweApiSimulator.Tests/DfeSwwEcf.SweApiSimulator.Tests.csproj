@@ -29,4 +29,16 @@
       <ProjectReference Include="..\..\swe-api-mimic\DfeSwwEcf.SweApiSimulator\DfeSwwEcf.SweApiSimulator.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="FunctionalTests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="FunctionalTests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="FunctionalTests\**" />
+    </ItemGroup>
+
 </Project>
