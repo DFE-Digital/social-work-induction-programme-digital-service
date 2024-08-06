@@ -1,12 +1,13 @@
 import { Send, GetRequest, LastResponse } from '@serenity-js/rest';
 import {Ensure, equals, property, and} from '@serenity-js/assertions';
 import { describe, it } from '@serenity-js/playwright-test';
+import { SocialWorkerDataFactory } from './Builders/TestData/SocialWorkerDataFactory';
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
 
 describe('GET Social Worker Details', () => {
 
-    // Positive Test Case: Valid SWID
+    //Test Case 1: Positive Test Case: Valid SWID
     it('should return the social worker details with status 200', async ({ actorCalled }) => {
         const actor = actorCalled('Alice');
         await actor.attemptsTo(
@@ -32,6 +33,37 @@ describe('GET Social Worker Details', () => {
                     property('Registered', equals(true))
                 ))
         );
+    });
+
+    // Test Case 2: Variations of Valid SWEID - Parameterized using Data Factory
+    const swidStatusMap = SocialWorkerDataFactory.createSocialWorkerTestData();
+
+    swidStatusMap.forEach(({ swid, expectedResponse }) => {
+        it(`should return 200 OK with the status "${expectedResponse.status}" for SWID ${swid}`, async ({
+                                                                                                            actorCalled,
+                                                                                                        }) => {
+            const actor = actorCalled('Alice');
+            const responseBody = LastResponse.body();
+            console.log('Actual Response:', responseBody);
+            await actor.attemptsTo(
+                Send.a(GetRequest.to(`/SocialWorker/${swid}`)),
+                // Ensure the response status code is 200
+                Ensure.that(LastResponse.status(), equals(200)),
+                // Ensure the response body contains the expected data with varied status
+                Ensure.that(
+                    LastResponse.body(),
+                    and(
+                        property('Registered Name', equals(expectedResponse.registeredName)),
+                        property('Registration Number', equals(expectedResponse.registrationNumber)),
+                        property('Status', equals(expectedResponse.status)),
+                        property('Town of employment', equals(expectedResponse.townOfEmployment || '')),
+                        property('Registered from', equals(expectedResponse.registeredFrom)),
+                        property('Registered until', equals(expectedResponse.registeredUntil)),
+                        property('Registered', equals(expectedResponse.registered))
+                    )
+                )
+            );
+        });
     });
 
     // Test Case 3: Negative Test - SWE ref (Unmatched SWID)
