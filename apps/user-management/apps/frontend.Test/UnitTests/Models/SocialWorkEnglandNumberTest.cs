@@ -15,17 +15,23 @@ public class SocialWorkEnglandNumberTest
         Action action = () => _ = new SocialWorkEnglandNumber(-1);
 
         //Assert
-        action.Should().Throw<ArgumentException>().WithMessage("Social Work England number must not be negative");
+        action
+            .Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Social Work England number must not be negative");
     }
 
     [Fact]
     public void WhenSweNumberNegative_ThrowException()
     {
         //Arrange & Act
-        Action action = () => _ = new SocialWorkEnglandNumber(-1,_today);
+        Action action = () => _ = new SocialWorkEnglandNumber(-1, _today);
 
         //Assert
-        action.Should().Throw<ArgumentException>().WithMessage("Social Work England number must not be negative");
+        action
+            .Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Social Work England number must not be negative");
     }
 
     [Fact]
@@ -109,5 +115,4 @@ public class SocialWorkEnglandNumberTest
         //Assert
         result.Should().BeTrue();
     }
-
 }
