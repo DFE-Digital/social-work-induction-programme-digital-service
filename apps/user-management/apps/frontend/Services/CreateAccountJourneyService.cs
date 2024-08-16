@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
@@ -55,7 +56,7 @@ public class CreateAccountJourneyService(
     public void SetAccountTypes(IList<AccountType> accountTypes)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        createAccountJourneyModel.AccountTypes = accountTypes;
+        createAccountJourneyModel.AccountTypes = accountTypes.ToImmutableList();
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 

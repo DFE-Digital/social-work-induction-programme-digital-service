@@ -5,7 +5,6 @@
 
 @{
     Model.Title = "View account details ";
-    Model.BackLinkPath = Url.Page(nameof(Index));
 
     var isAccountInactive = Model.Account.Status == AccountStatus.Inactive;
     var isAccountPaused = Model.Account.Status == AccountStatus.Paused;
@@ -35,7 +34,7 @@
                     <account-details account="Model.Account"></account-details>
                 </govuk-summary-list-row-value>
                 <govuk-summary-list-row-actions>
-                    <govuk-summary-list-row-action href="#" visually-hidden-text="account details">Change</govuk-summary-list-row-action>
+                    <govuk-summary-list-row-action asp-page="@nameof(EditAccountDetails)" asp-route-id="@Model.Account.Id" visually-hidden-text="account details">Change</govuk-summary-list-row-action>
                 </govuk-summary-list-row-actions>
             </govuk-summary-list-row>
         </govuk-summary-list>

@@ -1,5 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -15,7 +17,11 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
 
     public AddAccountDetailsPageTests()
     {
-        Sut = new AddAccountDetails(CreateAccountJourneyService, new AccountDetailsValidator());
+        Sut = new AddAccountDetails(
+            CreateAccountJourneyService,
+            new AccountDetailsValidator(),
+            new FakeLinkGenerator()
+        );
     }
 
     [Fact]
@@ -26,6 +32,43 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
 
         // Assert
         result.Should().BeOfType<PageResult>();
+    }
+
+    [Fact]
+    public void Get_WhenCalled_PopulatesModelFromJourneyState()
+    {
+        // Arrange
+        var account = AccountFaker.GenerateNewAccount();
+        CreateAccountJourneyService.PopulateJourneyModelFromAccount(account);
+
+        // Act
+        _ = Sut.OnGet();
+
+        // Assert
+        Sut.FirstName.Should().Be(account.FirstName);
+        Sut.LastName.Should().Be(account.LastName);
+        Sut.Email.Should().Be(account.Email);
+        Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+    }
+
+    [Fact]
+    public void GetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+    }
+
+    [Fact]
+    public void GetChange_WhenCalled_HasCorrectBackLink()
+    {
+        // Act
+        _ = Sut.OnGetChange();
+
+        // Assert
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
     }
 
     [Fact]
@@ -42,10 +85,11 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
         var result = await Sut.OnPostAsync();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
+        result.Should().BeOfType<RedirectResult>();
 
-        var redirectToPageResult = result as RedirectToPageResult;
-        redirectToPageResult!.PageName.Should().Be("ConfirmAccountDetails");
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
     }
 
     [Fact]

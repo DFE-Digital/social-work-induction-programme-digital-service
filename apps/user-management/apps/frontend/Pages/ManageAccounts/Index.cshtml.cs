@@ -11,7 +11,7 @@ public class Index(IAccountRepository accountRepository) : BasePageModel
 
     public PageResult OnGet()
     {
-        Accounts = accountRepository.GetAll();
+        Accounts = accountRepository.GetAll().OrderBy(account => account.CreatedAt).ToList();
 
         return Page();
     }

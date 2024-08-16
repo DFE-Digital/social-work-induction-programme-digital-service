@@ -1,5 +1,8 @@
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +17,18 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase
 
     public ConfirmAccountDetailsShould()
     {
-        Sut = new ConfirmAccountDetails(CreateAccountJourneyService) { TempData = TempData };
+        Sut = new ConfirmAccountDetails(
+            CreateAccountJourneyService,
+            AccountRepository,
+            new FakeLinkGenerator()
+        )
+        {
+            TempData = TempData
+        };
     }
 
     [Fact]
-    public void Get_WhenCalled_LoadsTheView()
+    public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
         var expectedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
@@ -37,6 +47,59 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase
     }
 
     [Fact]
+    public void Get_WhenCalled_HasCorrectBackLinkAndChangeDetailsLinkPaths()
+    {
+        // Arrange
+        var expectedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        CreateAccountJourneyService.SetAccountDetails(expectedAccountDetails);
+
+        // Act
+        _ = Sut.OnGet();
+
+        // Assert
+        Sut.IsUpdatingAccount.Should().BeFalse();
+        Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
+        Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
+    }
+
+    [Fact]
+    public void GetUpdate_WhenCalled_LoadsTheViewWithCorrectValues()
+    {
+        // Arrange
+        var account = AccountRepository.GetAll().PickRandom();
+        var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        TempData.Set("UpdatedAccountDetails-" + account.Id, updatedAccountDetails);
+
+        // Act
+        var result = Sut.OnGetUpdate(account.Id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.Id.Should().Be(account.Id);
+        Sut.FirstName.Should().Be(updatedAccountDetails.FirstName);
+        Sut.LastName.Should().Be(updatedAccountDetails.LastName);
+        Sut.Email.Should().Be(updatedAccountDetails.Email);
+        Sut.SocialWorkEnglandNumber.Should().Be(updatedAccountDetails.SocialWorkEnglandNumber);
+    }
+
+    [Fact]
+    public void GetUpdate_WhenCalled_HasCorrectBackLinkAndChangeDetailsLinkPaths()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+
+        // Act
+        _ = Sut.OnGetUpdate(accountId);
+
+        // Assert
+        Sut.IsUpdatingAccount.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + accountId);
+        Sut.ChangeDetailsLink.Should()
+            .Be("/manage-accounts/edit-account-details/" + accountId + "?handler=Change");
+    }
+
+    [Fact]
     public void Post_WhenCalled_RedirectsToAccountsIndex()
     {
         // Arrange
@@ -49,8 +112,54 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase
         var result = Sut.OnPost();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
+        result.Should().BeOfType<RedirectResult>();
 
-        result.PageName.Should().Be("Index");
+        result.Url.Should().Be("/manage-accounts");
+    }
+
+    [Fact]
+    public void PostUpdate_WhenCalled_UpdatesAccountDetailsAndRedirectsToAccountsIndex()
+    {
+        // Arrange
+        var account = AccountRepository.GetAll().PickRandom();
+        var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        TempData.Set("UpdatedAccountDetails-" + account.Id, updatedAccountDetails);
+
+        // Act
+        var result = Sut.OnPostUpdate(account.Id);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
+        AccountRepository.GetById(account.Id).Should().BeEquivalentTo(updatedAccountDetails);
+    }
+
+    [Fact]
+    public void PostUpdate_WhenCalledWithoutUpdatedAccountDetails_ReturnsBadRequest()
+    {
+        // Arrange
+        var account = AccountRepository.GetAll().PickRandom();
+
+        // Act
+        var result = Sut.OnPostUpdate(account.Id);
+
+        // Assert
+        result.Should().BeOfType<BadRequestObjectResult>();
+        var badRequestResult = result as BadRequestObjectResult;
+        badRequestResult.Should().NotBeNull();
+        badRequestResult!.StatusCode.Should().Be(400);
+        badRequestResult!.Value.Should().Be("Updated account details are missing from session.");
+    }
+
+    [Fact]
+    public void PostUpdate_WhenCalledWithInvalidId_ReturnsNotFound()
+    {
+        // Act
+        var result = Sut.OnPostUpdate(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
     }
 }

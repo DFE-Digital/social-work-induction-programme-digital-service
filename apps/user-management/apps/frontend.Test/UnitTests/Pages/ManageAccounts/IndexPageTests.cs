@@ -17,13 +17,19 @@ public class IndexPageTests : ManageAccountsPageTestBase
     }
 
     [Fact]
-    public void Get_WhenCalled_LoadsTheView()
+    public void Get_WhenCalled_LoadsTheViewWithAccountsSortedByCreatedAt()
     {
+        // Arrange
+        var expectedAccounts = AccountRepository.GetAll();
+
         // Act
         var result = Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
+        Sut.Accounts.Should().NotBeEmpty();
+        Sut.Accounts.Should().BeEquivalentTo(expectedAccounts);
+        Sut.Accounts.Should().BeInAscendingOrder(x => x.CreatedAt);
     }
 
     [Fact]

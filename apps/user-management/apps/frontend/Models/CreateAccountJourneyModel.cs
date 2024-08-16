@@ -1,8 +1,10 @@
-﻿namespace Dfe.Sww.Ecf.Frontend.Models;
+﻿using System.Collections.Immutable;
+
+namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class CreateAccountJourneyModel
 {
-    public IList<AccountType>? AccountTypes { get; set; }
+    public ImmutableList<AccountType>? AccountTypes { get; set; }
 
     public AccountDetails? AccountDetails { get; set; }
 

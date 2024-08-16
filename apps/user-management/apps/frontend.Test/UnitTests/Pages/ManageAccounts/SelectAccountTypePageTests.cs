@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase
 
     public SelectAccountTypePageTests()
     {
-        Sut = new SelectAccountType(CreateAccountJourneyService);
+        Sut = new SelectAccountType(CreateAccountJourneyService, new FakeLinkGenerator());
     }
 
     [Fact]
@@ -25,6 +26,20 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase
 
         // Assert
         result.Should().BeOfType<PageResult>();
+    }
+
+    [Fact]
+    public void Get_WhenCalled_PopulatesModelFromJourneyState()
+    {
+        // Arrange
+        var account = AccountFaker.GenerateNewAccount();
+        CreateAccountJourneyService.PopulateJourneyModelFromAccount(account);
+
+        // Act
+        _ = Sut.OnGet();
+
+        // Assert
+        Sut.IsStaff.Should().Be(CreateAccountJourneyService.GetIsStaff());
     }
 
     [Fact]
@@ -39,10 +54,8 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase
         var result = Sut.OnGetNew();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
-        var redirectToPageResult = result as RedirectToPageResult;
-        redirectToPageResult!.PageName.Should().Be(nameof(SelectAccountType));
-        redirectToPageResult.PageHandler.Should().BeNull();
+        result.Should().BeOfType<RedirectResult>();
+        result.Url.Should().Be("/manage-accounts/select-account-type");
 
         CreateAccountJourneyService.GetAccountDetails().Should().BeNull();
         CreateAccountJourneyService.GetAccountTypes().Should().BeNull();
@@ -59,10 +72,11 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase
         var result = Sut.OnPost();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
+        result.Should().BeOfType<RedirectResult>();
 
-        var redirectToPageResult = result as RedirectToPageResult;
-        redirectToPageResult!.PageName.Should().Be("AddAccountDetails");
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
     }
 
     [Fact]
@@ -75,10 +89,11 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase
         var result = Sut.OnPost();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
+        result.Should().BeOfType<RedirectResult>();
 
-        var redirectToPageResult = result as RedirectToPageResult;
-        redirectToPageResult!.PageName.Should().Be("SelectUseCase");
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/select-use-case");
     }
 
     [Fact]

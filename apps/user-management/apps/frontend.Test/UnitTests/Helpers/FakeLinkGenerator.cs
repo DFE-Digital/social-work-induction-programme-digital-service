@@ -1,0 +1,53 @@
+using Dfe.Sww.Ecf.Frontend.Routing;
+using Microsoft.AspNetCore.WebUtilities;
+
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+
+// TODO: Replace this with an implementation of RoutingEcfLinkGenerator that uses a real LinkGenerator.
+//       Will require registering a LinkGenerator in the DI container with all the page routing information.
+//       Examples of such can be found on Microsoft's [ASP.NET Core Integration tests](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0) page.
+public class FakeLinkGenerator : EcfLinkGenerator
+{
+    protected override string GetRequiredPathByPage(
+        string page,
+        string? handler = null,
+        object? routeValues = null
+    )
+    {
+        const string indexPath = "/index";
+        if (page.EndsWith(indexPath, StringComparison.OrdinalIgnoreCase))
+        {
+            page = page.Remove(page.Length - indexPath.Length);
+        }
+
+        var generatedLink = new SlugifyRouteParameterTransformer().TransformOutbound(page)!;
+
+        if (routeValues is not null)
+            generatedLink = AddRouteValues(generatedLink, routeValues);
+
+        return handler is null
+            ? generatedLink
+            : QueryHelpers.AddQueryString(generatedLink, "handler", handler);
+    }
+
+    private static string AddRouteValues(string link, object routeValues)
+    {
+        return routeValues
+            .GetType()
+            .GetProperties()
+            .Aggregate(
+                link,
+                (current, prop) =>
+                    current
+                    + prop.Name switch
+                    {
+                        "id" => "/" + prop.GetValue(routeValues),
+                        _
+                            => throw new ArgumentException(
+                                "FakeLinkGenerator does not support route values with the name "
+                                    + prop.Name
+                            )
+                    }
+            );
+    }
+}

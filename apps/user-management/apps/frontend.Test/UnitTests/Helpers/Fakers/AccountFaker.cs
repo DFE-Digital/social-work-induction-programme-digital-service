@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
 
@@ -32,10 +33,7 @@ public static class AccountFakerExtensions
 
     private static Faker<Account> GetSocialWorkerAccountFaker(this AccountFaker accountFaker)
     {
-        return accountFaker.RuleFor(
-            a => a.Types,
-            _ => new List<AccountType> { AccountType.EarlyCareerSocialWorker }
-        );
+        return accountFaker.RuleFor(a => a.Types, _ => [AccountType.EarlyCareerSocialWorker]);
     }
 
     public static Account GenerateSocialWorkerWithNoSweNumber(this AccountFaker accountFaker)
@@ -56,6 +54,6 @@ public static class AccountFakerExtensions
         params AccountType[] accountTypes
     )
     {
-        return accountFaker.RuleFor(a => a.Types, _ => accountTypes).Generate();
+        return accountFaker.RuleFor(a => a.Types, _ => accountTypes.ToImmutableList()).Generate();
     }
 }

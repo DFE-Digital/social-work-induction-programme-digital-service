@@ -17,7 +17,7 @@ public abstract class ManageAccountsPageTestBase : PageModelTestBase
     protected ManageAccountsPageTestBase()
     {
         AccountFaker = new AccountFaker();
-        AccountRepository = new AccountRepository();
+        AccountRepository = new InMemoryAccountRepository();
         AccountRepository.AddRange(AccountFaker.Generate(10));
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };

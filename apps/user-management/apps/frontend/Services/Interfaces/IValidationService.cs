@@ -1,5 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
+﻿using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 

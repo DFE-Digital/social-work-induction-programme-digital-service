@@ -2,6 +2,7 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 /// </summary>
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
-    IValidator<AccountDetails> validator
+    IValidator<AccountDetails> validator,
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     /// <summary>
@@ -49,6 +51,10 @@ public class AddAccountDetails(
 
     public PageResult OnGet()
     {
+        BackLinkPath ??= IsStaff
+            ? linkGenerator.SelectUseCase()
+            : linkGenerator.SelectAccountType();
+
         var accountDetails = createAccountJourneyService.GetAccountDetails();
 
         FirstName = accountDetails?.FirstName;
@@ -57,6 +63,12 @@ public class AddAccountDetails(
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
 
         return Page();
+    }
+
+    public PageResult OnGetChange()
+    {
+        BackLinkPath = linkGenerator.ConfirmAccountDetails();
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -77,6 +89,6 @@ public class AddAccountDetails(
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return RedirectToPage(nameof(ConfirmAccountDetails));
+        return Redirect(linkGenerator.ConfirmAccountDetails());
     }
 }

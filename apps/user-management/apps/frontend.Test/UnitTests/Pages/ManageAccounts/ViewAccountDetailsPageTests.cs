@@ -1,4 +1,6 @@
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,7 +14,10 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase
 
     public ViewAccountDetailsPageTests()
     {
-        Sut = new ViewAccountDetails(AccountRepository);
+        Sut = new ViewAccountDetails(AccountRepository, new FakeLinkGenerator())
+        {
+            TempData = TempData
+        };
     }
 
     [Fact]
@@ -39,13 +44,19 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase
         result.Should().BeOfType<NotFoundResult>();
     }
 
-    [Fact]
-    public void Get_WhenCalledWithNull_ReturnsNotFound()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Get_Always_ClearsUpdatedAccountDetails(bool isAccountIdValid)
     {
+        // Arrange
+        var accountId = isAccountIdValid ? AccountRepository.GetAll().First().Id : Guid.NewGuid();
+        TempData.Set("UpdatedAccountDetails-" + accountId, "foo");
+
         // Act
-        var result = Sut.OnGet(null);
+        _ = Sut.OnGet(accountId);
 
         // Assert
-        result.Should().BeOfType<NotFoundResult>();
+        TempData.Get<string>("UpdatedAccountDetails-" + accountId).Should().BeNull();
     }
 }

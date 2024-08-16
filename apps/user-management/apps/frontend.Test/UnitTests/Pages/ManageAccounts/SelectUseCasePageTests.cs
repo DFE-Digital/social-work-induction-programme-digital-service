@@ -1,5 +1,8 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +17,11 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase
 
     public SelectUseCasePageTests()
     {
-        Sut = new SelectUseCase(CreateAccountJourneyService, new SelectUseCaseValidator());
+        Sut = new SelectUseCase(
+            CreateAccountJourneyService,
+            new SelectUseCaseValidator(),
+            new FakeLinkGenerator()
+        );
     }
 
     [Fact]
@@ -27,10 +34,25 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase
         result.Should().BeOfType<PageResult>();
     }
 
+    [Fact]
+    public void Get_WhenCalled_PopulatesModelFromJourneyState()
+    {
+        // Arrange
+        var account = AccountFaker.GenerateNewAccount();
+        CreateAccountJourneyService.PopulateJourneyModelFromAccount(account);
+
+        // Act
+        _ = Sut.OnGet();
+
+        // Assert
+        Sut.SelectedAccountTypes.Should()
+            .BeEquivalentTo(CreateAccountJourneyService.GetAccountTypes());
+    }
+
     [Theory]
     [InlineData(AccountType.Coordinator)]
     [InlineData(AccountType.Coordinator, AccountType.Assessor)]
-    public async Task Post_WhenCalledWithValidSelection_RedirectsToAddUserDetails(
+    public async Task Post_WhenCalledWithValidSelection_RedirectsToAddAccountDetails(
         params AccountType[] accountTypes
     )
     {
@@ -41,10 +63,11 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase
         var result = await Sut.OnPostAsync();
 
         // Assert
-        result.Should().BeOfType<RedirectToPageResult>();
+        result.Should().BeOfType<RedirectResult>();
 
-        var redirectToPageResult = result as RedirectToPageResult;
-        redirectToPageResult!.PageName.Should().Be(nameof(AddAccountDetails));
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
     }
 
     [Fact]

@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,8 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
-    IValidator<SelectUseCase> validator
+    IValidator<SelectUseCase> validator,
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty]
@@ -18,6 +20,7 @@ public class SelectUseCase(
 
     public PageResult OnGet()
     {
+        BackLinkPath = linkGenerator.SelectAccountType();
         SelectedAccountTypes = createAccountJourneyService.GetAccountTypes();
         return Page();
     }
@@ -33,6 +36,6 @@ public class SelectUseCase(
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
 
-        return RedirectToPage(nameof(AddAccountDetails));
+        return Redirect(linkGenerator.AddAccountDetails());
     }
 }

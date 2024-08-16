@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -11,6 +12,11 @@ public class Account
     /// Account ID
     /// </summary>
     public Guid Id { get; init; }
+
+    /// <summary>
+    /// Date and time the account was created
+    /// </summary>
+    public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
     /// <summary>
     /// First Name
@@ -46,11 +52,25 @@ public class Account
     /// Account types
     /// </summary>
     [Display(Name = "Account type")]
-    public IList<AccountType>? Types { get; init; }
+    public ImmutableList<AccountType>? Types { get; init; }
 
     /// <summary>
     /// Social Work England number
     /// </summary>
     [Display(Name = "Social Work England number")]
-    public string? SocialWorkEnglandNumber { get; set; }
+    public string? SocialWorkEnglandNumber { get; init; }
+
+    public Account() { }
+
+    public Account(Account account)
+    {
+        Id = account.Id;
+        CreatedAt = account.CreatedAt;
+        FirstName = account.FirstName;
+        LastName = account.LastName;
+        Email = account.Email;
+        Status = account.Status;
+        Types = account.Types;
+        SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+    }
 }

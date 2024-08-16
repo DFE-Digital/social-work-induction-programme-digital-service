@@ -17,7 +17,7 @@ public static class InstallServices
     /// <param name="services"></param>
     public static void AddRepository(this IServiceCollection services)
     {
-        var accountsRepository = new AccountRepository();
+        var accountsRepository = new InMemoryAccountRepository();
 
         // TODO: Remove this once the DAL is in place
         accountsRepository.AddRange(
