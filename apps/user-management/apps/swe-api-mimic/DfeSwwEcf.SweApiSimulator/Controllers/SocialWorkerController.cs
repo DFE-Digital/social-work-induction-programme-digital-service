@@ -10,7 +10,6 @@ namespace DfeSwwEcf.SweApiSimulator.Controllers;
 /// </summary>
 /// <param name="socialWorkerService"></param>
 [ApiController]
-[Route("[controller]")]
 public class SocialWorkerController(ISocialWorkerService socialWorkerService) : ControllerBase
 {
     private readonly ISocialWorkerService _socialWorkerService = socialWorkerService;
@@ -18,12 +17,12 @@ public class SocialWorkerController(ISocialWorkerService socialWorkerService) : 
     /// <summary>
     /// Get a social worker by their ID
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="swid"></param>
     /// <returns>A single social worker record</returns>
-    [HttpGet("{id?}")]
-    public IActionResult GetById(string? id)
+    [HttpGet("/GetSocialWorkerById")]
+    public IActionResult GetById([FromQuery] string? swid)
     {
-        var response = _socialWorkerService.GetById(id);
+        var response = _socialWorkerService.GetById(swid);
 
         if (response?.ErrorDetails is not null)
         {
