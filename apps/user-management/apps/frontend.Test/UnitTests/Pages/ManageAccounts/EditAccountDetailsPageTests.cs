@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class EditAccountDetailsPageTests : ManageAccountsPageTestBase
+public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccountDetails>
 {
     private EditAccountDetails Sut { get; }
 
@@ -42,6 +42,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+        Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
     }
 
     [Fact]
@@ -141,6 +142,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
     }
 
     [Fact]

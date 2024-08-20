@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -16,7 +17,7 @@ public class Account
     /// <summary>
     /// Date and time the account was created
     /// </summary>
-    public DateTime CreatedAt { get; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
     /// <summary>
     /// First Name
@@ -59,6 +60,9 @@ public class Account
     /// </summary>
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; init; }
+
+    public bool IsStaff =>
+        Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
     public Account() { }
 

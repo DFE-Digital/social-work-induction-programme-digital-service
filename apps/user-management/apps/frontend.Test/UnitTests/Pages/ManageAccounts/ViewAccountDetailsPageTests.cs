@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase
+public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccountDetails>
 {
     private ViewAccountDetails Sut { get; }
 

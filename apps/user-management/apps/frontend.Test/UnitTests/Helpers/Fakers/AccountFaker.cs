@@ -9,6 +9,7 @@ public sealed class AccountFaker : Faker<Account>
     public AccountFaker()
     {
         RuleFor(a => a.Id, f => f.Random.Guid());
+        RuleFor(a => a.CreatedAt, f => f.Date.Past());
         RuleFor(a => a.FirstName, f => f.Name.FirstName());
         RuleFor(a => a.LastName, f => f.Name.LastName());
         RuleFor(a => a.Status, f => f.PickRandom<AccountStatus>());

@@ -67,10 +67,7 @@ public class InMemoryAccountRepository : IAccountRepository
     }
 
     /// <inheritdoc />
-    public IEnumerable<Account> GetAll()
-    {
-        return _accounts.Values.ToList();
-    }
+    public IEnumerable<Account> GetAll() => _accounts.Values.ToList();
 
     /// <inheritdoc />
     public void Update(Account account)
@@ -82,4 +79,7 @@ public class InMemoryAccountRepository : IAccountRepository
             throw new KeyNotFoundException("Account not found.");
         }
     }
+
+    /// <inheritdoc />
+    public bool Exists(Guid id) => _accounts.ContainsKey(id);
 }

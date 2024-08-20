@@ -37,4 +37,11 @@ public interface IAccountRepository
     /// </summary>
     /// <param name="account">The account to update.</param>
     void Update(Account account);
+
+    /// <summary>
+    /// Checks if an account exists in the repository.
+    /// </summary>
+    /// <param name="id">The ID of the account to check.</param>
+    /// <returns>True if the account exists, false otherwise.</returns>
+    bool Exists(Guid id);
 }

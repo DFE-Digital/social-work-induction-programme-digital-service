@@ -81,11 +81,18 @@ public class EditAccountDetails(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
+            BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
             return Page();
         }
 
         TempData.Set("UpdatedAccountDetails-" + id, accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(id));
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync(Guid id)
+    {
+        BackLinkPath = linkGenerator.ConfirmAccountDetailsUpdate(id);
+        return await OnPostAsync(id);
     }
 }

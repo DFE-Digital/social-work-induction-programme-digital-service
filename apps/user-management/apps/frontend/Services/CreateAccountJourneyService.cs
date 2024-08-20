@@ -19,7 +19,7 @@ public class CreateAccountJourneyService(
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
-    public CreateAccountJourneyModel GetCreateAccountJourneyModel()
+    private CreateAccountJourneyModel GetCreateAccountJourneyModel()
     {
         Session.TryGet(
             CreateAccountSessionKey,

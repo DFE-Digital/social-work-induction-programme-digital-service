@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase
+public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAccountDetails>
 {
     private ConfirmAccountDetails Sut { get; }
 

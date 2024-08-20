@@ -49,11 +49,18 @@ public class AddAccountDetails(
 
     public bool IsStaff = createAccountJourneyService.GetIsStaff() ?? false;
 
+    private void SetBackLinkPath(bool fromConfirmPage = false)
+    {
+        BackLinkPath ??= fromConfirmPage
+            ? linkGenerator.ConfirmAccountDetails()
+            : IsStaff
+                ? linkGenerator.SelectUseCase()
+                : linkGenerator.SelectAccountType();
+    }
+
     public PageResult OnGet()
     {
-        BackLinkPath ??= IsStaff
-            ? linkGenerator.SelectUseCase()
-            : linkGenerator.SelectAccountType();
+        SetBackLinkPath();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
 
@@ -67,7 +74,7 @@ public class AddAccountDetails(
 
     public PageResult OnGetChange()
     {
-        BackLinkPath = linkGenerator.ConfirmAccountDetails();
+        SetBackLinkPath(true);
         return OnGet();
     }
 
@@ -84,11 +91,18 @@ public class AddAccountDetails(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
+            SetBackLinkPath();
             return Page();
         }
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetails());
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        SetBackLinkPath(true);
+        return await OnPostAsync();
     }
 }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
+public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountDetails>
 {
     private AddAccountDetails Sut { get; }
 
@@ -49,6 +49,26 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Get_WhenCalled_HasCorrectBackLink(bool isStaff)
+    {
+        // Arrange
+        Sut.IsStaff = isStaff;
+
+        // Act
+        _ = Sut.OnGet();
+
+        // Assert
+        Sut.BackLinkPath.Should()
+            .Be(
+                isStaff
+                    ? "/manage-accounts/select-use-case"
+                    : "/manage-accounts/select-account-type"
+            );
     }
 
     [Fact]
@@ -113,5 +133,25 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Post_WhenCalledWithInvalidData_HasCorrectBackLink(bool isStaff)
+    {
+        // Arrange
+        Sut.IsStaff = isStaff;
+
+        // Act
+        _ = await Sut.OnPostAsync();
+
+        // Assert
+        Sut.BackLinkPath.Should()
+            .Be(
+                isStaff
+                    ? "/manage-accounts/select-use-case"
+                    : "/manage-accounts/select-account-type"
+            );
     }
 }

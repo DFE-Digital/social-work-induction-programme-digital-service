@@ -3,17 +3,17 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Xunit;
-using Index = Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index;
+using ManageAccoutsIndex = Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class IndexPageTests : ManageAccountsPageTestBase
+public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
 {
-    private Index Sut { get; }
+    private ManageAccoutsIndex Sut { get; }
 
     public IndexPageTests()
     {
-        Sut = new Index(AccountRepository);
+        Sut = new ManageAccoutsIndex(AccountRepository);
     }
 
     [Fact]
