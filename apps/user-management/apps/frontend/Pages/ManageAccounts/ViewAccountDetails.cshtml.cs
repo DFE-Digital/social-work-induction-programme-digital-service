@@ -16,7 +16,6 @@ public class ViewAccountDetails(
     public IActionResult OnGet(Guid id)
     {
         BackLinkPath = linkGenerator.ManageAccounts();
-        TempData.Remove("UpdatedAccountDetails-" + id);
 
         var account = accountRepository.GetById(id);
         if (account is null)

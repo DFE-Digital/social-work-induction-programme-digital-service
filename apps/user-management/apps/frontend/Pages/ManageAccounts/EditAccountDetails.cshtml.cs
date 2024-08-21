@@ -2,15 +2,15 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
-using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class EditAccountDetails(
-    IAccountRepository accountRepository,
+    IEditAccountJourneyService editAccountJourneyService,
     IValidator<AccountDetails> validator,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
@@ -35,8 +35,7 @@ public class EditAccountDetails(
 
     public IActionResult OnGet(Guid id)
     {
-        var account = accountRepository.GetById(id);
-        if (account is null)
+        if (!editAccountJourneyService.IsAccountIdValid(id))
         {
             return NotFound();
         }
@@ -44,13 +43,12 @@ public class EditAccountDetails(
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
 
-        var updatedAccountDetails = TempData.Peek<AccountDetails>("UpdatedAccountDetails-" + id);
+        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
 
-        FirstName = updatedAccountDetails?.FirstName ?? account.FirstName;
-        LastName = updatedAccountDetails?.LastName ?? account.LastName;
-        Email = updatedAccountDetails?.Email ?? account.Email;
-        SocialWorkEnglandNumber =
-            updatedAccountDetails?.SocialWorkEnglandNumber ?? account.SocialWorkEnglandNumber;
+        FirstName = accountDetails.FirstName;
+        LastName = accountDetails.LastName;
+        Email = accountDetails.Email;
+        SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
 
         return Page();
     }
@@ -64,7 +62,7 @@ public class EditAccountDetails(
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        if (accountRepository.GetById(id) is null)
+        if (!editAccountJourneyService.IsAccountIdValid(id))
         {
             return NotFound();
         }
@@ -85,7 +83,7 @@ public class EditAccountDetails(
             return Page();
         }
 
-        TempData.Set("UpdatedAccountDetails-" + id, accountDetails);
+        editAccountJourneyService.SetAccountDetails(id, accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(id));
     }

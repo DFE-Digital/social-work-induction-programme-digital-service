@@ -19,7 +19,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         Sut = new ConfirmAccountDetails(
             CreateAccountJourneyService,
-            AccountRepository,
+            EditAccountJourneyService,
             new FakeLinkGenerator()
         )
         {
@@ -68,7 +68,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var account = AccountRepository.GetAll().PickRandom();
         var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
-        TempData.Set("UpdatedAccountDetails-" + account.Id, updatedAccountDetails);
+        EditAccountJourneyService.SetAccountDetails(account.Id, updatedAccountDetails);
 
         // Act
         var result = Sut.OnGetUpdate(account.Id);
@@ -87,7 +87,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public void GetUpdate_WhenCalled_HasCorrectBackLinkAndChangeDetailsLinkPaths()
     {
         // Arrange
-        var accountId = Guid.NewGuid();
+        var accountId = AccountRepository.GetAll().PickRandom().Id;
 
         // Act
         _ = Sut.OnGetUpdate(accountId);
@@ -97,6 +97,19 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + accountId);
         Sut.ChangeDetailsLink.Should()
             .Be("/manage-accounts/edit-account-details/" + accountId + "?handler=Change");
+    }
+
+    [Fact]
+    public void GetUpdate_WithInvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        var invalidId = Guid.NewGuid();
+
+        // Act
+        var result = Sut.OnGetUpdate(invalidId);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
     }
 
     [Fact]
@@ -122,8 +135,14 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountRepository.GetAll().PickRandom();
-        var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
-        TempData.Set("UpdatedAccountDetails-" + account.Id, updatedAccountDetails);
+        var updatedAccountDetails = new AccountDetails()
+        {
+            FirstName = "UpdatedFirstName",
+            LastName = "UpdatedLastName",
+            Email = "UpdatedEmail",
+            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber
+        };
+        EditAccountJourneyService.SetAccountDetails(account.Id, updatedAccountDetails);
 
         // Act
         var result = Sut.OnPostUpdate(account.Id);
@@ -134,23 +153,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
         AccountRepository.GetById(account.Id).Should().BeEquivalentTo(updatedAccountDetails);
-    }
-
-    [Fact]
-    public void PostUpdate_WhenCalledWithoutUpdatedAccountDetails_ReturnsBadRequest()
-    {
-        // Arrange
-        var account = AccountRepository.GetAll().PickRandom();
-
-        // Act
-        var result = Sut.OnPostUpdate(account.Id);
-
-        // Assert
-        result.Should().BeOfType<BadRequestObjectResult>();
-        var badRequestResult = result as BadRequestObjectResult;
-        badRequestResult.Should().NotBeNull();
-        badRequestResult!.StatusCode.Should().Be(400);
-        badRequestResult!.Value.Should().Be("Updated account details are missing from session.");
     }
 
     [Fact]

@@ -16,7 +16,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public EditAccountDetailsPageTests()
     {
         Sut = new EditAccountDetails(
-            AccountRepository,
+            EditAccountJourneyService,
             new AccountDetailsValidator(),
             new FakeLinkGenerator()
         )
@@ -153,5 +153,23 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task PostChange_WhenCalled_HasCorrectBackLink()
+    {
+        // Arrange
+        var account = AccountRepository.GetAll().PickRandom();
+        Sut.FirstName = account.FirstName;
+        Sut.LastName = account.LastName;
+        Sut.Email = account.Email;
+        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+
+        // Act
+        _ = await Sut.OnPostChangeAsync(account.Id);
+
+        // Assert
+        Sut.BackLinkPath.Should()
+            .Be($"/manage-accounts/confirm-account-details/{account.Id}?handler=Update");
     }
 }

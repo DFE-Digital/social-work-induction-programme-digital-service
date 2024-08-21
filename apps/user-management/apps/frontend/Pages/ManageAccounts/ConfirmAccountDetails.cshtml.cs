@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
-using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +9,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
-    IAccountRepository accountRepository,
+    IEditAccountJourneyService editAccountJourneyService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
@@ -67,24 +64,23 @@ public class ConfirmAccountDetails(
 
     public IActionResult OnGetUpdate(Guid id)
     {
+        if (!editAccountJourneyService.IsAccountIdValid(id))
+        {
+            return NotFound();
+        }
+
         BackLinkPath = linkGenerator.EditAccountDetails(id);
         ChangeDetailsLink = linkGenerator.EditAccountDetailsChange(id);
 
         IsUpdatingAccount = true;
         Id = id;
-        var account = accountRepository.GetById(id);
 
-        if (account is null)
-        {
-            return NotFound();
-        }
+        var updatedAccountDetails = editAccountJourneyService.GetAccountDetails(id);
 
-        var updatedAccountDetails = TempData.Peek<AccountDetails>("UpdatedAccountDetails-" + id);
-
-        FirstName = updatedAccountDetails?.FirstName;
-        LastName = updatedAccountDetails?.LastName;
-        Email = updatedAccountDetails?.Email;
-        SocialWorkEnglandNumber = updatedAccountDetails?.SocialWorkEnglandNumber;
+        FirstName = updatedAccountDetails.FirstName;
+        LastName = updatedAccountDetails.LastName;
+        Email = updatedAccountDetails.Email;
+        SocialWorkEnglandNumber = updatedAccountDetails.SocialWorkEnglandNumber;
 
         return Page();
     }
@@ -105,27 +101,12 @@ public class ConfirmAccountDetails(
 
     public IActionResult OnPostUpdate(Guid id)
     {
-        var existingAccount = accountRepository.GetById(id);
-        if (existingAccount is null)
+        if (!editAccountJourneyService.IsAccountIdValid(id))
         {
             return NotFound();
         }
 
-        var updatedAccountDetails = TempData.Get<AccountDetails>("UpdatedAccountDetails-" + id);
-        if (updatedAccountDetails is null)
-        {
-            return BadRequest("Updated account details are missing from session.");
-        }
-
-        var updatedAccount = new Account(existingAccount)
-        {
-            FirstName = updatedAccountDetails.FirstName,
-            LastName = updatedAccountDetails.LastName,
-            Email = updatedAccountDetails.Email,
-            SocialWorkEnglandNumber = updatedAccountDetails.SocialWorkEnglandNumber
-        };
-
-        accountRepository.Update(updatedAccount);
+        editAccountJourneyService.CompleteJourney(id);
 
         return Redirect(linkGenerator.ViewAccountDetails(id));
     }

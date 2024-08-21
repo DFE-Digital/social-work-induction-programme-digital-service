@@ -8,7 +8,7 @@ public class EditAccountJourneyModel(Account account)
 
     public ImmutableList<AccountType>? AccountTypes { get; set; } = account.Types;
 
-    public AccountDetails? AccountDetails { get; set; } =
+    public AccountDetails AccountDetails { get; set; } =
         new()
         {
             FirstName = account.FirstName,

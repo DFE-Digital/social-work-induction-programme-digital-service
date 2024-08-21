@@ -7,7 +7,7 @@ public interface IEditAccountJourneyService
 {
     bool IsAccountIdValid(Guid accountId);
     ImmutableList<AccountType>? GetAccountTypes(Guid accountId);
-    AccountDetails? GetAccountDetails(Guid accountId);
+    AccountDetails GetAccountDetails(Guid accountId);
     bool? GetIsStaff(Guid accountId);
     void SetAccountDetails(Guid accountId, AccountDetails accountDetails);
     void SetAccountTypes(Guid accountId, IEnumerable<AccountType> accountTypes);

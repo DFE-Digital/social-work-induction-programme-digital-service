@@ -154,4 +154,21 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
                     : "/manage-accounts/select-account-type"
             );
     }
+
+    [Fact]
+    public async Task PostChange_WhenCalled_HasCorrectBackLink()
+    {
+        // Arrange
+        var account = AccountRepository.GetAll().PickRandom();
+        Sut.FirstName = account.FirstName;
+        Sut.LastName = account.LastName;
+        Sut.Email = account.Email;
+        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+    }
 }

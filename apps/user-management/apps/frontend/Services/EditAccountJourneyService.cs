@@ -51,7 +51,7 @@ public class EditAccountJourneyService(
         return editAccountJourneyModel.AccountTypes;
     }
 
-    public AccountDetails? GetAccountDetails(Guid accountId)
+    public AccountDetails GetAccountDetails(Guid accountId)
     {
         var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
         return editAccountJourneyModel.AccountDetails;

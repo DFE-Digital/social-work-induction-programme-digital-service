@@ -43,20 +43,4 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void Get_Always_ClearsUpdatedAccountDetails(bool isAccountIdValid)
-    {
-        // Arrange
-        var accountId = isAccountIdValid ? AccountRepository.GetAll().First().Id : Guid.NewGuid();
-        TempData.Set("UpdatedAccountDetails-" + accountId, "foo");
-
-        // Act
-        _ = Sut.OnGet(accountId);
-
-        // Assert
-        TempData.Get<string>("UpdatedAccountDetails-" + accountId).Should().BeNull();
-    }
 }
