@@ -20,6 +20,8 @@ builder
 builder.Services.AddValidators();
 builder.Services.AddRepository();
 builder.Services.AddJourneys();
+builder.Services.AddClients();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<EcfLinkGenerator, RoutingEcfLinkGenerator>();
 builder.Services.AddSession(options =>

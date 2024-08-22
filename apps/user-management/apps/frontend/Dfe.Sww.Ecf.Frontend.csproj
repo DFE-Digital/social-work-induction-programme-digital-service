@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
 	<ScopedCssEnabled>false</ScopedCssEnabled>
+	<UserSecretsId>8b4a63e0-706d-4795-9680-4c112937d29f</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
