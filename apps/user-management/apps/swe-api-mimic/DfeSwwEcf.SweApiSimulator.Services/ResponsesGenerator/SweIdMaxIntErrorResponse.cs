@@ -16,7 +16,7 @@ public class SweIdMaxIntErrorResponse : ISocialWorkerResponse
             {
                 HttpStatusCode = HttpStatusCode.InternalServerError,
                 ErrorMessage =
-                    "Internal server error: One or more error occurred. (Value was either too large or too small for an Int32.)"
+                    "Internal server error: One or more errors occurred. (Value was either too large or too small for an Int32.)"
             }
         };
     }

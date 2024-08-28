@@ -15,7 +15,7 @@ public class SweIdNullErrorResponse : ISocialWorkerResponse
             ErrorDetails = new()
             {
                 HttpStatusCode = HttpStatusCode.BadRequest,
-                ErrorMessage = "Please provide non-null value"
+                ErrorMessage = "Please provide a non-null value"
             }
         };
     }
