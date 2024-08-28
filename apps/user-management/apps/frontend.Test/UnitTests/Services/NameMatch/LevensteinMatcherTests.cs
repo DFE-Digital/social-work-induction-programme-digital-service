@@ -92,6 +92,14 @@ public class LevensteinMatcherTests
         {
             new object[] { "Candace Ann Bosco", "Candace Ann Bosco" },
             new object[] { "Sam Mac-Donald", "Sam Mac-Donald" },
+            // Additional exact matches
+            new object[] { "John Smith", "John Smith" },
+            new object[] { "Jane Doe", "Jane Doe" },
+            new object[] { "Alice Johnson", "Alice Johnson" },
+            new object[] { "Zachary Taylor", "Zachary Taylor" },
+            new object[] { "Amanda Clark", "Amanda Clark" },
+            new object[] { "supercalifragilisticexpialidocious", "supercalifragilisticexpialidocious" },
+            new object[] { "supercalifragilisticexpialidocious123", "supercalifragilisticexpialidocious123" },
         };
 
     public static IEnumerable<object[]> VeryGoodMatchTestData =>
@@ -102,7 +110,17 @@ public class LevensteinMatcherTests
             new object[] { "Gemma Elizabeth Downes", "Gemma Elizabeth Downesv" },
             new object[] { "Kelly-Marie Jackson", "Kelly Marie Jackson" },
             new object[] { "Donna Louise Archibald", "Clare Louise Archibald" },
-            new object[] { "Karen Johnson", "Karen Ann Johnson" }
+            new object[] { "Karen Johnson", "Karen Ann Johnson" },
+            // Additional very good matches
+            new object[] { "Johnathan", "Jonathan" },
+            new object[] { "Christopher", "Christoph" },
+            new object[] { "Aplle", "Apple" },
+            new object[] { "supercalifragilisticexpialidocious", "supercalifragilisticexpialidocious123" },
+            new object[] { "Michelle Anne Robinson", "Michelle Jayne Robertson" },
+            new object[] { "Andrew Philip Jones", "Andrew Philip Cooper" },
+            new object[] { "Amanda Clark", "Amand Clarke" },
+            new object[] { "José", "Jose" },
+            new object[] { "Mary Jane", "Maryjane" },
         };
 
     public static IEnumerable<object[]> GoodTestData =>
@@ -110,6 +128,18 @@ public class LevensteinMatcherTests
         {
             new object[] { "Jayden Paulo Koch", "Hayden Paul Johnson" },
             new object[] { "Samantha Edwards Jackson", "Samantha Jedwards" },
+            // Additional good matches
+            new object[] { "Paul Johnston", "Paul John Anderson" },
+            new object[] { "Anne-Marie", "Annmarie" },
+            new object[] { "Ann", "Annie" },
+            new object[] { "Alice Johnson", "Bob Johnson" },
+            new object[] { "Martha", "Marhta" },
+            new object[] { "Zachary Taylor", "Zachary Tan" },
+            new object[] { "Dixon", "Dicksonx" },
+            new object[] { "Isabella", "Bella" },
+            new object[] { "Michael Robin Camp", "Michael Brown" },
+            new object[] { "Michelle Teri Schofield", "Michael Leslie Cornfield" },
+            new object[] { "Michael Robin Camp", "Michael Robin Harper-Coulson" },
         };
 
     public static IEnumerable<object[]> AverageTestData =>
@@ -117,10 +147,24 @@ public class LevensteinMatcherTests
         {
             new object[] { "Mark Anderson", "Mike Paul Hanson" },
             new object[] { "John Paul Smith", "Mike Pauline Hanson" },
+            // Additional average matches
+            new object[] { "Marta", "Stewart" },
+            new object[] { "Chris", "Christopher Johansen" },
+            new object[] { "adn", "and" },
+            new object[] { "Michael", "Mike" },
+            new object[] { "Benjamin", "Ben" },
         };
 
     public static IEnumerable<object[]> PoorTestData =>
-        new List<object[]> { new object[] { "Judy", "Mark Smith" }, new object[] { "", "" } };
+        new List<object[]> { new object[] { "Judy", "Mark Smith" },
+            new object[] { "", "" },
+            // Additional poor matches
+            new object[] { "Alice Johnson", "Bob Marley" },
+            new object[] { "Amanda Clark", "Emily Davis" },
+            new object[] { "Smith, John", "John Smith" },
+            new object[] { "Zachary Taylor", "Lucy Smith" },
+        };
+
 
 #pragma warning disable xUnit2000
     /// <summary>

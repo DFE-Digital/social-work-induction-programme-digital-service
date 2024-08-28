@@ -94,6 +94,12 @@ public class JaroWinklerDistanceMatcherTests
         {
             new object[] { "Candace Bosco", "Candace Bosco" },
             new object[] { "Sam Mac-Donald", "Sam Mac-Donald" },
+            // Additional exact matches
+            new object[] { "John Smith", "John Smith" },
+            new object[] { "Jane Doe", "Jane Doe" },
+            new object[] { "Alice Johnson", "Alice Johnson" },
+            new object[] { "Zachary Taylor", "Zachary Taylor" },
+            new object[] { "Amanda Clark", "Amanda Clark" },
         };
 
     public static IEnumerable<object[]> VeryGoodMatchTestData =>
@@ -105,6 +111,28 @@ public class JaroWinklerDistanceMatcherTests
             new object[] { "Gemma Elizabeth Downes", "Gemma Elizabeth Downesv" },
             new object[] { "Karen Johnson", "Karen Ann Johnson" },
             new object[] { "Kelly-Marie Jackson", "Kelly Marie Jackson" },
+            // Additional very good matches
+            new object[] { "John Smith", "Jon Smith" },
+            new object[] { "Jane Doe", "Janet Doe" },
+            new object[] { "Alice Johnson", "Alicia Johnson" },
+            new object[] { "Zachary Taylor", "Zach Taylor" },
+            new object[] { "Amanda Clark", "Amand Clark" },
+            new object[] { "Jane Doe", "Jan Doe" },
+            new object[] { "John Smith", "Jon Smith" },  // Common typo
+            new object[] { "Martha", "Marhta" },         // Slight variation
+            new object[] { "José", "Jose" },             // Accented vs. unaccented character
+            new object[] { "Ann", "Annie" },              // Nickname vs. full name
+            new object[] { "Christopher", "Christoph" },  // Slightly different name
+            new object[] { "Michelle Anne Robinson", "Michelle Jayne Robertson" },  // Different middle names
+            new object[] { "Paul Johnston", "Paul John Anderson" },                 // Embedded name
+            new object[] { "Michelle Teri Schofield", "Michael Leslie Cornfield" }, // Completely different names
+            new object[] { "Michael Robin Camp", "Michael Robin Harper-Coulson" }, // Similar first/middle, different last
+            new object[] { "John Smith", "John Smyth" },
+            new object[] { "Johnathan", "Jonathan" },     // Variant spelling
+            new object[] { "Benjamin Carter", "Ben Carter" },  // Shortened first name
+            new object[] { "Amanda Clark", "Amand Clarke" },
+            new object[] { "Zachary Taylor", "Zachary Tan" },
+            new object[] { "Isabella Thompson", "Bella Thompson" }, // Abbreviated first name
         };
 
     public static IEnumerable<object[]> GoodTestData =>
@@ -112,6 +140,10 @@ public class JaroWinklerDistanceMatcherTests
         {
             new object[] { "Jayden Smith Koch", "Hayden Paul Johnson" },
             new object[] { "Samantha Edwards Jackson", "Samantha Danielle" },
+            // Additional good matches
+            new object[] { "Zachary Taylor", "Zak Taylor" },
+            new object[] { "Alice Johnson", "Bob Johnson" },
+            new object[] { "Michael", "Mike" },           // Nickname vs. full name
         };
 
     public static IEnumerable<object[]> AverageTestData =>
@@ -119,6 +151,8 @@ public class JaroWinklerDistanceMatcherTests
         {
             new object[] { "John Smith", "Paul Ben" },
             new object[] { "Ruma Begum", "John Mall" },
+            // Additional average matches
+            new object[] { "Alice Johnson", "Bob Marley" },
         };
 
     public static IEnumerable<object[]> PoorTestData =>
