@@ -24,7 +24,7 @@ public class GetByIdShould : SocialWorkerTestsTestBase
                 TownOfEmployment = "Workington",
                 RegisteredFrom = new DateTime(2012, 8, 1),
                 RegisteredUntil = new DateTime(2024, 11, 30),
-                Registered = true
+                Registered = "True"
             }
         };
 

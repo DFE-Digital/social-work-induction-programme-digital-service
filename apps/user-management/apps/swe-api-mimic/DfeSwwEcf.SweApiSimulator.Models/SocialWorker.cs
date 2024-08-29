@@ -64,5 +64,5 @@ public class SocialWorker
     /// </summary>
     [Name("Registered")]
     [JsonPropertyName("Registered")]
-    public bool? Registered { get; set; }
+    public string? Registered { get; set; }
 }
