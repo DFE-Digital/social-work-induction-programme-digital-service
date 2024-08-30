@@ -60,6 +60,13 @@ public class SocialWorker
     public DateTime? RegisteredUntil { get; set; }
 
     /// <summary>
+    /// Annotations
+    /// </summary>
+    [Name("Annotations")]
+    [JsonPropertyName("Annotations")]
+    public List<string>? Annotations { get; set; } = [];
+
+    /// <summary>
     /// Registered
     /// </summary>
     [Name("Registered")]

@@ -13,6 +13,7 @@ public sealed class SocialWorkerFaker : Faker<SocialWorker>
         RuleFor(a => a.TownOfEmployment, f => f.Address.City());
         RuleFor(a => a.RegisteredFrom, f => f.Date.Recent());
         RuleFor(a => a.RegisteredUntil, f => f.Date.Soon());
+        RuleFor(a => a.Annotations, _ => []);
         RuleFor(a => a.Registered, _ => "True");
     }
 }
