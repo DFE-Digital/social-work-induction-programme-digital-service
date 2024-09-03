@@ -11,13 +11,13 @@ public enum AccountStatus
     Active,
 
     [Display(
-        Name = "Inactive",
+        Name = "Not linked",
         Description = "This account is no longer linked to this organisation"
     )]
     Inactive,
 
     [Display(
-        Name = "Pending Registration",
+        Name = "Pending registration",
         Description = "You have not provided a Social Work England registration number for this account"
     )]
     PendingRegistration,
