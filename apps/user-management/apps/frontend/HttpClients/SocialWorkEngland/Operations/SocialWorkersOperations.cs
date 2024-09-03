@@ -1,50 +1,81 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
+using Polly;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Operations;
 
-public class SocialWorkersOperations : ISocialWorkersOperations
+public class SocialWorkersOperations(
+    SocialWorkEnglandClient socialWorkEnglandClient,
+    ResiliencePipeline<HttpResponseMessage> pipeline
+) : ISocialWorkersOperations
 {
     private static JsonSerializerOptions? SerializerOptions { get; } =
         new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly ConcurrentQueue<TaskCompletionSource<SocialWorker?>> _queue = new();
 
-    // private readonly ILogger<SocialWorkOperations> _logger;
-    private readonly SocialWorkEnglandClient _socialWorkEnglandClient;
+    private readonly SocialWorkEnglandClient _socialWorkEnglandClient = socialWorkEnglandClient;
+    private readonly ResiliencePipeline<HttpResponseMessage> _pipeline = pipeline;
 
-    public SocialWorkersOperations(
-        // ILogger<SocialWorkOperations> logger,
-        SocialWorkEnglandClient socialWorkEnglandClient
-    )
+    public async Task<SocialWorker?> GetByIdAsync(int id)
     {
-        // _logger = logger;
-        _socialWorkEnglandClient = socialWorkEnglandClient;
+        var tcs = new TaskCompletionSource<SocialWorker?>();
+        _queue.Enqueue(tcs);
+
+        await ProcessQueueAsync(id);
+
+        return await tcs.Task;
     }
 
-    public async Task<SocialWorker?> GetById(int id)
+    private async Task ProcessQueueAsync(int id)
     {
-        // _logger.LogWarning("Attempting to retrieve Social Worker ID Number - {id}", id);
+        await _semaphore.WaitAsync();
 
-        var route =
-            _socialWorkEnglandClient.Options.Routes?.SocialWorker?.GetById
-            ?? "/GetSocialWorkerById";
-
-        var httpResponse = await _socialWorkEnglandClient.HttpClient.GetAsync(
-            route + $"?swid={id}"
-        );
-
-        var result = await httpResponse.Content.ReadAsStringAsync();
-
-        if (!httpResponse.IsSuccessStatusCode)
+        try
         {
-            // TODO Error/Exception Handling?
-            // _logger.LogWarning("Failed to retrieve Social Worker - {result}", result);
-            return null;
+            while (_queue.TryDequeue(out var tcs))
+            {
+                var route =
+                    _socialWorkEnglandClient.Options.Routes?.SocialWorker?.GetById
+                    ?? "/GetSocialWorkerById";
+
+                var httpResponse = await MakeGetRequestWithRetryAsync(route + $"?swid={id}");
+
+                var result = await httpResponse.Content.ReadAsStringAsync();
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    // TODO Error/Exception Handling?
+                    tcs.SetResult(null);
+                    return;
+                }
+
+                if (result == "Invalid request")
+                {
+                    tcs.SetResult(null);
+                    return;
+                }
+
+                var response = JsonSerializer.Deserialize<SocialWorker>(result, SerializerOptions);
+                tcs.SetResult(response);
+            }
         }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
 
-        // _logger.LogWarning("$Retrieved Social Worker - {result}", result);
+    private async Task<HttpResponseMessage> MakeGetRequestWithRetryAsync(string route)
+    {
+        return await _pipeline.ExecuteAsync(async ct =>
+        {
+            var httpResponse = await _socialWorkEnglandClient.HttpClient.GetAsync(route, ct);
 
-        return JsonSerializer.Deserialize<SocialWorker>(result, SerializerOptions);
+            return httpResponse;
+        });
     }
 }

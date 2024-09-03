@@ -27,14 +27,15 @@ public static class InstallClients
                 SocialWorkEnglandClientOptions,
                 ISocialWorkEnglandClient,
                 SocialWorkEnglandClient
-            >()
+            >(true)
             .AddHttpMessageHandler<
                 OAuthAuthenticationDelegatingHandler<SocialWorkEnglandClientOptions>
             >();
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(
-        this IServiceCollection services
+        this IServiceCollection services,
+        bool isSingleton = false
     )
         where TOptions : HttpClientOptions
         where TInterface : class
@@ -47,7 +48,15 @@ public static class InstallClients
                 (options, configuration) => configuration.GetSection(optionsName).Bind(options)
             );
 
-        services.AddTransient<TInterface, TConcrete>();
+        if (isSingleton)
+        {
+            services.AddSingleton<TInterface, TConcrete>();
+        }
+        else
+        {
+            services.AddTransient<TInterface, TConcrete>();
+        }
+
         var httpClientBuilder = services.AddHttpClient<TInterface, TConcrete>(
             (serviceProvider, client) =>
             {

@@ -1,6 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Models;
 
-namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 public interface ICreateAccountJourneyService
 {

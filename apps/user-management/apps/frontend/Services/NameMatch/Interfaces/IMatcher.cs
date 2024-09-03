@@ -1,4 +1,4 @@
-﻿namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+﻿namespace Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
 
 internal interface IMatcher
 {

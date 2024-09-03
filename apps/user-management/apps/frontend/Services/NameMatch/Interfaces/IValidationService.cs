@@ -1,6 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
 
-namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+namespace Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
 
 /// <summary>
 /// Validation service for social workers

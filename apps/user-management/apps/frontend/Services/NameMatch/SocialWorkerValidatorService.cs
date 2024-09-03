@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.NameMatch;
 

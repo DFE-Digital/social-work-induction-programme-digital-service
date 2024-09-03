@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Repositories;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;

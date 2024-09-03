@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Installers;
 

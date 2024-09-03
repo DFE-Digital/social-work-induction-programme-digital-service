@@ -9,7 +9,7 @@ namespace Dfe.Sww.Ecf.Frontend.Installers;
 /// Install Repository Dependencies
 /// </summary>
 [ExcludeFromCodeCoverage]
-public static class InstallServices
+public static class InstallRepositories
 {
     /// <summary>
     /// Add Repository Dependencies

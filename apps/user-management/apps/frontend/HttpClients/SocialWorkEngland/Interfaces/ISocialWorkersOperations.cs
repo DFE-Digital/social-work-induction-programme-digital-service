@@ -8,5 +8,5 @@ public interface ISocialWorkersOperations
     /// Get a social worker by their SWE ID
     /// </summary>
     /// <param name="id"></param>
-    Task<SocialWorker?> GetById(int id);
+    Task<SocialWorker?> GetByIdAsync(int id);
 }

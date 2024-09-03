@@ -3,8 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
-namespace Dfe.Sww.Ecf.Frontend.Services;
+namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,

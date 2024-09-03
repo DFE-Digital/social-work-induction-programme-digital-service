@@ -7,6 +7,8 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
+using Polly;
+using Polly.Retry;
 using RichardSzalay.MockHttp;
 using Xunit;
 
@@ -14,13 +16,18 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient;
 
 public class SocialWorkersOperationsTests
 {
-    private readonly Mock<IOptions<SocialWorkEnglandClientOptions>> _mockOptions;
     private readonly SocialWorkerFaker _socialWorkerFaker;
+    private readonly Mock<IOptions<SocialWorkEnglandClientOptions>> _mockOptions;
+    private readonly ResiliencePipeline<HttpResponseMessage> _pipeline;
 
     public SocialWorkersOperationsTests()
     {
-        _mockOptions = new();
         _socialWorkerFaker = new();
+        _mockOptions = new();
+
+        _pipeline = new ResiliencePipelineBuilder<HttpResponseMessage>()
+            .AddRetry(new RetryStrategyOptions<HttpResponseMessage> { MaxRetryAttempts = 2 })
+            .Build();
     }
 
     [Fact]
@@ -35,7 +42,7 @@ public class SocialWorkersOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.SocialWorkers.GetById(swId);
+        var response = await sut.SocialWorkers.GetByIdAsync(swId);
 
         // Assert
         response.Should().NotBeNull();
@@ -58,7 +65,7 @@ public class SocialWorkersOperationsTests
         var sut = BuildSut(mockHttp, route);
 
         // Act
-        var response = await sut.SocialWorkers.GetById(swId);
+        var response = await sut.SocialWorkers.GetByIdAsync(swId);
 
         // Assert
         response.Should().NotBeNull();
@@ -92,7 +99,7 @@ public class SocialWorkersOperationsTests
                 }
             );
 
-        var sut = new SocialWorkEnglandClient(client, _mockOptions.Object);
+        var sut = new SocialWorkEnglandClient(client, _mockOptions.Object, _pipeline);
 
         return sut;
     }
