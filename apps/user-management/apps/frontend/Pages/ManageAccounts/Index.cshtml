@@ -6,20 +6,21 @@
 @{
     Model.Title = "Manage accounts";
 
-    var createdAccountEmail = TempData["CreatedAccountEmail"]?.ToString();
+    var notifiedEmail = TempData["NotifyEmail"]?.ToString();
+    var notificationBannerSubject = TempData["notificationBannerSubject"]?.ToString();
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-        @if (!string.IsNullOrWhiteSpace(createdAccountEmail))
+        @if (!string.IsNullOrWhiteSpace(notifiedEmail) && !string.IsNullOrWhiteSpace(notificationBannerSubject))
         {
             <govuk-notification-banner>
                 <govuk-notification-banner-title heading-level="2" id="banner-title">
-                    Account was successfully added
+                    @notificationBannerSubject
                 </govuk-notification-banner-title>
                 <p class="govuk-notification-banner__heading">
-                    An email notification was sent to @createdAccountEmail
+                    An email notification was sent to @notifiedEmail
                 </p>
             </govuk-notification-banner>
         }

@@ -78,6 +78,13 @@ public class EditAccountJourneyService(
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
+    public void SetAccountStatus(Guid accountId, AccountStatus accountStatus)
+    {
+        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        editAccountJourneyModel.AccountStatus = accountStatus;
+        SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
+    }
+
     public void SetIsStaff(Guid accountId, bool? isStaff)
     {
         var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);

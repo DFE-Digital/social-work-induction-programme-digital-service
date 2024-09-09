@@ -44,7 +44,7 @@
         </h1>
 
         <link-account-link condition="isAccountInactive" account-name="@Model.Account.FullName" href="#" />
-        <set-account-inactive-link condition="!isAccountInactive" account-name="@Model.Account.FullName" href="#" />
+        <set-account-inactive-link condition="!isAccountInactive" account-name="@Model.Account.FullName" href="@Model.UnlinkPath" />
         <unpause-account-link condition="isAccountPaused" account-name="@Model.Account.FullName" href="#" />
         <pause-account-link condition="!isAccountPaused && !isAccountInactive" account-name="@Model.Account.FullName" href="#" />
     </div>
