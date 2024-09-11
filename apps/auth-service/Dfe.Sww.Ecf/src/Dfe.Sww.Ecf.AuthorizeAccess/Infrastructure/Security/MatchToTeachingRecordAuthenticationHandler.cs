@@ -22,12 +22,7 @@ public class MatchToTeachingRecordAuthenticationHandler(SignInJourneyHelper help
 
         var ticket = journeyInstance.State.AuthenticationTicket;
 
-        if (ticket is null)
-        {
-            return AuthenticateResult.NoResult();
-        }
-
-        return AuthenticateResult.Success(ticket);
+        return ticket is null ? AuthenticateResult.NoResult() : AuthenticateResult.Success(ticket);
     }
 
     public async Task ChallengeAsync(AuthenticationProperties? properties)

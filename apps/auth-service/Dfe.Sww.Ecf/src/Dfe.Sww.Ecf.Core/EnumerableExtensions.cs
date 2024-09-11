@@ -73,4 +73,12 @@ public static class EnumerableExtensions
         var secondArray = second.ToArray().OrderBy(s => s);
         return firstArray.SequenceEqual(secondArray);
     }
+
+    public static void AddRange<T>(this HashSet<T> hashSet, IEnumerable<T> values)
+    {
+        foreach (var value in values)
+        {
+            hashSet.Add(value);
+        }
+    }
 }

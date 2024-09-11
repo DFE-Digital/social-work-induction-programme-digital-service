@@ -69,6 +69,12 @@ just set-secret OneLogin:ClientId "exampleClientId"
 just set-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
 ```
 
+To run the tests, you will also need to set the OneLogin secrets for the test projects:
+```shell
+just set-tests-secret OneLogin:ClientId "exampleClientId"
+just set-tests-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
+```
+
 ## Formatting
 
 Before committing you can format any changed files by running:

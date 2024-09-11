@@ -15,7 +15,9 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Filters;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Logging;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.TagHelpers;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.Infrastructure;
 using Dfe.Sww.Ecf.Core.Services.Files;
 using Dfe.Sww.Ecf.Core.Services.PersonMatching;
@@ -24,8 +26,11 @@ using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Filters;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Middleware;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +39,17 @@ builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 builder.AddServiceDefaults(dataProtectionBlobName: "AuthorizeAccess");
 
 builder.ConfigureLogging();
+var oidcConfigurationSection = builder.Configuration.GetRequiredSection(OidcConfiguration.ConfigurationKey);
+var oidcConfiguration = oidcConfigurationSection.Get<OidcConfiguration>();
+if (oidcConfiguration is null)
+{
+    throw new InvalidConfigurationException("Missing OIDC configuration.");
+}
+if (oidcConfiguration.Issuer is null)
+{
+    throw new InvalidConfigurationException("OIDC Issuer not configured.");
+}
+builder.Services.Configure<OidcConfiguration>(oidcConfigurationSection);
 
 builder.Services.AddGovUkFrontend();
 builder.Services.AddCsp(nonceByteAmount: 32);
@@ -126,6 +142,67 @@ builder.Services.AddAuthentication(options =>
     }
 });
 
+builder.Services.AddOpenIddict()
+    .AddCore(options =>
+    {
+        options
+            .UseEntityFrameworkCore()
+            .UseDbContext<EcfDbContext>()
+            .ReplaceDefaultEntities<Guid>();
+    })
+    .AddServer(options =>
+    {
+        options
+            .SetAuthorizationEndpointUris("/oauth2/authorize")
+            .SetLogoutEndpointUris("/oauth2/logout")
+            .SetTokenEndpointUris("/oauth2/token")
+            .SetUserinfoEndpointUris("/oauth2/userinfo");
+
+        options.SetIssuer(oidcConfiguration.Issuer);
+
+        options.RegisterScopes(Scopes.Email, Scopes.Profile, CustomScopes.SocialWorkerRecord);
+
+        options.AllowAuthorizationCodeFlow();
+
+        options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
+
+        if (builder.Environment.IsProduction())
+        {
+            var encryptionKeysConfig = builder.Configuration.GetSection("EncryptionKeys").Get<string[]>() ?? [];
+            var signingKeysConfig = builder.Configuration.GetSection("SigningKeys").Get<string[]>() ?? [];
+
+            foreach (var value in encryptionKeysConfig)
+            {
+                options.AddEncryptionKey(LoadKey(value));
+            }
+
+            foreach (var value in signingKeysConfig)
+            {
+                options.AddSigningKey(LoadKey(value));
+            }
+
+            static SecurityKey LoadKey(string configurationValue)
+            {
+                using var rsa = RSA.Create();
+                rsa.FromXmlString(configurationValue);
+                return new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true));
+            }
+        }
+        else
+        {
+            options
+                .AddDevelopmentEncryptionCertificate()
+                .AddDevelopmentSigningCertificate();
+        }
+
+        options.UseAspNetCore()
+            .EnableAuthorizationEndpointPassthrough()
+            .EnableLogoutEndpointPassthrough()
+            .EnableTokenEndpointPassthrough()
+            .EnableUserinfoEndpointPassthrough()
+            .EnableStatusCodePagesIntegration();
+    });
+
 builder.Services.AddDfeAnalytics()
     .AddAspNetCoreIntegration(options =>
     {
@@ -148,7 +225,9 @@ builder.Services
 if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
 {
     builder.Services.AddDbContext<IdDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetRequiredConnectionString("Id")));
+        options
+            .UseNpgsql(builder.Configuration.GetRequiredConnectionString("Id"))
+            .UseOpenIddict<Guid>());
 }
 
 builder.AddBlobStorage();
@@ -165,7 +244,8 @@ builder.Services
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
     .AddFileService()
-    .AddPersonMatching();
+    .AddPersonMatching()
+    .AddHostedService<OidcApplicationSeeder>();
 
 builder.Services.AddOptions<AuthorizeAccessOptions>()
     .Bind(builder.Configuration)
@@ -247,6 +327,7 @@ if (builder.Configuration["RootRedirect"] is { } rootRedirect)
 
 app.Run();
 
+[PublicAPI]
 public partial class Program
 {
 }
