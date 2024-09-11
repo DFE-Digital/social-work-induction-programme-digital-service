@@ -2,6 +2,12 @@ namespace Dfe.Sww.Ecf.Frontend.Routing;
 
 public abstract class EcfLinkGenerator
 {
+    public string SignIn() => GetRequiredPathByPage("/SignIn");
+
+    public string SignOut() => GetRequiredPathByPage("/SignOut");
+
+    public string Home() => GetRequiredPathByPage("/Index");
+
     public string ManageAccounts() => GetRequiredPathByPage("/ManageAccounts/Index");
 
     public string AddAccountDetails() => GetRequiredPathByPage("/ManageAccounts/AddAccountDetails");
