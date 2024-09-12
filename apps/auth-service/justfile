@@ -16,7 +16,6 @@ install-tools:
 # Restore dependencies
 restore:
   @cd {{solution-root}} && dotnet restore
-  @cd {{solution-root / "src" / "Dfe.Sww.Ecf.SupportUi" }} && dotnet libman restore --verbosity quiet
   @cd {{solution-root / "src" / "Dfe.Sww.Ecf.AuthorizeAccess" }} && dotnet libman restore --verbosity quiet
 
 # Run the ecfcli
