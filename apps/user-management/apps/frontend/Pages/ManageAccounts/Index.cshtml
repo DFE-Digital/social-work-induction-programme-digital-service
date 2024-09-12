@@ -1,4 +1,5 @@
 @page
+@using Dfe.Sww.Ecf.Frontend.Extensions
 @using Dfe.Sww.Ecf.Frontend.Models
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index
@@ -7,7 +8,7 @@
     Model.Title = "Manage accounts";
 
     var notifiedEmail = TempData["NotifyEmail"]?.ToString();
-    var notificationBannerSubject = TempData["notificationBannerSubject"]?.ToString();
+    var notificationBannerSubject = TempData["NotificationBannerSubject"]?.ToString();
 }
 
 <div class="govuk-grid-row">

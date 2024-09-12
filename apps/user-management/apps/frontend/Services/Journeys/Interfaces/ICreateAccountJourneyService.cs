@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
+using Dfe.Sww.Ecf.Frontend.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -19,4 +20,8 @@ public interface ICreateAccountJourneyService
     Account CompleteJourney();
 
     void ResetCreateAccountJourneyModel();
+
+    void SetSocialWorkerDetails(SocialWorker socialWorkerDetails);
+
+    SocialWorker? GetSocialWorkerDetails();
 }

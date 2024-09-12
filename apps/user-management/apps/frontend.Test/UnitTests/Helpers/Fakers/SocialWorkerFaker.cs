@@ -23,4 +23,15 @@ public static class SocialWorkerFakerExtensions
     {
         return accountFaker.RuleFor(a => a.Id, _ => id.ToString()).Generate();
     }
+
+    public static SocialWorker GenerateWithName(
+        this SocialWorkerFaker accountFaker,
+        string firstName,
+        string lastName
+    )
+    {
+        return accountFaker
+            .RuleFor(a => a.RegisteredName, _ => $"{firstName} {lastName}")
+            .Generate();
+    }
 }

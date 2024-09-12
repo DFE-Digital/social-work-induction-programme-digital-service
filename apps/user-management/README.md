@@ -1,5 +1,8 @@
 # Social Worker Workforce - Early Career Framework
 
+## Information
+This is the root README which contains information that is relevant to the entire repo. Please read the application/project specific README's for information relating to individual applications
+
 ## Development
 
 ### Coding Conventions & Standards

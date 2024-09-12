@@ -1,11 +1,13 @@
 using Dfe.Sww.Ecf.Frontend.Repositories;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
@@ -19,6 +21,8 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
     private protected CreateAccountJourneyService CreateAccountJourneyService { get; }
 
     private protected EditAccountJourneyService EditAccountJourneyService { get; }
+
+    private protected Mock<ISocialWorkEnglandService> MockSocialWorkEnglandService { get; }
 
     protected ManageAccountsPageTestBase()
     {
@@ -35,5 +39,6 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
             httpContextAccessor,
             AccountRepository
         );
+        MockSocialWorkEnglandService = new();
     }
 }

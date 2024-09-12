@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace Dfe.Sww.Ecf.Frontend.Models;
+namespace Dfe.Sww.Ecf.Frontend.Extensions;
 
 public static class EnumExtensions
 {

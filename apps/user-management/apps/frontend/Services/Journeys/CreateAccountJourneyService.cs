@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
@@ -88,5 +88,18 @@ public class CreateAccountJourneyService(
         ResetCreateAccountJourneyModel();
 
         return account;
+    }
+
+    public void SetSocialWorkerDetails(SocialWorker socialWorkerDetails)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.SocialWorkerDetails = socialWorkerDetails;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public SocialWorker? GetSocialWorkerDetails()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.SocialWorkerDetails;
     }
 }

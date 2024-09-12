@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -9,6 +10,8 @@ public class CreateAccountJourneyModel
     public AccountDetails? AccountDetails { get; set; }
 
     public bool? IsStaff { get; set; }
+
+    public SocialWorker? SocialWorkerDetails { get; set; }
 
     public Account ToAccount()
     {

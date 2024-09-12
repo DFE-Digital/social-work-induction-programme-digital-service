@@ -10,7 +10,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class UnlinkAccount(
     IEditAccountJourneyService editAccountJourneyService,
     EcfLinkGenerator linkGenerator
-    ) : BasePageModel
+) : BasePageModel
 {
     public Guid Id { get; set; }
 
@@ -42,7 +42,8 @@ public class UnlinkAccount(
 
         var accountDetails = editAccountJourneyService.GetAccountDetails(id);
         TempData["NotifyEmail"] = accountDetails.Email;
-        TempData["notificationBannerSubject"] = "Account was successfully unlinked from this organisation";
+        TempData["NotificationBannerSubject"] =
+            "Account was successfully unlinked from this organisation";
 
         editAccountJourneyService.SetAccountStatus(id, AccountStatus.Inactive);
         editAccountJourneyService.CompleteJourney(id);

@@ -96,7 +96,7 @@ public class ConfirmAccountDetails(
         createAccountJourneyService.CompleteJourney();
 
         TempData["NotifyEmail"] = accountDetails?.Email;
-        TempData["notificationBannerSubject"] = "Account was successfully added";
+        TempData["NotificationBannerSubject"] = "Account was successfully added";
 
         return Redirect(linkGenerator.ManageAccounts());
     }

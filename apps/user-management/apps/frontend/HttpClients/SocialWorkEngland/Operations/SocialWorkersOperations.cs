@@ -53,6 +53,7 @@ public class SocialWorkersOperations(
                     return;
                 }
 
+                // Invalid request is a 200 response
                 if (result == "Invalid request")
                 {
                     tcs.SetResult(null);

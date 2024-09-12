@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -17,7 +18,8 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    ISocialWorkEnglandService socialWorkEnglandService
 ) : BasePageModel
 {
     /// <summary>
@@ -96,9 +98,22 @@ public class AddAccountDetails(
             return Page();
         }
 
+        var socialWorker = await socialWorkEnglandService.GetById(SocialWorkEnglandNumber);
+
+        string redirectLink;
+        if (socialWorker is null)
+        {
+            redirectLink = linkGenerator.ConfirmAccountDetails();
+        }
+        else
+        {
+            createAccountJourneyService.SetSocialWorkerDetails(socialWorker);
+            redirectLink = linkGenerator.AddExistingUser();
+        }
+
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect(linkGenerator.ConfirmAccountDetails());
+        return Redirect(redirectLink);
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

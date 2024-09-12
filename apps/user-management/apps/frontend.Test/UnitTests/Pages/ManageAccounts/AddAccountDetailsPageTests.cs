@@ -1,5 +1,7 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
@@ -7,6 +9,7 @@ using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Moq;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
@@ -20,7 +23,8 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut = new AddAccountDetails(
             CreateAccountJourneyService,
             new AccountDetailsValidator(),
-            new FakeLinkGenerator()
+            new FakeLinkGenerator(),
+            MockSocialWorkEnglandService.Object
         );
     }
 
@@ -101,6 +105,10 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.Email = accountDetails.Email;
         Sut.SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
 
+        MockSocialWorkEnglandService
+            .Setup(x => x.GetById(It.IsAny<string>()))
+            .ReturnsAsync((SocialWorker?)null);
+
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -110,6 +118,9 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
+
+        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.VerifyNoOtherCalls();
     }
 
     [Fact]
