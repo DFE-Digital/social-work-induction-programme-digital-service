@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -22,11 +23,11 @@ public class AccountDetailsTagHelper : TagHelper
             return;
         }
 
-        if (Account.SocialWorkEnglandNumber is null or "")
+        if (string.IsNullOrEmpty(Account.SocialWorkEnglandNumber))
         {
             output.Content.AppendHtml(
                 "<p>"
-                    + "<govuk-tag class=\"govuk-tag--orange\">Missing registration number</govuk-tag>"
+                    + "<govuk-tag class=\"govuk-tag govuk-tag--orange\">" + AccountStatus.PendingRegistration.GetDisplayName() + "</govuk-tag>"
                     + "<span class=\"govuk-!-display-block govuk-hint govuk-!-margin-bottom-0\">"
                     + "You have not provided a Social Work England registration number for this account"
                     + "</span>"
