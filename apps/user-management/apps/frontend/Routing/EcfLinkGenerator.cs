@@ -63,6 +63,9 @@ public abstract class EcfLinkGenerator
 
     public string UnlinkAccount(Guid id) =>
         GetRequiredPathByPage("/ManageAccounts/UnlinkAccount", routeValues: new { id });
+  
+    public string LinkAccount(Guid id) =>
+        GetRequiredPathByPage("/ManageAccounts/LinkAccount", routeValues: new { id });
 
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
 

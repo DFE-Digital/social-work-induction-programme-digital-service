@@ -14,11 +14,13 @@ public class ViewAccountDetails(
     public Account Account { get; set; } = default!;
 
     public string? UnlinkPath { get; set; }
+    public string? LinkPath { get; set; }
 
     public IActionResult OnGet(Guid id)
     {
         BackLinkPath = linkGenerator.ManageAccounts();
         UnlinkPath = linkGenerator.UnlinkAccount(id);
+        LinkPath = linkGenerator.LinkAccount(id);
 
         var account = accountRepository.GetById(id);
         if (account is null)
