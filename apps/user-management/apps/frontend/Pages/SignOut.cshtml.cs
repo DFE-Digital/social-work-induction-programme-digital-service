@@ -14,10 +14,10 @@ public class SignOut(EcfLinkGenerator linkGenerator) : BasePageModel
     public async Task<IActionResult> OnGetAsync()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
-        {
-            RedirectUri = linkGenerator.Home()
-        });
+        await HttpContext.SignOutAsync(
+            OpenIdConnectDefaults.AuthenticationScheme,
+            new AuthenticationProperties { RedirectUri = linkGenerator.LoggedOut() }
+        );
         return Page();
     }
 }

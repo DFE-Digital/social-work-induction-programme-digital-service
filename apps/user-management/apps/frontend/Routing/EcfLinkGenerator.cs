@@ -6,6 +6,8 @@ public abstract class EcfLinkGenerator
 
     public string SignOut() => GetRequiredPathByPage("/SignOut");
 
+    public string LoggedOut() => GetRequiredPathByPage("/LoggedOut");
+
     public string Home() => GetRequiredPathByPage("/Index");
 
     public string ManageAccounts() => GetRequiredPathByPage("/ManageAccounts/Index");

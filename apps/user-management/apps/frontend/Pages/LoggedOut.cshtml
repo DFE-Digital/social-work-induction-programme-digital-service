@@ -1,0 +1,21 @@
+@page
+@model Dfe.Sww.Ecf.Frontend.Pages.LoggedOut
+@{
+    Model.Title = "Logged out";
+}
+
+<div class="text-center">
+    <h1 class="govuk-heading-l">
+        <span class="govuk-label--l">You have signed out</span>
+    </h1>
+
+    <div class="govuk-body">
+        <p>
+            To go back, <a href="@LinkGenerator.SignIn()" class="govuk-link govuk-link--no-visited-state">sign in to your GOV.UK One Login</a>
+        </p>
+
+        <p>
+            or <a href="https://www.gov.uk/" target="_blank" class="govuk-link govuk-link--no-visited-state">go to the GOV.UK homepage</a>
+        </p>
+    </div>
+</div>
