@@ -1,10 +1,18 @@
+using Dfe.Sww.Ecf.Frontend.Configuration;
+using Microsoft.Extensions.Options;
+
 namespace Dfe.Sww.Ecf.Frontend.Routing;
 
-public abstract class EcfLinkGenerator
+public abstract class EcfLinkGenerator(IWebHostEnvironment environment, IOptions<OidcConfiguration> oidcConfiguration)
 {
-    public string SignIn() => GetRequiredPathByPage("/SignIn");
+    private bool IsBackdoorEnabled => environment.IsDevelopment() && oidcConfiguration.Value.EnableDevelopmentBackdoor;
+    public string SignIn() => IsBackdoorEnabled
+        ? GetRequiredPathByPage("/Debug/Backdoor")
+        : GetRequiredPathByPage("/SignIn");
 
-    public string SignOut() => GetRequiredPathByPage("/SignOut");
+    public string SignOut() => IsBackdoorEnabled
+        ? GetRequiredPathByPage("/Debug/SignOut")
+        : GetRequiredPathByPage("/SignOut");
 
     public string LoggedOut() => GetRequiredPathByPage("/LoggedOut");
 
@@ -63,7 +71,7 @@ public abstract class EcfLinkGenerator
 
     public string UnlinkAccount(Guid id) =>
         GetRequiredPathByPage("/ManageAccounts/UnlinkAccount", routeValues: new { id });
-  
+
     public string LinkAccount(Guid id) =>
         GetRequiredPathByPage("/ManageAccounts/LinkAccount", routeValues: new { id });
 
@@ -76,7 +84,7 @@ public abstract class EcfLinkGenerator
     );
 }
 
-public class RoutingEcfLinkGenerator(LinkGenerator linkGenerator) : EcfLinkGenerator
+public class RoutingEcfLinkGenerator(IWebHostEnvironment environment, IOptions<OidcConfiguration> oidcConfiguration, LinkGenerator linkGenerator) : EcfLinkGenerator(environment, oidcConfiguration)
 {
     protected override string GetRequiredPathByPage(
         string page,

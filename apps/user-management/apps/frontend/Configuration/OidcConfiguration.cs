@@ -27,4 +27,6 @@ public sealed class OidcConfiguration
     public string? CookieName { get; init; }
 
     public ushort SessionLifetimeMinutes { get; init; } = 60;
+
+    public bool EnableDevelopmentBackdoor { get; init; }
 }
