@@ -14,13 +14,12 @@ builder
     .Services.AddRazorPages()
     .AddViewOptions(options => options.HtmlHelperOptions.ClientValidationEnabled = false)
     .AddRazorPagesOptions(options =>
-        {
-            options.Conventions.Add(
-                new PageRouteTransformerConvention(new SlugifyRouteParameterTransformer())
-            );
-            options.Conventions.AuthorizeFolder("/ManageAccounts");
-        }
-    );
+    {
+        options.Conventions.Add(
+            new PageRouteTransformerConvention(new SlugifyRouteParameterTransformer())
+        );
+        options.Conventions.AuthorizeFolder("/ManageAccounts");
+    });
 
 // Dependencies
 builder.Services.AddValidators();
@@ -36,7 +35,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-builder.Services.AddEcfAuthentication(builder.Configuration.GetRequiredSection(OidcConfiguration.ConfigurationKey));
+builder.Services.AddEcfAuthentication(
+    builder.Configuration.GetRequiredSection(OidcConfiguration.ConfigurationKey)
+);
 
 var app = builder.Build();
 
@@ -56,25 +57,17 @@ app.UseCsp(csp =>
 {
     var pageTemplateHelper = app.Services.GetRequiredService<PageTemplateHelper>();
 
-    csp.ByDefaultAllow
-        .FromSelf();
+    csp.ByDefaultAllow.FromSelf();
 
-    csp.AllowScripts
-        .FromSelf()
-        .From(pageTemplateHelper.GetCspScriptHashes())
-        .AddNonce();
+    csp.AllowScripts.FromSelf().From(pageTemplateHelper.GetCspScriptHashes()).AddNonce();
 
-    csp.AllowStyles
-        .FromSelf()
-        .From(pageTemplateHelper.GetCspScriptHashes())
-        .AddNonce();
+    csp.AllowStyles.FromSelf().From(pageTemplateHelper.GetCspScriptHashes()).AddNonce();
 
     // Ensure ASP.NET Core's auto refresh works
     // See https://github.com/dotnet/aspnetcore/issues/33068
     if (builder.Environment.IsDevelopment())
     {
-        csp.AllowConnections
-            .ToAnywhere();
+        csp.AllowConnections.ToAnywhere();
     }
 });
 

@@ -44,14 +44,13 @@ public class SocialWorkersOperations(
 
                 var httpResponse = await MakeGetRequestWithRetryAsync(route + $"?swid={id}");
 
-                var result = await httpResponse.Content.ReadAsStringAsync();
-
-                if (!httpResponse.IsSuccessStatusCode)
+                if (httpResponse is null || !httpResponse.IsSuccessStatusCode)
                 {
-                    // TODO Error/Exception Handling?
                     tcs.SetResult(null);
                     return;
                 }
+
+                var result = await httpResponse.Content.ReadAsStringAsync();
 
                 // Invalid request is a 200 response
                 if (result == "Invalid request")
@@ -70,13 +69,20 @@ public class SocialWorkersOperations(
         }
     }
 
-    private async Task<HttpResponseMessage> MakeGetRequestWithRetryAsync(string route)
+    private async Task<HttpResponseMessage?> MakeGetRequestWithRetryAsync(string route)
     {
-        return await _pipeline.ExecuteAsync(async ct =>
+        try
         {
-            var httpResponse = await _socialWorkEnglandClient.HttpClient.GetAsync(route, ct);
+            return await _pipeline.ExecuteAsync(async ct =>
+            {
+                var httpResponse = await _socialWorkEnglandClient.HttpClient.GetAsync(route, ct);
 
-            return httpResponse;
-        });
+                return httpResponse;
+            });
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }

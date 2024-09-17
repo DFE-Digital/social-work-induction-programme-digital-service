@@ -96,14 +96,14 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     }
 
     [Fact]
-    public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
+    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmAccountDetails()
     {
         // Arrange
         var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
         Sut.FirstName = accountDetails.FirstName;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;
-        Sut.SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
+        Sut.SocialWorkEnglandNumber = null;
 
         MockSocialWorkEnglandService
             .Setup(x => x.GetById(It.IsAny<string>()))
@@ -118,6 +118,34 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
+
+        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenCalledWithSocialWorkerNumber_RedirectsToAddExistingUser()
+    {
+        // Arrange
+        var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        Sut.FirstName = accountDetails.FirstName;
+        Sut.LastName = accountDetails.LastName;
+        Sut.Email = accountDetails.Email;
+        Sut.SocialWorkEnglandNumber = "1";
+
+        MockSocialWorkEnglandService
+            .Setup(x => x.GetById(It.IsAny<string>()))
+            .ReturnsAsync(new SocialWorker());
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/add-existing-user");
 
         MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
@@ -144,6 +172,42 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
+
+        MockSocialWorkEnglandService.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenSocialWorkerReturnsNull_ReturnsErrors()
+    {
+        // Arrange
+        var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        Sut.FirstName = accountDetails.FirstName;
+        Sut.LastName = accountDetails.LastName;
+        Sut.Email = accountDetails.Email;
+        Sut.SocialWorkEnglandNumber = "123";
+
+        MockSocialWorkEnglandService
+            .Setup(x => x.GetById(It.IsAny<string>()))
+            .ReturnsAsync((SocialWorker?)null);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Should().Contain(nameof(Sut.SocialWorkEnglandNumber));
+        modelState[nameof(Sut.SocialWorkEnglandNumber)]!.Errors.Count.Should().Be(1);
+        modelState[nameof(Sut.SocialWorkEnglandNumber)]!
+            .Errors[0]
+            .ErrorMessage.Should()
+            .Be("Failed to retrieve Social Work England record. Please try again later.");
+
+        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.VerifyNoOtherCalls();
     }
 
     [Theory]

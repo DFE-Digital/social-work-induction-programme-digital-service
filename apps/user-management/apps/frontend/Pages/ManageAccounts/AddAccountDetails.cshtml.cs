@@ -100,6 +100,15 @@ public class AddAccountDetails(
 
         var socialWorker = await socialWorkEnglandService.GetById(SocialWorkEnglandNumber);
 
+        if (!string.IsNullOrWhiteSpace(SocialWorkEnglandNumber) && socialWorker is null)
+        {
+            ModelState.AddModelError(
+                nameof(SocialWorkEnglandNumber),
+                "Failed to retrieve Social Work England record. Please try again later."
+            );
+            return Page();
+        }
+
         string redirectLink;
         if (socialWorker is null)
         {
