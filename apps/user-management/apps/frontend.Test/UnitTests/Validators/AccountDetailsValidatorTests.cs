@@ -69,6 +69,26 @@ public class AccountDetailsValidatorTests()
             .WithErrorMessage("Enter an email");
     }
 
+    [Theory]
+    [InlineData("SWE123")]
+    [InlineData("SW123456789123456789")]
+    [InlineData("123456789123456789")]
+    [InlineData("-500")]
+    [InlineData("0")]
+    public void WhenSocialWorkerNumberIsInvalid_HasValidationErrors(string? sweId)
+    {
+        // Arrange
+        var account = Faker.GenerateWithSweId(sweId);
+
+        // Act
+        var result = Sut.TestValidate(account);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(person => person.SocialWorkEnglandNumber)
+            .WithErrorMessage("Social Work England Number is in an invalid format");
+    }
+
     [Fact]
     public void WhenEmailIsNotInEmailFormat_HaveValidationErrors()
     {

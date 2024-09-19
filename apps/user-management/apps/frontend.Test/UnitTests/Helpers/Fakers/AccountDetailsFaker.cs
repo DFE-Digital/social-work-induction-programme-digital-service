@@ -10,7 +10,7 @@ public sealed class AccountDetailsFaker : Faker<AccountDetails>
         RuleFor(a => a.FirstName, f => f.Name.FirstName());
         RuleFor(a => a.LastName, f => f.Name.LastName());
         RuleFor(a => a.Email, f => f.Internet.Email());
-        RuleFor(a => a.SocialWorkEnglandNumber, f => f.Random.Number().ToString());
+        RuleFor(a => a.SocialWorkEnglandNumber, f => f.Random.Number(1, 1000).ToString());
     }
 }
 
@@ -34,5 +34,13 @@ public static class AccountDetailsFakerExtensions
             .RuleFor(a => a.FirstName, _ => firstName)
             .RuleFor(a => a.LastName, _ => lastName)
             .Generate();
+    }
+
+    public static AccountDetails GenerateWithSweId(
+        this AccountDetailsFaker accountDetailsFaker,
+        string? sweId
+    )
+    {
+        return accountDetailsFaker.RuleFor(a => a.SocialWorkEnglandNumber, _ => sweId).Generate();
     }
 }

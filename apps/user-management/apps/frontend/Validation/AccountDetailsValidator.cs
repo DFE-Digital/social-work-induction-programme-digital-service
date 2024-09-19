@@ -30,5 +30,7 @@ public class AccountDetailsValidator : AbstractValidator<AccountDetails>
         );
 
         RuleFor(y => y.Email).EmailValidation();
+
+        RuleFor(x => x.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation();
     }
 }

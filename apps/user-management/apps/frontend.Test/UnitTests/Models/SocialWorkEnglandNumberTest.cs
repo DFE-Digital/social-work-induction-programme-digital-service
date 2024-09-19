@@ -11,10 +11,10 @@ public class SocialWorkEnglandNumberTest
     [Fact]
     public void WhenSweNumberNegativeSingleParam_ThrowException()
     {
-        //Arrange & Act
+        // Arrange & Act
         Action action = () => _ = new SocialWorkEnglandNumber(-1);
 
-        //Assert
+        // Assert
         action
             .Should()
             .Throw<ArgumentException>()
@@ -24,10 +24,10 @@ public class SocialWorkEnglandNumberTest
     [Fact]
     public void WhenSweNumberNegative_ThrowException()
     {
-        //Arrange & Act
+        // Arrange & Act
         Action action = () => _ = new SocialWorkEnglandNumber(-1, _today);
 
-        //Assert
+        // Assert
         action
             .Should()
             .Throw<ArgumentException>()
@@ -37,26 +37,26 @@ public class SocialWorkEnglandNumberTest
     [Fact]
     public void WhenDueDateInFuture_RegisteredCheckRequireFalse()
     {
-        //Arrange
+        // Arrange
         var account = new SocialWorkEnglandNumber(new Random().Next(), _today.AddDays(1));
 
-        //Act
+        // Act
         var result = account.IsStatusCheckRequired();
 
-        //Assert
+        // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
     public void WhenCheckIsDue_RegisteredCheckRequireTrue()
     {
-        //Arrange
+        // Arrange
         var account = new SocialWorkEnglandNumber(new Random().Next(), _today);
 
-        //Act
+        // Act
         var result = account.IsStatusCheckRequired();
 
-        //Assert
+        // Assert
         result.Should().BeTrue();
     }
 
@@ -65,54 +65,88 @@ public class SocialWorkEnglandNumberTest
     [InlineData("1234")]
     public void ExtractNumber_ReturnsInt(string sweId)
     {
-        //Arrange
+        // Arrange
         var expectedObject = new SocialWorkEnglandNumber(1234);
 
-        //Act
+        // Act
         var result = SocialWorkEnglandNumber.Parse(sweId);
 
-        //Assert
+        // Assert
         result.Should().BeEquivalentTo(expectedObject);
+    }
+
+    [Theory]
+    [InlineData("SW1234")]
+    [InlineData("sw1234")]
+    [InlineData("1234")]
+    public void TryParse_WithValidInputs_ReturnsSocialWorkEnglandNumber(string sweId)
+    {
+        // Arrange
+        var expectedObject = new SocialWorkEnglandNumber(1234);
+
+        // Act
+        var result = SocialWorkEnglandNumber.TryParse(sweId, out var sweNumber);
+
+        // Assert
+        result.Should().BeTrue();
+        sweNumber.Should().BeEquivalentTo(expectedObject);
+    }
+
+    [Theory]
+    [InlineData("SWE123")]
+    [InlineData("SW123456789123456789")]
+    [InlineData("123456789123456789")]
+    [InlineData("-500")]
+    [InlineData("0")]
+    [InlineData("")]
+    public void TryParse_WithInvalidInputs_ReturnsSocialWorkEnglandNumber(string sweId)
+    {
+        // Arrange & Act
+        var result = SocialWorkEnglandNumber.TryParse(sweId, out var sweNumber);
+
+        // Assert
+        result.Should().BeFalse();
+        sweNumber.Should().BeNull();
     }
 
     [Fact]
     public void WhenArgumentIsNull_EqualsReturnsFalse()
     {
-        //Arrange
+        // Arrange
         var account = new SocialWorkEnglandNumber(new Random().Next(), _today);
 
-        //Act
+        // Act
         var result = account.Equals(null);
 
-        //Assert
+        // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
     public void WhenObjectIsNotSocialWorkEnglandNumber_EqualsReturnsFalse()
     {
-        //Arrange
+        // Arrange
         var account = new SocialWorkEnglandNumber(new Random().Next(), _today);
         var obj = new object();
 
-        //Act
+        // Act
         var result = account.Equals(obj);
 
-        //Assert
+        // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
     public void WhenObjectsHoldTheSameNumber_EqualsReturnsTrue()
     {
-        //Arrange
+        // Arrange
         var account1 = new SocialWorkEnglandNumber(1234, _today);
         var account2 = new SocialWorkEnglandNumber(1234, _today.AddDays(1));
 
-        //Act
+        // Act
         var result = account1.Equals(account2);
 
-        //Assert
+        // Assert
         result.Should().BeTrue();
     }
 }

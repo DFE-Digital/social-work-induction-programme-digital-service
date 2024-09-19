@@ -42,7 +42,10 @@ public sealed class SocialWorkEnglandNumber
     {
         if (incrementDays > -1)
         {
-            return new SocialWorkEnglandNumber(_socialWorkEnglandNumber, DateOnly.FromDateTime(DateTime.Now).AddDays(incrementDays));
+            return new SocialWorkEnglandNumber(
+                _socialWorkEnglandNumber,
+                DateOnly.FromDateTime(DateTime.Now).AddDays(incrementDays)
+            );
         }
         throw new ArgumentException("Increment value must not be negative");
     }
@@ -54,8 +57,40 @@ public sealed class SocialWorkEnglandNumber
     /// <returns></returns>
     public static SocialWorkEnglandNumber Parse(string sweId)
     {
-        var sweNumber = sweId.StartsWith("SW") ? Int32.Parse(sweId.Remove(0, 2)) : Int32.Parse(sweId);
+        var sweNumber = sweId.StartsWith("SW", StringComparison.OrdinalIgnoreCase)
+            ? int.Parse(sweId.Remove(0, 2))
+            : int.Parse(sweId);
         return new SocialWorkEnglandNumber(sweNumber);
+    }
+
+    /// <summary>
+    /// Tries to convert a Social Work England Registration ID into its Social Work England Number object equivalent
+    /// </summary>
+    /// <param name="sweId"></param>
+    /// <param name="socialWorkEnglandNumber"></param>
+    /// <returns><c>true</c> if <paramref name="sweId" /> was converted successfully; otherwise, false.</returns>
+    public static bool TryParse(string? sweId, out SocialWorkEnglandNumber? socialWorkEnglandNumber)
+    {
+        if (string.IsNullOrWhiteSpace(sweId))
+        {
+            socialWorkEnglandNumber = null;
+            return false;
+        }
+
+        if (sweId.StartsWith("SW", StringComparison.InvariantCultureIgnoreCase))
+        {
+            sweId = sweId.Remove(0, 2);
+        }
+
+        var isNumber = int.TryParse(sweId, out var sweNumber);
+        if (!isNumber || sweNumber <= 0)
+        {
+            socialWorkEnglandNumber = null;
+            return false;
+        }
+
+        socialWorkEnglandNumber = new SocialWorkEnglandNumber(sweNumber);
+        return true;
     }
 
     /// <summary>
