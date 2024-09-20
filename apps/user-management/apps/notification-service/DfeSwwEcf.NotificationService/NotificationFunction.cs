@@ -25,6 +25,9 @@ public class NotificationFunction(
     INotificationCommand notificationCommand
 )
 {
+    private static JsonSerializerOptions? SerializerOptions { get; } =
+        new(JsonSerializerDefaults.Web);
+
     [Function("Notification")]
     [OpenApiOperation(operationId: "RunAsync", tags: ["Notification Function"])]
     [OpenApiSecurity(
@@ -53,7 +56,7 @@ public class NotificationFunction(
         NotificationRequest? data;
         try
         {
-            data = JsonSerializer.Deserialize<NotificationRequest>(requestBody);
+            data = JsonSerializer.Deserialize<NotificationRequest>(requestBody, SerializerOptions);
         }
         catch (JsonException)
         {

@@ -6,7 +6,7 @@
 public class NotificationRequest
 {
     /// <summary>
-    /// The email address the notification is being sen to
+    /// The email address the notification is being sent to
     /// </summary>
     public string EmailAddress { get; set; } = null!;
 
