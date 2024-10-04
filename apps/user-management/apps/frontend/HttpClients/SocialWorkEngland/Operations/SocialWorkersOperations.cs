@@ -39,8 +39,7 @@ public class SocialWorkersOperations(
             while (_queue.TryDequeue(out var tcs))
             {
                 var route =
-                    _socialWorkEnglandClient.Options.Routes?.SocialWorker?.GetById
-                    ?? "/GetSocialWorkerById";
+                    _socialWorkEnglandClient.Options.Routes.SocialWorker.GetById;
 
                 var httpResponse = await MakeGetRequestWithRetryAsync(route + $"?swid={id}");
 

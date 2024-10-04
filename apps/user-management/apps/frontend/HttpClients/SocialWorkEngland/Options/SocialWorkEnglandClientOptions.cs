@@ -4,5 +4,5 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Options;
 
 public class SocialWorkEnglandClientOptions : HttpClientOptions
 {
-    public SweApiRoutes? Routes { get; init; }
+    public required SweApiRoutes Routes { get; init; }
 }

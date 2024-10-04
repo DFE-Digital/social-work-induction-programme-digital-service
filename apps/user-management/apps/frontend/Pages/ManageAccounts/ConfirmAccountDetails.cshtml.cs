@@ -1,17 +1,23 @@
 using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    INotificationServiceClient notificationServiceClient,
+    IOptions<EmailTemplateOptions> emailTemplateOptions
 ) : BasePageModel
 {
     public Guid Id { get; set; }
@@ -90,9 +96,10 @@ public class ConfirmAccountDetails(
     /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
-    public RedirectResult OnPost()
+    public async Task<RedirectResult> OnPost()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
+        await SendInvitationEmail(accountDetails);
         createAccountJourneyService.CompleteJourney();
 
         TempData["NotifyEmail"] = accountDetails?.Email;
@@ -111,5 +118,32 @@ public class ConfirmAccountDetails(
         editAccountJourneyService.CompleteJourney(id);
 
         return Redirect(linkGenerator.ViewAccountDetails(id));
+    }
+
+    private async Task SendInvitationEmail(AccountDetails? accountDetails)
+    {
+        var accountTypes = createAccountJourneyService.GetAccountTypes();
+
+        if (accountTypes is null || accountDetails is null || string.IsNullOrWhiteSpace(accountDetails.Email))
+        {
+            return;
+        }
+
+        // Get the highest ranking role - the lowest (int)enum
+        var invitationEmailType = accountTypes.Min();
+
+        var templateId = emailTemplateOptions.Value.Roles[invitationEmailType.ToString()].Invitation;
+        var notificationRequest = new NotificationRequest
+        {
+            EmailAddress = accountDetails.Email,
+            TemplateId = templateId,
+            Personalisation = new Dictionary<string, string>
+            {
+                { "name", accountDetails.FullName },
+                { "organisation", "TEST ORGANISATION" } // TODO Retrieve this value when we can
+            }
+        };
+
+        await notificationServiceClient.Notification.SendEmailAsync(notificationRequest);
     }
 }

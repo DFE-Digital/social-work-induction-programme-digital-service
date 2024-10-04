@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Repositories;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services;
@@ -24,6 +25,8 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
 
     private protected Mock<ISocialWorkEnglandService> MockSocialWorkEnglandService { get; }
 
+    private protected Mock<INotificationServiceClient> MockNotificationServiceClient { get; }
+
     protected ManageAccountsPageTestBase()
     {
         AccountFaker = new AccountFaker();
@@ -40,5 +43,6 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
             AccountRepository
         );
         MockSocialWorkEnglandService = new();
+        MockNotificationServiceClient = new();
     }
 }

@@ -2,5 +2,5 @@
 
 public class SweApiRoutes
 {
-    public SocialWorkerRoutes? SocialWorker { get; set; }
+    public required SocialWorkerRoutes SocialWorker { get; init; }
 }

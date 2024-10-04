@@ -4,6 +4,9 @@ using System.Net;
 using System.Net.Sockets;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Options;
@@ -35,6 +38,7 @@ public static class InstallClients
             }
         );
 
+        // Social Work England Client
         services
             .AddHttpClient<
                 SocialWorkEnglandClientOptions,
@@ -44,6 +48,13 @@ public static class InstallClients
             .AddHttpMessageHandler<
                 OAuthAuthenticationDelegatingHandler<SocialWorkEnglandClientOptions>
             >();
+
+        // Notification Service Client
+        services.AddHttpClient<
+            NotificationClientOptions,
+            INotificationServiceClient,
+            NotificationServiceClient
+        >();
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(

@@ -2,5 +2,5 @@
 
 public class SocialWorkerRoutes
 {
-    public string? GetById { get; set; }
+    public required string GetById { get; init; }
 }

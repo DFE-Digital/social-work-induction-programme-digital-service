@@ -17,10 +17,7 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
 
     public LinkAccountPageTests()
     {
-        Sut = new LinkAccount(
-            EditAccountJourneyService,
-            new FakeLinkGenerator()
-        )
+        Sut = new LinkAccount(EditAccountJourneyService, new FakeLinkGenerator())
         {
             TempData = TempData
         };
@@ -68,9 +65,7 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!
-            .Url.Should()
-            .Be("/manage-accounts");
+        redirectResult!.Url.Should().Be("/manage-accounts");
 
         var updatedAccount = AccountRepository.GetById(account.Id);
         updatedAccount.Should().NotBeNull();
@@ -94,9 +89,7 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!
-            .Url.Should()
-            .Be("/manage-accounts");
+        redirectResult!.Url.Should().Be("/manage-accounts");
 
         var updatedAccount = AccountRepository.GetById(account.Id);
         updatedAccount.Should().NotBeNull();
@@ -120,9 +113,7 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!
-            .Url.Should()
-            .Be("/manage-accounts");
+        redirectResult!.Url.Should().Be("/manage-accounts");
 
         var updatedAccount = AccountRepository.GetById(account.Id);
         updatedAccount.Should().NotBeNull();

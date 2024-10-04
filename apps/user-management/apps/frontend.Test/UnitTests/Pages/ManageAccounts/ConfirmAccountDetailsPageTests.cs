@@ -1,4 +1,6 @@
-using Dfe.Sww.Ecf.Frontend.Extensions;
+using System.Net;
+using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
@@ -7,6 +9,8 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
@@ -17,11 +21,34 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
     public ConfirmAccountDetailsShould()
     {
+        var options = new Mock<IOptions<EmailTemplateOptions>>();
+        options
+            .Setup(x => x.Value)
+            .Returns(new EmailTemplateOptions
+            {
+                Roles = new Dictionary<string, RoleEmailTemplateConfiguration>
+                {
+                    {
+                        AccountType.Assessor.ToString(),
+                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
+                    },
+                    {
+                        AccountType.EarlyCareerSocialWorker.ToString(),
+                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
+                    },
+                    {
+                        AccountType.Coordinator.ToString(),
+                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
+                    }
+                }
+            });
+
         Sut = new ConfirmAccountDetails(
             CreateAccountJourneyService,
             EditAccountJourneyService,
-            new FakeLinkGenerator()
-        )
+            new FakeLinkGenerator(),
+            MockNotificationServiceClient.Object,
+            options.Object)
         {
             TempData = TempData
         };
@@ -113,7 +140,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     }
 
     [Fact]
-    public void Post_WhenCalled_RedirectsToAccountsIndex()
+    public async Task Post_WhenCalled_RedirectsToAccountsIndex()
     {
         // Arrange
         var account = AccountFaker.GenerateNewAccount();
@@ -121,8 +148,17 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         CreateAccountJourneyService.SetAccountTypes(account.Types!);
         CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
 
+        var notificationRequest = new NotificationRequest
+        {
+            EmailAddress = "test@test.com",
+            TemplateId = Guid.NewGuid()
+        };
+        MockNotificationServiceClient
+            .Setup(x => x.Notification.SendEmailAsync(notificationRequest))
+            .ReturnsAsync(new NotificationResponse() { StatusCode = HttpStatusCode.OK });
+
         // Act
-        var result = Sut.OnPost();
+        var result = await Sut.OnPost();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
@@ -135,7 +171,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountRepository.GetAll().PickRandom();
-        var updatedAccountDetails = new AccountDetails()
+        var updatedAccountDetails = new AccountDetails
         {
             FirstName = "UpdatedFirstName",
             LastName = "UpdatedLastName",

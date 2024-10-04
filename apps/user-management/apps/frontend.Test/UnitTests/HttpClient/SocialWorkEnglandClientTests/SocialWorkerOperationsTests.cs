@@ -14,9 +14,9 @@ using Polly.Retry;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.SocialWorkEnglandClientTests;
 
-public class SocialWorkersOperationsTests
+public class SocialWorkerOperationsTests
 {
     private const int RetryAttempts = 2;
     private const HttpStatusCode ErrorResponseStatusCode = HttpStatusCode.InternalServerError;
@@ -25,7 +25,7 @@ public class SocialWorkersOperationsTests
     private readonly Mock<IOptions<SocialWorkEnglandClientOptions>> _mockOptions;
     private readonly ResiliencePipeline<HttpResponseMessage> _pipeline;
 
-    public SocialWorkersOperationsTests()
+    public SocialWorkerOperationsTests()
     {
         _socialWorkerFaker = new();
         _mockOptions = new();
@@ -42,30 +42,6 @@ public class SocialWorkersOperationsTests
                 }
             )
             .Build();
-    }
-
-    [Fact]
-    public async Task GetById_NoOptions_UsesFallbackRoute_ReturnsCorrectResponse()
-    {
-        // Arrange
-        var swId = 1;
-        var socialWorker = _socialWorkerFaker.GenerateWithId(swId);
-
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, socialWorker);
-
-        var sut = BuildSut(mockHttp);
-
-        // Act
-        var response = await sut.SocialWorkers.GetByIdAsync(swId);
-
-        // Assert
-        response.Should().NotBeNull();
-        response.Should().BeOfType<SocialWorker>();
-        response.Should().BeEquivalentTo(socialWorker);
-
-        mockHttp.GetMatchCount(request).Should().Be(1);
-        mockHttp.VerifyNoOutstandingRequest();
-        mockHttp.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
@@ -117,7 +93,7 @@ public class SocialWorkersOperationsTests
 
     private SocialWorkEnglandClient BuildSut(
         MockHttpMessageHandler mockHttpMessageHandler,
-        string? route = null
+        string route
     )
     {
         var client = mockHttpMessageHandler.ToHttpClient();
@@ -139,7 +115,11 @@ public class SocialWorkersOperationsTests
                 }
             );
 
-        var sut = new SocialWorkEnglandClient(client, _mockOptions.Object, _pipeline);
+        var sut = new SocialWorkEnglandClient(
+            client,
+            _mockOptions.Object,
+            _pipeline
+        );
 
         return sut;
     }
@@ -150,7 +130,7 @@ public class SocialWorkersOperationsTests
     ) GenerateMockClient(
         HttpStatusCode statusCode,
         SocialWorker? response,
-        string route = "/GetSocialWorkerById"
+        string route
     )
     {
         using var mockHttp = new MockHttpMessageHandler();

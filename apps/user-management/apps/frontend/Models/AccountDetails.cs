@@ -17,6 +17,12 @@ public class AccountDetails
     public string? LastName { get; init; }
 
     /// <summary>
+    /// FullName
+    /// </summary>
+    [Display(Name = "Full name")]
+    public string FullName => $"{FirstName} {LastName}".Trim();
+
+    /// <summary>
     /// Email
     /// </summary>
     [Display(Name = "Email address")]
