@@ -50,7 +50,7 @@
             @foreach (var account in Model.Accounts)
             {
                 <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">
+                    <th scope="row" class="govuk-table__header" data-test-class="account-name">
                         @Html.DisplayFor(model => account.FullName)
                     </th>
                     <td class="govuk-table__cell">
@@ -66,7 +66,7 @@
                         }
                         @if (account.Status is not null)
                         {
-                            <strong class="govuk-tag @tagClass">
+                            <strong class="govuk-tag @tagClass" data-test-class="account-status">
                                 @account.Status.GetDisplayName()
                             </strong>
                             <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">

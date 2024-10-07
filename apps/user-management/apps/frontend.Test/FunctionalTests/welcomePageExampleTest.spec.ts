@@ -2,14 +2,14 @@ import { Ensure, equals, isPresent } from '@serenity-js/assertions';
 import { describe, it } from '@serenity-js/playwright-test';
 import { Click, isVisible, Navigate, Text } from '@serenity-js/web';
 import { welcomeMessage, manageAccountsCaption, manageAccountsLink, addSomeoneButton } from './Pages';
+import {authenticateAsJoeBloggsCoordinator} from "./Tasks/login";
 
 describe('Early Career Framework Service', () => {
 
-    describe('when the user navigates through the application', () => { 
+    describe('when the user navigates through the application', () => {
         it('should navigate through the application and check elements', async ({ actor }) => {
             await actor.attemptsTo(
-                Navigate.to('/'),
-
+                authenticateAsJoeBloggsCoordinator(),
                 Ensure.that(welcomeMessage(), isVisible()),
                 Ensure.that(Text.of(welcomeMessage()), equals('Welcome to the post qualifying pathway digital service')),
 

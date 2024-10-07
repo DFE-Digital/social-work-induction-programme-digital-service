@@ -24,7 +24,7 @@ public class LinkAccountLinkTagHelperTests
 
         // Assert
         var expectedHtml =
-            $"<p class=\"govuk-body\"><a class=\"govuk-link govuk-link--no-visited-state\" href=\"{href}\">Link {accountName} to this organisation</a></p>";
+            $"<p class=\"govuk-body\"><a class=\"govuk-link govuk-link--no-visited-state\" data-test-id=\"link\" href=\"{href}\">Link {accountName} to this organisation</a></p>";
         output.ToHtmlString().Should().Be(expectedHtml);
     }
 }

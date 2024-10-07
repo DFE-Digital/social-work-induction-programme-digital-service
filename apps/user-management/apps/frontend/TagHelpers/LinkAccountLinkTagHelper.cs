@@ -17,7 +17,7 @@ public class LinkAccountLinkTagHelper : TagHelper
         output.AddClass("govuk-body", HtmlEncoder.Default);
 
         output.Content.SetHtmlContent(
-            $"<a class=\"govuk-link govuk-link--no-visited-state\" href=\"{Href}\">Link {AccountName} to this organisation</a>"
+            $"<a class=\"govuk-link govuk-link--no-visited-state\" data-test-id=\"link\" href=\"{Href}\">Link {AccountName} to this organisation</a>"
         );
     }
 }

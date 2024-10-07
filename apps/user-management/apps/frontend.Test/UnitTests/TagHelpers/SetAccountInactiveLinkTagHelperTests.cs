@@ -27,7 +27,7 @@ public class SetAccountInactiveLinkTagHelperTests
         // Assert
         var expectedHtml =
             $"<p class=\"govuk-body\">"
-            + $"<a class=\"govuk-link govuk-link--no-visited-state\" href=\"{href}\">{accountName} is leaving this organisation</a>"
+            + $"<a class=\"govuk-link govuk-link--no-visited-state\" data-test-id=\"unlink\" href=\"{href}\">{accountName} is leaving this organisation</a>"
             + "<span class=\"govuk-hint govuk-!-display-block\">"
             + "This will unlink this account from this organisation. It will not delete the account or any learner records. "
             + "Coordinators from other organisations will be able to link this account to their own PQP service."
