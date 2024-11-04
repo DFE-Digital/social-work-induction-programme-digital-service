@@ -2,6 +2,9 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
@@ -29,6 +32,7 @@ public static class InstallClients
     public static void AddClients(this IServiceCollection services)
     {
         services.AddTransient(typeof(OAuthAuthenticationDelegatingHandler<>));
+        services.AddTransient(typeof(OidcAuthenticationDelegatingHandler));
 
         services.AddResiliencePipeline<string, HttpResponseMessage>(
             nameof(SocialWorkEnglandClient),
@@ -55,6 +59,11 @@ public static class InstallClients
             INotificationServiceClient,
             NotificationServiceClient
         >();
+
+        // Auth Service Client
+        services
+            .AddHttpClient<AuthClientOptions, IAuthServiceClient, AuthServiceClient>()
+            .AddHttpMessageHandler<OidcAuthenticationDelegatingHandler>();
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(

@@ -1,7 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Operations;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Options;
 using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;

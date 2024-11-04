@@ -10,10 +10,13 @@ namespace Dfe.Sww.Ecf.Frontend.Installers;
 [ExcludeFromCodeCoverage]
 public static class InstallAuthentication
 {
-    public static void AddEcfAuthentication(this IServiceCollection services,
-        IConfigurationSection configurationSection)
+    public static void AddEcfAuthentication(
+        this IServiceCollection services,
+        IConfigurationSection configurationSection
+    )
     {
-        services.AddOptions<OidcConfiguration>()
+        services
+            .AddOptions<OidcConfiguration>()
             .Bind(configurationSection)
             .ValidateDataAnnotations()
             .ValidateOnStart();
@@ -21,7 +24,9 @@ public static class InstallAuthentication
         var ecfAuthenticationOptions = configurationSection.Get<OidcConfiguration>();
         if (ecfAuthenticationOptions is null)
         {
-            throw new InvalidOperationException("Unable to parse configuration for ECF authentication.");
+            throw new InvalidOperationException(
+                "Unable to parse configuration for ECF authentication."
+            );
         }
 
         services
@@ -37,10 +42,14 @@ public static class InstallAuthentication
                 {
                     options.Cookie.Name = ecfAuthenticationOptions.CookieName;
                 }
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(ecfAuthenticationOptions.SessionLifetimeMinutes);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(
+                    ecfAuthenticationOptions.SessionLifetimeMinutes
+                );
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.SlidingExpiration = true;
                 options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             })
             .AddOpenIdConnect(options =>
             {
@@ -53,7 +62,9 @@ public static class InstallAuthentication
                 options.NonceCookie.SameSite = SameSiteMode.Lax;
                 options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                 options.CallbackPath = new PathString(ecfAuthenticationOptions.CallbackUrl);
-                options.SignedOutCallbackPath = new PathString(ecfAuthenticationOptions.SignedOutCallbackUrl);
+                options.SignedOutCallbackPath = new PathString(
+                    ecfAuthenticationOptions.SignedOutCallbackUrl
+                );
                 options.UsePkce = true;
 
                 options.Scope.Clear();
