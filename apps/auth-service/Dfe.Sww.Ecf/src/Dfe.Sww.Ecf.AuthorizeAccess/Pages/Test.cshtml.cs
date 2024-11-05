@@ -30,14 +30,14 @@ public class TestModel : PageModel
                 {
                     Items =
                     {
-                        { MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.OneLoginAuthenticationScheme, AuthenticationScheme },
-                        { MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName, "Test service" },
-                        { MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl, Request.GetEncodedUrl() },
-                        { MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken, TrnToken },
+                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.OneLoginAuthenticationScheme, AuthenticationScheme },
+                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName, "Test service" },
+                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl, Request.GetEncodedUrl() },
+                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken, TrnToken },
                     },
                     RedirectUri = Request.GetEncodedUrl()
                 },
-                AuthenticationSchemes.MatchToTeachingRecord);
+                AuthenticationSchemes.MatchToEcfAccount);
         }
 
         return Page();

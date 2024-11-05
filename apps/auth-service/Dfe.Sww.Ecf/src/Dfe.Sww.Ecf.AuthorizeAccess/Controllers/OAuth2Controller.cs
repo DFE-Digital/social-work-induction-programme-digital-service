@@ -41,7 +41,7 @@ public class OAuth2Controller(
         var application = await applicationManager.FindByClientIdAsync(request.ClientId ?? "") ??
                           throw new InvalidOperationException("The application cannot be found.");
 
-        var authenticateResult = await HttpContext.AuthenticateAsync(AuthenticationSchemes.MatchToTeachingRecord);
+        var authenticateResult = await HttpContext.AuthenticateAsync(AuthenticationSchemes.MatchToEcfAccount);
 
         if (!authenticateResult.Succeeded)
         {
@@ -57,26 +57,26 @@ public class OAuth2Controller(
                 Items =
                 {
                     {
-                        MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys
+                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys
                             .OneLoginAuthenticationScheme,
                         "OneLogin"
                     },
                     {
-                        MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName,
+                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName,
                         await applicationManager.GetDisplayNameAsync(application)
                     },
                     {
-                        MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl,
+                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl,
                         serviceUrl
                     },
                     {
-                        MatchToTeachingRecordAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken,
+                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken,
                         trnToken ?? "token"
                     },
                 }
             };
 
-            return Challenge(authenticationProperties, AuthenticationSchemes.MatchToTeachingRecord);
+            return Challenge(authenticationProperties, AuthenticationSchemes.MatchToEcfAccount);
         }
 
         var user = authenticateResult.Principal;

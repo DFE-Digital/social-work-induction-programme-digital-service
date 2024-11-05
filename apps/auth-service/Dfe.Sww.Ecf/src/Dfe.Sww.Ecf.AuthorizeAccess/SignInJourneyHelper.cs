@@ -322,7 +322,7 @@ public class SignInJourneyHelper(
 
         var principal = new ClaimsPrincipal(teachingRecordIdentity);
 
-        state.AuthenticationTicket = new AuthenticationTicket(principal, properties: null, AuthenticationSchemes.MatchToTeachingRecord);
+        state.AuthenticationTicket = new AuthenticationTicket(principal, properties: null, AuthenticationSchemes.MatchToEcfAccount);
     }
 
     private static string EnsureUrlHasJourneyId(string url, JourneyInstanceId instanceId)

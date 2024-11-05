@@ -4,7 +4,7 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 
-public class MatchToTeachingRecordAuthenticationHandler(SignInJourneyHelper helper) : IAuthenticationHandler
+public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper) : IAuthenticationHandler
 {
     private AuthenticationScheme? _scheme;
     private HttpContext? _context;

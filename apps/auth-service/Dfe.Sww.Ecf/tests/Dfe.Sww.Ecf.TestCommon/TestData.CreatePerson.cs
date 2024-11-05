@@ -31,6 +31,18 @@ public partial class TestData
         });
     }
 
+    public async Task<CreatePersonResult[]> CreatePersons(int count)
+    {
+        var results = new CreatePersonResult[count];
+
+        for (var i = 0; i < count; i++)
+        {
+            results[i] = await CreatePerson();
+        }
+
+        return results.ToArray();
+    }
+
     public class CreatePersonBuilder
     {
         private DateOnly? _dateOfBirth;
@@ -174,6 +186,8 @@ public partial class TestData
                 LastName = lastName,
                 Email = _email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
+                CreatedOn = testData.Clock.UtcNow,
+                UpdatedOn = testData.Clock.UtcNow
             };
         }
     }
@@ -188,5 +202,21 @@ public partial class TestData
         public required string LastName { get; init; }
         public required string? Email { get; init; }
         public required string? NationalInsuranceNumber { get; init; }
+        public required DateTime? CreatedOn { get; init; }
+        public required DateTime? UpdatedOn { get; init; }
+
+        public Person ToPerson() => new Person
+        {
+            PersonId = PersonId,
+            Trn = Trn,
+            DateOfBirth = DateOfBirth,
+            FirstName = FirstName,
+            MiddleName = MiddleName,
+            LastName = LastName,
+            EmailAddress = Email,
+            NationalInsuranceNumber = NationalInsuranceNumber,
+            CreatedOn = CreatedOn,
+            UpdatedOn = UpdatedOn,
+        };
     }
 }
