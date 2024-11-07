@@ -1,4 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
+using Dfe.Sww.Ecf.Frontend.Mappers;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.NameMatch;
@@ -7,19 +10,17 @@ using Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
 namespace Dfe.Sww.Ecf.Frontend.Installers;
 
 /// <summary>
-/// Install Service Dependencies
+/// Install Mapper Dependencies
 /// </summary>
 [ExcludeFromCodeCoverage]
-public static class InstallServices
+public static class InstallMapper
 {
     /// <summary>
-    /// Add Service Dependencies
+    /// Add Mapper Dependencies
     /// </summary>
     /// <param name="services"></param>
-    public static void AddServices(this IServiceCollection services)
+    public static void AddMappers(this IServiceCollection services)
     {
-        services.AddTransient<IAccountService, AccountService>();
-        services.AddTransient<ISocialWorkEnglandService, SocialWorkEnglandService>();
-        services.AddTransient<ISocialWorkerValidatorService, SocialWorkerValidatorService>();
+        services.AddSingleton<IModelMapper<Person, Account>, AccountMapper>();
     }
 }

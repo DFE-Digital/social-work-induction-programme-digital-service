@@ -1,7 +1,9 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Moq;
 using Xunit;
 using ManageAccoutsIndex = Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index;
 
@@ -13,17 +15,18 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
 
     public IndexPageTests()
     {
-        Sut = new ManageAccoutsIndex(AccountRepository);
+        Sut = new ManageAccoutsIndex(MockAccountService.Object);
     }
 
     [Fact]
-    public void Get_WhenCalled_LoadsTheViewWithAccountsSortedByCreatedAt()
+    public async Task Get_WhenCalled_LoadsTheViewWithAccountsSortedByCreatedAt()
     {
         // Arrange
-        var expectedAccounts = AccountRepository.GetAll();
+        var expectedAccounts = AccountFaker.Generate(10);
+        MockAccountService.Setup(x => x.GetAllAsync()).ReturnsAsync(expectedAccounts);
 
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -33,7 +36,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
     }
 
     [Fact]
-    public void Get_WhenAccountIsAdded_ModelShouldContainNewAccount()
+    public async Task Get_WhenAccountIsAdded_ModelShouldContainNewAccount()
     {
         // Arrange
         var newAccount = AccountFaker.GenerateNewAccount();
@@ -44,8 +47,10 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
         CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(newAccount));
         newAccount = CreateAccountJourneyService.CompleteJourney();
 
+        MockAccountService.Setup(x => x.GetAllAsync()).ReturnsAsync([newAccount]);
+
         // Act
-        Sut.OnGet();
+        await Sut.OnGet();
 
         // Assert
         Sut.Accounts.Should().ContainEquivalentOf(newAccount);

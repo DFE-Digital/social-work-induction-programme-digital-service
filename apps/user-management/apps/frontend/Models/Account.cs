@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 

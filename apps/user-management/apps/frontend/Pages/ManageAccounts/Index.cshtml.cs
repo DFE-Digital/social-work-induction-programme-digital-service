@@ -1,17 +1,19 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
-using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class Index(IAccountRepository accountRepository) : BasePageModel
+public class Index(IAccountService accountService) : BasePageModel
 {
     public IList<Account> Accounts { get; set; } = default!;
 
-    public PageResult OnGet()
+    public async Task<PageResult> OnGet()
     {
-        Accounts = accountRepository.GetAll().OrderBy(account => account.CreatedAt).ToList();
+        Accounts = (await accountService.GetAllAsync())
+            .OrderBy(account => account.CreatedAt)
+            .ToList();
 
         return Page();
     }

@@ -15,8 +15,9 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageModelTestBase<T>
     where T : PageModel
 {
-    private protected IAccountRepository AccountRepository { get; }
+    private protected Mock<IAccountService> MockAccountService { get; }
 
+    private protected InMemoryAccountRepository AccountRepository { get; }
     private protected AccountFaker AccountFaker { get; }
 
     private protected CreateAccountJourneyService CreateAccountJourneyService { get; }
@@ -30,6 +31,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
     protected ManageAccountsPageTestBase()
     {
         AccountFaker = new AccountFaker();
+        MockAccountService = new Mock<IAccountService>();
         AccountRepository = new InMemoryAccountRepository();
         AccountRepository.AddRange(AccountFaker.Generate(10));
 

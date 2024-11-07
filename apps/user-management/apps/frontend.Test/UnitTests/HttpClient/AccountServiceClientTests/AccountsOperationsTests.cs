@@ -22,6 +22,63 @@ public class AccountsOperationsTests
     }
 
     [Fact]
+    public async Task GetAll_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var route = "/api/Accounts";
+        var persons = new List<Person>
+        {
+            new()
+            {
+                PersonId = Guid.NewGuid(),
+                CreatedOn = DateTime.UtcNow,
+                UpdatedOn = DateTime.UtcNow,
+                Trn = "1234",
+                FirstName = "Test",
+                LastName = "McTester",
+            }
+        };
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, persons, route);
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Accounts.GetAllAsync();
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(persons);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetAll_WhenErrorResponseReturned_ReturnsNull()
+    {
+        // Arrange
+        var route = $"/api/Accounts";
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, null, route);
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await sut.Accounts.GetAllAsync()
+        );
+
+        // Assert
+        actualException.Should().BeOfType<InvalidOperationException>();
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
     public async Task GetById_SuccessfulRequest_ReturnsCorrectResponse()
     {
         // Arrange
@@ -98,7 +155,7 @@ public class AccountsOperationsTests
                 }
             );
 
-        var sut = new AuthServiceClient(client, _mockOptions.Object);
+        var sut = new AuthServiceClient(client);
 
         return sut;
     }
@@ -106,7 +163,7 @@ public class AccountsOperationsTests
     private static (
         MockHttpMessageHandler MockHttpMessageHandler,
         MockedRequest MockedRequest
-    ) GenerateMockClient(HttpStatusCode statusCode, Person? response, string route)
+    ) GenerateMockClient(HttpStatusCode statusCode, object? response, string route)
     {
         using var mockHttp = new MockHttpMessageHandler();
         var request = mockHttp

@@ -28,8 +28,11 @@ builder.Services.AddRepository();
 builder.Services.AddJourneys();
 builder.Services.AddClients();
 builder.Services.AddServices();
+builder.Services.AddMappers();
 
-builder.Services.Configure<EmailTemplateOptions>(builder.Configuration.GetSection(nameof(EmailTemplateOptions)));
+builder.Services.Configure<EmailTemplateOptions>(
+    builder.Configuration.GetSection(nameof(EmailTemplateOptions))
+);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<EcfLinkGenerator, RoutingEcfLinkGenerator>();
