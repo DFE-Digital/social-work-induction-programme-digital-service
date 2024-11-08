@@ -1,16 +1,16 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AccountServiceClientTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AuthServiceClientTests;
 
 public class AccountsOperationsTests
 {

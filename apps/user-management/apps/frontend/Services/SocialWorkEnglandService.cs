@@ -15,7 +15,7 @@ public class SocialWorkEnglandService(
     private readonly ISocialWorkerValidatorService _socialWorkerValidatorService =
         socialWorkerValidatorService;
 
-    public async Task<SocialWorker?> GetById(string? sweId)
+    public async Task<SocialWorker?> GetByIdAsync(string? sweId)
     {
         if (string.IsNullOrWhiteSpace(sweId))
         {

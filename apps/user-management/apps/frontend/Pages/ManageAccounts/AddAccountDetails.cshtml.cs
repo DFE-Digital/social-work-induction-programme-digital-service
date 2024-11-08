@@ -98,7 +98,7 @@ public class AddAccountDetails(
             return Page();
         }
 
-        var socialWorker = await socialWorkEnglandService.GetById(SocialWorkEnglandNumber);
+        var socialWorker = await socialWorkEnglandService.GetByIdAsync(SocialWorkEnglandNumber);
 
         if (!string.IsNullOrWhiteSpace(SocialWorkEnglandNumber) && socialWorker is null)
         {

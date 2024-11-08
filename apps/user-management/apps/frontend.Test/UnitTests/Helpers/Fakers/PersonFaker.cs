@@ -1,5 +1,5 @@
 using Bogus;
-using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models.Person;
+using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 

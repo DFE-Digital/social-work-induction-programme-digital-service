@@ -1,21 +1,20 @@
-using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
-using ManageAccoutsIndex = Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index;
+using ManageAccountsIndex = Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
+public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
 {
-    private ManageAccoutsIndex Sut { get; }
+    private ManageAccountsIndex Sut { get; }
 
     public IndexPageTests()
     {
-        Sut = new ManageAccoutsIndex(MockAccountService.Object);
+        Sut = new ManageAccountsIndex(MockAccountService.Object);
     }
 
     [Fact]
@@ -26,7 +25,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
         MockAccountService.Setup(x => x.GetAllAsync()).ReturnsAsync(expectedAccounts);
 
         // Act
-        var result = await Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -45,12 +44,12 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccoutsIndex>
             new List<AccountType> { newAccount.Types!.First() }
         );
         CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(newAccount));
-        newAccount = CreateAccountJourneyService.CompleteJourney();
+        newAccount = await CreateAccountJourneyService.CompleteJourneyAsync();
 
         MockAccountService.Setup(x => x.GetAllAsync()).ReturnsAsync([newAccount]);
 
         // Act
-        await Sut.OnGet();
+        await Sut.OnGetAsync();
 
         // Assert
         Sut.Accounts.Should().ContainEquivalentOf(newAccount);

@@ -1,15 +1,25 @@
 ﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    IAccountRepository accountRepository
+    IAccountRepository accountRepository,
+    INotificationServiceClient notificationServiceClient,
+    IOptions<EmailTemplateOptions> emailTemplateOptions,
+    IAuthServiceClient authServiceClient,
+    EcfLinkGenerator linkGenerator
 ) : ICreateAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -78,12 +88,14 @@ public class CreateAccountJourneyService(
         Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
     }
 
-    public Account CompleteJourney()
+    public async Task<Account> CompleteJourneyAsync()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
         _accountRepository.Add(account);
+
+        await SendInvitationEmailAsync(account);
 
         ResetCreateAccountJourneyModel();
 
@@ -101,5 +113,56 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         return createAccountJourneyModel.SocialWorkerDetails;
+    }
+
+    private async Task SendInvitationEmailAsync(Account account)
+    {
+        var accountTypes = GetAccountTypes();
+
+        if (
+            accountTypes is null
+            || string.IsNullOrWhiteSpace(account.Email)
+            || _httpContextAccessor.HttpContext is null
+        )
+        {
+            return;
+        }
+
+        var inviteTokenResponse = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
+            account.Id
+        );
+
+        if (inviteTokenResponse is null)
+        {
+            throw new InvalidOperationException(
+                "Failed to get account linking token when preparing to send invitation email."
+            );
+        }
+
+        var invitationLink = linkGenerator.SignInWithInviteToken(
+            _httpContextAccessor.HttpContext,
+            inviteTokenResponse
+        );
+
+        // Get the highest ranking role - the lowest (int)enum
+        var invitationEmailType = accountTypes.Min();
+
+        var templateId = emailTemplateOptions
+            .Value
+            .Roles[invitationEmailType.ToString()]
+            .Invitation;
+        var notificationRequest = new NotificationRequest
+        {
+            EmailAddress = account.Email,
+            TemplateId = templateId,
+            Personalisation = new Dictionary<string, string>
+            {
+                { "name", account.FullName },
+                { "organisation", "TEST ORGANISATION" }, // TODO Retrieve this value when we can
+                { "invitation_link", invitationLink }
+            }
+        };
+
+        await notificationServiceClient.Notification.SendEmailAsync(notificationRequest);
     }
 }

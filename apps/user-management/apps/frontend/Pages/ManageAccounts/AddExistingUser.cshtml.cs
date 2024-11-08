@@ -75,10 +75,10 @@ public class AddExistingUser(
     /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
-    public RedirectResult OnPost()
+    public async Task<RedirectResult> OnPostAsync()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
-        createAccountJourneyService.CompleteJourney();
+        await createAccountJourneyService.CompleteJourneyAsync();
 
         TempData["NotifyEmail"] = accountDetails?.Email;
         TempData["NotificationBannerSubject"] = "Account was successfully added";

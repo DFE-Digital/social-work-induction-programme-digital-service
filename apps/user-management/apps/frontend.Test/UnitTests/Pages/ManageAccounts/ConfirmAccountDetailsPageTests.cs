@@ -1,5 +1,5 @@
 using System.Net;
-using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -9,7 +9,6 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -21,34 +20,11 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
     public ConfirmAccountDetailsShould()
     {
-        var options = new Mock<IOptions<EmailTemplateOptions>>();
-        options
-            .Setup(x => x.Value)
-            .Returns(new EmailTemplateOptions
-            {
-                Roles = new Dictionary<string, RoleEmailTemplateConfiguration>
-                {
-                    {
-                        AccountType.Assessor.ToString(),
-                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
-                    },
-                    {
-                        AccountType.EarlyCareerSocialWorker.ToString(),
-                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
-                    },
-                    {
-                        AccountType.Coordinator.ToString(),
-                        new RoleEmailTemplateConfiguration { Invitation = Guid.NewGuid(), Welcome = Guid.NewGuid() }
-                    }
-                }
-            });
-
         Sut = new ConfirmAccountDetails(
             CreateAccountJourneyService,
             EditAccountJourneyService,
-            new FakeLinkGenerator(),
-            MockNotificationServiceClient.Object,
-            options.Object)
+            new FakeLinkGenerator()
+        )
         {
             TempData = TempData
         };
@@ -158,12 +134,69 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .ReturnsAsync(new NotificationResponse() { StatusCode = HttpStatusCode.OK });
 
         // Act
-        var result = await Sut.OnPost();
+        var result = await Sut.OnPostAsync();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
 
         result.Url.Should().Be("/manage-accounts");
+    }
+
+    [Fact]
+    public async Task Post_WhenCalled_SendsEmailToNewAccountWithInvitationTokenLink()
+    {
+        // Arrange
+        var account = AccountFaker.GenerateSocialWorker();
+        CreateAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
+        CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
+
+        var expectedInviteToken = new Faker().Random.String(64);
+
+        MockAuthServiceClient
+            .MockAccountsOperations.Setup(operations =>
+                operations.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>())
+            )
+            .ReturnsAsync(expectedInviteToken);
+        var expectedNotificationRequest = new NotificationRequest
+        {
+            EmailAddress = account.Email!,
+            TemplateId = MockEmailTemplateOptions
+                .Object
+                .Value
+                .Roles[AccountType.EarlyCareerSocialWorker.ToString()]
+                .Invitation,
+            Personalisation = new Dictionary<string, string>
+            {
+                { "name", account.FullName },
+                { "organisation", "TEST ORGANISATION" },
+                {
+                    "invitation_link",
+                    new FakeLinkGenerator().SignInWithInviteToken(HttpContext, expectedInviteToken)
+                }
+            }
+        };
+
+        // Act
+        await Sut.OnPostAsync();
+
+        // Assert
+        MockNotificationOperations.Verify(
+            operations =>
+                operations.SendEmailAsync(
+                    It.Is<NotificationRequest>(request =>
+                        request.EmailAddress == expectedNotificationRequest.EmailAddress
+                        && request.TemplateId == expectedNotificationRequest.TemplateId
+                        && request.Personalisation != null
+                        && request.Personalisation["name"]
+                            == expectedNotificationRequest.Personalisation["name"]
+                        && request.Personalisation["organisation"]
+                            == expectedNotificationRequest.Personalisation["organisation"]
+                        && request.Personalisation["invitation_link"]
+                            == expectedNotificationRequest.Personalisation["invitation_link"]
+                    )
+                ),
+            Times.Once
+        );
     }
 
     [Fact]

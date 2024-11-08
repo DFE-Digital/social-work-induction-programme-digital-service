@@ -9,7 +9,7 @@ public class Index(IAccountService accountService) : BasePageModel
 {
     public IList<Account> Accounts { get; set; } = default!;
 
-    public async Task<PageResult> OnGet()
+    public async Task<PageResult> OnGetAsync()
     {
         Accounts = (await accountService.GetAllAsync())
             .OrderBy(account => account.CreatedAt)

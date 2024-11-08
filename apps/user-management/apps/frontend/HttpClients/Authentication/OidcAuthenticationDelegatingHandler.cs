@@ -11,14 +11,14 @@ public class OidcAuthenticationDelegatingHandler(IHttpContextAccessor httpContex
         CancellationToken cancellationToken
     )
     {
-        var token = await FetchToken();
+        var token = await FetchTokenAsync();
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         return await base.SendAsync(request, cancellationToken);
     }
 
-    private async Task<string> FetchToken()
+    private async Task<string> FetchTokenAsync()
     {
         var accessToken = await (
             httpContextAccessor.HttpContext ?? throw new InvalidOperationException()

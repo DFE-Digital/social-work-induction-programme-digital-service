@@ -36,14 +36,14 @@ public class OAuthAuthenticationDelegatingHandler<TOptions> : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
-        var token = await FetchToken();
+        var token = await FetchTokenAsync();
 
         request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, token.Token);
 
         return await base.SendAsync(request, cancellationToken);
     }
 
-    private async Task<AccessToken> FetchToken()
+    private async Task<AccessToken> FetchTokenAsync()
     {
         try
         {

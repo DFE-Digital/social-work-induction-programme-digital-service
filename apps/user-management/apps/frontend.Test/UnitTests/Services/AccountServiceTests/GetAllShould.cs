@@ -1,5 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
-using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Dfe.Sww.Ecf.Frontend.Models;
 using FluentAssertions;
 using Moq;
 using Xunit;

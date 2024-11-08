@@ -1,4 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Mappers;

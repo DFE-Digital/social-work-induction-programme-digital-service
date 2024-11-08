@@ -1,5 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AccountsService.Models;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.Mappers;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services;

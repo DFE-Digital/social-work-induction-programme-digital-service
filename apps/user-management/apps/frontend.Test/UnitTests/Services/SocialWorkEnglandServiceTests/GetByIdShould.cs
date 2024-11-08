@@ -1,8 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
-using Dfe.Sww.Ecf.Frontend.Services;
-using Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Moq;
@@ -22,7 +18,7 @@ public class GetByIdShould : SocialWorkEnglandTestBase
         MockClient.Setup(x => x.SocialWorkers.GetByIdAsync(id)).ReturnsAsync(socialWorker);
 
         // Act
-        var response = await Sut.GetById(id.ToString());
+        var response = await Sut.GetByIdAsync(id.ToString());
 
         // Assert
         response.Should().NotBeNull();
@@ -42,7 +38,7 @@ public class GetByIdShould : SocialWorkEnglandTestBase
         var id = "NOT AN ID";
 
         // Act
-        var response = await Sut.GetById(id);
+        var response = await Sut.GetByIdAsync(id);
 
         // Assert
         response.Should().BeNull();
@@ -55,7 +51,7 @@ public class GetByIdShould : SocialWorkEnglandTestBase
     public async Task WhenCalledWithNullId_ReturnsNull()
     {
         // Act
-        var response = await Sut.GetById(null);
+        var response = await Sut.GetByIdAsync(null);
 
         // Assert
         response.Should().BeNull();

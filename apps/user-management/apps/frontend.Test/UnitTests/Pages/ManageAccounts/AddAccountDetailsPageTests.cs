@@ -1,7 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
@@ -106,7 +105,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.SocialWorkEnglandNumber = null;
 
         MockSocialWorkEnglandService
-            .Setup(x => x.GetById(It.IsAny<string>()))
+            .Setup(x => x.GetByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((SocialWorker?)null);
 
         // Act
@@ -119,7 +118,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
 
-        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.Verify(x => x.GetByIdAsync(It.IsAny<string>()), Times.Once);
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
     }
 
@@ -134,7 +133,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.SocialWorkEnglandNumber = "1";
 
         MockSocialWorkEnglandService
-            .Setup(x => x.GetById(It.IsAny<string>()))
+            .Setup(x => x.GetByIdAsync(It.IsAny<string>()))
             .ReturnsAsync(new SocialWorker());
 
         // Act
@@ -147,7 +146,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/add-existing-user");
 
-        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.Verify(x => x.GetByIdAsync(It.IsAny<string>()), Times.Once);
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
     }
 
@@ -187,7 +186,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.SocialWorkEnglandNumber = "123";
 
         MockSocialWorkEnglandService
-            .Setup(x => x.GetById(It.IsAny<string>()))
+            .Setup(x => x.GetByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((SocialWorker?)null);
 
         // Act
@@ -206,7 +205,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
             .ErrorMessage.Should()
             .Be("Failed to retrieve Social Work England record. Please try again later.");
 
-        MockSocialWorkEnglandService.Verify(x => x.GetById(It.IsAny<string>()), Times.Once);
+        MockSocialWorkEnglandService.Verify(x => x.GetByIdAsync(It.IsAny<string>()), Times.Once);
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
     }
 

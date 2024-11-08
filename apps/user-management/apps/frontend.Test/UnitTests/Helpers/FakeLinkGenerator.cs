@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -10,18 +11,23 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 // TODO: Replace this with an implementation of RoutingEcfLinkGenerator that uses a real LinkGenerator.
 //       Will require registering a LinkGenerator in the DI container with all the page routing information.
 //       Examples of such can be found on Microsoft's [ASP.NET Core Integration tests](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0) page.
-public class FakeLinkGenerator() : EcfLinkGenerator(new Mock<IWebHostEnvironment>().Object, Options.Create(new OidcConfiguration()
+public class FakeLinkGenerator()
+    : EcfLinkGenerator(
+        new Mock<IWebHostEnvironment>().Object,
+        Options.Create(
+            new OidcConfiguration()
+            {
+                AuthorityUrl = "http://localhost",
+                CallbackUrl = "http://localhost",
+                ClientId = "test",
+                ClientSecret = "test",
+                CookieName = "test",
+                Scopes = [],
+                SignedOutCallbackUrl = "http://localhost"
+            }
+        )
+    )
 {
-    AuthorityUrl = "http://localhost",
-    CallbackUrl = "http://localhost",
-    ClientId = "test",
-    ClientSecret = "test",
-    CookieName = "test",
-    Scopes = [],
-    SignedOutCallbackUrl = "http://localhost"
-}))
-{
-
     protected override string GetRequiredPathByPage(
         string page,
         string? handler = null,
@@ -44,6 +50,31 @@ public class FakeLinkGenerator() : EcfLinkGenerator(new Mock<IWebHostEnvironment
             : QueryHelpers.AddQueryString(generatedLink, "handler", handler);
     }
 
+    protected override string GetRequiredUriByPage(
+        HttpContext httpContext,
+        string page,
+        string? handler = null,
+        object? routeValues = null
+    )
+    {
+        const string indexPath = "/index";
+        if (page.EndsWith(indexPath, StringComparison.OrdinalIgnoreCase))
+        {
+            page = page.Remove(page.Length - indexPath.Length);
+        }
+
+        var generatedLink = new SlugifyRouteParameterTransformer().TransformOutbound(page)!;
+
+        if (routeValues is not null)
+            generatedLink = AddRouteValues(generatedLink, routeValues);
+
+        generatedLink = handler is null
+            ? generatedLink
+            : QueryHelpers.AddQueryString(generatedLink, "handler", handler);
+
+        return httpContext.Request.Scheme + "://" + httpContext.Request.Host + generatedLink;
+    }
+
     private static string AddRouteValues(string link, object routeValues)
     {
         return routeValues
@@ -56,6 +87,7 @@ public class FakeLinkGenerator() : EcfLinkGenerator(new Mock<IWebHostEnvironment
                     + prop.Name switch
                     {
                         "id" => "/" + prop.GetValue(routeValues),
+                        "inviteToken" => "/" + prop.GetValue(routeValues),
                         _
                             => throw new ArgumentException(
                                 "FakeLinkGenerator does not support route values with the name "

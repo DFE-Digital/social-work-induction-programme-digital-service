@@ -17,7 +17,7 @@ public interface ICreateAccountJourneyService
 
     void SetIsStaff(bool? isStaff);
 
-    Account CompleteJourney();
+    Task<Account> CompleteJourneyAsync();
 
     void ResetCreateAccountJourneyModel();
 

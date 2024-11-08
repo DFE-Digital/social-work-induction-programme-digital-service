@@ -3,16 +3,31 @@ using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Routing;
 
-public abstract class EcfLinkGenerator(IWebHostEnvironment environment, IOptions<OidcConfiguration> oidcConfiguration)
+public abstract class EcfLinkGenerator(
+    IWebHostEnvironment environment,
+    IOptions<OidcConfiguration> oidcConfiguration
+)
 {
-    private bool IsBackdoorEnabled => environment.IsDevelopment() && oidcConfiguration.Value.EnableDevelopmentBackdoor;
-    public string SignIn() => IsBackdoorEnabled
-        ? GetRequiredPathByPage("/Debug/Backdoor")
-        : GetRequiredPathByPage("/SignIn");
+    private bool IsBackdoorEnabled =>
+        environment.IsDevelopment() && oidcConfiguration.Value.EnableDevelopmentBackdoor;
 
-    public string SignOut() => IsBackdoorEnabled
-        ? GetRequiredPathByPage("/Debug/SignOut")
-        : GetRequiredPathByPage("/SignOut");
+    public string SignIn() =>
+        IsBackdoorEnabled
+            ? GetRequiredPathByPage("/Debug/Backdoor")
+            : GetRequiredPathByPage("/SignIn");
+
+    public string SignInWithInviteToken(HttpContext httpContext, string inviteToken) =>
+        GetRequiredUriByPage(
+            httpContext,
+            "/SignIn",
+            handler: "invite",
+            routeValues: new { inviteToken }
+        );
+
+    public string SignOut() =>
+        IsBackdoorEnabled
+            ? GetRequiredPathByPage("/Debug/SignOut")
+            : GetRequiredPathByPage("/SignOut");
 
     public string LoggedOut() => GetRequiredPathByPage("/LoggedOut");
 
@@ -82,15 +97,39 @@ public abstract class EcfLinkGenerator(IWebHostEnvironment environment, IOptions
         string? handler = null,
         object? routeValues = null
     );
+
+    protected abstract string GetRequiredUriByPage(
+        HttpContext httpContext,
+        string page,
+        string? handler = null,
+        object? routeValues = null
+    );
 }
 
-public class RoutingEcfLinkGenerator(IWebHostEnvironment environment, IOptions<OidcConfiguration> oidcConfiguration, LinkGenerator linkGenerator) : EcfLinkGenerator(environment, oidcConfiguration)
+public class RoutingEcfLinkGenerator(
+    IWebHostEnvironment environment,
+    IOptions<OidcConfiguration> oidcConfiguration,
+    LinkGenerator linkGenerator
+) : EcfLinkGenerator(environment, oidcConfiguration)
 {
     protected override string GetRequiredPathByPage(
         string page,
         string? handler = null,
         object? routeValues = null
-    ) =>
-        linkGenerator.GetPathByPage(page, handler, values: routeValues)
-        ?? throw new InvalidOperationException("Page was not found.");
+    )
+    {
+        return linkGenerator.GetPathByPage(page, handler, values: routeValues)
+            ?? throw new InvalidOperationException("Page was not found.");
+    }
+
+    protected override string GetRequiredUriByPage(
+        HttpContext httpContext,
+        string page,
+        string? handler = null,
+        object? routeValues = null
+    )
+    {
+        return linkGenerator.GetUriByPage(httpContext, page, handler, values: routeValues)
+            ?? throw new InvalidOperationException("Page was not found.");
+    }
 }

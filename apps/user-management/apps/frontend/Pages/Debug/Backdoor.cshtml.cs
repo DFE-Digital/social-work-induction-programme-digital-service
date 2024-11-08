@@ -16,7 +16,8 @@ public class Backdoor(
     IWebHostEnvironment environment,
     IOptions<OidcConfiguration> oidcConfiguration,
     IAccountRepository accountRepository,
-    EcfLinkGenerator linkGenerator) : DebugBasePageModel(environment, oidcConfiguration)
+    EcfLinkGenerator linkGenerator
+) : DebugBasePageModel(environment, oidcConfiguration)
 {
     public IList<Account> Accounts { get; set; } =
         accountRepository.GetAll().OrderBy(account => account.CreatedAt).ToList();
@@ -27,21 +28,30 @@ public class Backdoor(
 
     public PageResult OnGet() => Page();
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+            return Page();
 
-        if (SelectedAccountId is null || SelectedAccountId == Guid.Empty) return NotFound();
+        if (SelectedAccountId is null || SelectedAccountId == Guid.Empty)
+            return NotFound();
         var selectedAccount = accountRepository.GetById(SelectedAccountId.Value);
-        if (selectedAccount is null) return NotFound();
+        if (selectedAccount is null)
+            return NotFound();
 
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(new ClaimsIdentity([
-                new Claim(ClaimTypes.Email, selectedAccount.Email ?? string.Empty),
-                new Claim(ClaimTypes.Name, selectedAccount.FullName)
-            ], CookieAuthenticationDefaults.AuthenticationScheme)),
-            new AuthenticationProperties());
+            new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.Email, selectedAccount.Email ?? string.Empty),
+                        new Claim(ClaimTypes.Name, selectedAccount.FullName)
+                    ],
+                    CookieAuthenticationDefaults.AuthenticationScheme
+                )
+            ),
+            new AuthenticationProperties()
+        );
 
         return Redirect(linkGenerator.Home());
     }

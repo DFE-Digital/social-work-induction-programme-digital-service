@@ -5,7 +5,7 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 
 public interface ISocialWorkEnglandService
 {
-    public Task<SocialWorker?> GetById(string? sweId);
+    public Task<SocialWorker?> GetByIdAsync(string? sweId);
 
     public MatchResult? GetNameMatchScore(string? firstName, string? lastName, string? sweName);
 }
