@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,10 @@ public class AccountsController(
 ) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationRequest request)
     {
-        var accounts = await accountsService.GetAllAsync();
-        if (!accounts.Any())
+        var accounts = await accountsService.GetAllAsync(request);
+        if (!accounts.Records.Any())
         {
             return NoContent();
         }

@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             // Arrange
             await TestData.CreatePersons(5);
 
+            var request = new PaginationRequest(1, 5);
+
             var expectedAccounts = await dbContext.Persons.ToListAsync();
             var accountsService = new AccountsService(dbContext);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
@@ -27,11 +30,11 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
             // Act
-            var result = await controller.GetAllAsync();
+            var result = await controller.GetAllAsync(request);
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultAccounts = okResult.Value.Should().BeOfType<List<Person>>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<PaginationResult<Person>>().Subject;
 
             resultAccounts.Should().BeEquivalentTo(expectedAccounts);
         });
