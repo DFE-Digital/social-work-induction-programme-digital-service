@@ -128,20 +128,20 @@ public class CreateAccountJourneyService(
             return;
         }
 
-        var inviteTokenResponse = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
+        var linkingToken = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
             account.Id
         );
 
-        if (inviteTokenResponse is null)
+        if (linkingToken is null)
         {
             throw new InvalidOperationException(
                 "Failed to get account linking token when preparing to send invitation email."
             );
         }
 
-        var invitationLink = linkGenerator.SignInWithInviteToken(
+        var invitationLink = linkGenerator.SignInWithLinkingToken(
             _httpContextAccessor.HttpContext,
-            inviteTokenResponse
+            linkingToken
         );
 
         // Get the highest ranking role - the lowest (int)enum

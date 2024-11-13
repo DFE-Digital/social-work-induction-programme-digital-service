@@ -87,7 +87,12 @@ public class FakeLinkGenerator()
                     + prop.Name switch
                     {
                         "id" => "/" + prop.GetValue(routeValues),
-                        "inviteToken" => "/" + prop.GetValue(routeValues),
+                        "linkingToken"
+                            => QueryHelpers.AddQueryString(
+                                link,
+                                "linkingToken",
+                                prop.GetValue(routeValues)?.ToString() ?? string.Empty
+                            ),
                         _
                             => throw new ArgumentException(
                                 "FakeLinkGenerator does not support route values with the name "

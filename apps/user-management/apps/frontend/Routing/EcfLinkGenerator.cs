@@ -16,12 +16,12 @@ public abstract class EcfLinkGenerator(
             ? GetRequiredPathByPage("/Debug/Backdoor")
             : GetRequiredPathByPage("/SignIn");
 
-    public string SignInWithInviteToken(HttpContext httpContext, string inviteToken) =>
+    public string SignInWithLinkingToken(HttpContext httpContext, string linkingToken) =>
         GetRequiredUriByPage(
             httpContext,
             "/SignIn",
             handler: "invite",
-            routeValues: new { inviteToken }
+            routeValues: new { linkingToken }
         );
 
     public string SignOut() =>

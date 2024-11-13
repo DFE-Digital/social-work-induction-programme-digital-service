@@ -73,6 +73,21 @@ public static class InstallAuthentication
 
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.SaveTokens = true;
+
+                options.Events.OnRedirectToIdentityProvider = context =>
+                {
+                    if (
+                        context.HttpContext.Request.Query.TryGetValue(
+                            "LinkingToken",
+                            out var linkingToken
+                        )
+                    )
+                    {
+                        context.ProtocolMessage.SetParameter("LinkingToken", linkingToken);
+                    }
+
+                    return Task.CompletedTask;
+                };
             });
     }
 }

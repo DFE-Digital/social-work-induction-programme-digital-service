@@ -150,13 +150,13 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         CreateAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
         CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
 
-        var expectedInviteToken = new Faker().Random.String(64);
+        var expectedLinkingToken = new Faker().Random.String(64);
 
         MockAuthServiceClient
             .MockAccountsOperations.Setup(operations =>
                 operations.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>())
             )
-            .ReturnsAsync(expectedInviteToken);
+            .ReturnsAsync(expectedLinkingToken);
         var expectedNotificationRequest = new NotificationRequest
         {
             EmailAddress = account.Email!,
@@ -171,7 +171,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
                 { "organisation", "TEST ORGANISATION" },
                 {
                     "invitation_link",
-                    new FakeLinkGenerator().SignInWithInviteToken(HttpContext, expectedInviteToken)
+                    new FakeLinkGenerator().SignInWithLinkingToken(
+                        HttpContext,
+                        expectedLinkingToken
+                    )
                 }
             }
         };
