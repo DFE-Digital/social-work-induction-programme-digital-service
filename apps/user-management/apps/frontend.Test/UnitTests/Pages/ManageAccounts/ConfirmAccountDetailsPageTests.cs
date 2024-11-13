@@ -1,5 +1,6 @@
 using System.Net;
 using Bogus;
+using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -9,6 +10,7 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -103,46 +105,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     }
 
     [Fact]
-    public void GetUpdate_WithInvalidId_ReturnsNotFound()
-    {
-        // Arrange
-        var invalidId = Guid.NewGuid();
-
-        // Act
-        var result = Sut.OnGetUpdate(invalidId);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-    }
-
-    [Fact]
-    public async Task Post_WhenCalled_RedirectsToAccountsIndex()
-    {
-        // Arrange
-        var account = AccountFaker.GenerateNewAccount();
-
-        CreateAccountJourneyService.SetAccountTypes(account.Types!);
-        CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
-
-        var notificationRequest = new NotificationRequest
-        {
-            EmailAddress = "test@test.com",
-            TemplateId = Guid.NewGuid()
-        };
-        MockNotificationServiceClient
-            .Setup(x => x.Notification.SendEmailAsync(notificationRequest))
-            .ReturnsAsync(new NotificationResponse() { StatusCode = HttpStatusCode.OK });
-
-        // Act
-        var result = await Sut.OnPostAsync();
-
-        // Assert
-        result.Should().BeOfType<RedirectResult>();
-
-        result.Url.Should().Be("/manage-accounts");
-    }
-
-    [Fact]
     public async Task Post_WhenCalled_SendsEmailToNewAccountWithInvitationTokenLink()
     {
         // Arrange
@@ -200,6 +162,46 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
                 ),
             Times.Once
         );
+    }
+
+    [Fact]
+    public void GetUpdate_WithInvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        var invalidId = Guid.NewGuid();
+
+        // Act
+        var result = Sut.OnGetUpdate(invalidId);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Fact]
+    public async Task Post_WhenCalled_RedirectsToAccountsIndex()
+    {
+        // Arrange
+        var account = AccountFaker.GenerateNewAccount();
+
+        CreateAccountJourneyService.SetAccountTypes(account.Types!);
+        CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
+
+        var notificationRequest = new NotificationRequest
+        {
+            EmailAddress = "test@test.com",
+            TemplateId = Guid.NewGuid()
+        };
+        MockNotificationServiceClient
+            .Setup(x => x.Notification.SendEmailAsync(notificationRequest))
+            .ReturnsAsync(new NotificationResponse() { StatusCode = HttpStatusCode.OK });
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        result.Url.Should().Be("/manage-accounts");
     }
 
     [Fact]

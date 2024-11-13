@@ -2,6 +2,7 @@
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Operations;
 
@@ -10,9 +11,10 @@ public class AccountsOperations(AuthServiceClient authServiceClient) : IAccounts
     private static JsonSerializerOptions? SerializerOptions { get; } =
         new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
 
-    public async Task<IList<Person>> GetAllAsync()
+    public async Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request)
     {
-        var httpResponse = await authServiceClient.HttpClient.GetAsync("/api/Accounts");
+        var route = $"/api/Accounts?Offset={request.Offset}&PageSize={request.PageSize}";
+        var httpResponse = await authServiceClient.HttpClient.GetAsync(route);
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -21,7 +23,10 @@ public class AccountsOperations(AuthServiceClient authServiceClient) : IAccounts
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
-        var persons = JsonSerializer.Deserialize<IList<Person>>(response, SerializerOptions);
+        var persons = JsonSerializer.Deserialize<PaginationResult<Person>>(
+            response,
+            SerializerOptions
+        );
 
         if (persons is null)
         {

@@ -1,12 +1,7 @@
-using Bogus;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories;
-using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -15,7 +10,6 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Moq;
 

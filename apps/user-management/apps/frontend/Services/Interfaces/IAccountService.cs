@@ -1,8 +1,9 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
+using Dfe.Sww.Ecf.Frontend.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 
 public interface IAccountService
 {
-    public Task<List<Account>> GetAllAsync();
+    public Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request);
 }

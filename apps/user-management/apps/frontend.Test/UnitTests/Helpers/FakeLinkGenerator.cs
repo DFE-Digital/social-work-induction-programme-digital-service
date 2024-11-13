@@ -93,11 +93,7 @@ public class FakeLinkGenerator()
                                 "linkingToken",
                                 prop.GetValue(routeValues)?.ToString() ?? string.Empty
                             ),
-                        _
-                            => throw new ArgumentException(
-                                "FakeLinkGenerator does not support route values with the name "
-                                    + prop.Name
-                            )
+                        _ => string.Empty
                     }
             );
     }

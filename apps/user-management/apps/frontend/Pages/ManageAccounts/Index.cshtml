@@ -9,6 +9,8 @@
 
     var notifiedEmail = TempData["NotifyEmail"]?.ToString();
     var notificationBannerSubject = TempData["NotificationBannerSubject"]?.ToString();
+
+    var paging = Model.Pagination;
 }
 
 <div class="govuk-grid-row">
@@ -75,7 +77,7 @@
                         }
                     </td>
                     <td class="govuk-table__cell">
-                        <account-types types="account.Types" />
+                        <account-types types="account.Types"/>
                     </td>
                     <td class="govuk-table__cell">
                         <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">View</a>
@@ -84,6 +86,33 @@
             }
             </tbody>
         </table>
+
+        <govuk-pagination>
+            @if (paging?.Links?["previous"] != null)
+            {
+                var prev = paging.Links["previous"];
+                <govuk-pagination-previous href="@LinkGenerator.ManageAccounts(prev.Offset, prev.PageSize)"/>
+            }
+
+            @for (var i = 1; i < paging?.PageCount + 1; i++)
+            {
+                var pageNo = i;
+                var currentPage = paging?.Page ?? 0;
+
+                <govuk-pagination-item
+                    is-current=@(currentPage == pageNo)
+                    href=@LinkGenerator.ManageAccounts((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                    @pageNo
+                </govuk-pagination-item>
+            }
+
+            @if (paging?.Links?["next"] != null)
+            {
+                var next = paging.Links["next"];
+                <govuk-pagination-next href="@LinkGenerator.ManageAccounts(next.Offset, next.PageSize)"/>
+            }
+        </govuk-pagination>
+
         <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add someone</govuk-button-link>
     </div>
-</div>
+</div >

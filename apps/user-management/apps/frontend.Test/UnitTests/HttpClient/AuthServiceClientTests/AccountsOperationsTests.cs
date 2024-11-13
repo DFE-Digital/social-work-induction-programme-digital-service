@@ -3,6 +3,7 @@ using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -39,16 +40,30 @@ public class AccountsOperationsTests
             }
         };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, persons, route);
+        var paginationRequest = new PaginationRequest(0, 10);
+        var paginationResponse = new PaginationResult<Person>
+        {
+            Records = persons,
+            MetaData = new PaginationMetaData
+            {
+                Page = 1,
+                PageSize = 5,
+                PageCount = 2,
+                TotalCount = 10,
+                Links = new Dictionary<string, MetaDataLink>()
+            }
+        };
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, paginationResponse, route);
 
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.Accounts.GetAllAsync();
+        var response = await sut.Accounts.GetAllAsync(paginationRequest);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeEquivalentTo(persons);
+        response.Should().BeEquivalentTo(paginationResponse);
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -65,9 +80,11 @@ public class AccountsOperationsTests
 
         var sut = BuildSut(mockHttp);
 
+        var paginationRequest = new PaginationRequest(0, 10);
+
         // Act
         var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Accounts.GetAllAsync()
+            async () => await sut.Accounts.GetAllAsync(paginationRequest)
         );
 
         // Assert
