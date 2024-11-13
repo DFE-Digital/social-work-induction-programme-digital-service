@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess;
 
@@ -10,7 +10,8 @@ public class SignInJourneyState(
     string redirectUri,
     string serviceName,
     string serviceUrl,
-    string? trnToken = null)
+    string? linkingToken = null
+)
 {
     public const string JourneyName = "SignInJourney";
 
@@ -23,9 +24,7 @@ public class SignInJourneyState(
 
     public string ServiceUrl { get; } = serviceUrl;
 
-    public string? TrnToken { get; } = trnToken;
-
-    public string? TrnTokenTrn { get; set; }
+    public string? LinkingToken { get; } = linkingToken;
 
     [JsonConverter(typeof(AuthenticationTicketJsonConverter))]
     public AuthenticationTicket? AuthenticationTicket { get; set; }
@@ -34,8 +33,6 @@ public class SignInJourneyState(
     public AuthenticationTicket? OneLoginAuthenticationTicket { get; set; }
 
     public bool AttemptedIdentityVerification { get; set; }
-
-    public bool HasPendingSupportRequest { get; set; }
 
     [JsonInclude]
     public bool IdentityVerified { get; private set; }
@@ -51,12 +48,6 @@ public class SignInJourneyState(
 
     [JsonInclude]
     public string? NationalInsuranceNumber { get; private set; }
-
-    [JsonInclude]
-    public bool? HaveTrn { get; private set; }
-
-    [JsonInclude]
-    public string? Trn { get; private set; }
 
     public void Reset()
     {
@@ -81,26 +72,21 @@ public class SignInJourneyState(
         VerifiedDatesOfBirth = null;
     }
 
-    public void SetNationalInsuranceNumber(bool haveNationalInsuranceNumber, string? nationalInsuranceNumber)
+    public void SetNationalInsuranceNumber(
+        bool haveNationalInsuranceNumber,
+        string? nationalInsuranceNumber
+    )
     {
         if (haveNationalInsuranceNumber && nationalInsuranceNumber is null)
         {
-            throw new ArgumentException("National Insurance number must be specified.", nameof(nationalInsuranceNumber));
+            throw new ArgumentException(
+                "National Insurance number must be specified.",
+                nameof(nationalInsuranceNumber)
+            );
         }
 
         HaveNationalInsuranceNumber = haveNationalInsuranceNumber;
         NationalInsuranceNumber = haveNationalInsuranceNumber ? nationalInsuranceNumber! : null;
-    }
-
-    public void SetTrn(bool haveTrn, string? trn)
-    {
-        if (haveTrn && trn is null)
-        {
-            throw new ArgumentException("TRN must be specified.", nameof(trn));
-        }
-
-        HaveTrn = haveTrn;
-        Trn = haveTrn ? trn! : null;
     }
 }
 
@@ -108,7 +94,11 @@ public class AuthenticationTicketJsonConverter : JsonConverter<AuthenticationTic
 {
     private readonly TicketSerializer _ticketSerializer = TicketSerializer.Default;
 
-    public override AuthenticationTicket? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override AuthenticationTicket? Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         if (reader.TokenType == JsonTokenType.Null)
         {
@@ -124,7 +114,11 @@ public class AuthenticationTicketJsonConverter : JsonConverter<AuthenticationTic
         throw new JsonException($"Unknown TokenType: '{reader.TokenType}'.");
     }
 
-    public override void Write(Utf8JsonWriter writer, AuthenticationTicket value, JsonSerializerOptions options)
+    public override void Write(
+        Utf8JsonWriter writer,
+        AuthenticationTicket value,
+        JsonSerializerOptions options
+    )
     {
         var bytes = _ticketSerializer.Serialize(value);
         writer.WriteBase64StringValue(bytes);

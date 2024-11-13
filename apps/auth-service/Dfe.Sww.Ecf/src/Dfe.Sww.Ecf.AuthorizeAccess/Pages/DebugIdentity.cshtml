@@ -9,7 +9,7 @@
         <form action="@LinkGenerator.DebugIdentity(Model.JourneyInstance!.InstanceId)" method="post">
             <h1 class="govuk-heading-l">@ViewBag.Title</h1>
 
-            <govuk-input asp-for="TrnToken" disabled="true" />
+            <govuk-input asp-for="LinkingToken" disabled="true" />
 
             <h2 class="govuk-heading-m">User information</h2>
 
@@ -29,7 +29,7 @@
             </govuk-checkboxes>
 
             <div class="govuk-!-margin-bottom-5">
-                <h2 class="govuk-heading-m">Teaching record</h2>
+                <h2 class="govuk-heading-m">ECF Account</h2>
 
                 @if (Model.Person is not null)
                 {
@@ -53,13 +53,13 @@
                     </govuk-summary-list>
 
                     <govuk-checkboxes asp-for="DetachPerson" class="govuk-checkboxes--small">
-                        <govuk-checkboxes-item value="@true">Detach teaching record</govuk-checkboxes-item>
+                        <govuk-checkboxes-item value="@true">Detach ECF Account</govuk-checkboxes-item>
                     </govuk-checkboxes>
                 }
                 else
                 {
                     <p class="govuk-body">
-                        <div class="govuk-caption-m">User is not linked to a teaching record.</div>
+                        <div class="govuk-caption-m">User is not linked to an ECF Account.</div>
                     </p>
                 }
             </div>

@@ -19,8 +19,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             var expectedAccounts = await dbContext.Persons.ToListAsync();
             var accountsService = new AccountsService(dbContext);
-            var oneLoginAccountLinkingService =
-                new OneLoginAccountLinkingService(accountsService, new MemoryCache(new MemoryCacheOptions()));
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
@@ -43,8 +45,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
             var accountsService = new AccountsService(dbContext);
-            var oneLoginAccountLinkingService =
-                new OneLoginAccountLinkingService(accountsService, new MemoryCache(new MemoryCacheOptions()));
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
@@ -66,8 +70,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             var accountsService = new AccountsService(dbContext);
-            var oneLoginAccountLinkingService =
-                new OneLoginAccountLinkingService(accountsService, new MemoryCache(new MemoryCacheOptions()));
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
@@ -87,8 +93,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
             var accountsService = new AccountsService(dbContext);
-            var oneLoginAccountLinkingService =
-                new OneLoginAccountLinkingService(accountsService, new MemoryCache(new MemoryCacheOptions()));
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
@@ -108,8 +116,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             var accountsService = new AccountsService(dbContext);
-            var oneLoginAccountLinkingService =
-                new OneLoginAccountLinkingService(accountsService, new MemoryCache(new MemoryCacheOptions()));
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 

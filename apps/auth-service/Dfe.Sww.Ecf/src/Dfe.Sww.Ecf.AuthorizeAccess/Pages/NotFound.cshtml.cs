@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Dfe.Sww.Ecf.UiCommon.FormFlow;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Pages;
 
@@ -10,11 +9,7 @@ public class NotFoundModel(SignInJourneyHelper helper) : PageModel
 {
     public JourneyInstance<SignInJourneyState>? JourneyInstance { get; set; }
 
-    public void OnGet()
-    {
-    }
-
-    public IActionResult OnPost() => Redirect(helper.LinkGenerator.CheckAnswers(JourneyInstance!.InstanceId));
+    public void OnGet() { }
 
     public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
@@ -22,23 +17,13 @@ public class NotFoundModel(SignInJourneyHelper helper) : PageModel
 
         if (state.AuthenticationTicket is not null)
         {
-            // Already matched to a Teaching Record
+            // Already matched to an ECF account
             context.Result = Redirect(helper.GetSafeRedirectUri(JourneyInstance));
         }
         else if (state.OneLoginAuthenticationTicket is null || !state.IdentityVerified)
         {
             // Not authenticated/verified with One Login
             context.Result = BadRequest();
-        }
-        else if (!state.HaveNationalInsuranceNumber.HasValue)
-        {
-            // Not answered the NINO question
-            context.Result = Redirect(helper.LinkGenerator.NationalInsuranceNumber(JourneyInstance.InstanceId));
-        }
-        else if (!state.HaveTrn.HasValue)
-        {
-            // Not answered the TRN question
-            context.Result = Redirect(helper.LinkGenerator.Trn(JourneyInstance.InstanceId));
         }
     }
 }

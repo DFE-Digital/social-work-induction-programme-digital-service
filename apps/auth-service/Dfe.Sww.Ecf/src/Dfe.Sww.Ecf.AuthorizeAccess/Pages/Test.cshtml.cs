@@ -1,9 +1,9 @@
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
+using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
-using Dfe.Sww.Ecf.UiCommon.FormFlow;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Pages;
 
@@ -30,14 +30,35 @@ public class TestModel : PageModel
                 {
                     Items =
                     {
-                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.OneLoginAuthenticationScheme, AuthenticationScheme },
-                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName, "Test service" },
-                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl, Request.GetEncodedUrl() },
-                        { MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken, TrnToken },
+                        {
+                            MatchToEcfAccountAuthenticationHandler
+                                .AuthenticationPropertiesItemKeys
+                                .OneLoginAuthenticationScheme,
+                            AuthenticationScheme
+                        },
+                        {
+                            MatchToEcfAccountAuthenticationHandler
+                                .AuthenticationPropertiesItemKeys
+                                .ServiceName,
+                            "Test service"
+                        },
+                        {
+                            MatchToEcfAccountAuthenticationHandler
+                                .AuthenticationPropertiesItemKeys
+                                .ServiceUrl,
+                            Request.GetEncodedUrl()
+                        },
+                        {
+                            MatchToEcfAccountAuthenticationHandler
+                                .AuthenticationPropertiesItemKeys
+                                .LinkingToken,
+                            TrnToken
+                        },
                     },
-                    RedirectUri = Request.GetEncodedUrl()
+                    RedirectUri = Request.GetEncodedUrl(),
                 },
-                AuthenticationSchemes.MatchToEcfAccount);
+                AuthenticationSchemes.MatchToEcfAccount
+            );
         }
 
         return Page();

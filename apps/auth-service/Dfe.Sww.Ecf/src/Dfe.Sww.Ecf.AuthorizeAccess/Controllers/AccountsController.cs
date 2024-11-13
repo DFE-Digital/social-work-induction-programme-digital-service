@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Validation.AspNetCore;
+
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
@@ -10,7 +11,8 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 [Route("api/[controller]")]
 public class AccountsController(
     IAccountsService accountsService,
-    IOneLoginAccountLinkingService oneLoginAccountLinkingService) : Controller
+    IOneLoginAccountLinkingService oneLoginAccountLinkingService
+) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
@@ -46,11 +48,8 @@ public class AccountsController(
             return NoContent();
         }
 
-        var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountId(id);
-        var result = new LinkingTokenResult
-        {
-            LinkingToken = linkingToken
-        };
+        var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountIdAsync(id);
+        var result = new LinkingTokenResult { LinkingToken = linkingToken };
 
         return Ok(result);
     }

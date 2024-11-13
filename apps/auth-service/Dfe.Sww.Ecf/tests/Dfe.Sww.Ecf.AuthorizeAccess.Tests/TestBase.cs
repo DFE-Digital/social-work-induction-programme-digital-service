@@ -1,12 +1,12 @@
 using System.Security.Claims;
-using GovUk.OneLogin.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
+using GovUk.OneLogin.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests;
 
@@ -20,10 +20,7 @@ public abstract class TestBase : IDisposable
 
         _testServices = TestScopedServices.Reset();
 
-        HttpClient = hostFixture.CreateClient(new()
-        {
-            AllowAutoRedirect = false
-        });
+        HttpClient = hostFixture.CreateClient(new() { AllowAutoRedirect = false });
     }
 
     public HostFixture HostFixture { get; }
@@ -36,7 +33,9 @@ public abstract class TestBase : IDisposable
 
     public TestData TestData => HostFixture.Services.GetRequiredService<TestData>();
 
-    public async Task<JourneyInstance<SignInJourneyState>> CreateJourneyInstance(SignInJourneyState state)
+    public async Task<JourneyInstance<SignInJourneyState>> CreateJourneyInstance(
+        SignInJourneyState state
+    )
     {
         await using var scope = HostFixture.Services.CreateAsyncScope();
         var stateProvider = scope.ServiceProvider.GetRequiredService<IUserInstanceStateProvider>();
@@ -45,32 +44,42 @@ public abstract class TestBase : IDisposable
 
         var keysDict = new Dictionary<string, StringValues>
         {
-            { Constants.UniqueKeyQueryParameterName, new StringValues(Guid.NewGuid().ToString()) }
+            { Constants.UniqueKeyQueryParameterName, new StringValues(Guid.NewGuid().ToString()) },
         };
 
         var instanceId = new JourneyInstanceId(journeyDescriptor.JourneyName, keysDict);
 
         var stateType = typeof(SignInJourneyState);
 
-        var instance = await stateProvider.CreateInstanceAsync(instanceId, stateType, state, properties: null);
+        var instance = await stateProvider.CreateInstanceAsync(
+            instanceId,
+            stateType,
+            state,
+            properties: null
+        );
         return (JourneyInstance<SignInJourneyState>)instance;
     }
 
-    public async Task<JourneyInstance<SignInJourneyState>> ReloadJourneyInstance(JourneyInstance<SignInJourneyState> journeyInstance)
+    public async Task<JourneyInstance<SignInJourneyState>> ReloadJourneyInstance(
+        JourneyInstance<SignInJourneyState> journeyInstance
+    )
     {
         await using var scope = HostFixture.Services.CreateAsyncScope();
         var stateProvider = scope.ServiceProvider.GetRequiredService<IUserInstanceStateProvider>();
-        var reloadedInstance = await stateProvider.GetInstanceAsync(journeyInstance.InstanceId, typeof(SignInJourneyState));
+        var reloadedInstance = await stateProvider.GetInstanceAsync(
+            journeyInstance.InstanceId,
+            typeof(SignInJourneyState)
+        );
         return (JourneyInstance<SignInJourneyState>)reloadedInstance!;
     }
 
-    public virtual void Dispose()
-    {
-    }
+    public virtual void Dispose() { }
 
     public virtual async Task<T> WithDbContext<T>(Func<EcfDbContext, Task<T>> action)
     {
-        var dbContextFactory = HostFixture.Services.GetRequiredService<IDbContextFactory<EcfDbContext>>();
+        var dbContextFactory = HostFixture.Services.GetRequiredService<
+            IDbContextFactory<EcfDbContext>
+        >();
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
         return await action(dbContext);
     }
@@ -82,7 +91,8 @@ public abstract class TestBase : IDisposable
             return 0;
         });
 
-    public SignInJourneyHelper GetSignInJourneyHelper() => HostFixture.Services.GetRequiredService<SignInJourneyHelper>();
+    public SignInJourneyHelper GetSignInJourneyHelper() =>
+        HostFixture.Services.GetRequiredService<SignInJourneyHelper>();
 
     public AuthenticationTicket CreateOneLoginAuthenticationTicket(
         string vtr,
@@ -91,24 +101,25 @@ public abstract class TestBase : IDisposable
         string? firstName = null,
         string? lastName = null,
         DateOnly? dateOfBirth = null,
-        bool? createCoreIdentityVc = null)
+        bool? createCoreIdentityVc = null
+    )
     {
         sub ??= TestData.CreateOneLoginUserSubject();
         email ??= Faker.Internet.Email();
 
-        var claims = new List<Claim>()
-        {
-            new("sub", sub),
-            new("email", email)
-        };
+        var claims = new List<Claim>() { new("sub", sub), new("email", email) };
 
-        createCoreIdentityVc ??= vtr == SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr;
+        createCoreIdentityVc ??=
+            vtr == SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr;
 
         if (createCoreIdentityVc == true)
         {
             if (vtr == SignInJourneyHelper.AuthenticationOnlyVtr)
             {
-                throw new ArgumentException("Cannot assign core identity VC with authentication-only vtr.", nameof(vtr));
+                throw new ArgumentException(
+                    "Cannot assign core identity VC with authentication-only vtr.",
+                    nameof(vtr)
+                );
             }
 
             firstName ??= Faker.Name.First();
@@ -119,13 +130,26 @@ public abstract class TestBase : IDisposable
             claims.Add(new Claim("vc", vc.RootElement.ToString(), "JSON"));
         }
 
-        var identity = new ClaimsIdentity(claims, authenticationType: "OneLogin", nameType: "sub", roleType: null);
+        var identity = new ClaimsIdentity(
+            claims,
+            authenticationType: "OneLogin",
+            nameType: "sub",
+            roleType: null
+        );
 
         var principal = new ClaimsPrincipal(identity);
 
         var properties = new AuthenticationProperties();
         properties.SetVectorOfTrust(vtr);
-        properties.StoreTokens([new AuthenticationToken() { Name = OpenIdConnectParameterNames.IdToken, Value = "dummy" }]);
+        properties.StoreTokens(
+            [
+                new AuthenticationToken()
+                {
+                    Name = OpenIdConnectParameterNames.IdToken,
+                    Value = "dummy",
+                },
+            ]
+        );
 
         return new AuthenticationTicket(principal, properties, authenticationScheme: "OneLogin");
     }
@@ -137,45 +161,11 @@ public abstract class TestBase : IDisposable
             user.Email,
             user.VerifiedNames?.First().First(),
             user.VerifiedNames?.First().Last(),
-            user.VerifiedDatesOfBirth?.First());
+            user.VerifiedDatesOfBirth?.First()
+        );
 
-    public SignInJourneyState CreateNewState(IdTrnToken trnToken, string redirectUri = "/") =>
-        CreateNewState(redirectUri, trnToken.TrnToken, trnToken.Trn);
-
-    public static SignInJourneyState CreateNewState(string redirectUri = "/", string? trnToken = null, string? trnTokenTrn = null) =>
-        new(
-            redirectUri,
-            serviceName: "Test Service",
-            serviceUrl: "https://service",
-            trnToken)
-        {
-            TrnTokenTrn = trnTokenTrn
-        };
-
-    private static int _lastTrnToken;
-
-    public async Task<IdTrnToken> CreateTrnToken(string trn, string? email = null)
-    {
-        var trnTokenStr = Interlocked.Increment(ref _lastTrnToken).ToString("D12");
-
-        email ??= Faker.Internet.Email();
-
-        using var scope = HostFixture.Services.CreateScope();
-        using var idDbContext = scope.ServiceProvider.GetRequiredService<IdDbContext>();
-
-        var trnToken = new IdTrnToken()
-        {
-            CreatedUtc = Clock.UtcNow,
-            Email = email,
-            ExpiresUtc = Clock.UtcNow.AddDays(30),
-            Trn = trn,
-            TrnToken = trnTokenStr,
-            UserId = null
-        };
-
-        idDbContext.TrnTokens.Add(trnToken);
-        await idDbContext.SaveChangesAsync();
-
-        return trnToken;
-    }
+    public static SignInJourneyState CreateNewState(
+        string redirectUri = "/",
+        string? linkingToken = null
+    ) => new(redirectUri, serviceName: "Test Service", serviceUrl: "https://service", linkingToken);
 }

@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
-using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
-using Dfe.Sww.Ecf.UiCommon.FormFlow;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Pages;
 
@@ -17,14 +17,15 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Pages;
 public class DebugIdentityModel(
     EcfDbContext dbContext,
     SignInJourneyHelper helper,
-    IOptions<AuthorizeAccessOptions> optionsAccessor) : PageModel
+    IOptions<AuthorizeAccessOptions> optionsAccessor
+) : PageModel
 {
     private OneLoginUser? _oneLoginUser;
 
     public JourneyInstance<SignInJourneyState>? JourneyInstance { get; set; }
 
-    [Display(Name = "TRN token")]
-    public string? TrnToken { get; set; }
+    [Display(Name = "Linking token")]
+    public string? LinkingToken { get; set; }
 
     [Display(Name = "Subject")]
     public string? Subject { get; set; }
@@ -44,8 +45,6 @@ public class DebugIdentityModel(
     [Display(Name = "Verified dates of birth")]
     public string? VerifiedDatesOfBirth { get; set; }
 
-    public string? CoreIdentityJwt { get; set; }
-
     public PersonInfo? Person { get; set; }
 
     [BindProperty]
@@ -55,21 +54,30 @@ public class DebugIdentityModel(
     {
         IdentityVerified = JourneyInstance!.State.IdentityVerified;
 
-        if (IdentityVerified)
+        if (!IdentityVerified)
         {
-            VerifiedNames = string.Join("\n", JourneyInstance.State.VerifiedNames!.Select(name => string.Join(" ", name)));
-            VerifiedDatesOfBirth = string.Join("\n", JourneyInstance.State.VerifiedDatesOfBirth!.Select(dob => dob.ToString("dd/MM/yyyy")));
+            return;
         }
+
+        VerifiedNames = string.Join(
+            "\n",
+            JourneyInstance.State.VerifiedNames!.Select(name => string.Join(" ", name))
+        );
+        VerifiedDatesOfBirth = string.Join(
+            "\n",
+            JourneyInstance.State.VerifiedDatesOfBirth!.Select(dob => dob.ToString("dd/MM/yyyy"))
+        );
     }
 
-    public async Task<IActionResult> OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
         string[][]? verifiedNames;
         DateOnly[]? verifiedDatesOfBirth;
 
         if (IdentityVerified)
         {
-            verifiedNames = (VerifiedNames ?? string.Empty).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            verifiedNames = (VerifiedNames ?? string.Empty)
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray())
                 .ToArray();
 
@@ -79,20 +87,34 @@ public class DebugIdentityModel(
             }
             else if (verifiedNames.Any(name => name.Length < 2))
             {
-                ModelState.AddModelError(nameof(VerifiedNames), "Each name must have at least two parts");
+                ModelState.AddModelError(
+                    nameof(VerifiedNames),
+                    "Each name must have at least two parts"
+                );
             }
 
-            var dobs = (VerifiedDatesOfBirth ?? string.Empty).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(line => DateOnly.TryParseExact(line, "d/M/yyyy", out var parsed) ? parsed : (DateOnly?)null)
+            var dobs = (VerifiedDatesOfBirth ?? string.Empty)
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(line =>
+                    DateOnly.TryParseExact(line, "d/M/yyyy", out var parsed)
+                        ? parsed
+                        : (DateOnly?)null
+                )
                 .ToArray();
 
             if (dobs.Length == 0)
             {
-                ModelState.AddModelError(nameof(VerifiedDatesOfBirth), "Enter at least one date of birth");
+                ModelState.AddModelError(
+                    nameof(VerifiedDatesOfBirth),
+                    "Enter at least one date of birth"
+                );
             }
             else if (dobs.Any(dob => dob is null))
             {
-                ModelState.AddModelError(nameof(VerifiedDatesOfBirth), "Each date of birth must be in the dd/mm/yyyy format");
+                ModelState.AddModelError(
+                    nameof(VerifiedDatesOfBirth),
+                    "Each date of birth must be in the dd/mm/yyyy format"
+                );
             }
 
             verifiedDatesOfBirth = dobs.Where(d => d.HasValue).Select(d => d!.Value).ToArray();
@@ -110,7 +132,7 @@ public class DebugIdentityModel(
 
         if (_oneLoginUser!.PersonId is not null && !DetachPerson)
         {
-            await JourneyInstance!.UpdateStateAsync(state => SignInJourneyHelper.Complete(state, _oneLoginUser.Person!.Trn!));
+            await JourneyInstance!.UpdateStateAsync(SignInJourneyHelper.Complete);
             return GetNextPage();
         }
 
@@ -121,7 +143,12 @@ public class DebugIdentityModel(
 
         if (IdentityVerified)
         {
-            await helper.OnUserVerifiedCore(JourneyInstance!, verifiedNames!, verifiedDatesOfBirth!, coreIdentityClaimVc: null);
+            await helper.OnUserVerifiedCore(
+                JourneyInstance!,
+                verifiedNames!,
+                verifiedDatesOfBirth!,
+                coreIdentityClaimVc: null
+            );
         }
         else
         {
@@ -140,7 +167,10 @@ public class DebugIdentityModel(
         IActionResult GetNextPage() => helper.GetNextPage(JourneyInstance!).ToActionResult();
     }
 
-    public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    public override async Task OnPageHandlerExecutionAsync(
+        PageHandlerExecutingContext context,
+        PageHandlerExecutionDelegate next
+    )
     {
         if (!optionsAccessor.Value.ShowDebugPages)
         {
@@ -154,21 +184,35 @@ public class DebugIdentityModel(
             return;
         }
 
-        TrnToken = JourneyInstance.State.TrnToken;
+        LinkingToken = JourneyInstance.State.LinkingToken;
         Subject = User.FindFirstValue("sub");
         Email = User.FindFirstValue("email");
 
-        _oneLoginUser = await dbContext.OneLoginUsers
-            .Include(o => o.Person)
+        _oneLoginUser = await dbContext
+            .OneLoginUsers.Include(o => o.Person)
             .FirstOrDefaultAsync(o => o.Subject == Subject);
 
-        if (_oneLoginUser?.Person is Person person)
+        if (_oneLoginUser?.Person is { } person)
         {
-            Person = new(person.PersonId, person.Trn, person.FirstName, person.LastName, person.DateOfBirth, person.NationalInsuranceNumber);
+            Person = new PersonInfo(
+                person.PersonId,
+                person.Trn,
+                person.FirstName,
+                person.LastName,
+                person.DateOfBirth,
+                person.NationalInsuranceNumber
+            );
         }
 
         await base.OnPageHandlerExecutionAsync(context, next);
     }
 
-    public record PersonInfo(Guid PersonId, string? Trn, string FirstName, string LastName, DateOnly? DateOfBirth, string? NationalInsuranceNumber);
+    public record PersonInfo(
+        Guid PersonId,
+        string? Trn,
+        string FirstName,
+        string LastName,
+        DateOnly? DateOfBirth,
+        string? NationalInsuranceNumber
+    );
 }

@@ -16,40 +16,61 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 public class OAuth2Controller(
     EcfDbContext dbContext,
     IOpenIddictApplicationManager applicationManager,
-    IOpenIddictScopeManager scopeManager) : Controller
+    IOpenIddictScopeManager scopeManager
+) : Controller
 {
     [HttpGet("~/oauth2/authorize")]
     [HttpPost("~/oauth2/authorize"), Produces("application/json")]
     [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Authorize()
     {
-        var request = HttpContext.GetOpenIddictServerRequest() ??
-                      throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+        var request =
+            HttpContext.GetOpenIddictServerRequest()
+            ?? throw new InvalidOperationException(
+                "The OpenID Connect request cannot be retrieved."
+            );
 
         if (!request.HasScope(CustomScopes.SocialWorkerRecord))
         {
             return Forbid(
                 authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                properties: new AuthenticationProperties(new Dictionary<string, string?>()
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        $"Requests must include the {CustomScopes.SocialWorkerRecord} scope."
-                }));
+                properties: new AuthenticationProperties(
+                    new Dictionary<string, string?>()
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] =
+                            Errors.InvalidRequest,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            $"Requests must include the {CustomScopes.SocialWorkerRecord} scope.",
+                    }
+                )
+            );
         }
 
-        var application = await applicationManager.FindByClientIdAsync(request.ClientId ?? "") ??
-                          throw new InvalidOperationException("The application cannot be found.");
+        var application =
+            await applicationManager.FindByClientIdAsync(request.ClientId ?? "")
+            ?? throw new InvalidOperationException("The application cannot be found.");
 
-        var authenticateResult = await HttpContext.AuthenticateAsync(AuthenticationSchemes.MatchToEcfAccount);
+        var authenticateResult = await HttpContext.AuthenticateAsync(
+            AuthenticationSchemes.MatchToEcfAccount
+        );
 
         if (!authenticateResult.Succeeded)
         {
-            var parameters = Request.HasFormContentType ? Request.Form.ToList() : Request.Query.ToList();
+            var parameters = Request.HasFormContentType
+                ? Request.Form.ToList()
+                : Request.Query.ToList();
 
             var serviceUrl = new Uri(request.RedirectUri!).GetLeftPart(UriPartial.Authority);
-            var trnToken = parameters.GroupBy(kvp => kvp.Key).FirstOrDefault(kvp => kvp.Key == "trn_token")
-                ?.Select(kvp => kvp.Value).FirstOrDefault();
+            var linkingToken = parameters
+                .GroupBy(kvp => kvp.Key)
+                .FirstOrDefault(kvp =>
+                    kvp.Key
+                    == MatchToEcfAccountAuthenticationHandler
+                        .AuthenticationPropertiesItemKeys
+                        .LinkingToken
+                )
+                ?.Select(kvp => kvp.Value)
+                .FirstOrDefault();
 
             var authenticationProperties = new AuthenticationProperties()
             {
@@ -57,59 +78,77 @@ public class OAuth2Controller(
                 Items =
                 {
                     {
-                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys
+                        MatchToEcfAccountAuthenticationHandler
+                            .AuthenticationPropertiesItemKeys
                             .OneLoginAuthenticationScheme,
                         "OneLogin"
                     },
                     {
-                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceName,
+                        MatchToEcfAccountAuthenticationHandler
+                            .AuthenticationPropertiesItemKeys
+                            .ServiceName,
                         await applicationManager.GetDisplayNameAsync(application)
                     },
                     {
-                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.ServiceUrl,
+                        MatchToEcfAccountAuthenticationHandler
+                            .AuthenticationPropertiesItemKeys
+                            .ServiceUrl,
                         serviceUrl
                     },
                     {
-                        MatchToEcfAccountAuthenticationHandler.AuthenticationPropertiesItemKeys.TrnToken,
-                        trnToken ?? "token"
+                        MatchToEcfAccountAuthenticationHandler
+                            .AuthenticationPropertiesItemKeys
+                            .LinkingToken,
+                        linkingToken
                     },
-                }
+                },
             };
 
             return Challenge(authenticationProperties, AuthenticationSchemes.MatchToEcfAccount);
         }
 
         var user = authenticateResult.Principal;
-        var subject = user.FindFirstValue(ClaimTypes.Subject) ??
-                      throw new InvalidOperationException(
-                          $"Principal does not contain a '{ClaimTypes.Subject}' claim.");
+        var subject =
+            user.FindFirstValue(ClaimTypes.Subject)
+            ?? throw new InvalidOperationException(
+                $"Principal does not contain a '{ClaimTypes.Subject}' claim."
+            );
 
         var identity = new ClaimsIdentity(
             claims: user.Claims,
             authenticationType: TokenValidationParameters.DefaultAuthenticationType,
             nameType: System.Security.Claims.ClaimTypes.Name,
-            roleType: null);
+            roleType: null
+        );
 
         identity
             .SetClaim(ClaimTypes.Subject, subject)
             .SetClaim(ClaimTypes.Email, user.FindFirstValue(ClaimTypes.Email) ?? "");
 
-        var oneLoginUser = await dbContext.OneLoginUsers
-            .Include(o => o.Person)
+        var oneLoginUser = await dbContext
+            .OneLoginUsers.Include(o => o.Person)
             .SingleAsync(u => u.Subject == subject);
 
         if (oneLoginUser.Person is { } person)
         {
             identity
                 .SetClaim(ClaimTypes.Trn, person.Trn ?? "")
-                .SetClaim(System.Security.Claims.ClaimTypes.Name, $"{person.FirstName} {person.LastName}");
+                .SetClaim(
+                    System.Security.Claims.ClaimTypes.Name,
+                    $"{person.FirstName} {person.LastName}"
+                );
         }
 
         identity.SetScopes(request.GetScopes());
-        identity.SetResources(await scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
+        identity.SetResources(
+            await scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync()
+        );
         identity.SetDestinations(GetDestinations);
 
-        return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return SignIn(
+            new ClaimsPrincipal(identity),
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+        );
     }
 
     [HttpPost("~/oauth2/token")]
@@ -117,25 +156,34 @@ public class OAuth2Controller(
     [Produces("application/json")]
     public async Task<IActionResult> Token()
     {
-        var request = HttpContext.GetOpenIddictServerRequest() ??
-                      throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+        var request =
+            HttpContext.GetOpenIddictServerRequest()
+            ?? throw new InvalidOperationException(
+                "The OpenID Connect request cannot be retrieved."
+            );
 
-        if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
+        if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
         {
-            var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-
-            var identity = new ClaimsIdentity(
-                result.Principal!.Claims,
-                authenticationType: TokenValidationParameters.DefaultAuthenticationType,
-                nameType: System.Security.Claims.ClaimTypes.Name,
-                roleType: System.Security.Claims.ClaimTypes.Role);
-
-            identity.SetDestinations(GetDestinations);
-
-            return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            throw new InvalidOperationException("The specified grant type is not supported.");
         }
 
-        throw new InvalidOperationException("The specified grant type is not supported.");
+        var result = await HttpContext.AuthenticateAsync(
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+        );
+
+        var identity = new ClaimsIdentity(
+            result.Principal!.Claims,
+            authenticationType: TokenValidationParameters.DefaultAuthenticationType,
+            nameType: System.Security.Claims.ClaimTypes.Name,
+            roleType: System.Security.Claims.ClaimTypes.Role
+        );
+
+        identity.SetDestinations(GetDestinations);
+
+        return SignIn(
+            new ClaimsPrincipal(identity),
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+        );
     }
 
     [HttpGet("~/oauth2/logout")]
@@ -145,16 +193,20 @@ public class OAuth2Controller(
         // a) extract the One Login ID token and;
         // b) know which authentication scheme to sign out with.
 
-        var request = HttpContext.GetOpenIddictServerRequest() ??
-                      throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+        var request =
+            HttpContext.GetOpenIddictServerRequest()
+            ?? throw new InvalidOperationException(
+                "The OpenID Connect request cannot be retrieved."
+            );
 
         if (request.IdTokenHint is null)
         {
             return BadRequest();
         }
 
-        var authenticateResult =
-            await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var authenticateResult = await HttpContext.AuthenticateAsync(
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+        );
 
         // We need to sign out with One Login and then complete the OIDC sign out request.
         // We do it by calling SignOutAsync with OpenIddict first, capturing the Location header from its redirect
@@ -162,16 +214,16 @@ public class OAuth2Controller(
 
         await HttpContext.SignOutAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-            new AuthenticationProperties()
-            {
-                RedirectUri = "/"
-            });
+            new AuthenticationProperties() { RedirectUri = "/" }
+        );
 
         var authenticationProperties = new AuthenticationProperties()
         {
-            RedirectUri = HttpContext.Response.Headers.Location
+            RedirectUri = HttpContext.Response.Headers.Location,
         };
-        var oneLoginIdToken = authenticateResult.Principal!.FindFirstValue(ClaimTypes.OneLoginIdToken)!;
+        var oneLoginIdToken = authenticateResult.Principal!.FindFirstValue(
+            ClaimTypes.OneLoginIdToken
+        )!;
         authenticationProperties.SetParameter(OpenIdConnectParameterNames.IdToken, oneLoginIdToken);
 
         return SignOut(authenticationProperties, "OneLogin");
@@ -187,17 +239,20 @@ public class OAuth2Controller(
 
         var claims = new Dictionary<string, object>(StringComparer.Ordinal)
         {
-            [ClaimTypes.Subject] = subject
+            [ClaimTypes.Subject] = subject,
         };
 
-        var oneLoginUser = await dbContext.OneLoginUsers
-            .Include(o => o.Person)
+        var oneLoginUser = await dbContext
+            .OneLoginUsers.Include(o => o.Person)
             .SingleAsync(u => u.Subject == subject);
 
         if (oneLoginUser.Person is { } person)
         {
             claims.Add(ClaimTypes.Trn, person.Trn ?? "");
-            claims.Add(System.Security.Claims.ClaimTypes.Name, $"{person.FirstName} {person.LastName}");
+            claims.Add(
+                System.Security.Claims.ClaimTypes.Name,
+                $"{person.FirstName} {person.LastName}"
+            );
         }
 
         if (User.HasScope(Scopes.Email))

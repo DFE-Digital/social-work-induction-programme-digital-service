@@ -1,10 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Authentication;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 
-public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper) : IAuthenticationHandler
+public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper)
+    : IAuthenticationHandler
 {
     private AuthenticationScheme? _scheme;
     private HttpContext? _context;
@@ -13,7 +14,9 @@ public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper) 
     {
         EnsureInitialized();
 
-        var journeyInstance = await helper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(_context);
+        var journeyInstance = await helper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(
+            _context
+        );
 
         if (journeyInstance is null)
         {
@@ -29,19 +32,34 @@ public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper) 
     {
         EnsureInitialized();
 
-        if (properties is null ||
-            !TryGetNonNullItem(AuthenticationPropertiesItemKeys.ServiceName, out var serviceName) ||
-            !TryGetNonNullItem(AuthenticationPropertiesItemKeys.ServiceUrl, out var serviceUrl))
+        if (
+            properties is null
+            || !TryGetNonNullItem(AuthenticationPropertiesItemKeys.ServiceName, out var serviceName)
+            || !TryGetNonNullItem(AuthenticationPropertiesItemKeys.ServiceUrl, out var serviceUrl)
+        )
         {
-            throw new InvalidOperationException($"{nameof(AuthenticationProperties)} is missing one or more items.");
+            throw new InvalidOperationException(
+                $"{nameof(AuthenticationProperties)} is missing one or more items."
+            );
         }
 
-        properties.Items.TryGetValue(AuthenticationPropertiesItemKeys.TrnToken, out var trnToken);
+        properties.Items.TryGetValue(
+            AuthenticationPropertiesItemKeys.LinkingToken,
+            out var linkingToken
+        );
 
-        var journeyInstance = await helper.UserInstanceStateProvider.GetOrCreateSignInJourneyInstanceAsync(
-            _context,
-            createState: () => new SignInJourneyState(properties.RedirectUri ?? "/", serviceName, serviceUrl, trnToken),
-            updateState: state => state.Reset());
+        var journeyInstance =
+            await helper.UserInstanceStateProvider.GetOrCreateSignInJourneyInstanceAsync(
+                _context,
+                createState: () =>
+                    new SignInJourneyState(
+                        properties.RedirectUri ?? "/",
+                        serviceName,
+                        serviceUrl,
+                        linkingToken
+                    ),
+                updateState: state => state.Reset()
+            );
 
         var result = helper.SignInWithOneLogin(journeyInstance);
         await result.ExecuteAsync(_context);
@@ -80,6 +98,6 @@ public class MatchToEcfAccountAuthenticationHandler(SignInJourneyHelper helper) 
         public const string OneLoginAuthenticationScheme = "OneLoginAuthenticationScheme";
         public const string ServiceName = "ServiceName";
         public const string ServiceUrl = "ServiceUrl";
-        public const string TrnToken = "TrnToken";
+        public const string LinkingToken = "LinkingToken";
     }
 }

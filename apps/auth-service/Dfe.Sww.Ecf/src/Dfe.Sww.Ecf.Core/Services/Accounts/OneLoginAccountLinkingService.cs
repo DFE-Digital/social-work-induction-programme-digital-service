@@ -13,12 +13,18 @@ public class OneLoginAccountLinkingService(
     private static string GetLinkingTokenCacheKey(string linkingToken) =>
         $"{LinkingTokenCacheKey}-{linkingToken}";
 
-    private async Task<bool> IsAccountIdValid(Guid accountId) => await accountsService.GetByIdAsync(accountId) is not null;
+    private async Task<bool> IsAccountIdValid(Guid accountId) =>
+        await accountsService.GetByIdAsync(accountId) is not null;
 
     private bool DoesLinkingTokenExist(string linkingToken) =>
         memoryCache.TryGetValue(GetLinkingTokenCacheKey(linkingToken), out _);
 
-    public async Task<string> GetLinkingTokenForAccountId(Guid accountId)
+    public Guid? GetAccountIdForLinkingToken(string linkingToken) =>
+        memoryCache.TryGetValue<Guid>(GetLinkingTokenCacheKey(linkingToken), out var accountId)
+            ? accountId
+            : null;
+
+    public async Task<string> GetLinkingTokenForAccountIdAsync(Guid accountId)
     {
         if (!(await IsAccountIdValid(accountId)))
         {
@@ -63,4 +69,7 @@ public class OneLoginAccountLinkingService(
 
         memoryCache.Set(GetLinkingTokenCacheKey(linkingToken), accountId, cacheEntryOptions);
     }
+
+    public void InvalidateLinkingToken(string linkingToken) =>
+        memoryCache.Remove(GetLinkingTokenCacheKey(linkingToken));
 }
