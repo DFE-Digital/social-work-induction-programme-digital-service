@@ -7,10 +7,11 @@
 
 <div class="text-center">
     <h1 class="govuk-heading-l">
-        <span class="govuk-label--l">Welcome to the post qualifying pathway digital service</span>
+        <span class="govuk-label--l">Post qualifying pathway digital service</span>
     </h1>
 
-    @if (HttpContext.User.Identity?.IsAuthenticated == true){
+    @if (HttpContext.User.Identity?.IsAuthenticated == true)
+    {
         <p>Through this service you can:</p>
         <ul class="govuk-list govuk-list--bullet">
             <li>add and manage user accounts for your organisation</li>
@@ -19,11 +20,39 @@
     }
     else
     {
-        <p>Use the link below to log in to the post qualifying pathway digital service.</p>
-        <p>This will direct you to GOV.UK One Login.</p>
+        <div class="govuk-body">
+            <p>This is the digital service for the post qualifying pathway, a programme that supports training and development for early career social workers.</p>
 
-        <p class="govuk-body">
-            <a href="@LinkGenerator.SignIn()" class="govuk-link govuk-link--no-visited-state">Continue to GOV.UK One Login</a>
-        </p>
+            <p>
+                <b>For early career social workers</b>
+            </p>
+            <p>You can use this service to:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>write and submit your assessments</li>
+                <li>check your progress towards the framework outcomes</li>
+                <li>view feedback from your assessor</li>
+            </ul>
+
+            <div>
+                <p>
+                    <b>For coordinators and assessors</b>
+                </p>
+                <p >You can use this service to:</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>view submissions from your early career social workers</li>
+                    <li>give feedback on their development</li>
+                    <li>track their progress towards the framework outcomes</li>
+                    <li>manage accounts for your organisation</li>
+                </ul>
+            </div>
+
+            <govuk-button-link href="@LinkGenerator.SignIn()">Sign in with One Login</govuk-button-link>
+
+            <p>
+                <b>Before you starts</b>
+            </p>
+            <p>You will need a GOV.UK One Login account to sign in.</p>
+            <p>If you are taking part in the post qualifying pathway, you should have received an email inviting you to create an account. If you have not received an invitation email, contact your programme coordinator.</p>
+        </div>
     }
 </div>
