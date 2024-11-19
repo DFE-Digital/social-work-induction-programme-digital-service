@@ -80,7 +80,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.EditAccountId.Should().Be(account.Id);
-        Sut.IsStaff.Should().Be(EditAccountJourneyService.GetIsStaff(account.Id));
+        Sut.IsStaff.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
     }
 

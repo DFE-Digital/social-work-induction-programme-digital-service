@@ -38,7 +38,6 @@ public class SelectUseCase(
 
         BackLinkPath = linkGenerator.EditAccountType(id);
         EditAccountId = id;
-        SelectedAccountTypes = editAccountJourneyService.GetAccountTypes(id);
 
         return Page();
     }

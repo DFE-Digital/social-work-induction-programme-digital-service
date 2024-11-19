@@ -65,8 +65,7 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         Sut.BackLinkPath.Should()
             .Be($"/manage-accounts/select-account-type/{account.Id}?handler=Edit");
         Sut.EditAccountId.Should().Be(account.Id);
-        Sut.SelectedAccountTypes.Should()
-            .BeEquivalentTo(EditAccountJourneyService.GetAccountTypes(account.Id));
+        Sut.SelectedAccountTypes.Should().BeNull();
     }
 
     [Fact]

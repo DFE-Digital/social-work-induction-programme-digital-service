@@ -43,7 +43,6 @@ public class SelectAccountType(
 
         BackLinkPath = linkGenerator.ViewAccountDetails(id);
         EditAccountId = id;
-        IsStaff = editAccountJourneyService.GetIsStaff(id);
 
         return Page();
     }
