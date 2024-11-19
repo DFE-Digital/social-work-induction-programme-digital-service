@@ -24,4 +24,10 @@ public class AccountService(
 
         return accounts;
     }
+
+    public async Task<Account> GetByIdAsync(Guid id)
+    {
+        var persons = await authServiceClient.Accounts.GetByIdAsync(id);
+        return mapper.MapToBo(persons);
+    }
 }
