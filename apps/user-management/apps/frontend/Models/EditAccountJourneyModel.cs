@@ -27,6 +27,7 @@ public class EditAccountJourneyModel(Account account)
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             LastName = AccountDetails?.LastName,
+            SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
             Types = AccountTypes,
             Status = AccountStatus
         };

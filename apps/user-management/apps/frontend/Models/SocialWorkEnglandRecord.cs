@@ -1,12 +1,12 @@
 ﻿namespace Dfe.Sww.Ecf.Frontend.Models;
 
-public sealed class SocialWorkEnglandNumber
+public sealed class SocialWorkEnglandRecord
 {
     private readonly int _socialWorkEnglandNumber;
 
     private readonly DateOnly _statusCheckDueDate;
 
-    public SocialWorkEnglandNumber(int socialWorkEnglandNumber)
+    public SocialWorkEnglandRecord(int socialWorkEnglandNumber)
     {
         if (socialWorkEnglandNumber < 0)
         {
@@ -16,7 +16,7 @@ public sealed class SocialWorkEnglandNumber
         _statusCheckDueDate = default;
     }
 
-    public SocialWorkEnglandNumber(int socialWorkEnglandNumber, DateOnly statusCheckDueDate)
+    public SocialWorkEnglandRecord(int socialWorkEnglandNumber, DateOnly statusCheckDueDate)
     {
         if (socialWorkEnglandNumber < 0)
         {
@@ -38,11 +38,11 @@ public sealed class SocialWorkEnglandNumber
     /// <param name="incrementDays"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public SocialWorkEnglandNumber UpdateDueDate(int incrementDays)
+    public SocialWorkEnglandRecord UpdateDueDate(int incrementDays)
     {
         if (incrementDays > -1)
         {
-            return new SocialWorkEnglandNumber(
+            return new SocialWorkEnglandRecord(
                 _socialWorkEnglandNumber,
                 DateOnly.FromDateTime(DateTime.Now).AddDays(incrementDays)
             );
@@ -55,12 +55,12 @@ public sealed class SocialWorkEnglandNumber
     /// </summary>
     /// <param name="sweId"></param>
     /// <returns></returns>
-    public static SocialWorkEnglandNumber Parse(string sweId)
+    public static SocialWorkEnglandRecord Parse(string sweId)
     {
         var sweNumber = sweId.StartsWith("SW", StringComparison.OrdinalIgnoreCase)
             ? int.Parse(sweId.Remove(0, 2))
             : int.Parse(sweId);
-        return new SocialWorkEnglandNumber(sweNumber);
+        return new SocialWorkEnglandRecord(sweNumber);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public sealed class SocialWorkEnglandNumber
     /// <param name="sweId"></param>
     /// <param name="socialWorkEnglandNumber"></param>
     /// <returns><c>true</c> if <paramref name="sweId" /> was converted successfully; otherwise, false.</returns>
-    public static bool TryParse(string? sweId, out SocialWorkEnglandNumber? socialWorkEnglandNumber)
+    public static bool TryParse(string? sweId, out SocialWorkEnglandRecord? socialWorkEnglandNumber)
     {
         if (string.IsNullOrWhiteSpace(sweId))
         {
@@ -89,7 +89,7 @@ public sealed class SocialWorkEnglandNumber
             return false;
         }
 
-        socialWorkEnglandNumber = new SocialWorkEnglandNumber(sweNumber);
+        socialWorkEnglandNumber = new SocialWorkEnglandRecord(sweNumber);
         return true;
     }
 
@@ -109,7 +109,7 @@ public sealed class SocialWorkEnglandNumber
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj is not SocialWorkEnglandNumber account)
+        if (obj is null || obj is not SocialWorkEnglandRecord account)
             return false;
         return _socialWorkEnglandNumber == account.GetNumber();
     }

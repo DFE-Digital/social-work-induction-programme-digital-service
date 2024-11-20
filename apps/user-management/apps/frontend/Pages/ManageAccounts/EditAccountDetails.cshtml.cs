@@ -34,6 +34,8 @@ public class EditAccountDetails(
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
+    public bool IsStaff { get; set; }
+
     public IActionResult OnGet(Guid id)
     {
         if (!editAccountJourneyService.IsAccountIdValid(id))
@@ -49,7 +51,13 @@ public class EditAccountDetails(
         FirstName = accountDetails.FirstName;
         LastName = accountDetails.LastName;
         Email = accountDetails.Email;
-        SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
+
+        var isSwe = SocialWorkEnglandRecord.TryParse(
+            accountDetails.SocialWorkEnglandNumber,
+            out var swe
+        );
+        SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
+        IsStaff = editAccountJourneyService.GetIsStaff(id) ?? false;
 
         return Page();
     }

@@ -37,7 +37,7 @@ public static class CommonValidators
                     return;
                 }
 
-                var isSweNumber = SocialWorkEnglandNumber.TryParse(sweId, out _);
+                var isSweNumber = SocialWorkEnglandRecord.TryParse(sweId, out _);
 
                 if (!isSweNumber)
                 {
