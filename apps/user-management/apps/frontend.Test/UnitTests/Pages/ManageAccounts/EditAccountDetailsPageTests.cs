@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -30,6 +31,8 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     {
         // Arrange
         var account = AccountRepository.GetAll().PickRandom();
+        var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
+        var socialWorkerId = isSwe ? swe?.GetNumber().ToString() : null;
 
         // Act
         var result = Sut.OnGet(account.Id);
@@ -41,7 +44,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.FirstName.Should().Be(account.FirstName);
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
-        Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+        Sut.SocialWorkEnglandNumber.Should().Be(socialWorkerId);
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
     }
 
