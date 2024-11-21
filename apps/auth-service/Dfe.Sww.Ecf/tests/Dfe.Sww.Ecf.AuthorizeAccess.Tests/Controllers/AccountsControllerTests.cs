@@ -16,12 +16,13 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            await TestData.CreatePersons(5);
+            const int expectedCount = 5;
+            await TestData.CreatePersons(expectedCount);
 
-            var request = new PaginationRequest(1, 5);
+            var request = new PaginationRequest(0, expectedCount);
 
-            var expectedAccounts = await dbContext.Persons.ToListAsync();
-            var accountsService = new AccountsService(dbContext);
+            var expectedAccounts = dbContext.Persons.Take(expectedCount).ToList();
+            var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
@@ -34,7 +35,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultAccounts = okResult.Value.Should().BeOfType<PaginationResult<Person>>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<PaginationResult<Person>>().Subject.Records;
 
             resultAccounts.Should().BeEquivalentTo(expectedAccounts);
         });
@@ -47,7 +48,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
-            var accountsService = new AccountsService(dbContext);
+            var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
@@ -72,7 +73,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var accountsService = new AccountsService(dbContext);
+            var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
@@ -95,7 +96,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
-            var accountsService = new AccountsService(dbContext);
+            var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
@@ -118,7 +119,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var accountsService = new AccountsService(dbContext);
+            var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
@@ -131,6 +132,32 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
+        });
+    }
+
+    [Fact]
+    public async Task CreateAsync_ReturnsCreatedResult_WhenUserIsCreated()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var expectedNewUser = await TestData.CreatePerson(null, false);
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+
+            // Act
+            var result = await controller.CreateAsync(expectedNewUser.ToPerson());
+
+            // Assert
+            result.Should().BeOfType<CreatedAtActionResult>();
+            var createdResult = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+            createdResult.Value.Should().BeOfType<Person>();
+            createdResult.Value.Should().BeEquivalentTo(expectedNewUser.ToPerson());
         });
     }
 }

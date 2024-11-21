@@ -1,3 +1,5 @@
+using System.Net.Mime;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using JetBrains.Annotations;
@@ -16,6 +18,7 @@ public class AccountsController(
 ) : Controller
 {
     [HttpGet]
+    [ActionName(nameof(GetAllAsync))]
     public async Task<IActionResult> GetAllAsync([FromQuery] PaginationRequest request)
     {
         var accounts = await accountsService.GetAllAsync(request);
@@ -28,7 +31,8 @@ public class AccountsController(
     }
 
     [HttpGet("{id:guid}")]
-    [Produces("application/json")]
+    [ActionName(nameof(GetByIdAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         var user = await accountsService.GetByIdAsync(id);
@@ -40,8 +44,23 @@ public class AccountsController(
         return Ok(user);
     }
 
+    [HttpPost("Create")]
+    [ActionName(nameof(CreateAsync))]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> CreateAsync([FromBody] Person user)
+    {
+        var createdAccount = await accountsService.CreateAsync(user);
+        return CreatedAtAction(
+            nameof(GetByIdAsync),
+            new { id = createdAccount.PersonId },
+            createdAccount
+        );
+    }
+
     [HttpGet("{id:guid}/linking-token")]
-    [Produces("application/json")]
+    [ActionName(nameof(GetLinkingTokenByIdAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> GetLinkingTokenByIdAsync(Guid id)
     {
         if (await accountsService.GetByIdAsync(id) == null)

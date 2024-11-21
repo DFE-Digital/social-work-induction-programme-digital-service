@@ -4,7 +4,7 @@ using Dfe.Sww.Ecf.Core.Models.Pagination;
 
 namespace Dfe.Sww.Ecf.Core.Services.Accounts;
 
-public class AccountsService(EcfDbContext dbContext) : IAccountsService
+public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsService
 {
     public async Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request)
     {
@@ -19,7 +19,7 @@ public class AccountsService(EcfDbContext dbContext) : IAccountsService
         var response = new PaginationResult<Person>
         {
             Records = paginatedResults,
-            MetaData = new PaginationMetaData(request.Offset, request.PageSize, totalItems)
+            MetaData = new PaginationMetaData(request.Offset, request.PageSize, totalItems),
         };
 
         return response;
@@ -29,5 +29,13 @@ public class AccountsService(EcfDbContext dbContext) : IAccountsService
     {
         var account = await dbContext.Persons.FirstOrDefaultAsync(x => x.PersonId == id);
         return account;
+    }
+
+    public async Task<Person> CreateAsync(Person person)
+    {
+        person.CreatedOn = clock.UtcNow;
+        await dbContext.Persons.AddAsync(person);
+        await dbContext.SaveChangesAsync();
+        return person;
     }
 }

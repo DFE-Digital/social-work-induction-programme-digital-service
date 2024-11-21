@@ -4,15 +4,14 @@ namespace Dfe.Sww.Ecf.TestCommon;
 
 public partial class TestData
 {
-    public Task<CreatePersonResult> CreatePerson(Action<CreatePersonBuilder>? configure = null)
+    public Task<CreatePersonResult> CreatePerson(Action<CreatePersonBuilder>? configure = null, bool? addToDb = true)
     {
         return WithDbContext(async dbContext =>
         {
             var builder = new CreatePersonBuilder();
             configure?.Invoke(builder);
             var createPersonResult = await builder.Execute(this);
-
-            dbContext.Persons.Add(new Person()
+            var newPerson = new Person()
             {
                 PersonId = createPersonResult.PersonId,
                 Trn = createPersonResult.Trn,
@@ -24,8 +23,16 @@ public partial class TestData
                 NationalInsuranceNumber = createPersonResult.NationalInsuranceNumber,
                 CreatedOn = Clock.UtcNow,
                 UpdatedOn = Clock.UtcNow,
-            });
+            };
+
+            if (addToDb is not true)
+            {
+                return createPersonResult;
+            }
+
+            dbContext.Persons.Add(newPerson);
             await dbContext.SaveChangesAsync();
+
 
             return createPersonResult;
         });
