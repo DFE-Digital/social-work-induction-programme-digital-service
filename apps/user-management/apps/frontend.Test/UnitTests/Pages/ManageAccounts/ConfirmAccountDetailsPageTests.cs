@@ -1,6 +1,7 @@
 using System.Net;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
+using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
@@ -105,7 +107,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     }
 
     [Fact]
-    public async Task Post_WhenCalled_SendsEmailToNewAccountWithInvitationTokenLink()
+    public async Task Post_WhenCalled_CreatesAccountAndSendsEmailToNewAccountWithInvitationTokenLink()
     {
         // Arrange
         var account = AccountFaker.GenerateSocialWorker();
@@ -113,12 +115,28 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
 
         var expectedLinkingToken = new Faker().Random.String(64);
+        var expectedAccountId = Guid.NewGuid();
 
         MockAuthServiceClient
             .MockAccountsOperations.Setup(operations =>
                 operations.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>())
             )
             .ReturnsAsync(expectedLinkingToken);
+        MockAuthServiceClient
+            .MockAccountsOperations.Setup(operations =>
+                operations.CreateAsync(It.IsAny<CreatePersonRequest>())
+            )
+            .ReturnsAsync(
+                (CreatePersonRequest createPersonRequest) =>
+                    new Person
+                    {
+                        PersonId = expectedAccountId,
+                        CreatedOn = DateTime.UtcNow,
+                        FirstName = createPersonRequest.FirstName,
+                        LastName = createPersonRequest.LastName,
+                        EmailAddress = createPersonRequest.EmailAddress
+                    }
+            );
         var expectedNotificationRequest = new NotificationRequest
         {
             EmailAddress = account.Email!,
@@ -145,6 +163,22 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         await Sut.OnPostAsync();
 
         // Assert
+        MockAuthServiceClient.MockAccountsOperations.Verify(
+            x =>
+                x.CreateAsync(
+                    It.Is<CreatePersonRequest>(request =>
+                        request.EmailAddress == account.Email
+                        && request.FirstName == account.FirstName
+                        && request.LastName == account.LastName
+                    )
+                ),
+            Times.Once
+        );
+        MockAuthServiceClient.MockAccountsOperations.Verify(
+            x => x.GetLinkingTokenByAccountIdAsync(expectedAccountId),
+            Times.Once
+        );
+        MockAuthServiceClient.MockAccountsOperations.VerifyNoOtherCalls();
         MockNotificationOperations.Verify(
             operations =>
                 operations.SendEmailAsync(

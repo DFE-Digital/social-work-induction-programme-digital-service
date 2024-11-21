@@ -9,5 +9,7 @@ public interface IAccountsOperations
 
     Task<Person> GetByIdAsync(Guid guid);
 
+    Task<Person> CreateAsync(CreatePersonRequest createPersonRequest);
+
     Task<string> GetLinkingTokenByAccountIdAsync(Guid accountId);
 }

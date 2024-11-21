@@ -6,8 +6,8 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -15,15 +15,14 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    IAccountRepository accountRepository,
     INotificationServiceClient notificationServiceClient,
     IOptions<EmailTemplateOptions> emailTemplateOptions,
     IAuthServiceClient authServiceClient,
+    IAccountService accountService,
     EcfLinkGenerator linkGenerator
 ) : ICreateAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IAccountRepository _accountRepository = accountRepository;
 
     private const string CreateAccountSessionKey = "_createAccount";
 
@@ -93,7 +92,8 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
-        _accountRepository.Add(account);
+
+        account = await accountService.CreateAsync(account);
 
         await SendInvitationEmailAsync(account);
 

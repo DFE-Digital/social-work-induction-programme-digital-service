@@ -57,6 +57,25 @@ public class AccountsOperations(AuthServiceClient authServiceClient) : IAccounts
         return person;
     }
 
+    public async Task<Person> CreateAsync(CreatePersonRequest createPersonRequest)
+    {
+        var httpResponse = await authServiceClient.HttpClient.PostAsJsonAsync(
+            "/api/Accounts/Create",
+            createPersonRequest
+        );
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException("Failed to create account.");
+        }
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        var createdPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
+        if (createdPerson is null)
+        {
+            throw new InvalidOperationException("Failed to create account.");
+        }
+        return createdPerson;
+    }
+
     public async Task<string> GetLinkingTokenByAccountIdAsync(Guid accountId)
     {
         var httpResponse = await authServiceClient.HttpClient.GetAsync(

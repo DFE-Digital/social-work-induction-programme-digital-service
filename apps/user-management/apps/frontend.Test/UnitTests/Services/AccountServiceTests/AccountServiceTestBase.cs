@@ -4,6 +4,7 @@ using Dfe.Sww.Ecf.Frontend.Mappers;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.AccountServiceTests;
@@ -12,7 +13,7 @@ public abstract class AccountServiceTestBase
 {
     private protected PersonFaker PersonFaker { get; }
 
-    private protected Mock<IAuthServiceClient> MockClient { get; }
+    private protected MockAuthServiceClient MockClient { get; }
 
     private protected IModelMapper<Person, Account> Mapper { get; }
 

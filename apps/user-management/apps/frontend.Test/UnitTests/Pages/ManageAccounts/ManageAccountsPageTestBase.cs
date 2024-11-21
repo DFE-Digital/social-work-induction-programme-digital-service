@@ -1,7 +1,9 @@
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Mappers;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Repositories;
+using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -91,10 +93,10 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
         CreateAccountJourneyService = new CreateAccountJourneyService(
             httpContextAccessor,
-            AccountRepository,
             MockNotificationServiceClient.Object,
             MockEmailTemplateOptions.Object,
             MockAuthServiceClient.Object,
+            new AccountService(MockAuthServiceClient.Object, new AccountMapper()),
             new FakeLinkGenerator()
         );
         EditAccountJourneyService = new EditAccountJourneyService(

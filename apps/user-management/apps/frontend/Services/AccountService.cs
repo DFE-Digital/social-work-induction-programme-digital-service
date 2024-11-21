@@ -30,4 +30,26 @@ public class AccountService(
         var persons = await authServiceClient.Accounts.GetByIdAsync(id);
         return mapper.MapToBo(persons);
     }
+
+    public async Task<Account> CreateAsync(Account account)
+    {
+        if (
+            string.IsNullOrWhiteSpace(account.FirstName)
+            || string.IsNullOrWhiteSpace(account.LastName)
+            || string.IsNullOrWhiteSpace(account.Email)
+        )
+        {
+            throw new ArgumentException("First name, last name and email are required");
+        }
+        var person = await authServiceClient.Accounts.CreateAsync(
+            new CreatePersonRequest
+            {
+                FirstName = account.FirstName,
+                LastName = account.LastName,
+                EmailAddress = account.Email
+            }
+        );
+
+        return mapper.MapToBo(person);
+    }
 }

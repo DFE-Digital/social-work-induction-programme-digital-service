@@ -19,7 +19,7 @@ public sealed class AccountFaker : Faker<Account>
             a => a.SocialWorkEnglandNumber,
             (f, current) =>
                 current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
-                    ? $"SW{f.Random.Number(1, 1000)}"
+                    ? f.Random.Number(1, 1000).ToString()
                     : null
         );
     }

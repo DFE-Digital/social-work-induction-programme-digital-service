@@ -17,7 +17,6 @@ public class CreateAccountJourneyModel
     {
         return new Account
         {
-            Id = Guid.NewGuid(),
             Status = AccountStatus.Active,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
