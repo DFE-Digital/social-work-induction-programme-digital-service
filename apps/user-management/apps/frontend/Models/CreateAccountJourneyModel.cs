@@ -21,7 +21,8 @@ public class CreateAccountJourneyModel
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             LastName = AccountDetails?.LastName,
-            Types = AccountTypes
+            Types = AccountTypes,
+            SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber
         };
     }
 }

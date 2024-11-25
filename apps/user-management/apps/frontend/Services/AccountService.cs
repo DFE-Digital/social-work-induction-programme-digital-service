@@ -46,7 +46,8 @@ public class AccountService(
             {
                 FirstName = account.FirstName,
                 LastName = account.LastName,
-                EmailAddress = account.Email
+                EmailAddress = account.Email,
+                Trn = account.SocialWorkEnglandNumber
             }
         );
 

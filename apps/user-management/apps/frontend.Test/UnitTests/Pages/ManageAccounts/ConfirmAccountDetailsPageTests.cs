@@ -134,7 +134,8 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
                         CreatedOn = DateTime.UtcNow,
                         FirstName = createPersonRequest.FirstName,
                         LastName = createPersonRequest.LastName,
-                        EmailAddress = createPersonRequest.EmailAddress
+                        EmailAddress = createPersonRequest.EmailAddress,
+                        Trn = createPersonRequest.Trn
                     }
             );
         var expectedNotificationRequest = new NotificationRequest
@@ -170,6 +171,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
                         request.EmailAddress == account.Email
                         && request.FirstName == account.FirstName
                         && request.LastName == account.LastName
+                        && request.Trn == account.SocialWorkEnglandNumber
                     )
                 ),
             Times.Once

@@ -22,6 +22,9 @@ public class SocialWorkersOperations(
 
     public async Task<SocialWorker?> GetByIdAsync(int id)
     {
+        if (_socialWorkEnglandClient.Options.BypassSweChecks)
+            return null;
+
         var tcs = new TaskCompletionSource<SocialWorker?>();
         _queue.Enqueue(tcs);
 
@@ -38,8 +41,7 @@ public class SocialWorkersOperations(
         {
             while (_queue.TryDequeue(out var tcs))
             {
-                var route =
-                    _socialWorkEnglandClient.Options.Routes.SocialWorker.GetById;
+                var route = _socialWorkEnglandClient.Options.Routes.SocialWorker.GetById;
 
                 var httpResponse = await MakeGetRequestWithRetryAsync(route + $"?swid={id}");
 
