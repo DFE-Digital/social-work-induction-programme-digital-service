@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using OpenIddict.EntityFrameworkCore.Models;
 using Establishment = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Establishment;
 using User = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.User;
@@ -10,9 +11,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 public class EcfDbContext : DbContext
 {
     public EcfDbContext(DbContextOptions<EcfDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
 
     public static EcfDbContext Create(string connectionString, int? commandTimeout = null) =>
         new(CreateOptions(connectionString, commandTimeout));
@@ -37,12 +36,16 @@ public class EcfDbContext : DbContext
 
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
 
-    public static void ConfigureOptions(DbContextOptionsBuilder optionsBuilder, string connectionString,
-        int? commandTimeout = null)
+    public static void ConfigureOptions(
+        DbContextOptionsBuilder optionsBuilder,
+        string connectionString,
+        int? commandTimeout = null
+    )
     {
         optionsBuilder
             .UseNpgsql(connectionString, Options)
             .UseSnakeCaseNamingConvention()
+            .ReplaceService<IHistoryRepository, SnakeCaseNpgsqlHistoryRepository>()
             .UseOpenIddict<Guid>();
         return;
 
@@ -69,19 +72,26 @@ public class EcfDbContext : DbContext
 
             if (clrType.Assembly == typeof(OpenIddictEntityFrameworkCoreApplication).Assembly)
             {
-                entityType.SetTableName(clrType.Name.Split("`")[0] switch
-                {
-                    nameof(OpenIddictEntityFrameworkCoreApplication) => "oidc_applications",
-                    nameof(OpenIddictEntityFrameworkCoreAuthorization) => "oidc_authorizations",
-                    nameof(OpenIddictEntityFrameworkCoreScope) => "oidc_scopes",
-                    nameof(OpenIddictEntityFrameworkCoreToken) => "oidc_tokens",
-                    _ => throw new NotSupportedException($"Cannot configure table name for {clrType.Name}.")
-                });
+                entityType.SetTableName(
+                    clrType.Name.Split("`")[0] switch
+                    {
+                        nameof(OpenIddictEntityFrameworkCoreApplication) => "oidc_applications",
+                        nameof(OpenIddictEntityFrameworkCoreAuthorization) => "oidc_authorizations",
+                        nameof(OpenIddictEntityFrameworkCoreScope) => "oidc_scopes",
+                        nameof(OpenIddictEntityFrameworkCoreToken) => "oidc_tokens",
+                        _ => throw new NotSupportedException(
+                            $"Cannot configure table name for {clrType.Name}."
+                        ),
+                    }
+                );
             }
         }
     }
 
-    private static DbContextOptions<EcfDbContext> CreateOptions(string connectionString, int? commandTimeout)
+    private static DbContextOptions<EcfDbContext> CreateOptions(
+        string connectionString,
+        int? commandTimeout
+    )
     {
         var optionsBuilder = new DbContextOptionsBuilder<EcfDbContext>();
         ConfigureOptions(optionsBuilder, connectionString, commandTimeout);
