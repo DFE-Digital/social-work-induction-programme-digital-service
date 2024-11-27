@@ -45,6 +45,17 @@ public static class AccountFakerExtensions
             .Generate();
     }
 
+    public static Account GenerateSocialWorkerWithSweNumber(
+        this AccountFaker accountFaker,
+        string? socialWorkEnglandId
+    )
+    {
+        return accountFaker
+            .GetSocialWorkerAccountFaker()
+            .RuleFor(a => a.SocialWorkEnglandNumber, _ => socialWorkEnglandId)
+            .Generate();
+    }
+
     public static Account GenerateSocialWorker(this AccountFaker accountFaker)
     {
         return accountFaker.GetSocialWorkerAccountFaker().Generate();

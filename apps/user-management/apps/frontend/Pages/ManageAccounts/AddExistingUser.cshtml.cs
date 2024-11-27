@@ -38,11 +38,6 @@ public class AddExistingUser(
     /// </summary>
     public MatchResult? NameMatchResult { get; set; }
 
-    private void SetBackLinkPath()
-    {
-        BackLinkPath ??= linkGenerator.AddAccountDetails();
-    }
-
     /// <summary>
     /// Action for confirming user details
     /// </summary>
@@ -75,7 +70,7 @@ public class AddExistingUser(
     /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
-    public async Task<RedirectResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         await createAccountJourneyService.CompleteJourneyAsync();

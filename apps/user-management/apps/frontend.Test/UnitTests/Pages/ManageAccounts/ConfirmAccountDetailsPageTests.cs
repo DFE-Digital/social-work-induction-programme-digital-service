@@ -1,20 +1,12 @@
-using System.Net;
-using Bogus;
-using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
-using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
@@ -25,8 +17,8 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public ConfirmAccountDetailsShould()
     {
         Sut = new ConfirmAccountDetails(
-            CreateAccountJourneyService,
-            EditAccountJourneyService,
+            MockCreateAccountJourneyService.Object,
+            MockEditAccountJourneyService.Object,
             new FakeLinkGenerator()
         )
         {
@@ -39,7 +31,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var expectedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
-        CreateAccountJourneyService.SetAccountDetails(expectedAccountDetails);
+
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountDetails())
+            .Returns(expectedAccountDetails);
 
         // Act
         var result = Sut.OnGet();
@@ -51,31 +46,26 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.LastName.Should().Be(expectedAccountDetails.LastName);
         Sut.Email.Should().Be(expectedAccountDetails.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(expectedAccountDetails.SocialWorkEnglandNumber);
-    }
 
-    [Fact]
-    public void Get_WhenCalled_HasCorrectBackLinkAndChangeDetailsLinkPaths()
-    {
-        // Arrange
-        var expectedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
-        CreateAccountJourneyService.SetAccountDetails(expectedAccountDetails);
-
-        // Act
-        _ = Sut.OnGet();
-
-        // Assert
         Sut.IsUpdatingAccount.Should().BeFalse();
         Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
         Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
+
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public void GetUpdate_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
-        var account = AccountRepository.GetAll().PickRandom();
+        var account = AccountFaker.Generate();
         var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
-        EditAccountJourneyService.SetAccountDetails(account.Id, updatedAccountDetails);
+
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValid(account.Id)).Returns(true);
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountDetails(account.Id))
+            .Returns(updatedAccountDetails);
 
         // Act
         var result = Sut.OnGetUpdate(account.Id);
@@ -88,116 +78,39 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.LastName.Should().Be(updatedAccountDetails.LastName);
         Sut.Email.Should().Be(updatedAccountDetails.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(updatedAccountDetails.SocialWorkEnglandNumber);
-    }
 
-    [Fact]
-    public void GetUpdate_WhenCalled_HasCorrectBackLinkAndChangeDetailsLinkPaths()
-    {
-        // Arrange
-        var accountId = AccountRepository.GetAll().PickRandom().Id;
-
-        // Act
-        _ = Sut.OnGetUpdate(accountId);
-
-        // Assert
         Sut.IsUpdatingAccount.Should().BeTrue();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + accountId);
+        Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + account.Id);
         Sut.ChangeDetailsLink.Should()
-            .Be("/manage-accounts/edit-account-details/" + accountId + "?handler=Change");
+            .Be("/manage-accounts/edit-account-details/" + account.Id + "?handler=Change");
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValid(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetails(account.Id), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public async Task Post_WhenCalled_CreatesAccountAndSendsEmailToNewAccountWithInvitationTokenLink()
     {
         // Arrange
-        var account = AccountFaker.GenerateSocialWorker();
-        CreateAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
-        CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
+        var account = AccountFaker.Generate();
+        var updatedAccountDetails = AccountDetails.FromAccount(account);
 
-        var expectedLinkingToken = new Faker().Random.String(64);
-        var expectedAccountId = Guid.NewGuid();
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountDetails())
+            .Returns(updatedAccountDetails);
 
-        MockAuthServiceClient
-            .MockAccountsOperations.Setup(operations =>
-                operations.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>())
-            )
-            .ReturnsAsync(expectedLinkingToken);
-        MockAuthServiceClient
-            .MockAccountsOperations.Setup(operations =>
-                operations.CreateAsync(It.IsAny<CreatePersonRequest>())
-            )
-            .ReturnsAsync(
-                (CreatePersonRequest createPersonRequest) =>
-                    new Person
-                    {
-                        PersonId = expectedAccountId,
-                        CreatedOn = DateTime.UtcNow,
-                        FirstName = createPersonRequest.FirstName,
-                        LastName = createPersonRequest.LastName,
-                        EmailAddress = createPersonRequest.EmailAddress,
-                        Trn = createPersonRequest.Trn
-                    }
-            );
-        var expectedNotificationRequest = new NotificationRequest
-        {
-            EmailAddress = account.Email!,
-            TemplateId = MockEmailTemplateOptions
-                .Object
-                .Value
-                .Roles[AccountType.EarlyCareerSocialWorker.ToString()]
-                .Invitation,
-            Personalisation = new Dictionary<string, string>
-            {
-                { "name", account.FullName },
-                { "organisation", "TEST ORGANISATION" },
-                {
-                    "invitation_link",
-                    new FakeLinkGenerator().SignInWithLinkingToken(
-                        HttpContext,
-                        expectedLinkingToken
-                    )
-                }
-            }
-        };
+        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync());
 
         // Act
-        await Sut.OnPostAsync();
+        var result = await Sut.OnPostAsync();
 
         // Assert
-        MockAuthServiceClient.MockAccountsOperations.Verify(
-            x =>
-                x.CreateAsync(
-                    It.Is<CreatePersonRequest>(request =>
-                        request.EmailAddress == account.Email
-                        && request.FirstName == account.FirstName
-                        && request.LastName == account.LastName
-                        && request.Trn == account.SocialWorkEnglandNumber
-                    )
-                ),
-            Times.Once
-        );
-        MockAuthServiceClient.MockAccountsOperations.Verify(
-            x => x.GetLinkingTokenByAccountIdAsync(expectedAccountId),
-            Times.Once
-        );
-        MockAuthServiceClient.MockAccountsOperations.VerifyNoOtherCalls();
-        MockNotificationOperations.Verify(
-            operations =>
-                operations.SendEmailAsync(
-                    It.Is<NotificationRequest>(request =>
-                        request.EmailAddress == expectedNotificationRequest.EmailAddress
-                        && request.TemplateId == expectedNotificationRequest.TemplateId
-                        && request.Personalisation != null
-                        && request.Personalisation["name"]
-                            == expectedNotificationRequest.Personalisation["name"]
-                        && request.Personalisation["organisation"]
-                            == expectedNotificationRequest.Personalisation["organisation"]
-                        && request.Personalisation["invitation_link"]
-                            == expectedNotificationRequest.Personalisation["invitation_link"]
-                    )
-                ),
-            Times.Once
-        );
+        result.Url.Should().Be("/manage-accounts");
+
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
@@ -206,53 +119,26 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var invalidId = Guid.NewGuid();
 
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValid(invalidId)).Returns(false);
+
         // Act
         var result = Sut.OnGetUpdate(invalidId);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
-    }
 
-    [Fact]
-    public async Task Post_WhenCalled_RedirectsToAccountsIndex()
-    {
-        // Arrange
-        var account = AccountFaker.GenerateNewAccount();
-
-        CreateAccountJourneyService.SetAccountTypes(account.Types!);
-        CreateAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
-
-        var notificationRequest = new NotificationRequest
-        {
-            EmailAddress = "test@test.com",
-            TemplateId = Guid.NewGuid()
-        };
-        MockNotificationServiceClient
-            .Setup(x => x.Notification.SendEmailAsync(notificationRequest))
-            .ReturnsAsync(new NotificationResponse() { StatusCode = HttpStatusCode.OK });
-
-        // Act
-        var result = await Sut.OnPostAsync();
-
-        // Assert
-        result.Should().BeOfType<RedirectResult>();
-
-        result.Url.Should().Be("/manage-accounts");
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValid(invalidId), Times.Once());
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public void PostUpdate_WhenCalled_UpdatesAccountDetailsAndRedirectsToAccountsIndex()
     {
         // Arrange
-        var account = AccountRepository.GetAll().PickRandom();
-        var updatedAccountDetails = new AccountDetails
-        {
-            FirstName = "UpdatedFirstName",
-            LastName = "UpdatedLastName",
-            Email = "UpdatedEmail",
-            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber
-        };
-        EditAccountJourneyService.SetAccountDetails(account.Id, updatedAccountDetails);
+        var account = AccountFaker.Generate();
+
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValid(account.Id)).Returns(true);
+        MockEditAccountJourneyService.Setup(x => x.CompleteJourney(account.Id));
 
         // Act
         var result = Sut.OnPostUpdate(account.Id);
@@ -262,16 +148,25 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
-        AccountRepository.GetById(account.Id).Should().BeEquivalentTo(updatedAccountDetails);
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValid(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.CompleteJourney(account.Id), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public void PostUpdate_WhenCalledWithInvalidId_ReturnsNotFound()
     {
+        var id = Guid.NewGuid();
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValid(id)).Returns(false);
+
         // Act
-        var result = Sut.OnPostUpdate(Guid.NewGuid());
+        var result = Sut.OnPostUpdate(id);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValid(id), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 }
