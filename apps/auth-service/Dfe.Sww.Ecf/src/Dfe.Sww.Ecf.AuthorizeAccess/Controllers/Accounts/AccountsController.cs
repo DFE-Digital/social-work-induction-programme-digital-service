@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Validation.AspNetCore;
 
-namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
+namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 [ApiController]
@@ -48,9 +48,22 @@ public class AccountsController(
     [ActionName(nameof(CreateAsync))]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> CreateAsync([FromBody] Person user)
+    public async Task<IActionResult> CreateAsync([FromBody] CreatePersonRequest createPersonRequest)
     {
-        var createdAccount = await accountsService.CreateAsync(user);
+        var roles = createPersonRequest
+            .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
+            .ToList();
+        var createdAccount = await accountsService.CreateAsync(
+            new Person
+            {
+                FirstName = createPersonRequest.FirstName,
+                LastName = createPersonRequest.LastName,
+                EmailAddress = createPersonRequest.EmailAddress,
+                Trn = createPersonRequest.SocialWorkEnglandNumber,
+                PersonRoles = roles,
+            }
+        );
+
         return CreatedAtAction(
             nameof(GetByIdAsync),
             new { id = createdAccount.PersonId },

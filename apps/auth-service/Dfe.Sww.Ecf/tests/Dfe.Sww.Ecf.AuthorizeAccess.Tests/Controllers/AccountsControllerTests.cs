@@ -1,4 +1,5 @@
-using Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
+using System.Collections.Immutable;
+using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
@@ -21,7 +22,12 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             var request = new PaginationRequest(0, expectedCount);
 
-            var expectedAccounts = dbContext.Persons.Take(expectedCount).ToList();
+            var expectedAccounts = dbContext
+                .Persons.Include(p => p.PersonRoles)
+                .ThenInclude(pr => pr.Role)
+                .Take(expectedCount)
+                .Select(p => p.ToDto())
+                .ToList();
             var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
@@ -35,7 +41,10 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultAccounts = okResult.Value.Should().BeOfType<PaginationResult<Person>>().Subject.Records;
+            var resultAccounts = okResult
+                .Value.Should()
+                .BeOfType<PaginationResult<PersonDto>>()
+                .Subject.Records;
 
             resultAccounts.Should().BeEquivalentTo(expectedAccounts);
         });
@@ -61,9 +70,9 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultAccounts = okResult.Value.Should().BeOfType<Person>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<PersonDto>().Subject;
 
-            resultAccounts.Should().BeEquivalentTo(createdPerson);
+            resultAccounts.Should().BeEquivalentTo(createdPerson.ToDto());
         });
     }
 
@@ -141,7 +150,12 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var expectedNewUser = await TestData.CreatePerson(null, false);
+            var expectedNewUser = (await TestData.CreatePerson(null, false)).ToPersonDto();
+            expectedNewUser.Roles = new List<RoleType>
+            {
+                Faker.Enum.Random<RoleType>(),
+            }.ToImmutableList();
+            ;
             var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
@@ -151,13 +165,24 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
             // Act
-            var result = await controller.CreateAsync(expectedNewUser.ToPerson());
+            var result = await controller.CreateAsync(
+                new CreatePersonRequest
+                {
+                    FirstName = expectedNewUser.FirstName,
+                    LastName = expectedNewUser.LastName,
+                    EmailAddress = expectedNewUser.EmailAddress,
+                    SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
+                    Roles = expectedNewUser.Roles,
+                }
+            );
 
             // Assert
             result.Should().BeOfType<CreatedAtActionResult>();
             var createdResult = result.Should().BeOfType<CreatedAtActionResult>().Subject;
-            createdResult.Value.Should().BeOfType<Person>();
-            createdResult.Value.Should().BeEquivalentTo(expectedNewUser.ToPerson());
+            createdResult.Value.Should().BeOfType<PersonDto>();
+            createdResult
+                .Value.Should()
+                .BeEquivalentTo(expectedNewUser, p => p.Excluding(x => x.PersonId));
         });
     }
 }

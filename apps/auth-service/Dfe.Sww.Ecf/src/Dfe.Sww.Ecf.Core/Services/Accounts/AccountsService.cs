@@ -6,17 +6,20 @@ namespace Dfe.Sww.Ecf.Core.Services.Accounts;
 
 public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsService
 {
-    public async Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request)
+    public async Task<PaginationResult<PersonDto>> GetAllAsync(PaginationRequest request)
     {
         var accounts = dbContext.Persons.AsQueryable();
         var totalItems = await accounts.CountAsync();
 
         var paginatedResults = await accounts
+            .Include(p => p.PersonRoles)
+            .ThenInclude(pr => pr.Role)
             .Skip(request.Offset)
             .Take(request.PageSize)
+            .Select(x => x.ToDto())
             .ToListAsync();
 
-        var response = new PaginationResult<Person>
+        var response = new PaginationResult<PersonDto>
         {
             Records = paginatedResults,
             MetaData = new PaginationMetaData(request.Offset, request.PageSize, totalItems),
@@ -25,17 +28,29 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         return response;
     }
 
-    public async Task<Person?> GetByIdAsync(Guid id)
+    public async Task<PersonDto?> GetByIdAsync(Guid id)
     {
-        var account = await dbContext.Persons.FirstOrDefaultAsync(x => x.PersonId == id);
-        return account;
+        var account = await dbContext
+            .Persons.Include(p => p.PersonRoles)
+            .ThenInclude(pr => pr.Role)
+            .FirstOrDefaultAsync(x => x.PersonId == id);
+        return account?.ToDto();
     }
 
-    public async Task<Person> CreateAsync(Person person)
+    public async Task<PersonDto> CreateAsync(Person person)
     {
         person.CreatedOn = clock.UtcNow;
         await dbContext.Persons.AddAsync(person);
         await dbContext.SaveChangesAsync();
-        return person;
+
+        // Ensure roles are loaded
+        await dbContext
+            .Entry(person)
+            .Collection(x => x.PersonRoles)
+            .Query()
+            .Include(pr => pr.Role)
+            .LoadAsync();
+
+        return person.ToDto();
     }
 }

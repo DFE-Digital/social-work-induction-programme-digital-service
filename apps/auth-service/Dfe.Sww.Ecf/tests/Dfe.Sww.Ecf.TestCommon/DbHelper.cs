@@ -1,9 +1,10 @@
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Text;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Respawn;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using SystemUser = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.SystemUser;
 
 namespace Dfe.Sww.Ecf.TestCommon;
@@ -20,10 +21,12 @@ public class DbHelper(string connectionString)
     {
         services.AddDbContext<EcfDbContext>(
             options => EcfDbContext.ConfigureOptions(options, connectionString),
-            contextLifetime: ServiceLifetime.Transient);
+            contextLifetime: ServiceLifetime.Transient
+        );
 
-        services.AddDbContextFactory<EcfDbContext>(
-            options => EcfDbContext.ConfigureOptions(options, connectionString));
+        services.AddDbContextFactory<EcfDbContext>(options =>
+            EcfDbContext.ConfigureOptions(options, connectionString)
+        );
 
         services.AddSingleton(new DbHelper(connectionString));
 
@@ -40,6 +43,11 @@ public class DbHelper(string connectionString)
 
         // Ensure we have the System User around
         dbContext.Set<SystemUser>().Add(SystemUser.Instance);
+        var roles = Enum.GetValues(typeof(RoleType))
+            .Cast<RoleType>()
+            .Select(roleType => new Role { RoleId = (int)roleType, RoleName = roleType })
+            .ToArray();
+        dbContext.Set<Role>().AddRange(roles);
         await dbContext.SaveChangesAsync();
     }
 
@@ -71,9 +79,12 @@ public class DbHelper(string connectionString)
         var cachedMigrationsVersionPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Dfe.Sww.Ecf.Tests",
-            $"{dbName}-dbversion.txt");
+            $"{dbName}-dbversion.txt"
+        );
 
-        var currentDbVersion = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(dbContext.Database.GenerateCreateScript())));
+        var currentDbVersion = Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(dbContext.Database.GenerateCreateScript()))
+        );
 
         if (currentDbVersion == GetPreviousMigrationsVersion())
         {
@@ -90,7 +101,9 @@ public class DbHelper(string connectionString)
         await EnsureRespawner(connection);
 
         string? GetPreviousMigrationsVersion() =>
-            File.Exists(cachedMigrationsVersionPath) ? File.ReadAllText(cachedMigrationsVersionPath) : null;
+            File.Exists(cachedMigrationsVersionPath)
+                ? File.ReadAllText(cachedMigrationsVersionPath)
+                : null;
 
         void WriteMigrationsVersion()
         {
@@ -106,6 +119,12 @@ public class DbHelper(string connectionString)
             new RespawnerOptions()
             {
                 DbAdapter = DbAdapter.Postgres,
-                TablesToIgnore = ["mandatory_qualification_providers", "establishment_sources", "tps_establishment_types"]
-            });
+                TablesToIgnore =
+                [
+                    "mandatory_qualification_providers",
+                    "establishment_sources",
+                    "tps_establishment_types",
+                ],
+            }
+        );
 }

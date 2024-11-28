@@ -1,10 +1,14 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Services.Accounts;
 
 namespace Dfe.Sww.Ecf.TestCommon;
 
 public partial class TestData
 {
-    public Task<CreatePersonResult> CreatePerson(Action<CreatePersonBuilder>? configure = null, bool? addToDb = true)
+    public Task<CreatePersonResult> CreatePerson(
+        Action<CreatePersonBuilder>? configure = null,
+        bool? addToDb = true
+    )
     {
         return WithDbContext(async dbContext =>
         {
@@ -32,7 +36,6 @@ public partial class TestData
 
             dbContext.Persons.Add(newPerson);
             await dbContext.SaveChangesAsync();
-
 
             return createPersonResult;
         });
@@ -68,7 +71,9 @@ public partial class TestData
         {
             if (_dateOfBirth is not null && _dateOfBirth != dateOfBirth)
             {
-                throw new InvalidOperationException("WithDateOfBirth cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithDateOfBirth cannot be changed after it's set."
+                );
             }
 
             _dateOfBirth = dateOfBirth;
@@ -79,7 +84,9 @@ public partial class TestData
         {
             if (_firstName is not null && _firstName != firstName)
             {
-                throw new InvalidOperationException("WithFirstName cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithFirstName cannot be changed after it's set."
+                );
             }
 
             _firstName = firstName;
@@ -90,7 +97,9 @@ public partial class TestData
         {
             if (_middleName is not null && _middleName != middleName)
             {
-                throw new InvalidOperationException("WithMiddleName cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithMiddleName cannot be changed after it's set."
+                );
             }
 
             _middleName = middleName;
@@ -101,7 +110,9 @@ public partial class TestData
         {
             if (_lastName is not null && _lastName != lastName)
             {
-                throw new InvalidOperationException("WithLastName cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithLastName cannot be changed after it's set."
+                );
             }
 
             _lastName = lastName;
@@ -123,7 +134,9 @@ public partial class TestData
         {
             if (_mobileNumber is not null && _mobileNumber != mobileNumber)
             {
-                throw new InvalidOperationException("WithMobileNumber cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithMobileNumber cannot be changed after it's set."
+                );
             }
 
             _mobileNumber = mobileNumber;
@@ -141,12 +154,25 @@ public partial class TestData
             return this;
         }
 
-        public CreatePersonBuilder WithNationalInsuranceNumber(bool? hasNationalInsuranceNumber = true, string? nationalInsuranceNumber = null)
+        public CreatePersonBuilder WithNationalInsuranceNumber(
+            bool? hasNationalInsuranceNumber = true,
+            string? nationalInsuranceNumber = null
+        )
         {
-            if ((_hasNationalInsuranceNumber is not null && _hasNationalInsuranceNumber != hasNationalInsuranceNumber)
-                || (_nationalInsuranceNumber is not null && _nationalInsuranceNumber != nationalInsuranceNumber))
+            if (
+                (
+                    _hasNationalInsuranceNumber is not null
+                    && _hasNationalInsuranceNumber != hasNationalInsuranceNumber
+                )
+                || (
+                    _nationalInsuranceNumber is not null
+                    && _nationalInsuranceNumber != nationalInsuranceNumber
+                )
+            )
             {
-                throw new InvalidOperationException("WithNationalInsuranceNumber cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithNationalInsuranceNumber cannot be changed after it's set."
+                );
             }
 
             _hasNationalInsuranceNumber = hasNationalInsuranceNumber;
@@ -158,10 +184,20 @@ public partial class TestData
         {
             var hasNationalInsuranceNumber = true;
 
-            if ((_hasNationalInsuranceNumber is not null && _hasNationalInsuranceNumber != hasNationalInsuranceNumber)
-                || (_nationalInsuranceNumber is not null && _nationalInsuranceNumber != nationalInsuranceNumber))
+            if (
+                (
+                    _hasNationalInsuranceNumber is not null
+                    && _hasNationalInsuranceNumber != hasNationalInsuranceNumber
+                )
+                || (
+                    _nationalInsuranceNumber is not null
+                    && _nationalInsuranceNumber != nationalInsuranceNumber
+                )
+            )
             {
-                throw new InvalidOperationException("WithNationalInsuranceNumber cannot be changed after it's set.");
+                throw new InvalidOperationException(
+                    "WithNationalInsuranceNumber cannot be changed after it's set."
+                );
             }
 
             _hasNationalInsuranceNumber = hasNationalInsuranceNumber;
@@ -174,10 +210,15 @@ public partial class TestData
             var hasTrn = _hasTrn ?? true;
             var trn = hasTrn ? await testData.GenerateTrn() : null;
             var hasNationalInsuranceNumber = _hasNationalInsuranceNumber ?? false;
-            var nationalInsuranceNumber = hasNationalInsuranceNumber ? _nationalInsuranceNumber ?? testData.GenerateNationalInsuranceNumber() : null;
+            var nationalInsuranceNumber = hasNationalInsuranceNumber
+                ? _nationalInsuranceNumber ?? testData.GenerateNationalInsuranceNumber()
+                : null;
             var statedFirstName = _firstName ?? testData.GenerateFirstName();
             var statedMiddleName = _middleName ?? testData.GenerateMiddleName();
-            var firstAndMiddleNames = $"{statedFirstName} {statedMiddleName}".Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var firstAndMiddleNames = $"{statedFirstName} {statedMiddleName}".Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+            );
             var firstName = firstAndMiddleNames.First();
             var middleName = string.Join(" ", firstAndMiddleNames.Skip(1));
             var lastName = _lastName ?? testData.GenerateLastName();
@@ -194,7 +235,7 @@ public partial class TestData
                 Email = _email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
-                UpdatedOn = testData.Clock.UtcNow
+                UpdatedOn = testData.Clock.UtcNow,
             };
         }
     }
@@ -212,18 +253,21 @@ public partial class TestData
         public required DateTime? CreatedOn { get; init; }
         public required DateTime? UpdatedOn { get; init; }
 
-        public Person ToPerson() => new Person
-        {
-            PersonId = PersonId,
-            Trn = Trn,
-            DateOfBirth = DateOfBirth,
-            FirstName = FirstName,
-            MiddleName = MiddleName,
-            LastName = LastName,
-            EmailAddress = Email,
-            NationalInsuranceNumber = NationalInsuranceNumber,
-            CreatedOn = CreatedOn,
-            UpdatedOn = UpdatedOn,
-        };
+        public Person ToPerson() =>
+            new Person
+            {
+                PersonId = PersonId,
+                Trn = Trn,
+                DateOfBirth = DateOfBirth,
+                FirstName = FirstName,
+                MiddleName = MiddleName,
+                LastName = LastName,
+                EmailAddress = Email,
+                NationalInsuranceNumber = NationalInsuranceNumber,
+                CreatedOn = CreatedOn,
+                UpdatedOn = UpdatedOn,
+            };
+
+        public PersonDto ToPersonDto() => ToPerson().ToDto();
     }
 }

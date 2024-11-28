@@ -5,9 +5,9 @@ namespace Dfe.Sww.Ecf.Core.Services.Accounts;
 
 public interface IAccountsService
 {
-    Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request);
+    Task<PaginationResult<PersonDto>> GetAllAsync(PaginationRequest request);
 
-    Task<Person?> GetByIdAsync(Guid id);
+    Task<PersonDto?> GetByIdAsync(Guid id);
 
-    Task<Person> CreateAsync(Person person);
+    Task<PersonDto> CreateAsync(Person person);
 }
