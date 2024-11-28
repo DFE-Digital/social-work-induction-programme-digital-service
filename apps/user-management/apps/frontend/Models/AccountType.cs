@@ -8,11 +8,11 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 public enum AccountType
 {
     [Display(Name = "Coordinator")]
-    Coordinator,
+    Coordinator = 800,
 
     [Display(Name = "Assessor")]
-    Assessor,
+    Assessor = 600,
 
     [Display(Name = "Early career social worker")]
-    EarlyCareerSocialWorker
+    EarlyCareerSocialWorker = 400
 }

@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Models;
 using JetBrains.Annotations;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
@@ -9,6 +11,7 @@ public record CreatePersonRequest
     public required string LastName { get; init; }
     public required string EmailAddress { get; init; }
 
-    // TODO: Rename this to SocialWorkEnglandNumber once the Auth service is updated
-    public string? Trn { get; init; }
+    public string? SocialWorkEnglandNumber { get; init; }
+
+    public ImmutableList<AccountType> Roles { get; init; } = [];
 }

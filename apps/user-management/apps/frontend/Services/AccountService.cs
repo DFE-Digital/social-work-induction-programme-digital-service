@@ -47,7 +47,8 @@ public class AccountService(
                 FirstName = account.FirstName,
                 LastName = account.LastName,
                 EmailAddress = account.Email,
-                Trn = account.SocialWorkEnglandNumber
+                SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
+                Roles = account.Types ?? []
             }
         );
 

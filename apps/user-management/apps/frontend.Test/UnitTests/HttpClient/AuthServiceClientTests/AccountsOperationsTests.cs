@@ -34,7 +34,7 @@ public class AccountsOperationsTests
                 PersonId = Guid.NewGuid(),
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
-                Trn = "1234",
+                SocialWorkEnglandNumber = "1234",
                 FirstName = "Test",
                 LastName = "McTester",
             }
@@ -106,7 +106,7 @@ public class AccountsOperationsTests
             PersonId = personId,
             CreatedOn = DateTime.UtcNow,
             UpdatedOn = DateTime.UtcNow,
-            Trn = "1234",
+            SocialWorkEnglandNumber = "1234",
             FirstName = "Test",
             LastName = "McTester",
         };

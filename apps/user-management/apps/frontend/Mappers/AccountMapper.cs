@@ -12,10 +12,10 @@ public class AccountMapper : IModelMapper<Person, Account>
             Id = person.PersonId,
             FirstName = person.FirstName,
             LastName = person.LastName,
-            SocialWorkEnglandNumber = person.Trn,
+            SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
             Email = person.EmailAddress,
             // Status = TODO
-            // Types =  TODO
+            Types = person.Roles,
             CreatedAt = person.CreatedOn
         };
     }
@@ -27,10 +27,10 @@ public class AccountMapper : IModelMapper<Person, Account>
             PersonId = account.Id,
             FirstName = account.FirstName ?? string.Empty,
             LastName = account.LastName ?? string.Empty,
-            Trn = account.SocialWorkEnglandNumber,
+            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             EmailAddress = account.Email,
             // Status = TODO
-            // Types =  TODO
+            Roles = account.Types ?? [],
             CreatedOn = account.CreatedAt
         };
     }

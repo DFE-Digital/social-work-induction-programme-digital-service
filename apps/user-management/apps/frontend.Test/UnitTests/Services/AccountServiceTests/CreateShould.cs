@@ -29,6 +29,8 @@ public class CreateShould : AccountServiceTestBase
                 account.Email == person.EmailAddress
                 && account.FirstName == person.FirstName
                 && account.LastName == person.LastName
+                && account.SocialWorkEnglandNumber == person.SocialWorkEnglandNumber
+                && account.Types == person.Roles
             );
 
         MockClient.Verify(

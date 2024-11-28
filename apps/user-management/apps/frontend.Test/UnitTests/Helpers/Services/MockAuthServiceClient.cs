@@ -31,7 +31,9 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
                         CreatedOn = DateTime.UtcNow,
                         FirstName = createPersonRequest.FirstName,
                         LastName = createPersonRequest.LastName,
-                        EmailAddress = createPersonRequest.EmailAddress
+                        EmailAddress = createPersonRequest.EmailAddress,
+                        SocialWorkEnglandNumber = createPersonRequest.SocialWorkEnglandNumber,
+                        Roles = createPersonRequest.Roles
                     }
             );
 
