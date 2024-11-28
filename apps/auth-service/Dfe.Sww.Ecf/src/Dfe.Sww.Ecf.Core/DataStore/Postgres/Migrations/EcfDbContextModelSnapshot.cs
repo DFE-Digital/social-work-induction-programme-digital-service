@@ -375,7 +375,6 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .UseCollation("case_insensitive");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("middle_name")
@@ -483,6 +482,38 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.ToTable("person_employments", (string)null);
                 });
 
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.PersonRole", b =>
+                {
+                    b.Property<Guid>("PersonRoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_role_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("AssignedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("assigned_on")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("PersonRoleId")
+                        .HasName("pk_person_roles");
+
+                    b.HasIndex("PersonId", "RoleId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_person_roles_person_id_role_id");
+
+                    b.ToTable("person_roles", (string)null);
+                });
+
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.PersonSearchAttribute", b =>
                 {
                     b.Property<long>("PersonSearchAttributeId")
@@ -531,6 +562,51 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasDatabaseName("ix_person_search_attributes_attribute_type_and_value");
 
                     b.ToTable("person_search_attributes", (string)null);
+                });
+
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("role_name");
+
+                    b.HasKey("RoleId")
+                        .HasName("pk_roles");
+
+                    b.HasIndex("RoleName")
+                        .IsUnique()
+                        .HasDatabaseName("uq_roles_role_name");
+
+                    b.ToTable("roles", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_roles_role_name", "role_name in ('EarlyCareerSocialWorker', 'Assessor', 'Coordinator')");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 400,
+                            RoleName = "EarlyCareerSocialWorker"
+                        },
+                        new
+                        {
+                            RoleId = 600,
+                            RoleName = "Assessor"
+                        },
+                        new
+                        {
+                            RoleId = 800,
+                            RoleName = "Coordinator"
+                        });
                 });
 
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.SupportTask", b =>
@@ -935,6 +1011,27 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasConstraintName("fk_person_employments_person_id");
                 });
 
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.PersonRole", b =>
+                {
+                    b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", "Person")
+                        .WithMany("PersonRoles")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_person_roles_persons_person_id");
+
+                    b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Role", "Role")
+                        .WithMany("PersonRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_person_roles_roles_role_id");
+
+                    b.Navigation("Person");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.SupportTask", b =>
                 {
                     b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.OneLoginUser", null)
@@ -973,6 +1070,16 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", b =>
+                {
+                    b.Navigation("PersonRoles");
+                });
+
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Role", b =>
+                {
+                    b.Navigation("PersonRoles");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication<System.Guid>", b =>

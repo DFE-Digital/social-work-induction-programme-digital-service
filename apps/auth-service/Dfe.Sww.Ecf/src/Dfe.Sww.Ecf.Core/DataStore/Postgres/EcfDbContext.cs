@@ -8,11 +8,8 @@ using User = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.User;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
-public class EcfDbContext : DbContext
+public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(options)
 {
-    public EcfDbContext(DbContextOptions<EcfDbContext> options)
-        : base(options) { }
-
     public static EcfDbContext Create(string connectionString, int? commandTimeout = null) =>
         new(CreateOptions(connectionString, commandTimeout));
 
@@ -23,6 +20,10 @@ public class EcfDbContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Person> Persons => Set<Person>();
+
+    public DbSet<Role> Roles => Set<Role>();
+
+    public DbSet<PersonRole> PersonRoles => Set<PersonRole>();
 
     public DbSet<OneLoginUser> OneLoginUsers => Set<OneLoginUser>();
 
@@ -64,6 +65,8 @@ public class EcfDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EcfDbContext).Assembly);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -86,6 +89,19 @@ public class EcfDbContext : DbContext
                 );
             }
         }
+
+        SeedDatabase(modelBuilder);
+    }
+
+    private static void SeedDatabase(ModelBuilder modelBuilder)
+    {
+        var roles = Enum.GetValues(typeof(RoleType))
+            .Cast<RoleType>()
+            .Select(roleType => new Role { RoleId = (int)roleType, RoleName = roleType })
+            .ToArray();
+
+        // Seed roles into the Roles table
+        modelBuilder.Entity<Role>().HasData(roles);
     }
 
     private static DbContextOptions<EcfDbContext> CreateOptions(

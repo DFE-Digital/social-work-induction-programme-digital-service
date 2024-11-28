@@ -4,7 +4,6 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
-using Dfe.Sww.Ecf.Core.Services.PersonMatching;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
 using GovUk.OneLogin.AspNetCore;
@@ -297,7 +296,6 @@ public class SignInJourneyHelper(
         var ecfIdentity = new ClaimsIdentity(
             [
                 new Claim(ClaimTypes.Subject, oneLoginPrincipal.FindFirstValue("sub")!),
-                new Claim(ClaimTypes.Email, oneLoginPrincipal.FindFirstValue("email")!),
                 new Claim(ClaimTypes.OneLoginIdToken, oneLoginIdToken),
             ],
             authenticationType: "Authorize access to an ECF account",

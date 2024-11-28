@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -24,26 +25,10 @@ public class OAuth2Controller(
     [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Authorize()
     {
-        var request =
-            HttpContext.GetOpenIddictServerRequest()
-            ?? throw new InvalidOperationException(
-                "The OpenID Connect request cannot be retrieved."
-            );
-
-        if (!request.HasScope(CustomScopes.SocialWorkerRecord))
+        var request = HttpContext.GetOpenIddictServerRequest();
+        if (request is null)
         {
-            return Forbid(
-                authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                properties: new AuthenticationProperties(
-                    new Dictionary<string, string?>()
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] =
-                            Errors.InvalidRequest,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            $"Requests must include the {CustomScopes.SocialWorkerRecord} scope.",
-                    }
-                )
-            );
+            throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
         }
 
         var application =
@@ -54,101 +39,142 @@ public class OAuth2Controller(
             AuthenticationSchemes.MatchToEcfAccount
         );
 
-        if (!authenticateResult.Succeeded)
+        if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
         {
-            var parameters = Request.HasFormContentType
-                ? Request.Form.ToList()
-                : Request.Query.ToList();
-
-            var serviceUrl = new Uri(request.RedirectUri!).GetLeftPart(UriPartial.Authority);
-            var linkingToken = parameters
-                .GroupBy(kvp => kvp.Key)
-                .FirstOrDefault(kvp =>
-                    kvp.Key
-                    == MatchToEcfAccountAuthenticationHandler
-                        .AuthenticationPropertiesItemKeys
-                        .LinkingToken
-                )
-                ?.Select(kvp => kvp.Value)
-                .FirstOrDefault();
-
-            var authenticationProperties = new AuthenticationProperties()
-            {
-                RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters),
-                Items =
-                {
-                    {
-                        MatchToEcfAccountAuthenticationHandler
-                            .AuthenticationPropertiesItemKeys
-                            .OneLoginAuthenticationScheme,
-                        "OneLogin"
-                    },
-                    {
-                        MatchToEcfAccountAuthenticationHandler
-                            .AuthenticationPropertiesItemKeys
-                            .ServiceName,
-                        await applicationManager.GetDisplayNameAsync(application)
-                    },
-                    {
-                        MatchToEcfAccountAuthenticationHandler
-                            .AuthenticationPropertiesItemKeys
-                            .ServiceUrl,
-                        serviceUrl
-                    },
-                    {
-                        MatchToEcfAccountAuthenticationHandler
-                            .AuthenticationPropertiesItemKeys
-                            .LinkingToken,
-                        linkingToken
-                    },
-                },
-            };
-
-            return Challenge(authenticationProperties, AuthenticationSchemes.MatchToEcfAccount);
+            return await HandleAuthenticationFailureAsync(request, application);
         }
 
-        var user = authenticateResult.Principal;
+        var principal = authenticateResult.Principal;
         var subject =
-            user.FindFirstValue(ClaimTypes.Subject)
+            principal.FindFirstValue(ClaimTypes.Subject)
             ?? throw new InvalidOperationException(
                 $"Principal does not contain a '{ClaimTypes.Subject}' claim."
             );
 
-        var identity = new ClaimsIdentity(
-            claims: user.Claims,
-            authenticationType: TokenValidationParameters.DefaultAuthenticationType,
-            nameType: System.Security.Claims.ClaimTypes.Name,
-            roleType: null
-        );
-
-        identity
-            .SetClaim(ClaimTypes.Subject, subject)
-            .SetClaim(ClaimTypes.Email, user.FindFirstValue(ClaimTypes.Email) ?? "");
+        var identity = CreateIdentity(principal, subject);
 
         var oneLoginUser = await dbContext
             .OneLoginUsers.Include(o => o.Person)
             .SingleAsync(u => u.Subject == subject);
 
-        if (oneLoginUser.Person is { } person)
-        {
-            identity
-                .SetClaim(ClaimTypes.Trn, person.Trn ?? "")
-                .SetClaim(
-                    System.Security.Claims.ClaimTypes.Name,
-                    $"{person.FirstName} {person.LastName}"
-                );
-        }
+        await BuildClaimsAsync(identity, request, oneLoginUser);
 
-        identity.SetScopes(request.GetScopes());
-        identity.SetResources(
-            await scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync()
-        );
-        identity.SetDestinations(GetDestinations);
+        await SetIdentityProperties(identity, request);
 
         return SignIn(
             new ClaimsPrincipal(identity),
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
         );
+    }
+
+    private static ClaimsIdentity CreateIdentity(ClaimsPrincipal userPrincipal, string subject)
+    {
+        var identity = new ClaimsIdentity(
+            claims: userPrincipal.Claims,
+            authenticationType: TokenValidationParameters.DefaultAuthenticationType,
+            nameType: System.Security.Claims.ClaimTypes.Name,
+            roleType: System.Security.Claims.ClaimTypes.Role
+        );
+
+        identity.SetClaim(ClaimTypes.Subject, subject);
+        return identity;
+    }
+
+    private async Task SetIdentityProperties(ClaimsIdentity identity, OpenIddictRequest request)
+    {
+        identity.SetScopes(request.GetScopes());
+        identity.SetResources(
+            await scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync()
+        );
+        identity.SetDestinations(GetDestinations);
+    }
+
+    private async Task BuildClaimsAsync(
+        ClaimsIdentity identity,
+        OpenIddictRequest request,
+        OneLoginUser oneLoginUser
+    )
+    {
+        if (oneLoginUser.Person is null)
+        {
+            return;
+        }
+
+        var claimsBuilder = new ClaimsBuilder(identity, request);
+
+        await claimsBuilder
+            .AddIfScope(Scopes.Email, ClaimTypes.Email, () => oneLoginUser.Person.EmailAddress)
+            .AddIfScope(
+                CustomScopes.SocialWorkerRecord,
+                ClaimTypes.Trn,
+                () => oneLoginUser.Person.Trn
+            )
+            .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
+    }
+
+    private async Task<IActionResult> HandleAuthenticationFailureAsync(
+        OpenIddictRequest request,
+        object application
+    )
+    {
+        var parameters = Request.HasFormContentType
+            ? Request.Form.ToList()
+            : Request.Query.ToList();
+
+        var serviceUrl = GetRedirectUri(request);
+        var serviceName = await applicationManager.GetDisplayNameAsync(application);
+        var linkingToken = parameters
+            .FirstOrDefault(kvp =>
+                kvp.Key
+                == MatchToEcfAccountAuthenticationHandler
+                    .AuthenticationPropertiesItemKeys
+                    .LinkingToken
+            )
+            .Value;
+
+        var authenticationProperties = new AuthenticationProperties
+        {
+            RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters),
+            Items =
+            {
+                {
+                    MatchToEcfAccountAuthenticationHandler
+                        .AuthenticationPropertiesItemKeys
+                        .OneLoginAuthenticationScheme,
+                    "OneLogin"
+                },
+                {
+                    MatchToEcfAccountAuthenticationHandler
+                        .AuthenticationPropertiesItemKeys
+                        .ServiceName,
+                    serviceName
+                },
+                {
+                    MatchToEcfAccountAuthenticationHandler
+                        .AuthenticationPropertiesItemKeys
+                        .ServiceUrl,
+                    serviceUrl
+                },
+                {
+                    MatchToEcfAccountAuthenticationHandler
+                        .AuthenticationPropertiesItemKeys
+                        .LinkingToken,
+                    linkingToken
+                },
+            },
+        };
+
+        return Challenge(authenticationProperties, AuthenticationSchemes.MatchToEcfAccount);
+    }
+
+    private static string GetRedirectUri(OpenIddictRequest request)
+    {
+        if (string.IsNullOrEmpty(request.RedirectUri))
+        {
+            throw new InvalidOperationException("RedirectUri is missing or invalid.");
+        }
+
+        return new Uri(request.RedirectUri).GetLeftPart(UriPartial.Authority);
     }
 
     [HttpPost("~/oauth2/token")]
@@ -277,9 +303,15 @@ public class OAuth2Controller(
         {
             case ClaimTypes.Subject:
             case System.Security.Claims.ClaimTypes.Name:
-            case ClaimTypes.Trn:
                 yield return Destinations.AccessToken;
                 yield return Destinations.IdentityToken;
+                yield break;
+            case ClaimTypes.Trn:
+                if (claim.Subject!.HasScope(CustomScopes.SocialWorkerRecord))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
                 yield break;
 
             case ClaimTypes.Email:
@@ -288,6 +320,14 @@ public class OAuth2Controller(
                     yield return Destinations.IdentityToken;
                 }
 
+                yield break;
+
+            case System.Security.Claims.ClaimTypes.Role:
+                if (claim.Subject!.HasScope(Scopes.Roles))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
                 yield break;
 
             case ClaimTypes.OneLoginIdToken:
