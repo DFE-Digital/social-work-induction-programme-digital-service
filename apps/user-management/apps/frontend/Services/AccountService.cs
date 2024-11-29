@@ -25,10 +25,16 @@ public class AccountService(
         return accounts;
     }
 
-    public async Task<Account> GetByIdAsync(Guid id)
+    public async Task<Account?> GetByIdAsync(Guid id)
     {
-        var persons = await authServiceClient.Accounts.GetByIdAsync(id);
-        return mapper.MapToBo(persons);
+        var person = await authServiceClient.Accounts.GetByIdAsync(id);
+
+        if (person is null)
+        {
+            return null;
+        }
+
+        return mapper.MapToBo(person);
     }
 
     public async Task<Account> CreateAsync(Account account)
@@ -53,5 +59,18 @@ public class AccountService(
         );
 
         return mapper.MapToBo(person);
+    }
+
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        var person = await authServiceClient.Accounts.GetByIdAsync(id);
+
+        return person is not null;
+    }
+
+    public Task UpdateAsync(Account updatedAccount)
+    {
+        // TODO - No update endpoint in auth sevice yet
+        throw new NotImplementedException();
     }
 }

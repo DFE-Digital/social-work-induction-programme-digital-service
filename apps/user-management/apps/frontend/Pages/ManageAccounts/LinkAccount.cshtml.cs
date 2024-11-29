@@ -18,9 +18,9 @@ public class LinkAccount(
     [BindProperty]
     public string? Email { get; set; }
 
-    public IActionResult OnGet(Guid id)
+    public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -28,32 +28,33 @@ public class LinkAccount(
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
 
-        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         Email = accountDetails.Email;
 
         return Page();
     }
 
-    public IActionResult OnPost(Guid id)
+    public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
 
-        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         TempData["NotifyEmail"] = accountDetails.Email;
-        TempData["NotificationBannerSubject"] = "Account was successfully linked to this organisation";
+        TempData["NotificationBannerSubject"] =
+            "Account was successfully linked to this organisation";
 
         var statusValue = AccountStatus.Active;
-        if (editAccountJourneyService.GetIsStaff(id) == false)
+        if (await editAccountJourneyService.GetIsStaffAsync(id) == false)
         {
             statusValue = string.IsNullOrEmpty(accountDetails.SocialWorkEnglandNumber)
                 ? AccountStatus.PendingRegistration
                 : statusValue;
         }
-        editAccountJourneyService.SetAccountStatus(id, statusValue);
-        editAccountJourneyService.CompleteJourney(id);
+        await editAccountJourneyService.SetAccountStatusAsync(id, statusValue);
+        await editAccountJourneyService.CompleteJourneyAsync(id);
 
         return Redirect(linkGenerator.ManageAccounts());
     }

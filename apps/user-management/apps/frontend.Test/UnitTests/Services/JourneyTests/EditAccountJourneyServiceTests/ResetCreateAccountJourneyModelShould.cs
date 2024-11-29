@@ -9,17 +9,17 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class ResetCreateAccountJourneyModelShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_ResetsUserJourney()
+    public async Task WhenCalled_ResetsUserJourney()
     {
         // Arrange
         var account = AccountFaker.Generate();
 
-        MockAccountRepository.Setup(x => x.GetById(account.Id)).Returns(account);
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 
-        Sut.SetIsStaff(account.Id, account.IsStaff);
+        await Sut.SetIsStaffAsync(account.Id, account.IsStaff);
 
         // Act
-        Sut.ResetCreateAccountJourneyModel(account.Id);
+        await Sut.ResetCreateAccountJourneyModelAsync(account.Id);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -29,29 +29,29 @@ public class ResetCreateAccountJourneyModelShould : EditAccountJourneyServiceTes
 
         editAccountJourneyModel.Should().BeNull();
 
-        MockAccountRepository.Verify(x => x.GetById(account.Id), Times.Exactly(2));
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Exactly(2));
         VerifyAllNoOtherCall();
     }
 
     [Fact]
-    public void WhenAccountNotFound_ThrowExpectedException()
+    public async Task WhenAccountNotFound_ThrowExpectedException()
     {
         // Arrange
         var account = AccountFaker.Generate();
 
         var expectedException = new KeyNotFoundException("Account not found with ID " + account.Id);
 
-        MockAccountRepository.Setup(x => x.GetById(account.Id)).Returns((Account?)null);
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync((Account?)null);
 
         // Act
-        var actualException = Assert.Throws<KeyNotFoundException>(
-            () => Sut.ResetCreateAccountJourneyModel(account.Id)
+        var actualException = await Assert.ThrowsAsync<KeyNotFoundException>(
+            () => Sut.ResetCreateAccountJourneyModelAsync(account.Id)
         );
 
         // Assert
         actualException.Message.Should().Be(expectedException.Message);
 
-        MockAccountRepository.Verify(x => x.GetById(account.Id), Times.Once);
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         VerifyAllNoOtherCall();
     }
 }

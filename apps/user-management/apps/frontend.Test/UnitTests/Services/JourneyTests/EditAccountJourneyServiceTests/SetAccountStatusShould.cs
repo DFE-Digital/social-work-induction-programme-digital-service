@@ -9,7 +9,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class SetAccountStatusShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_SetsAccountStatus()
+    public async Task WhenCalled_SetsAccountStatus()
     {
         // Arrange
         var originalAccount = AccountFaker.Generate();
@@ -17,10 +17,12 @@ public class SetAccountStatusShould : EditAccountJourneyServiceTestBase
         var updatedAccount = AccountFaker.Generate();
         var editedAccountStatus = new EditAccountJourneyModel(updatedAccount).AccountStatus!;
 
-        MockAccountRepository.Setup(x => x.GetById(originalAccount.Id)).Returns(originalAccount);
+        MockAccountService
+            .Setup(x => x.GetByIdAsync(originalAccount.Id))
+            .ReturnsAsync(originalAccount);
 
         // Act
-        Sut.SetAccountStatus(originalAccount.Id, editedAccountStatus.Value);
+        await Sut.SetAccountStatusAsync(originalAccount.Id, editedAccountStatus.Value);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -31,7 +33,7 @@ public class SetAccountStatusShould : EditAccountJourneyServiceTestBase
         editAccountJourneyModel.Should().NotBeNull();
         editAccountJourneyModel!.AccountStatus.Should().Be(editedAccountStatus.Value);
 
-        MockAccountRepository.Verify(x => x.GetById(originalAccount.Id), Times.Once);
+        MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();
     }
 }

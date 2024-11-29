@@ -7,7 +7,9 @@ public interface IAccountService
 {
     public Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request);
 
-    public Task<Account> GetByIdAsync(Guid id);
+    public Task<Account?> GetByIdAsync(Guid id);
 
     public Task<Account> CreateAsync(Account account);
+    public Task<bool> ExistsAsync(Guid id);
+    Task UpdateAsync(Account updatedAccount);
 }

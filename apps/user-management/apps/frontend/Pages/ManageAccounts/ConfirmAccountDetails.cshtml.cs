@@ -62,9 +62,9 @@ public class ConfirmAccountDetails(
         return Page();
     }
 
-    public IActionResult OnGetUpdate(Guid id)
+    public async Task<IActionResult> OnGetUpdateAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -75,7 +75,7 @@ public class ConfirmAccountDetails(
         IsUpdatingAccount = true;
         Id = id;
 
-        var updatedAccountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
 
         FirstName = updatedAccountDetails.FirstName;
         LastName = updatedAccountDetails.LastName;
@@ -100,14 +100,14 @@ public class ConfirmAccountDetails(
         return Redirect(linkGenerator.ManageAccounts());
     }
 
-    public IActionResult OnPostUpdate(Guid id)
+    public async Task<IActionResult> OnPostUpdateAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
 
-        editAccountJourneyService.CompleteJourney(id);
+        await editAccountJourneyService.CompleteJourneyAsync(id);
 
         return Redirect(linkGenerator.ViewAccountDetails(id));
     }

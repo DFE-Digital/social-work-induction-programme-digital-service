@@ -9,11 +9,11 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    IAccountRepository accountRepository
+    IAccountService accountService
 ) : IEditAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IAccountRepository _accountRepository = accountRepository;
+    private readonly IAccountService _accountService = accountService;
 
     private static string EditAccountSessionKey(Guid id) => "_editAccount-" + id;
 
@@ -23,7 +23,7 @@ public class EditAccountJourneyService(
     private static KeyNotFoundException AccountNotFoundException(Guid id) =>
         new("Account not found with ID " + id);
 
-    private EditAccountJourneyModel GetEditAccountJourneyModel(Guid accountId)
+    private async Task<EditAccountJourneyModel> GetEditAccountJourneyModelAsync(Guid accountId)
     {
         Session.TryGet(
             EditAccountSessionKey(accountId),
@@ -34,7 +34,7 @@ public class EditAccountJourneyService(
             return editAccountJourneyModel;
         }
 
-        var account = _accountRepository.GetById(accountId);
+        var account = await _accountService.GetByIdAsync(accountId);
         if (account is null)
         {
             throw AccountNotFoundException(accountId);
@@ -44,57 +44,58 @@ public class EditAccountJourneyService(
         return editAccountJourneyModel;
     }
 
-    public bool IsAccountIdValid(Guid accountId) => _accountRepository.Exists(accountId);
+    public async Task<bool> IsAccountIdValidAsync(Guid accountId) =>
+        await _accountService.ExistsAsync(accountId);
 
-    public ImmutableList<AccountType>? GetAccountTypes(Guid accountId)
+    public async Task<ImmutableList<AccountType>?> GetAccountTypesAsync(Guid accountId)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         return editAccountJourneyModel.AccountTypes;
     }
 
-    public AccountDetails GetAccountDetails(Guid accountId)
+    public async Task<AccountDetails> GetAccountDetailsAsync(Guid accountId)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         return editAccountJourneyModel.AccountDetails;
     }
 
-    public bool? GetIsStaff(Guid accountId)
+    public async Task<bool?> GetIsStaffAsync(Guid accountId)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         return editAccountJourneyModel.IsStaff;
     }
 
-    public void SetAccountDetails(Guid accountId, AccountDetails accountDetails)
+    public async Task SetAccountDetailsAsync(Guid accountId, AccountDetails accountDetails)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         editAccountJourneyModel.AccountDetails = accountDetails;
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
-    public void SetAccountTypes(Guid accountId, IEnumerable<AccountType> accountTypes)
+    public async Task SetAccountTypesAsync(Guid accountId, IEnumerable<AccountType> accountTypes)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         editAccountJourneyModel.AccountTypes = accountTypes.ToImmutableList();
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
-    public void SetAccountStatus(Guid accountId, AccountStatus accountStatus)
+    public async Task SetAccountStatusAsync(Guid accountId, AccountStatus accountStatus)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         editAccountJourneyModel.AccountStatus = accountStatus;
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
-    public void SetIsStaff(Guid accountId, bool? isStaff)
+    public async Task SetIsStaffAsync(Guid accountId, bool? isStaff)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         editAccountJourneyModel.IsStaff = isStaff;
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
-    public void ResetCreateAccountJourneyModel(Guid accountId)
+    public async Task ResetCreateAccountJourneyModelAsync(Guid accountId)
     {
-        var account = _accountRepository.GetById(accountId);
+        var account = await _accountService.GetByIdAsync(accountId);
         if (account is null)
         {
             throw AccountNotFoundException(accountId);
@@ -110,14 +111,14 @@ public class EditAccountJourneyService(
         Session.Set(EditAccountSessionKey(accountId), editAccountJourneyModel);
     }
 
-    public Account CompleteJourney(Guid accountId)
+    public async Task<Account> CompleteJourneyAsync(Guid accountId)
     {
-        var editAccountJourneyModel = GetEditAccountJourneyModel(accountId);
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
 
         var updatedAccount = editAccountJourneyModel.ToAccount();
-        _accountRepository.Update(updatedAccount);
+        await _accountService.UpdateAsync(updatedAccount);
 
-        ResetCreateAccountJourneyModel(accountId);
+        await ResetCreateAccountJourneyModelAsync(accountId);
         return updatedAccount;
     }
 }

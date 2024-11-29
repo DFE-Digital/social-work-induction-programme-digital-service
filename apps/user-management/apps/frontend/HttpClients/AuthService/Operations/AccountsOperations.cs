@@ -36,23 +36,18 @@ public class AccountsOperations(AuthServiceClient authServiceClient) : IAccounts
         return persons;
     }
 
-    public async Task<Person> GetByIdAsync(Guid id)
+    public async Task<Person?> GetByIdAsync(Guid id)
     {
         var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Accounts/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new InvalidOperationException("Failed to get account.");
+            return null;
         }
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
         var person = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
-
-        if (person is null)
-        {
-            throw new InvalidOperationException("Failed to get account.");
-        }
 
         return person;
     }

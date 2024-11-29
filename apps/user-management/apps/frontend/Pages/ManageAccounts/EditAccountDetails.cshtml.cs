@@ -36,9 +36,9 @@ public class EditAccountDetails(
 
     public bool IsStaff { get; set; }
 
-    public IActionResult OnGet(Guid id)
+    public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -46,7 +46,7 @@ public class EditAccountDetails(
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
 
-        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
 
         FirstName = accountDetails.FirstName;
         LastName = accountDetails.LastName;
@@ -57,21 +57,21 @@ public class EditAccountDetails(
             out var swe
         );
         SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
-        IsStaff = editAccountJourneyService.GetIsStaff(id) ?? false;
+        IsStaff = await editAccountJourneyService.GetIsStaffAsync(id) ?? false;
 
         return Page();
     }
 
-    public IActionResult OnGetChange(Guid id)
+    public async Task<IActionResult> OnGetChangeAsync(Guid id)
     {
         BackLinkPath = linkGenerator.ConfirmAccountDetailsUpdate(id);
 
-        return OnGet(id);
+        return await OnGetAsync(id);
     }
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -92,7 +92,7 @@ public class EditAccountDetails(
             return Page();
         }
 
-        editAccountJourneyService.SetAccountDetails(id, accountDetails);
+        await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(id));
     }

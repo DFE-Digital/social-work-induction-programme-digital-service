@@ -9,24 +9,24 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class GetAccountDetailsShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_ReturnAccountDetails()
+    public async Task WhenCalled_ReturnAccountDetails()
     {
         // Arrange
         var account = AccountFaker.Generate();
 
         var expected = new EditAccountJourneyModel(account);
 
-        MockAccountRepository.Setup(x => x.GetById(account.Id)).Returns(account);
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 
         // Act
-        var response = Sut.GetAccountDetails(account.Id);
+        var response = await Sut.GetAccountDetailsAsync(account.Id);
 
         // Assert
         response.Should().NotBeNull();
         response.Should().BeOfType<AccountDetails>();
         response.Should().BeEquivalentTo(expected.AccountDetails);
 
-        MockAccountRepository.Verify(x => x.GetById(account.Id), Times.Once);
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         VerifyAllNoOtherCall();
     }
 }

@@ -34,9 +34,9 @@ public class SelectAccountType(
         return Page();
     }
 
-    public IActionResult OnGetEdit(Guid id)
+    public async Task<IActionResult> OnGetEditAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -65,7 +65,7 @@ public class SelectAccountType(
         return Redirect(linkGenerator.AddAccountDetails());
     }
 
-    public IActionResult OnPostEdit(Guid id)
+    public async Task<IActionResult> OnPostEditAsync(Guid id)
     {
         if (!ModelState.IsValid)
         {
@@ -73,20 +73,23 @@ public class SelectAccountType(
             return Page();
         }
 
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
 
-        editAccountJourneyService.SetIsStaff(id, IsStaff);
+        await editAccountJourneyService.SetIsStaffAsync(id, IsStaff);
 
         if (IsStaff is true)
         {
             return Redirect(linkGenerator.EditUseCase(id));
         }
 
-        editAccountJourneyService.SetAccountTypes(id, [AccountType.EarlyCareerSocialWorker]);
-        editAccountJourneyService.CompleteJourney(id);
+        await editAccountJourneyService.SetAccountTypesAsync(
+            id,
+            [AccountType.EarlyCareerSocialWorker]
+        );
+        await editAccountJourneyService.CompleteJourneyAsync(id);
         return Redirect(linkGenerator.ViewAccountDetails(id));
     }
 }

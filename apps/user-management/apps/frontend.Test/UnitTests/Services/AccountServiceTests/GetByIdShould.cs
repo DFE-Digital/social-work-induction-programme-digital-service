@@ -1,7 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -28,6 +26,23 @@ public class GetByIdShould : AccountServiceTestBase
         response.Should().BeEquivalentTo(account);
 
         MockClient.Verify(x => x.Accounts.GetByIdAsync(person.PersonId), Times.Once);
-        MockClient.VerifyNoOtherCalls();
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task WhenNoPersonFound_ReturnsNull()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        MockClient.Setup(x => x.Accounts.GetByIdAsync(id)).ReturnsAsync((Person?)null);
+
+        // Act
+        var response = await Sut.GetByIdAsync(id);
+
+        // Assert
+        response.Should().BeNull();
+
+        MockClient.Verify(x => x.Accounts.GetByIdAsync(id), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 }

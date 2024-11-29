@@ -13,6 +13,8 @@ public abstract class AccountServiceTestBase
 {
     private protected PersonFaker PersonFaker { get; }
 
+    private protected AccountFaker AccountFaker { get; }
+
     private protected MockAuthServiceClient MockClient { get; }
 
     private protected IModelMapper<Person, Account> Mapper { get; }
@@ -22,9 +24,15 @@ public abstract class AccountServiceTestBase
     protected AccountServiceTestBase()
     {
         PersonFaker = new();
+        AccountFaker = new();
         MockClient = new();
         Mapper = new AccountMapper();
 
         Sut = new(MockClient.Object, Mapper);
+    }
+
+    private protected void VerifyAllNoOtherCalls()
+    {
+        MockClient.VerifyNoOtherCalls();
     }
 }

@@ -7,7 +7,7 @@ public interface IAccountsOperations
 {
     Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request);
 
-    Task<Person> GetByIdAsync(Guid guid);
+    Task<Person?> GetByIdAsync(Guid guid);
 
     Task<Person> CreateAsync(CreatePersonRequest createPersonRequest);
 

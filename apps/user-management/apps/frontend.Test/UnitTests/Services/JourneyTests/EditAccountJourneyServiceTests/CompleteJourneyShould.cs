@@ -10,18 +10,18 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_CompletesJourney()
+    public async Task WhenCalled_CompletesJourney()
     {
         // Arrange
         var account = AccountFaker.Generate();
 
-        MockAccountRepository.Setup(x => x.GetById(account.Id)).Returns(account);
-        MockAccountRepository.Setup(x => x.Update(account));
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        MockAccountService.Setup(x => x.UpdateAsync(account));
 
-        Sut.SetIsStaff(account.Id, account.IsStaff);
+        await Sut.SetIsStaffAsync(account.Id, account.IsStaff);
 
         // Act
-        Sut.CompleteJourney(account.Id);
+        await Sut.CompleteJourneyAsync(account.Id);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -31,9 +31,9 @@ public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
 
         editAccountJourneyModel.Should().BeNull();
 
-        MockAccountRepository.Verify(x => x.GetById(account.Id), Times.Exactly(2));
-        MockAccountRepository.Verify(
-            x => x.Update(MoqHelpers.ShouldBeEquivalentTo(account)),
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Exactly(2));
+        MockAccountService.Verify(
+            x => x.UpdateAsync(MoqHelpers.ShouldBeEquivalentTo(account)),
             Times.Once
         );
         VerifyAllNoOtherCall();

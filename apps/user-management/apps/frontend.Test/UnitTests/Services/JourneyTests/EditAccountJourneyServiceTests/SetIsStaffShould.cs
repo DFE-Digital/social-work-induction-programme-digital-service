@@ -9,15 +9,17 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class SetIsStaffShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_SetsIsStaff()
+    public async Task WhenCalled_SetsIsStaff()
     {
         // Arrange
         var originalAccount = AccountFaker.Generate();
 
-        MockAccountRepository.Setup(x => x.GetById(originalAccount.Id)).Returns(originalAccount);
+        MockAccountService
+            .Setup(x => x.GetByIdAsync(originalAccount.Id))
+            .ReturnsAsync(originalAccount);
 
         // Act
-        Sut.SetIsStaff(originalAccount.Id, !originalAccount.IsStaff);
+        await Sut.SetIsStaffAsync(originalAccount.Id, !originalAccount.IsStaff);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -28,7 +30,7 @@ public class SetIsStaffShould : EditAccountJourneyServiceTestBase
         editAccountJourneyModel.Should().NotBeNull();
         editAccountJourneyModel!.IsStaff.Should().Be(!originalAccount.IsStaff);
 
-        MockAccountRepository.Verify(x => x.GetById(originalAccount.Id), Times.Once);
+        MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();
     }
 }

@@ -8,7 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJ
 public class GetIsStaffShould : EditAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_ReturnIsStaff()
+    public async Task WhenCalled_ReturnIsStaff()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -16,16 +16,16 @@ public class GetIsStaffShould : EditAccountJourneyServiceTestBase
 
         var expected = new EditAccountJourneyModel(account);
 
-        MockAccountRepository.Setup(x => x.GetById(id)).Returns(account);
+        MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = Sut.GetIsStaff(id);
+        var response = await Sut.GetIsStaffAsync(id);
 
         // Assert
         response.Should().NotBeNull();
         response.Should().Be(expected.IsStaff);
 
-        MockAccountRepository.Verify(x => x.GetById(id), Times.Once);
+        MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();
     }
 }

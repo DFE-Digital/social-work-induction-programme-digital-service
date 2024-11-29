@@ -44,6 +44,27 @@ public class CreateShould : AccountServiceTestBase
                 ),
             Times.Once
         );
-        MockClient.VerifyNoOtherCalls();
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task WhenCalledWithNullData_ThrowsArgumentException()
+    {
+        // Arrange
+        var accountToCreate = new Account
+        {
+            FirstName = string.Empty,
+            LastName = string.Empty,
+            Email = string.Empty
+        };
+
+        // Act
+        var actualException = await Assert.ThrowsAsync<ArgumentException>(
+            async () => await Sut.CreateAsync(accountToCreate)
+        );
+
+        // Assert
+        actualException.Should().BeOfType<ArgumentException>();
+        VerifyAllNoOtherCalls();
     }
 }

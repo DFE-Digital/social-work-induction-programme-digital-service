@@ -1,4 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.Repositories.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
@@ -16,7 +16,7 @@ public abstract class EditAccountJourneyServiceTestBase
     private protected AccountDetailsFaker AccountDetailsFaker { get; }
     private protected HttpContext HttpContext { get; }
     private protected ITempDataDictionary TempData { get; }
-    private protected Mock<IAccountRepository> MockAccountRepository { get; }
+    private protected Mock<IAccountService> MockAccountService { get; }
 
     private protected EditAccountJourneyService Sut;
 
@@ -34,13 +34,13 @@ public abstract class EditAccountJourneyServiceTestBase
         TempData = new TempDataDictionary(HttpContext, Mock.Of<ITempDataProvider>());
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
-        MockAccountRepository = new();
+        MockAccountService = new();
 
-        Sut = new(httpContextAccessor, MockAccountRepository.Object);
+        Sut = new(httpContextAccessor, MockAccountService.Object);
     }
 
     private protected void VerifyAllNoOtherCall()
     {
-        MockAccountRepository.VerifyNoOtherCalls();
+        MockAccountService.VerifyNoOtherCalls();
     }
 }

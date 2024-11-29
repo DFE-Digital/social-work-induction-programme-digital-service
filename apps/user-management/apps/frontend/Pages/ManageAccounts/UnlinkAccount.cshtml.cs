@@ -17,9 +17,9 @@ public class UnlinkAccount(
     [BindProperty]
     public string? Email { get; set; }
 
-    public IActionResult OnGet(Guid id)
+    public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -27,26 +27,26 @@ public class UnlinkAccount(
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
 
-        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         Email = accountDetails.Email;
 
         return Page();
     }
 
-    public IActionResult OnPost(Guid id)
+    public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
 
-        var accountDetails = editAccountJourneyService.GetAccountDetails(id);
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         TempData["NotifyEmail"] = accountDetails.Email;
         TempData["NotificationBannerSubject"] =
             "Account was successfully unlinked from this organisation";
 
-        editAccountJourneyService.SetAccountStatus(id, AccountStatus.Inactive);
-        editAccountJourneyService.CompleteJourney(id);
+        await editAccountJourneyService.SetAccountStatusAsync(id, AccountStatus.Inactive);
+        await editAccountJourneyService.CompleteJourneyAsync(id);
 
         return Redirect(linkGenerator.ManageAccounts());
     }

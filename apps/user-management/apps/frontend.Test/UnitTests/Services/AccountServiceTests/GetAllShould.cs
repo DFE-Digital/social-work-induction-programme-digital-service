@@ -53,6 +53,6 @@ public class GetAllShould : AccountServiceTestBase
             x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)),
             Times.Once
         );
-        MockClient.VerifyNoOtherCalls();
+        VerifyAllNoOtherCalls();
     }
 }

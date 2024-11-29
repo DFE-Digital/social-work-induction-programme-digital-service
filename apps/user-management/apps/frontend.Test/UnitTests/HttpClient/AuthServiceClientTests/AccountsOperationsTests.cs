@@ -140,12 +140,10 @@ public class AccountsOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Accounts.GetByIdAsync(personId)
-        );
+        var response = await sut.Accounts.GetByIdAsync(personId);
 
         // Assert
-        actualException.Should().BeOfType<InvalidOperationException>();
+        response.Should().BeNull();
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();

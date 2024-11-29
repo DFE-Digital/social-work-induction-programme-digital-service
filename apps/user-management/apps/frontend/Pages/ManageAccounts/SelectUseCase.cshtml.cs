@@ -29,9 +29,9 @@ public class SelectUseCase(
         return Page();
     }
 
-    public IActionResult OnGetEdit(Guid id)
+    public async Task<IActionResult> OnGetEditAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -59,7 +59,7 @@ public class SelectUseCase(
 
     public async Task<IActionResult> OnPostEditAsync(Guid id)
     {
-        if (!editAccountJourneyService.IsAccountIdValid(id))
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
         {
             return NotFound();
         }
@@ -73,8 +73,8 @@ public class SelectUseCase(
             return Page();
         }
 
-        editAccountJourneyService.SetAccountTypes(id, SelectedAccountTypes);
-        editAccountJourneyService.CompleteJourney(id);
+        await editAccountJourneyService.SetAccountTypesAsync(id, SelectedAccountTypes);
+        await editAccountJourneyService.CompleteJourneyAsync(id);
 
         return Redirect(linkGenerator.ViewAccountDetails(id));
     }
