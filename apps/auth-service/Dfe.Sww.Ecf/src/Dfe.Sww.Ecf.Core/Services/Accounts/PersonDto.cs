@@ -9,6 +9,7 @@ public class PersonDto
 {
     public Guid PersonId { get; init; }
     public DateTime? CreatedOn { get; init; }
+    public DateTime? UpdatedOn { get; init; }
     public string? SocialWorkEnglandNumber { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
@@ -24,6 +25,7 @@ public static class PersonDtoExtensions
         {
             PersonId = person.PersonId,
             CreatedOn = person.CreatedOn,
+            UpdatedOn = person.UpdatedOn,
             SocialWorkEnglandNumber = person.Trn,
             FirstName = person.FirstName,
             LastName = person.LastName,

@@ -10,4 +10,5 @@ public interface IAccountsService
     Task<PersonDto?> GetByIdAsync(Guid id);
 
     Task<PersonDto> CreateAsync(Person person);
+    Task<PersonDto?> UpdateAsync(Person person);
 }

@@ -155,7 +155,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             {
                 Faker.Enum.Random<RoleType>(),
             }.ToImmutableList();
-            ;
+
             var accountsService = new AccountsService(dbContext, Clock);
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
@@ -183,6 +183,66 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             createdResult
                 .Value.Should()
                 .BeEquivalentTo(expectedNewUser, p => p.Excluding(x => x.PersonId));
+        });
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsUpdatedResult_WhenUserIsUpdated()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var existingUser = (await TestData.CreatePerson()).ToPersonDto();
+            existingUser.Roles = new List<RoleType>
+            {
+                Faker.Enum.Random<RoleType>(),
+            }.ToImmutableList();
+
+            var expectedUser = new PersonDto
+            {
+                PersonId = existingUser.PersonId,
+                CreatedOn = existingUser.CreatedOn,
+                UpdatedOn = Clock.UtcNow,
+                FirstName = "Changed First Name",
+                LastName = "Changed Last Name",
+                EmailAddress = "Changed Email",
+                SocialWorkEnglandNumber = "123",
+                Roles = new List<RoleType>
+                {
+                    RoleType.Assessor,
+                    RoleType.Coordinator,
+                    RoleType.EarlyCareerSocialWorker
+                }.ToImmutableList()
+            };
+
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+
+            // Act
+            var result = await controller.UpdateAsync(
+                new UpdatePersonRequest
+                {
+                    PersonId = existingUser.PersonId,
+                    FirstName = expectedUser.FirstName,
+                    LastName = expectedUser.LastName,
+                    EmailAddress = expectedUser.EmailAddress,
+                    SocialWorkEnglandNumber = expectedUser.SocialWorkEnglandNumber,
+                    Roles = expectedUser.Roles
+                }
+            );
+
+            // Assert
+            result.Should().BeOfType<OkObjectResult>();
+            var updatedResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            updatedResult.Value.Should().BeOfType<PersonDto>();
+            updatedResult
+                .Value.Should()
+                .BeEquivalentTo(expectedUser);
         });
     }
 }

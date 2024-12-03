@@ -25,8 +25,7 @@ public partial class TestData
                 LastName = createPersonResult.LastName,
                 EmailAddress = createPersonResult.Email,
                 NationalInsuranceNumber = createPersonResult.NationalInsuranceNumber,
-                CreatedOn = Clock.UtcNow,
-                UpdatedOn = Clock.UtcNow,
+                CreatedOn = Clock.UtcNow
             };
 
             if (addToDb is not true)
@@ -235,7 +234,6 @@ public partial class TestData
                 Email = _email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
-                UpdatedOn = testData.Clock.UtcNow,
             };
         }
     }
@@ -248,10 +246,10 @@ public partial class TestData
         public required string FirstName { get; init; }
         public required string MiddleName { get; init; }
         public required string LastName { get; init; }
-        public required string? Email { get; init; }
-        public required string? NationalInsuranceNumber { get; init; }
-        public required DateTime? CreatedOn { get; init; }
-        public required DateTime? UpdatedOn { get; init; }
+        public string? Email { get; init; }
+        public string? NationalInsuranceNumber { get; init; }
+        public DateTime? CreatedOn { get; init; }
+        public DateTime? UpdatedOn { get; init; }
 
         public Person ToPerson() =>
             new Person

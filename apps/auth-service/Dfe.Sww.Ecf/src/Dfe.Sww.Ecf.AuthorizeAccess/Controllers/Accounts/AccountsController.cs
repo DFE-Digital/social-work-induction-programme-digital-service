@@ -71,6 +71,35 @@ public class AccountsController(
         );
     }
 
+    [HttpPut]
+    [ActionName(nameof(UpdateAsync))]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdatePersonRequest updatePersonRequest)
+    {
+        var roles = updatePersonRequest
+            .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
+            .ToList();
+        var updatedAccount = await accountsService.UpdateAsync(
+            new Person
+            {
+                PersonId = updatePersonRequest.PersonId,
+                FirstName = updatePersonRequest.FirstName,
+                LastName = updatePersonRequest.LastName,
+                EmailAddress = updatePersonRequest.EmailAddress,
+                Trn = updatePersonRequest.SocialWorkEnglandNumber,
+                PersonRoles = roles,
+            }
+        );
+
+        if (updatedAccount is null)
+        {
+            return BadRequest("Account not found.");
+        }
+
+        return Ok(updatedAccount);
+    }
+
     [HttpGet("{id:guid}/linking-token")]
     [ActionName(nameof(GetLinkingTokenByIdAsync))]
     [Produces(MediaTypeNames.Application.Json)]

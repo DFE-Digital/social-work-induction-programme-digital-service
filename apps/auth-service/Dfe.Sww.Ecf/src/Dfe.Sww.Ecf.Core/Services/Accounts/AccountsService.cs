@@ -53,4 +53,41 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
 
         return person.ToDto();
     }
+
+    public async Task<PersonDto?> UpdateAsync(Person updatedAccount)
+    {
+        var account = await dbContext
+            .Persons.Include(p => p.PersonRoles)
+            .ThenInclude(pr => pr.Role)
+            .FirstOrDefaultAsync(x => x.PersonId == updatedAccount.PersonId);
+
+        if (account is null)
+        {
+            return null;
+        }
+
+        account.FirstName = updatedAccount.FirstName;
+        account.LastName = updatedAccount.LastName;
+        account.EmailAddress = updatedAccount.EmailAddress;
+        account.Trn = updatedAccount.Trn;
+        account.UpdatedOn = clock.UtcNow;
+
+        account.PersonRoles.Clear();
+        foreach (var role in updatedAccount.PersonRoles)
+        {
+            account.PersonRoles.Add(role);
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        // Ensure roles are loaded
+        await dbContext
+            .Entry(account)
+            .Collection(x => x.PersonRoles)
+            .Query()
+            .Include(pr => pr.Role)
+            .LoadAsync();
+
+        return account.ToDto();
+    }
 }
