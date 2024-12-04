@@ -1,14 +1,14 @@
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages;
 
-[Authorize]
+[AuthorizeRoles(RoleType.Coordinator, RoleType.Assessor, RoleType.EarlyCareerSocialWorker)]
 public class SignOut(EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public async Task<IActionResult> OnGetAsync()

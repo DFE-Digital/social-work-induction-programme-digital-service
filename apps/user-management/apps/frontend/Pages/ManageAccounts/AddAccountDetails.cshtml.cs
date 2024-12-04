@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
@@ -15,6 +16,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 /// <summary>
 /// Add User Details View Model
 /// </summary>
+[AuthorizeRoles(RoleType.Coordinator)]
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator,

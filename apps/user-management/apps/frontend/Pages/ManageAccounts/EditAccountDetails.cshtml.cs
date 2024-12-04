@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
+[AuthorizeRoles(RoleType.Coordinator)]
 public class EditAccountDetails(
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<AccountDetails> validator,

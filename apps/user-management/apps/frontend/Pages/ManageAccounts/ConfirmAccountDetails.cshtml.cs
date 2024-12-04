@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
+[AuthorizeRoles(RoleType.Coordinator)]
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,

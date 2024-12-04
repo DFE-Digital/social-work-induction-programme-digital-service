@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
+[AuthorizeRoles(RoleType.Coordinator)]
 public class Index(IAccountService accountService) : BasePageModel
 {
     [FromQuery]

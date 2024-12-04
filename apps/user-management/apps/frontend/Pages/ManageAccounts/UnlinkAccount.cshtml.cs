@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
+[AuthorizeRoles(RoleType.Coordinator)]
 public class UnlinkAccount(
     IEditAccountJourneyService editAccountJourneyService,
     EcfLinkGenerator linkGenerator

@@ -1,3 +1,4 @@
+@using Dfe.Sww.Ecf.Frontend.Authorisation
 @using Dfe.Sww.Ecf.Frontend.Helpers
 <header class="dfe-header" role="banner">
     <div class="govuk-width-container dfe-header__container">
@@ -49,22 +50,12 @@
                 @{
                     if (Context.User.Identity?.IsAuthenticated == true)
                     {
-                        <li class="dfe-header__navigation-item @Html.IsActive("/ManageAccounts")">
-                            <a class="dfe-header__navigation-link" href="@LinkGenerator.ManageAccounts()">
-                                Manage accounts
-                                <svg class="dfe-icon dfe-icon__chevron-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" width="34" height="34">
-                                    <path d="M15.5 12a1 1 0 0 1-.29.71l-5 5a1 1 0 0 1-1.42-1.42l4.3-4.29-4.3-4.29a1 1 0 0 1 1.42-1.42l5 5a1 1 0 0 1 .29.71z"></path>
-                                </svg>
-                            </a>
-                        </li>
-                        <li class="dfe-header__navigation-item @Html.IsActive("/ManageLearnerRecord"))">
-                            <a class="dfe-header__navigation-link" href="#">
-                                Manage learner records
-                                <svg class="dfe-icon dfe-icon__chevron-right" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" width="34" height="34">
-                                    <path d="M15.5 12a1 1 0 0 1-.29.71l-5 5a1 1 0 0 1-1.42-1.42l4.3-4.29-4.3-4.29a1 1 0 0 1 1.42-1.42l5 5a1 1 0 0 1 .29.71z"></path>
-                                </svg>
-                            </a>
-                        </li>
+                        if (User.IsInRole(RoleType.Coordinator.ToString()))
+                        {
+                            <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage Accounts"></header-link>
+                        }
+
+                        <header-link is-active-class="@Html.IsActive("/ManageLearnerRecord")" href="#" text="Manage learner records"></header-link>
                     }
                 }
             </ul>
