@@ -65,6 +65,7 @@ public class CreateShould : AccountServiceTestBase
 
         // Assert
         actualException.Should().BeOfType<ArgumentException>();
+        actualException.Message.Should().Be("First name, last name, and email are required");
         VerifyAllNoOtherCalls();
     }
 }

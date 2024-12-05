@@ -12,4 +12,6 @@ public interface IAccountsOperations
     Task<Person> CreateAsync(CreatePersonRequest createPersonRequest);
 
     Task<string> GetLinkingTokenByAccountIdAsync(Guid accountId);
+
+    Task<Person> UpdateAsync(UpdatePersonRequest updatePersonRequest);
 }

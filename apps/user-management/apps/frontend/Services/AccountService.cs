@@ -45,7 +45,7 @@ public class AccountService(
             || string.IsNullOrWhiteSpace(account.Email)
         )
         {
-            throw new ArgumentException("First name, last name and email are required");
+            throw new ArgumentException("First name, last name, and email are required");
         }
         var person = await authServiceClient.Accounts.CreateAsync(
             new CreatePersonRequest
@@ -68,9 +68,29 @@ public class AccountService(
         return person is not null;
     }
 
-    public Task UpdateAsync(Account updatedAccount)
+    public async Task<Account> UpdateAsync(Account updatedAccount)
     {
-        // TODO - No update endpoint in auth sevice yet
-        throw new NotImplementedException();
+        if (
+            string.IsNullOrWhiteSpace(updatedAccount.FirstName)
+            || string.IsNullOrWhiteSpace(updatedAccount.LastName)
+            || string.IsNullOrWhiteSpace(updatedAccount.Email)
+        )
+        {
+            throw new ArgumentException("Person ID, First name, last name, and email are required");
+        }
+
+        var person = await authServiceClient.Accounts.UpdateAsync(
+            new UpdatePersonRequest
+            {
+                PersonId = updatedAccount.Id,
+                FirstName = updatedAccount.FirstName,
+                LastName = updatedAccount.LastName,
+                EmailAddress = updatedAccount.Email,
+                SocialWorkEnglandNumber = updatedAccount.SocialWorkEnglandNumber,
+                Roles = updatedAccount.Types ?? []
+            }
+        );
+
+        return mapper.MapToBo(person);
     }
 }

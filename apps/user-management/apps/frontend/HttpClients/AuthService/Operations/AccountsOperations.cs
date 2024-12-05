@@ -96,4 +96,23 @@ public class AccountsOperations(AuthServiceClient authServiceClient) : IAccounts
 
         return linkingTokenResponse.LinkingToken;
     }
+
+    public async Task<Person> UpdateAsync(UpdatePersonRequest updatePersonRequest)
+    {
+        var httpResponse = await authServiceClient.HttpClient.PutAsJsonAsync(
+            "/api/Accounts",
+            updatePersonRequest
+        );
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException("Failed to update account.");
+        }
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        var updatedPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
+        if (updatedPerson is null)
+        {
+            throw new InvalidOperationException("Failed to update account.");
+        }
+        return updatedPerson;
+    }
 }

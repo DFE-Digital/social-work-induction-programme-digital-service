@@ -36,6 +36,21 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
                         Roles = createPersonRequest.Roles
                     }
             );
+        MockAccountsOperations
+            .Setup(operations => operations.UpdateAsync(It.IsAny<UpdatePersonRequest>()))
+            .ReturnsAsync(
+                (UpdatePersonRequest updatePersonRequest) =>
+                    new Person
+                    {
+                        PersonId = Guid.NewGuid(),
+                        CreatedOn = DateTime.UtcNow,
+                        FirstName = updatePersonRequest.FirstName,
+                        LastName = updatePersonRequest.LastName,
+                        EmailAddress = updatePersonRequest.EmailAddress,
+                        SocialWorkEnglandNumber = updatePersonRequest.SocialWorkEnglandNumber,
+                        Roles = updatePersonRequest.Roles
+                    }
+            );
 
         Setup(x => x.Accounts).Returns(MockAccountsOperations.Object);
     }

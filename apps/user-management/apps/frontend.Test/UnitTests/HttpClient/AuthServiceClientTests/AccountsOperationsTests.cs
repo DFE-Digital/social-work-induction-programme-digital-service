@@ -54,7 +54,12 @@ public class AccountsOperationsTests
             }
         };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, paginationResponse, route);
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            paginationResponse,
+            route
+        );
 
         var sut = BuildSut(mockHttp);
 
@@ -76,7 +81,12 @@ public class AccountsOperationsTests
         // Arrange
         var route = $"/api/Accounts";
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, null, route);
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Get,
+            null,
+            route
+        );
 
         var sut = BuildSut(mockHttp);
 
@@ -111,7 +121,12 @@ public class AccountsOperationsTests
             LastName = "McTester",
         };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, person, route);
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            person,
+            route
+        );
 
         var sut = BuildSut(mockHttp);
 
@@ -135,7 +150,12 @@ public class AccountsOperationsTests
         var personId = Guid.NewGuid();
         var route = $"/api/Accounts/{personId}";
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, null, route);
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Get,
+            null,
+            route
+        );
 
         var sut = BuildSut(mockHttp);
 
@@ -145,6 +165,164 @@ public class AccountsOperationsTests
         // Assert
         response.Should().BeNull();
 
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task Create_SuccessfulRequest_ReturnsPerson()
+    {
+        // Arrange
+        var person = new Person
+        {
+            PersonId = Guid.NewGuid(),
+            CreatedOn = DateTime.UtcNow,
+            UpdatedOn = DateTime.UtcNow,
+            SocialWorkEnglandNumber = "1234",
+            FirstName = "Test",
+            LastName = "McTester",
+            EmailAddress = "test@test.com"
+        };
+
+        var createRequest = new CreatePersonRequest
+        {
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
+            EmailAddress = person.EmailAddress
+        };
+
+        var route = "/api/Accounts/Create";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Post,
+            person,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Accounts.CreateAsync(createRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(person);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task Create_WhenErrorResponseReturned_ReturnsNull()
+    {
+        // Arrange
+        var createRequest = new CreatePersonRequest
+        {
+            FirstName = "John",
+            LastName = "Smith",
+            EmailAddress = "test@test.com"
+        };
+        var route = "/api/Accounts/Create";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Post,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await sut.Accounts.CreateAsync(createRequest)
+        );
+
+        // Assert
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task Update_SuccessfulRequest_ReturnsPerson()
+    {
+        // Arrange
+        var person = new Person
+        {
+            PersonId = Guid.NewGuid(),
+            CreatedOn = DateTime.UtcNow,
+            UpdatedOn = DateTime.UtcNow,
+            SocialWorkEnglandNumber = "1234",
+            FirstName = "Test",
+            LastName = "McTester",
+            EmailAddress = "test@test.com"
+        };
+
+        var updateRequest = new UpdatePersonRequest
+        {
+            PersonId = person.PersonId,
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
+            EmailAddress = person.EmailAddress
+        };
+
+        var route = "/api/Accounts";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Put,
+            person,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Accounts.UpdateAsync(updateRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(person);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task Update_WhenErrorResponseReturned_ReturnsNull()
+    {
+        // Arrange
+        var updateRequest = new UpdatePersonRequest
+        {
+            PersonId = Guid.NewGuid(),
+            FirstName = "John",
+            LastName = "Smith",
+            EmailAddress = "test@test.com"
+        };
+        var route = "/api/Accounts";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Put,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await sut.Accounts.UpdateAsync(updateRequest)
+        );
+
+        // Assert
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();
@@ -178,11 +356,16 @@ public class AccountsOperationsTests
     private static (
         MockHttpMessageHandler MockHttpMessageHandler,
         MockedRequest MockedRequest
-    ) GenerateMockClient(HttpStatusCode statusCode, object? response, string route)
+    ) GenerateMockClient(
+        HttpStatusCode statusCode,
+        HttpMethod httpMethod,
+        object? response,
+        string route
+    )
     {
         using var mockHttp = new MockHttpMessageHandler();
         var request = mockHttp
-            .When(HttpMethod.Get, route)
+            .When(httpMethod, route)
             .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
 
         return (mockHttp, request);
