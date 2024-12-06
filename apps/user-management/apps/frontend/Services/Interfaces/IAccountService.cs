@@ -10,6 +10,5 @@ public interface IAccountService
     public Task<Account?> GetByIdAsync(Guid id);
 
     public Task<Account> CreateAsync(Account account);
-    public Task<bool> ExistsAsync(Guid id);
     Task<Account> UpdateAsync(Account updatedAccount);
 }

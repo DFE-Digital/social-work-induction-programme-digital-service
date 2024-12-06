@@ -18,11 +18,16 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
+        var account = await accountService.GetByIdAsync(id);
+        if (account is null)
+        {
+            return NotFound();
+        }
+
         BackLinkPath = linkGenerator.ManageAccounts();
         UnlinkPath = linkGenerator.UnlinkAccount(id);
         LinkPath = linkGenerator.LinkAccount(id);
-
-        Account = await accountService.GetByIdAsync(id);
+        Account = account;
 
         return Page();
     }

@@ -66,7 +66,8 @@ public class ConfirmAccountDetails(
 
     public async Task<IActionResult> OnGetUpdateAsync(Guid id)
     {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
+        var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (updatedAccountDetails is null)
         {
             return NotFound();
         }
@@ -76,8 +77,6 @@ public class ConfirmAccountDetails(
 
         IsUpdatingAccount = true;
         Id = id;
-
-        var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
 
         FirstName = updatedAccountDetails.FirstName;
         LastName = updatedAccountDetails.LastName;

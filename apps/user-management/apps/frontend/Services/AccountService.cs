@@ -61,13 +61,6 @@ public class AccountService(
         return mapper.MapToBo(person);
     }
 
-    public async Task<bool> ExistsAsync(Guid id)
-    {
-        var person = await authServiceClient.Accounts.GetByIdAsync(id);
-
-        return person is not null;
-    }
-
     public async Task<Account> UpdateAsync(Account updatedAccount)
     {
         if (

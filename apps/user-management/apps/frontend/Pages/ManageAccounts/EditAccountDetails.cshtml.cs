@@ -40,15 +40,14 @@ public class EditAccountDetails(
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null)
         {
             return NotFound();
         }
 
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
-
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
 
         FirstName = accountDetails.FirstName;
         LastName = accountDetails.LastName;

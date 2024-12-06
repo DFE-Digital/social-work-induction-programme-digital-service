@@ -20,15 +20,14 @@ public class UnlinkAccount(
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null)
         {
             return NotFound();
         }
 
         BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
         Id = id;
-
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         Email = accountDetails.Email;
 
         return Page();
@@ -36,12 +35,12 @@ public class UnlinkAccount(
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null)
         {
             return NotFound();
         }
 
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         TempData["NotifyEmail"] = accountDetails.Email;
         TempData["NotificationBannerSubject"] =
             "Account was successfully unlinked from this organisation";

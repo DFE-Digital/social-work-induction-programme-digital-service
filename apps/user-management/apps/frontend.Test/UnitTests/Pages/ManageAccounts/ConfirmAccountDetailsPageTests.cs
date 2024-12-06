@@ -63,9 +63,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
 
         MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
-            .ReturnsAsync(true);
-        MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(updatedAccountDetails);
 
@@ -86,7 +83,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.ChangeDetailsLink.Should()
             .Be("/manage-accounts/edit-account-details/" + account.Id + "?handler=Change");
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -122,8 +118,8 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var invalidId = Guid.NewGuid();
 
         MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(invalidId))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetAccountDetailsAsync(invalidId))
+            .ReturnsAsync((AccountDetails?)null);
 
         // Act
         var result = await Sut.OnGetUpdateAsync(invalidId);
@@ -131,7 +127,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(invalidId), Times.Once());
+        MockEditAccountJourneyService.Verify(
+            x => x.GetAccountDetailsAsync(invalidId),
+            Times.Once()
+        );
         VerifyAllNoOtherCalls();
     }
 

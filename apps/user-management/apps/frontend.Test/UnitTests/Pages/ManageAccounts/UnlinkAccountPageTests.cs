@@ -31,9 +31,6 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
-            .ReturnsAsync(true);
-        MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
 
@@ -47,7 +44,6 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         Sut.Email.Should().Be(account.Email);
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -58,8 +54,8 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         var invalidId = Guid.NewGuid();
 
         MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(invalidId))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetAccountDetailsAsync(invalidId))
+            .ReturnsAsync((AccountDetails?)null);
 
         // Act
         var result = await Sut.OnGetAsync(invalidId);
@@ -67,7 +63,7 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(invalidId), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(invalidId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -78,9 +74,6 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         var account = AccountFaker.Generate();
         var accountDetails = AccountDetails.FromAccount(account);
 
-        MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
-            .ReturnsAsync(true);
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
@@ -102,7 +95,6 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
 
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(
             x => x.GetAccountDetailsAsync(account.Id),
             Times.Once()
@@ -122,8 +114,8 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         var invalidId = Guid.NewGuid();
 
         MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(invalidId))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetAccountDetailsAsync(invalidId))
+            .ReturnsAsync((AccountDetails?)null);
 
         // Act
         var result = await Sut.OnPostAsync(invalidId);
@@ -131,7 +123,7 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(invalidId), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(invalidId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

@@ -19,7 +19,7 @@ public class AccountNotFoundExceptionShould : EditAccountJourneyServiceTestBase
 
         // Act
         var actualException = await Assert.ThrowsAsync<KeyNotFoundException>(
-            () => Sut.GetIsStaffAsync(account.Id)
+            () => Sut.SetIsStaffAsync(account.Id, false)
         );
 
         // Assert
