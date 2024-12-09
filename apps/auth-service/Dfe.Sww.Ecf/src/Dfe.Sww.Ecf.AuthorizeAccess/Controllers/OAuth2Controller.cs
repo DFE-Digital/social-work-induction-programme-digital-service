@@ -103,6 +103,11 @@ public class OAuth2Controller(
         var claimsBuilder = new ClaimsBuilder(identity, request);
 
         await claimsBuilder
+            .AddIfScope(
+                Scopes.Profile,
+                System.Security.Claims.ClaimTypes.Name,
+                () => oneLoginUser.Person.FirstName + " " + oneLoginUser.Person.LastName
+            )
             .AddIfScope(Scopes.Email, ClaimTypes.Email, () => oneLoginUser.Person.EmailAddress)
             .AddIfScope(
                 CustomScopes.SocialWorkerRecord,
