@@ -379,8 +379,8 @@ builder
     .AddFileService()
     .AddPersonMatching()
     .AddHostedService<OidcApplicationSeeder>()
-    .AddSingleton<IAccountsService, AccountsService>()
-    .AddSingleton<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>();
+    .AddScoped<IAccountsService, AccountsService>()
+    .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>();
 ;
 
 builder

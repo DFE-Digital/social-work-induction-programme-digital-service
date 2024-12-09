@@ -1,3 +1,5 @@
+using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.Jobs.Scheduling;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -7,22 +9,28 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Serilog;
 using Serilog.Formatting.Compact;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres;
-using Dfe.Sww.Ecf.Core.Jobs.Scheduling;
 
 namespace Dfe.Sww.Ecf.Core;
 
 public static class Extensions
 {
-    public static IHostApplicationBuilder AddBackgroundWorkScheduler(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddBackgroundWorkScheduler(
+        this IHostApplicationBuilder builder
+    )
     {
         if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
         {
-            builder.Services.AddSingleton<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
+            builder.Services.AddSingleton<
+                IBackgroundJobScheduler,
+                HangfireBackgroundJobScheduler
+            >();
         }
         else
         {
-            builder.Services.AddSingleton<IBackgroundJobScheduler, ExecuteImmediatelyJobScheduler>();
+            builder.Services.AddSingleton<
+                IBackgroundJobScheduler,
+                ExecuteImmediatelyJobScheduler
+            >();
         }
 
         return builder;
@@ -34,10 +42,13 @@ public static class Extensions
 
         builder.Services.AddDbContext<EcfDbContext>(
             options => EcfDbContext.ConfigureOptions(options, pgConnectionString),
-            contextLifetime: ServiceLifetime.Transient,
-            optionsLifetime: ServiceLifetime.Singleton);
+            contextLifetime: ServiceLifetime.Scoped,
+            optionsLifetime: ServiceLifetime.Singleton
+        );
 
-        builder.Services.AddDbContextFactory<EcfDbContext>(options => EcfDbContext.ConfigureOptions(options, pgConnectionString));
+        builder.Services.AddDbContextFactory<EcfDbContext>(options =>
+            EcfDbContext.ConfigureOptions(options, pgConnectionString)
+        );
 
         return builder;
     }
@@ -48,11 +59,13 @@ public static class Extensions
         {
             var pgConnectionString = GetPostgresConnectionString(builder.Configuration);
 
-            builder.Services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(pgConnectionString)));
+            builder.Services.AddHangfire(configuration =>
+                configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(pgConnectionString))
+            );
         }
 
         return builder;
@@ -62,11 +75,15 @@ public static class Extensions
         this LoggerConfiguration config,
         IHostEnvironment environment,
         IConfiguration configuration,
-        IServiceProvider services)
+        IServiceProvider services
+    )
     {
         config
             .ReadFrom.Configuration(configuration)
-            .WriteTo.ApplicationInsights(services.GetRequiredService<TelemetryConfiguration>(), TelemetryConverter.Traces)
+            .WriteTo.ApplicationInsights(
+                services.GetRequiredService<TelemetryConfiguration>(),
+                TelemetryConverter.Traces
+            )
             .WriteTo.Sentry(o => o.InitializeSdk = false);
 
         if (environment.IsProduction())
@@ -80,9 +97,11 @@ public static class Extensions
     }
 
     public static string GetPostgresConnectionString(this IConfiguration configuration) =>
-        new NpgsqlConnectionStringBuilder(configuration.GetRequiredValue("ConnectionStrings:DefaultConnection"))
+        new NpgsqlConnectionStringBuilder(
+            configuration.GetRequiredValue("ConnectionStrings:DefaultConnection")
+        )
         {
             // We rely on error details to get the offending duplicate key values in the TrsDataSyncHelper
-            IncludeErrorDetail = true
+            IncludeErrorDetail = true,
         }.ConnectionString;
 }
