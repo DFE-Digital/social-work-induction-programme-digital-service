@@ -71,6 +71,16 @@ just cli migrate-db --connection TestDbConnection
 Run `just cli migrate-db -h` for more information on the `migrate-db` command.
 You can also run `just ef ...` to invoke the dotnet entity framework CLI directly.
 
+#### Manual Database Updates
+This section only needs to be done once when creating the database. Once the database migrations have successfully completed you need to add a person into the `person` table.
+
+You can use the following script:
+```sql
+INSERT INTO public.persons (person_id, created_on, updated_on, deleted_on, trn, first_name, middle_name, last_name, date_of_birth, email_address, national_insurance_number) VALUES ('<GUID_HERE>', NOW(), null, null, '<SOCIAL_WORK_ENGLAND_ID>', '<FIRST_NAME>', ' ', '<LAST_NAME>', '<DATE_OF_BIRTH>', null, null);
+```
+
+Once a person has been added you need to link the person record with the record in `one_login_users` (if none are there, try starting the app and logging into OneLogin). You can link the person to the one login user by updating the `person_id` column in the `one_login_users` table to match the record that was just created in the `person` table.
+
 ### OneLogin Integration
 
 We integrate with [Gov.UK OneLogin](https://www.sign-in.service.gov.uk/documentation) to provide us authentication services for our users. The application needs to be configured with the API account details in order for this to work.
