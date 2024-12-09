@@ -13,6 +13,6 @@ public class Person
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
-
+    public AccountStatus? Status { get; set; }
     public ImmutableList<AccountType> Roles { get; set; } = [];
 }

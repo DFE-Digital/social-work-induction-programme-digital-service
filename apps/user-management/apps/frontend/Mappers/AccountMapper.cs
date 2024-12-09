@@ -14,7 +14,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             LastName = person.LastName,
             SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
             Email = person.EmailAddress,
-            // Status = TODO
+            Status = person.Status,
             Types = person.Roles,
             CreatedAt = person.CreatedOn
         };
@@ -29,7 +29,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             LastName = account.LastName ?? string.Empty,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             EmailAddress = account.Email,
-            // Status = TODO
+            Status = account.Status,
             Roles = account.Types ?? [],
             CreatedOn = account.CreatedAt
         };

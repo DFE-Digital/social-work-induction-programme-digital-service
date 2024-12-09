@@ -1,15 +1,18 @@
 using System.Net;
 using System.Text.Json;
+using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
+using Dfe.Sww.Ecf.Frontend.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
+using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AuthServiceClientTests;
 
@@ -36,7 +39,7 @@ public class AccountsOperationsTests
                 UpdatedOn = DateTime.UtcNow,
                 SocialWorkEnglandNumber = "1234",
                 FirstName = "Test",
-                LastName = "McTester",
+                LastName = "McTester"
             }
         };
 
@@ -182,7 +185,8 @@ public class AccountsOperationsTests
             SocialWorkEnglandNumber = "1234",
             FirstName = "Test",
             LastName = "McTester",
-            EmailAddress = "test@test.com"
+            EmailAddress = "test@test.com",
+            Status = new Faker().PickRandom<AccountStatus>()
         };
 
         var createRequest = new CreatePersonRequest
@@ -190,10 +194,11 @@ public class AccountsOperationsTests
             FirstName = person.FirstName,
             LastName = person.LastName,
             SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
-            EmailAddress = person.EmailAddress
+            EmailAddress = person.EmailAddress,
+            Status = person.Status
         };
 
-        var route = "/api/Accounts/Create";
+        const string route = "/api/Accounts/Create";
 
         var (mockHttp, request) = GenerateMockClient(
             HttpStatusCode.OK,
@@ -260,7 +265,8 @@ public class AccountsOperationsTests
             SocialWorkEnglandNumber = "1234",
             FirstName = "Test",
             LastName = "McTester",
-            EmailAddress = "test@test.com"
+            EmailAddress = "test@test.com",
+            Status = new Faker().PickRandom<AccountStatus>()
         };
 
         var updateRequest = new UpdatePersonRequest
@@ -269,7 +275,8 @@ public class AccountsOperationsTests
             FirstName = person.FirstName,
             LastName = person.LastName,
             SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
-            EmailAddress = person.EmailAddress
+            EmailAddress = person.EmailAddress,
+            Status = person.Status
         };
 
         var route = "/api/Accounts";

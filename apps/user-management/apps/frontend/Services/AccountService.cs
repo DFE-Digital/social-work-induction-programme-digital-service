@@ -54,7 +54,8 @@ public class AccountService(
                 LastName = account.LastName,
                 EmailAddress = account.Email,
                 SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
-                Roles = account.Types ?? []
+                Roles = account.Types ?? [],
+                Status = account.Status
             }
         );
 
@@ -80,7 +81,8 @@ public class AccountService(
                 LastName = updatedAccount.LastName,
                 EmailAddress = updatedAccount.Email,
                 SocialWorkEnglandNumber = updatedAccount.SocialWorkEnglandNumber,
-                Roles = updatedAccount.Types ?? []
+                Roles = updatedAccount.Types ?? [],
+                Status = updatedAccount.Status
             }
         );
 

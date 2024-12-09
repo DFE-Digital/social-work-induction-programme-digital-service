@@ -17,7 +17,9 @@ public class CreateAccountJourneyModel
     {
         return new Account
         {
-            Status = AccountStatus.Active,
+            Status = AccountDetails?.SocialWorkEnglandNumber is null
+                ? AccountStatus.PendingRegistration
+                : AccountStatus.Active,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             LastName = AccountDetails?.LastName,
