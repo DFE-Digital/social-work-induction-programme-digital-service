@@ -25,7 +25,8 @@ public partial class TestData
                 LastName = createPersonResult.LastName,
                 EmailAddress = createPersonResult.Email,
                 NationalInsuranceNumber = createPersonResult.NationalInsuranceNumber,
-                CreatedOn = Clock.UtcNow
+                CreatedOn = Clock.UtcNow,
+                Status = createPersonResult.Status,
             };
 
             if (addToDb is not true)
@@ -63,6 +64,7 @@ public partial class TestData
         private string? _mobileNumber;
         private bool? _hasNationalInsuranceNumber;
         private string? _nationalInsuranceNumber;
+        private PersonStatus? _status;
 
         public Guid PersonId { get; } = Guid.NewGuid();
 
@@ -179,6 +181,17 @@ public partial class TestData
             return this;
         }
 
+        public CreatePersonBuilder WithStatus(PersonStatus status)
+        {
+            if (_status is not null && _status != status)
+            {
+                throw new InvalidOperationException("WithStatus cannot be changed after it's set.");
+            }
+
+            _status = status;
+            return this;
+        }
+
         public CreatePersonBuilder WithNationalInsuranceNumber(string nationalInsuranceNumber)
         {
             var hasNationalInsuranceNumber = true;
@@ -222,6 +235,7 @@ public partial class TestData
             var middleName = string.Join(" ", firstAndMiddleNames.Skip(1));
             var lastName = _lastName ?? testData.GenerateLastName();
             var dateOfBirth = _dateOfBirth ?? testData.GenerateDateOfBirth();
+            var status = _status ?? PersonStatus.Active;
 
             return new CreatePersonResult()
             {
@@ -234,6 +248,7 @@ public partial class TestData
                 Email = _email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
+                Status = status,
             };
         }
     }
@@ -250,6 +265,7 @@ public partial class TestData
         public string? NationalInsuranceNumber { get; init; }
         public DateTime? CreatedOn { get; init; }
         public DateTime? UpdatedOn { get; init; }
+        public PersonStatus Status { get; init; }
 
         public Person ToPerson() =>
             new Person
@@ -264,6 +280,7 @@ public partial class TestData
                 NationalInsuranceNumber = NationalInsuranceNumber,
                 CreatedOn = CreatedOn,
                 UpdatedOn = UpdatedOn,
+                Status = Status,
             };
 
         public PersonDto ToPersonDto() => ToPerson().ToDto();

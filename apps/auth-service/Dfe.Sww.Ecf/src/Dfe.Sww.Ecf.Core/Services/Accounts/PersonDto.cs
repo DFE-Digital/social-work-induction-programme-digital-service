@@ -14,8 +14,8 @@ public class PersonDto
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
-
     public ImmutableList<RoleType> Roles { get; set; } = [];
+    public PersonStatus? Status { get; set; }
 }
 
 public static class PersonDtoExtensions
@@ -31,5 +31,6 @@ public static class PersonDtoExtensions
             LastName = person.LastName,
             EmailAddress = person.EmailAddress,
             Roles = person.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList() ?? [],
+            Status = person.Status,
         };
 }

@@ -13,6 +13,7 @@ public class Person
     public DateOnly? DateOfBirth { get; set; }
     public string? EmailAddress { get; set; }
     public string? NationalInsuranceNumber { get; set; }
+    public PersonStatus? Status { get; set; }
 
     public ICollection<PersonRole> PersonRoles { get; set; } = new List<PersonRole>();
 }

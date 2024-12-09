@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using JetBrains.Annotations;
@@ -50,19 +49,7 @@ public class AccountsController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> CreateAsync([FromBody] CreatePersonRequest createPersonRequest)
     {
-        var roles = createPersonRequest
-            .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
-            .ToList();
-        var createdAccount = await accountsService.CreateAsync(
-            new Person
-            {
-                FirstName = createPersonRequest.FirstName,
-                LastName = createPersonRequest.LastName,
-                EmailAddress = createPersonRequest.EmailAddress,
-                Trn = createPersonRequest.SocialWorkEnglandNumber,
-                PersonRoles = roles,
-            }
-        );
+        var createdAccount = await accountsService.CreateAsync(createPersonRequest.ToPerson());
 
         return CreatedAtAction(
             nameof(GetByIdAsync),
@@ -77,20 +64,7 @@ public class AccountsController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdatePersonRequest updatePersonRequest)
     {
-        var roles = updatePersonRequest
-            .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
-            .ToList();
-        var updatedAccount = await accountsService.UpdateAsync(
-            new Person
-            {
-                PersonId = updatePersonRequest.PersonId,
-                FirstName = updatePersonRequest.FirstName,
-                LastName = updatePersonRequest.LastName,
-                EmailAddress = updatePersonRequest.EmailAddress,
-                Trn = updatePersonRequest.SocialWorkEnglandNumber,
-                PersonRoles = roles,
-            }
-        );
+        var updatedAccount = await accountsService.UpdateAsync(updatePersonRequest.ToPerson());
 
         if (updatedAccount is null)
         {

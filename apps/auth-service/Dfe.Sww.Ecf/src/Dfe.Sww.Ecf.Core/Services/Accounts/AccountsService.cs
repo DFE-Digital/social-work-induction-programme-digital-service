@@ -71,6 +71,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         account.EmailAddress = updatedAccount.EmailAddress;
         account.Trn = updatedAccount.Trn;
         account.UpdatedOn = clock.UtcNow;
+        account.Status = updatedAccount.Status;
 
         account.PersonRoles.Clear();
         foreach (var role in updatedAccount.PersonRoles)

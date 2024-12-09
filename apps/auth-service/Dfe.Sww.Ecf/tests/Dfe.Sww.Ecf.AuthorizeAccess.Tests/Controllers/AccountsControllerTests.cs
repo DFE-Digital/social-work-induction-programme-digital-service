@@ -173,6 +173,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     EmailAddress = expectedNewUser.EmailAddress,
                     SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
                     Roles = expectedNewUser.Roles,
+                    Status = expectedNewUser.Status,
                 }
             );
 
@@ -192,7 +193,9 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var existingUser = (await TestData.CreatePerson()).ToPersonDto();
+            var existingUser = (
+                await TestData.CreatePerson(p => p.WithStatus(PersonStatus.Active))
+            ).ToPersonDto();
             existingUser.Roles = new List<RoleType>
             {
                 Faker.Enum.Random<RoleType>(),
@@ -211,8 +214,9 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 {
                     RoleType.Assessor,
                     RoleType.Coordinator,
-                    RoleType.EarlyCareerSocialWorker
-                }.ToImmutableList()
+                    RoleType.EarlyCareerSocialWorker,
+                }.ToImmutableList(),
+                Status = PersonStatus.Paused,
             };
 
             var accountsService = new AccountsService(dbContext, Clock);
@@ -232,7 +236,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     LastName = expectedUser.LastName,
                     EmailAddress = expectedUser.EmailAddress,
                     SocialWorkEnglandNumber = expectedUser.SocialWorkEnglandNumber,
-                    Roles = expectedUser.Roles
+                    Roles = expectedUser.Roles,
+                    Status = expectedUser.Status,
                 }
             );
 
@@ -240,9 +245,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             result.Should().BeOfType<OkObjectResult>();
             var updatedResult = result.Should().BeOfType<OkObjectResult>().Subject;
             updatedResult.Value.Should().BeOfType<PersonDto>();
-            updatedResult
-                .Value.Should()
-                .BeEquivalentTo(expectedUser);
+            updatedResult.Value.Should().BeEquivalentTo(expectedUser);
         });
     }
 }
