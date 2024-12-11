@@ -4,5 +4,5 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 
 public interface INotificationOperations
 {
-    Task<NotificationResponse?> SendEmailAsync(NotificationRequest request);
+    Task<NotificationResponse> SendEmailAsync(NotificationRequest request);
 }

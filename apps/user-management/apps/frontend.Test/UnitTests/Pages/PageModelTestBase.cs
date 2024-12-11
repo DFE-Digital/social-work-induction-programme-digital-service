@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +17,19 @@ public class PageModelTestBase<[MeansTestSubject] T>
 
     protected PageModelTestBase()
     {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, UserConstants.UserName),
+            new(ClaimTypes.Email, UserConstants.UserEmail)
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+
         HttpContext = new DefaultHttpContext
         {
             Request = { Headers = { Referer = "test-referer" } },
-            Session = new MockHttpSession()
+            Session = new MockHttpSession(),
+            User = new ClaimsPrincipal(identity)
         };
 
         TempData = new TempDataDictionary(HttpContext, Mock.Of<ITempDataProvider>());

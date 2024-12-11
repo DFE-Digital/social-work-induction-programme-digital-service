@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -12,8 +13,15 @@ public class HeaderLinkTagHelper : TagHelper
 
     public required string Text { get; set; }
 
+    public bool? IsVisible { get; set; }
+
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
+        if (IsVisible is false)
+        {
+            return;
+        }
+
         output.Content.SetHtmlContent(
             $"<li class=\"dfe-header__navigation-item {IsActiveClass}\")\">"
                 + $"<a class=\"dfe-header__navigation-link\" href=\"{Href}\">"

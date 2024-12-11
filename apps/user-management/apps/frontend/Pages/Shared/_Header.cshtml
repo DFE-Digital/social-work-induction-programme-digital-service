@@ -50,11 +50,7 @@
                 @{
                     if (Context.User.Identity?.IsAuthenticated == true)
                     {
-                        if (User.IsInRole(RoleType.Coordinator.ToString()))
-                        {
-                            <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage Accounts"></header-link>
-                        }
-
+                        <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage Accounts" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
                         <header-link is-active-class="@Html.IsActive("/ManageLearnerRecord")" href="#" text="Manage learner records"></header-link>
                     }
                 }

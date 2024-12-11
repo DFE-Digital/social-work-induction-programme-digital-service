@@ -91,6 +91,12 @@ public abstract class EcfLinkGenerator(
     public string LinkAccount(Guid id) =>
         GetRequiredPathByPage("/ManageAccounts/LinkAccount", routeValues: new { id });
 
+    public string UnpauseAccount(Guid id) =>
+        GetRequiredPathByPage("/ManageAccounts/UnpauseAccount", routeValues: new { id });
+
+    public string PauseAccount(Guid id) =>
+        GetRequiredPathByPage("/ManageAccounts/PauseAccount", routeValues: new { id });
+
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
 
     protected abstract string GetRequiredPathByPage(

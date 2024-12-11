@@ -15,10 +15,9 @@ public class NotificationOperations(NotificationServiceClient notificationServic
     private readonly NotificationServiceClient _notificationServiceClient =
         notificationServiceClient;
 
-    public async Task<NotificationResponse?> SendEmailAsync(NotificationRequest request)
+    public async Task<NotificationResponse> SendEmailAsync(NotificationRequest request)
     {
-        var route =
-            _notificationServiceClient.Options.Routes.Notification.SendEmail;
+        var route = _notificationServiceClient.Options.Routes.Notification.SendEmail;
 
         using var content = new StringContent(
             JsonSerializer.Serialize(request, SerializerOptions),
@@ -30,15 +29,9 @@ public class NotificationOperations(NotificationServiceClient notificationServic
 
         if (!httpResponse.IsSuccessStatusCode)
         {
-            return new NotificationResponse
-            {
-                StatusCode = httpResponse.StatusCode
-            };
+            return new NotificationResponse { StatusCode = httpResponse.StatusCode };
         }
 
-        return new NotificationResponse
-        {
-            StatusCode = httpResponse.StatusCode
-        };
+        return new NotificationResponse { StatusCode = httpResponse.StatusCode };
     }
 }
