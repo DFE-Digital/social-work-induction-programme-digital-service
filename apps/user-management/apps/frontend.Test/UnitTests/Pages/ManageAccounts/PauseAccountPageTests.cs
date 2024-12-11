@@ -111,7 +111,7 @@ public class PauseAccountPageTests : ManageAccountsPageTestBase<PauseAccount>
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
+        redirectResult!.Url.Should().Be("/manage-accounts");
 
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
         Sut.TempData["NotificationBannerSubject"].Should().Be("Account was successfully paused");

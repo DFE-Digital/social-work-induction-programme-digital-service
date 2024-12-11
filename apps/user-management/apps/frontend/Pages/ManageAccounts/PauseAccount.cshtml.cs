@@ -62,6 +62,6 @@ public class PauseAccount(
         await editAccountJourneyService.SetAccountStatusAsync(id, AccountStatus.Paused);
         await editAccountJourneyService.CompleteJourneyAsync(id);
 
-        return Redirect(linkGenerator.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccounts());
     }
 }

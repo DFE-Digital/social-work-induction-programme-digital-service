@@ -70,6 +70,6 @@ public class UnpauseAccount(
         await editAccountJourneyService.SetAccountStatusAsync(id, statusValue);
         await editAccountJourneyService.CompleteJourneyAsync(id);
 
-        return Redirect(linkGenerator.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccounts());
     }
 }
