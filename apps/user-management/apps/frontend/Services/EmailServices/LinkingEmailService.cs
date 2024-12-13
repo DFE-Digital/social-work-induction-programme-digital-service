@@ -3,17 +3,17 @@ using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace Dfe.Sww.Ecf.Frontend.Services;
+namespace Dfe.Sww.Ecf.Frontend.Services.EmailServices;
 
-public class EmailService(
+public class LinkingEmailService(
     INotificationServiceClient notificationServiceClient,
     IOptions<EmailTemplateOptions> emailTemplateOptions
-) : IEmailService
+) : ILinkingEmailService
 {
-    public async Task<bool> PauseAccountAsync(
+    public async Task<bool> LinkAccountAsync(
         AccountDetails? accountDetails,
         ImmutableList<AccountType>? accountTypes,
         string? coordinatorName,
@@ -33,7 +33,7 @@ public class EmailService(
         // Get the highest ranking role - the lowest (int)enum
         var invitationEmailType = accountTypes.Min();
 
-        var templateId = emailTemplateOptions.Value.Roles[invitationEmailType.ToString()].Pause;
+        var templateId = emailTemplateOptions.Value.Roles[invitationEmailType.ToString()].Link;
 
         var notificationRequest = new NotificationRequest
         {
@@ -55,7 +55,7 @@ public class EmailService(
         return IsSuccessStatusCode((int)response.StatusCode);
     }
 
-    public async Task<bool> UnpauseAccountAsync(
+    public async Task<bool> UnlinkAccountAsync(
         AccountDetails? accountDetails,
         ImmutableList<AccountType>? accountTypes,
         string? coordinatorName,
@@ -75,7 +75,7 @@ public class EmailService(
         // Get the highest ranking role - the lowest (int)enum
         var invitationEmailType = accountTypes.Min();
 
-        var templateId = emailTemplateOptions.Value.Roles[invitationEmailType.ToString()].Unpause;
+        var templateId = emailTemplateOptions.Value.Roles[invitationEmailType.ToString()].Unlink;
 
         var notificationRequest = new NotificationRequest
         {

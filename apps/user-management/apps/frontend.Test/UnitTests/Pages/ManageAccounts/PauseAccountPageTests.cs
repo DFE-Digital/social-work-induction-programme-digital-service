@@ -88,7 +88,7 @@ public class PauseAccountPageTests : ManageAccountsPageTestBase<PauseAccount>
 
         MockEmailService
             .Setup(x =>
-                x.PauseAccountAsync(
+                x.Pausing.PauseAccountAsync(
                     MoqHelpers.ShouldBeEquivalentTo(accountDetails),
                     MoqHelpers.ShouldBeEquivalentTo(account.Types),
                     UserConstants.UserName,
@@ -123,7 +123,7 @@ public class PauseAccountPageTests : ManageAccountsPageTestBase<PauseAccount>
         MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
         MockEmailService.Verify(
             x =>
-                x.PauseAccountAsync(
+                x.Pausing.PauseAccountAsync(
                     MoqHelpers.ShouldBeEquivalentTo(accountDetails),
                     MoqHelpers.ShouldBeEquivalentTo(account.Types),
                     UserConstants.UserName,

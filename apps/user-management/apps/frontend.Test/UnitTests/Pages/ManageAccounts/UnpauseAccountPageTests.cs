@@ -99,7 +99,7 @@ public class UnpauseAccountPageTests : ManageAccountsPageTestBase<UnpauseAccount
 
         MockEmailService
             .Setup(x =>
-                x.UnpauseAccountAsync(
+                x.Pausing.UnpauseAccountAsync(
                     MoqHelpers.ShouldBeEquivalentTo(accountDetails),
                     MoqHelpers.ShouldBeEquivalentTo(account.Types),
                     UserConstants.UserName,
@@ -123,7 +123,7 @@ public class UnpauseAccountPageTests : ManageAccountsPageTestBase<UnpauseAccount
         redirectResult!.Url.Should().Be("/manage-accounts");
 
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
-        Sut.TempData["NotificationBannerSubject"].Should().Be("Account was successfully paused");
+        Sut.TempData["NotificationBannerSubject"].Should().Be("Account was successfully unpaused");
 
         MockEditAccountJourneyService.Verify(
             x => x.GetAccountDetailsAsync(account.Id),
@@ -133,7 +133,7 @@ public class UnpauseAccountPageTests : ManageAccountsPageTestBase<UnpauseAccount
         MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
         MockEmailService.Verify(
             x =>
-                x.UnpauseAccountAsync(
+                x.Pausing.UnpauseAccountAsync(
                     MoqHelpers.ShouldBeEquivalentTo(accountDetails),
                     MoqHelpers.ShouldBeEquivalentTo(account.Types),
                     UserConstants.UserName,

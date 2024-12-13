@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -17,9 +18,14 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
 
     public UnlinkAccountPageTests()
     {
-        Sut = new UnlinkAccount(MockEditAccountJourneyService.Object, new FakeLinkGenerator())
+        Sut = new UnlinkAccount(
+            MockEditAccountJourneyService.Object,
+            new FakeLinkGenerator(),
+            MockEmailService.Object
+        )
         {
-            TempData = TempData
+            TempData = TempData,
+            PageContext = new PageContext { HttpContext = HttpContext }
         };
     }
 
@@ -78,9 +84,25 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
 
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountTypesAsync(account.Id))
+            .ReturnsAsync(account.Types);
+
+        MockEmailService
+            .Setup(x =>
+                x.Linking.UnlinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                )
+            )
+            .ReturnsAsync(true);
+
         MockEditAccountJourneyService.Setup(x =>
             x.SetAccountStatusAsync(account.Id, AccountStatus.Inactive)
         );
+
         MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
 
         // Act
@@ -94,16 +116,29 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         redirectResult!.Url.Should().Be("/manage-accounts");
 
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
+        Sut.TempData["NotificationBannerSubject"]
+            .Should()
+            .Be("Account was successfully unlinked from this organisation");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
+
+        MockEmailService.Verify(
+            x =>
+                x.Linking.UnlinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                ),
+            Times.Once
+        );
 
         MockEditAccountJourneyService.Verify(
-            x => x.GetAccountDetailsAsync(account.Id),
-            Times.Once()
-        );
-        MockEditAccountJourneyService.Verify(
             x => x.SetAccountStatusAsync(account.Id, AccountStatus.Inactive),
-            Times.Once()
+            Times.Once
         );
-        MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once());
+        MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -116,6 +151,9 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(invalidId))
             .ReturnsAsync((AccountDetails?)null);
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountTypesAsync(invalidId))
+            .ReturnsAsync((ImmutableList<AccountType>?)null);
 
         // Act
         var result = await Sut.OnPostAsync(invalidId);
@@ -124,6 +162,7 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
         result.Should().BeOfType<NotFoundResult>();
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(invalidId), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(invalidId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

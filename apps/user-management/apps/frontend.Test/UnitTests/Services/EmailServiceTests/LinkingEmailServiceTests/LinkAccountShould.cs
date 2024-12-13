@@ -7,22 +7,22 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests.LinkingEmailServiceTests;
 
-public class UnpauseShould : EmailServiceTestBase
+public class LinkAccountShould : LinkingEmailServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_CallsNotificationService_ReturnsTrue()
+    public async Task WhenCalled_CallsNotificationClient_ReturnsTrue()
     {
         // Arrange
         var account = AccountFaker.Generate();
         var accountDetails = AccountDetails.FromAccount(account);
-        var unpauseTemplateId = Guid.NewGuid();
+        var linkTemplateId = Guid.NewGuid();
 
         var expectedRequest = new NotificationRequest
         {
             EmailAddress = accountDetails.Email!,
-            TemplateId = unpauseTemplateId,
+            TemplateId = linkTemplateId,
             Personalisation = new Dictionary<string, string>
             {
                 { "name", accountDetails.FullName },
@@ -43,10 +43,12 @@ public class UnpauseShould : EmailServiceTestBase
                             account.Types!.Min().ToString(),
                             new RoleEmailTemplateConfiguration
                             {
-                                Invitation = Guid.NewGuid(),
-                                Welcome = Guid.NewGuid(),
-                                Pause = Guid.NewGuid(),
-                                Unpause = unpauseTemplateId
+                                Invitation = default,
+                                Welcome = default,
+                                Pause = default,
+                                Unpause = default,
+                                Link = linkTemplateId,
+                                Unlink = default
                             }
                         }
                     }
@@ -60,7 +62,7 @@ public class UnpauseShould : EmailServiceTestBase
             .ReturnsAsync(new NotificationResponse { StatusCode = HttpStatusCode.OK });
 
         // Act
-        var response = await Sut.UnpauseAccountAsync(
+        var response = await Sut.LinkAccountAsync(
             accountDetails,
             account.Types,
             UserConstants.UserName,
@@ -79,10 +81,10 @@ public class UnpauseShould : EmailServiceTestBase
     }
 
     [Fact]
-    public async Task WhenCalled_WithNullParameters_ReturnsFalse()
+    public async Task WhenCalled_WithNullParameters_ReturnsPerson()
     {
         // Act
-        var response = await Sut.UnpauseAccountAsync(null, null, null, null);
+        var response = await Sut.LinkAccountAsync(null, null, null, null);
 
         // Assert
         response.Should().BeFalse();

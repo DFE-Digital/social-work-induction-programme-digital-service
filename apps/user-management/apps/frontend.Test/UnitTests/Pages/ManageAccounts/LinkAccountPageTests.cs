@@ -16,9 +16,14 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
 
     public LinkAccountPageTests()
     {
-        Sut = new LinkAccount(MockEditAccountJourneyService.Object, new FakeLinkGenerator())
+        Sut = new LinkAccount(
+            MockEditAccountJourneyService.Object,
+            new FakeLinkGenerator(),
+            MockEmailService.Object
+        )
         {
-            TempData = TempData
+            TempData = TempData,
+            PageContext = new PageContext { HttpContext = HttpContext }
         };
     }
 
@@ -80,7 +85,22 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountTypesAsync(account.Id))
+            .ReturnsAsync(account.Types);
         MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+
+        MockEmailService
+            .Setup(x =>
+                x.Linking.LinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                )
+            )
+            .ReturnsAsync(true);
+
         MockEditAccountJourneyService.Setup(x =>
             x.SetAccountStatusAsync(account.Id, AccountStatus.PendingRegistration)
         );
@@ -97,14 +117,29 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
         redirectResult!.Url.Should().Be("/manage-accounts");
 
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
+        Sut.TempData["NotificationBannerSubject"]
+            .Should()
+            .Be("Account was successfully linked to this organisation");
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once());
+
+        MockEmailService.Verify(
+            x =>
+                x.Linking.LinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                ),
+            Times.Once
+        );
+
         MockEditAccountJourneyService.Verify(
             x => x.SetAccountStatusAsync(account.Id, AccountStatus.PendingRegistration),
             Times.Once
         );
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -119,10 +154,25 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountTypesAsync(account.Id))
+            .ReturnsAsync(account.Types);
+        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+
+        MockEmailService
+            .Setup(x =>
+                x.Linking.LinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                )
+            )
+            .ReturnsAsync(true);
+
         MockEditAccountJourneyService.Setup(x =>
             x.SetAccountStatusAsync(account.Id, AccountStatus.Active)
         );
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
         MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
 
         // Act
@@ -138,11 +188,24 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
         Sut.TempData["NotifyEmail"].Should().Be(account.Email);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
+
+        MockEmailService.Verify(
+            x =>
+                x.Linking.LinkAccountAsync(
+                    MoqHelpers.ShouldBeEquivalentTo(accountDetails),
+                    MoqHelpers.ShouldBeEquivalentTo(account.Types),
+                    UserConstants.UserName,
+                    UserConstants.UserEmail
+                ),
+            Times.Once
+        );
+
         MockEditAccountJourneyService.Verify(
             x => x.SetAccountStatusAsync(account.Id, AccountStatus.Active),
             Times.Once
         );
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }

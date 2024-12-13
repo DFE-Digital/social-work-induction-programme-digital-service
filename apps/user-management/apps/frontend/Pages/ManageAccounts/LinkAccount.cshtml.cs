@@ -1,16 +1,21 @@
-﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
+﻿using System.Security.Claims;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Abstractions;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 [AuthorizeRoles(RoleType.Coordinator)]
 public class LinkAccount(
     IEditAccountJourneyService editAccountJourneyService,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IEmailService emailService
 ) : BasePageModel
 {
     public Guid Id { get; set; }
@@ -36,14 +41,11 @@ public class LinkAccount(
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (accountDetails is null)
+        var accountTypes = await editAccountJourneyService.GetAccountTypesAsync(id);
+        if (accountDetails is null || accountTypes is null)
         {
             return NotFound();
         }
-
-        TempData["NotifyEmail"] = accountDetails.Email;
-        TempData["NotificationBannerSubject"] =
-            "Account was successfully linked to this organisation";
 
         var statusValue = AccountStatus.Active;
         if (await editAccountJourneyService.GetIsStaffAsync(id) == false)
@@ -52,6 +54,21 @@ public class LinkAccount(
                 ? AccountStatus.PendingRegistration
                 : statusValue;
         }
+
+        var emailSuccessful = await emailService.Linking.LinkAccountAsync(
+            accountDetails,
+            accountTypes,
+            User.Identity!.Name,
+            User.GetClaim(ClaimTypes.Email)
+        );
+
+        if (emailSuccessful)
+        {
+            TempData["NotifyEmail"] = accountDetails.Email;
+            TempData["NotificationBannerSubject"] =
+                "Account was successfully linked to this organisation";
+        }
+
         await editAccountJourneyService.SetAccountStatusAsync(id, statusValue);
         await editAccountJourneyService.CompleteJourneyAsync(id);
 

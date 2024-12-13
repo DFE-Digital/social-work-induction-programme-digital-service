@@ -1,18 +1,18 @@
 ﻿using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 
-namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+namespace Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 
-public interface IEmailService
+public interface ILinkingEmailService
 {
-    Task<bool> PauseAccountAsync(
+    Task<bool> LinkAccountAsync(
         AccountDetails? accountDetails,
         ImmutableList<AccountType>? accountTypes,
         string? coordinatorName,
         string? coordinatorEmail
     );
 
-    Task<bool> UnpauseAccountAsync(
+    Task<bool> UnlinkAccountAsync(
         AccountDetails? accountDetails,
         ImmutableList<AccountType>? accountTypes,
         string? coordinatorName,

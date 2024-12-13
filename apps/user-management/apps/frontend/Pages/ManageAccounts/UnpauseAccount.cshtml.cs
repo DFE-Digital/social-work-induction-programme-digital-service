@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,7 @@ public class UnpauseAccount(
                 : statusValue;
         }
 
-        var emailSuccessful = await emailService.UnpauseAccountAsync(
+        var emailSuccessful = await emailService.Pausing.UnpauseAccountAsync(
             accountDetails,
             accountTypes,
             User.Identity!.Name,
@@ -64,7 +65,7 @@ public class UnpauseAccount(
         if (emailSuccessful)
         {
             TempData["NotifyEmail"] = accountDetails.Email;
-            TempData["NotificationBannerSubject"] = "Account was successfully paused";
+            TempData["NotificationBannerSubject"] = "Account was successfully unpaused";
         }
 
         await editAccountJourneyService.SetAccountStatusAsync(id, statusValue);

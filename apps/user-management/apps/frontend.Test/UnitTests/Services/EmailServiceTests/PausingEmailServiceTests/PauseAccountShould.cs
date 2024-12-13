@@ -7,9 +7,9 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests.PausingEmailServiceTests;
 
-public class PauseShould : EmailServiceTestBase
+public class PauseAccountShould : PausingEmailServiceTestBase
 {
     [Fact]
     public async Task WhenCalled_CallsNotificationClient_ReturnsTrue()
@@ -43,10 +43,12 @@ public class PauseShould : EmailServiceTestBase
                             account.Types!.Min().ToString(),
                             new RoleEmailTemplateConfiguration
                             {
-                                Invitation = Guid.NewGuid(),
-                                Welcome = Guid.NewGuid(),
+                                Invitation = default,
+                                Welcome = default,
                                 Pause = pauseTemplateId,
-                                Unpause = Guid.NewGuid()
+                                Unpause = default,
+                                Link = default,
+                                Unlink = default
                             }
                         }
                     }
@@ -79,7 +81,7 @@ public class PauseShould : EmailServiceTestBase
     }
 
     [Fact]
-    public async Task WhenCalled_WithNullParameters_ReturnsPerson()
+    public async Task WhenCalled_WithNullParameters_ReturnsFalse()
     {
         // Act
         var response = await Sut.PauseAccountAsync(null, null, null, null);

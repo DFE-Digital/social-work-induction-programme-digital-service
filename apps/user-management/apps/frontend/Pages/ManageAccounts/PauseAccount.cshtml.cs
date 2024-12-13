@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +47,7 @@ public class PauseAccount(
             return NotFound();
         }
 
-        var emailSuccessful = await emailService.PauseAccountAsync(
+        var emailSuccessful = await emailService.Pausing.PauseAccountAsync(
             accountDetails,
             accountTypes,
             User.Identity!.Name,

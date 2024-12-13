@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Dfe.Sww.Ecf.Frontend.Services;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices;
+using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.NameMatch;
 using Dfe.Sww.Ecf.Frontend.Services.NameMatch.Interfaces;
@@ -22,5 +24,7 @@ public static class InstallServices
         services.AddTransient<ISocialWorkEnglandService, SocialWorkEnglandService>();
         services.AddTransient<ISocialWorkerValidatorService, SocialWorkerValidatorService>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddTransient<ILinkingEmailService, LinkingEmailService>();
+        services.AddTransient<IPausingEmailService, PausingEmailService>();
     }
 }
