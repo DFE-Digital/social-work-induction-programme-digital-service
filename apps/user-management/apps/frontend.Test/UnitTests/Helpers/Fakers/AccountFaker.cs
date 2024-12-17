@@ -70,4 +70,7 @@ public static class AccountFakerExtensions
     {
         return accountFaker.RuleFor(a => a.Types, _ => accountTypes.ToImmutableList()).Generate();
     }
+
+    public static Account GenerateAccountWithoutId(this Faker<Account> accountFaker) =>
+        accountFaker.RuleFor(a => a.Id, _ => Guid.Empty).Generate();
 }

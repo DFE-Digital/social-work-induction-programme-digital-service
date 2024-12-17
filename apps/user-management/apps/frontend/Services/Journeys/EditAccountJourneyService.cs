@@ -103,7 +103,7 @@ public class EditAccountJourneyService(
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 
-    public async Task ResetCreateAccountJourneyModelAsync(Guid accountId)
+    public async Task ResetEditAccountJourneyModelAsync(Guid accountId)
     {
         var account = await _accountService.GetByIdAsync(accountId);
         if (account is null)
@@ -131,7 +131,7 @@ public class EditAccountJourneyService(
         var updatedAccount = editAccountJourneyModel.ToAccount();
         await _accountService.UpdateAsync(updatedAccount);
 
-        await ResetCreateAccountJourneyModelAsync(accountId);
+        await ResetEditAccountJourneyModelAsync(accountId);
         return updatedAccount;
     }
 }

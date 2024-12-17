@@ -4,7 +4,6 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -14,7 +13,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.NotificationServiceClientTests;
 
-public class SocialWorkerOperationsTests
+public class NotificationOperationsTests
 {
     private readonly NotificationRequestFaker _notificationRequestFaker = new();
     private readonly Mock<IOptions<NotificationClientOptions>> _mockOptions = new();
@@ -57,7 +56,11 @@ public class SocialWorkerOperationsTests
         var notificationRequest = _notificationRequestFaker.Generate();
         var notificationResponse = new NotificationResponse { StatusCode = httpResponseCode };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, notificationResponse, route);
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            notificationResponse,
+            route
+        );
 
         var sut = BuildSut(mockHttp, route);
 

@@ -6,7 +6,7 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 /// <summary>
 /// User account
 /// </summary>
-public class Account
+public record Account
 {
     /// <summary>
     /// Account ID

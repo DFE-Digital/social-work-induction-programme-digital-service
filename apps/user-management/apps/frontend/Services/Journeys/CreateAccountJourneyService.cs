@@ -79,7 +79,7 @@ public class CreateAccountJourneyService(
 
     public void ResetCreateAccountJourneyModel()
     {
-        SetCreateAccountJourneyModel(new CreateAccountJourneyModel());
+        Session.Remove(CreateAccountSessionKey);
     }
 
     private void SetCreateAccountJourneyModel(CreateAccountJourneyModel createAccountJourneyModel)
@@ -131,13 +131,6 @@ public class CreateAccountJourneyService(
         var linkingToken = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
             account.Id
         );
-
-        if (linkingToken is null)
-        {
-            throw new InvalidOperationException(
-                "Failed to get account linking token when preparing to send invitation email."
-            );
-        }
 
         var invitationLink = linkGenerator.SignInWithLinkingToken(
             _httpContextAccessor.HttpContext,

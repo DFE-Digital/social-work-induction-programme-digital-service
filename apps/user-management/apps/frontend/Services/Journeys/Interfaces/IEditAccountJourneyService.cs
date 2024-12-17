@@ -13,6 +13,6 @@ public interface IEditAccountJourneyService
     Task SetAccountTypesAsync(Guid accountId, IEnumerable<AccountType> accountTypes);
     Task SetAccountStatusAsync(Guid accountId, AccountStatus accountStatus);
     Task SetIsStaffAsync(Guid accountId, bool? isStaff);
-    Task ResetCreateAccountJourneyModelAsync(Guid accountId);
+    Task ResetEditAccountJourneyModelAsync(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }
