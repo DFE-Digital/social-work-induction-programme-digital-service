@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using static Dfe.Sww.Ecf.Frontend.Models.AccountStatus;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -24,12 +25,17 @@ public class EditAccountJourneyModel(Account account)
     {
         return new Account(Account)
         {
-            Email = AccountDetails?.Email,
+            Email = AccountDetails.Email,
             FirstName = AccountDetails?.FirstName,
             LastName = AccountDetails?.LastName,
             SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
             Types = AccountTypes,
-            Status = AccountStatus
+            Status =
+                AccountTypes != null
+                && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
+                && AccountDetails?.SocialWorkEnglandNumber is null
+                    ? PendingRegistration
+                    : Active,
         };
     }
 }

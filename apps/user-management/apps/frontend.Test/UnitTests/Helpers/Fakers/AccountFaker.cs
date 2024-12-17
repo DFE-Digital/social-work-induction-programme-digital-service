@@ -42,6 +42,7 @@ public static class AccountFakerExtensions
         return accountFaker
             .GetSocialWorkerAccountFaker()
             .RuleFor(a => a.SocialWorkEnglandNumber, _ => null)
+            .RuleFor(a => a.Status, _ => AccountStatus.PendingRegistration)
             .Generate();
     }
 
@@ -53,6 +54,7 @@ public static class AccountFakerExtensions
         return accountFaker
             .GetSocialWorkerAccountFaker()
             .RuleFor(a => a.SocialWorkEnglandNumber, _ => socialWorkEnglandId)
+            .RuleFor(a => a.Status, _ => AccountStatus.Active)
             .Generate();
     }
 
