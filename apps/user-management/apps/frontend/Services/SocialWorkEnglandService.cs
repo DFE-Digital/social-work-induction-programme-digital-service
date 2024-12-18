@@ -31,17 +31,8 @@ public class SocialWorkEnglandService(
         return await _client.SocialWorkers.GetByIdAsync(id);
     }
 
-    public MatchResult? GetNameMatchScore(string? firstName, string? lastName, string? sweName)
+    public MatchResult? GetNameMatchScore(string firstName, string lastName, string sweName)
     {
-        if (
-            string.IsNullOrWhiteSpace(firstName)
-            || string.IsNullOrWhiteSpace(lastName)
-            || string.IsNullOrWhiteSpace(sweName)
-        )
-        {
-            return null;
-        }
-
         return _socialWorkerValidatorService.ConvertToResult(firstName, lastName, sweName);
     }
 }

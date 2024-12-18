@@ -24,7 +24,7 @@ public class GetNameMatchScoreShould : SocialWorkEnglandTestBase
             .Returns(expectedResponse);
 
         // Act
-        var response = Sut.GetNameMatchScore(firstName, lastName, socialWorker.RegisteredName);
+        var response = Sut.GetNameMatchScore(firstName, lastName, socialWorker.RegisteredName!);
 
         // Assert
         response.Should().NotBeNull();
@@ -36,21 +36,6 @@ public class GetNameMatchScoreShould : SocialWorkEnglandTestBase
         );
         MockSocialWorkerValidatorService.VerifyNoOtherCalls();
 
-        MockClient.VerifyNoOtherCalls();
-    }
-
-    [Fact]
-    public void WhenCalledWithNullParameters_ReturnNull()
-    {
-        // Arrange
-
-        // Act
-        var response = Sut.GetNameMatchScore(null, null, null);
-
-        // Assert
-        response.Should().BeNull();
-
-        MockSocialWorkerValidatorService.VerifyNoOtherCalls();
         MockClient.VerifyNoOtherCalls();
     }
 }

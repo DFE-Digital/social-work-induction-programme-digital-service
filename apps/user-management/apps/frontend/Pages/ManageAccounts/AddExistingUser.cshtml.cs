@@ -60,9 +60,9 @@ public class AddExistingUser(
         SocialWorkEnglandNumber = socialWorkerDetails.Id;
         Email = accountDetails.Email;
         NameMatchResult = socialWorkEnglandService.GetNameMatchScore(
-            accountDetails.FirstName,
-            accountDetails.LastName,
-            socialWorkerDetails.RegisteredName
+            accountDetails.FirstName ?? string.Empty,
+            accountDetails.LastName ?? string.Empty,
+            socialWorkerDetails.RegisteredName ?? string.Empty
         );
 
         return Page();
