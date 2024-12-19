@@ -26,16 +26,21 @@ public class EditAccountJourneyModel(Account account)
         return new Account(Account)
         {
             Email = AccountDetails.Email,
-            FirstName = AccountDetails?.FirstName,
-            LastName = AccountDetails?.LastName,
-            SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
+            FirstName = AccountDetails.FirstName,
+            LastName = AccountDetails.LastName,
+            SocialWorkEnglandNumber = AccountDetails.SocialWorkEnglandNumber,
             Types = AccountTypes,
-            Status =
-                AccountTypes != null
-                && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                && AccountDetails?.SocialWorkEnglandNumber is null
-                    ? PendingRegistration
-                    : Active,
+            Status = AccountStatus switch
+            {
+                Paused => Paused,
+                Inactive => Inactive,
+                _
+                    => AccountTypes != null
+                    && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
+                    && AccountDetails.SocialWorkEnglandNumber is null
+                        ? PendingRegistration
+                        : Active
+            }
         };
     }
 }

@@ -48,13 +48,14 @@ public static class AccountFakerExtensions
 
     public static Account GenerateSocialWorkerWithSweNumber(
         this AccountFaker accountFaker,
-        string? socialWorkEnglandId
+        string? socialWorkEnglandId,
+        AccountStatus accountStatus = AccountStatus.Active
     )
     {
         return accountFaker
             .GetSocialWorkerAccountFaker()
             .RuleFor(a => a.SocialWorkEnglandNumber, _ => socialWorkEnglandId)
-            .RuleFor(a => a.Status, _ => AccountStatus.Active)
+            .RuleFor(a => a.Status, _ => accountStatus)
             .Generate();
     }
 
