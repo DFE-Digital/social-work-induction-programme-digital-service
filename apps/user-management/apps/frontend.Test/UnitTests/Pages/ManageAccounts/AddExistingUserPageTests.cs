@@ -3,8 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
-using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -33,7 +31,7 @@ public class AddExistingUserPageTests : ManageAccountsPageTestBase<AddExistingUs
     public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         var socialWorker = SocialWorkerFaker.Generate();
@@ -106,7 +104,7 @@ public class AddExistingUserPageTests : ManageAccountsPageTestBase<AddExistingUs
     public async Task OnPostAsync_WhenCalled_RediectsToManageAccounts()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);

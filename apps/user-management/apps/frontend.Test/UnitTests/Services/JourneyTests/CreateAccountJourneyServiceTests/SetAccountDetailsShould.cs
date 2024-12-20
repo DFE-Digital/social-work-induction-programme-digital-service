@@ -12,8 +12,8 @@ public class SetAccountDetailsShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_SetsAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
-        var existingDetails = AccountDetails.FromAccount(AccountFaker.Generate());
+        var account = AccountBuilder.Build();
+        var existingDetails = AccountDetails.FromAccount(AccountBuilder.Build());
         var expected = AccountDetails.FromAccount(account);
         HttpContext.Session.Set(
             CreateAccountSessionKey,
@@ -39,7 +39,7 @@ public class SetAccountDetailsShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithBlankSession_SetsAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var expected = AccountDetails.FromAccount(account);
 
         // Act

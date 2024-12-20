@@ -12,9 +12,9 @@ public class SetAccountDetailsShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_SetsAccountDetails()
     {
         // Arrange
-        var originalAccount = AccountFaker.Generate();
+        var originalAccount = AccountBuilder.Build();
 
-        var updatedAccount = AccountFaker.Generate();
+        var updatedAccount = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(updatedAccount);
         var expected = new EditAccountJourneyModel(updatedAccount).AccountDetails;
 

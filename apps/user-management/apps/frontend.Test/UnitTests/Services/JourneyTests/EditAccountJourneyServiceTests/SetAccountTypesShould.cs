@@ -12,9 +12,9 @@ public class SetAccountTypesShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_SetsAccountTypes()
     {
         // Arrange
-        var originalAccount = AccountFaker.Generate();
+        var originalAccount = AccountBuilder.Build();
 
-        var updatedAccount = AccountFaker.Generate();
+        var updatedAccount = AccountBuilder.Build();
         var editedAccountTypes = new EditAccountJourneyModel(updatedAccount).AccountTypes!;
 
         MockAccountService

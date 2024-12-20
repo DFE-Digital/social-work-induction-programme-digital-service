@@ -31,7 +31,7 @@ public class PauseAccountPageTests : ManageAccountsPageTestBase<PauseAccount>
     public async Task Get_WhenCalled_LoadsTheViewWithAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -75,7 +75,7 @@ public class PauseAccountPageTests : ManageAccountsPageTestBase<PauseAccount>
     public async Task Post_WhenCalled_UpdatesAccountStatusAndRedirectsToAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService

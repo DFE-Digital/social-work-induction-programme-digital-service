@@ -12,7 +12,7 @@ public class GetIsStaffShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_ReturnsAccountTypes()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var expected = account.IsStaff;
         HttpContext.Session.Set(
             CreateAccountSessionKey,

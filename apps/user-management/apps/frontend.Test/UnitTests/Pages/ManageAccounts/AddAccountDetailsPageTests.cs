@@ -1,7 +1,9 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -33,7 +35,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     {
         // Arrange
         Sut.IsStaff = isStaff;
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(isStaff);
@@ -66,7 +68,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     public void GetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
@@ -93,9 +95,12 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     )
     {
         // Arrange
-        var accountDetails = AccountDetails.FromAccount(
-            AccountFaker.GenerateSocialWorkerWithSweNumber(sweId)
-        );
+        var account = AccountBuilder
+            .WithSocialWorkEnglandNumber(sweId)
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
         var socialWorker = sweId is null ? null : new SocialWorker();
         Sut.FirstName = accountDetails.FirstName;
         Sut.LastName = accountDetails.LastName;
@@ -154,7 +159,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddAccountDetails()
     {
         // Arrange
-        var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        var accountDetails = new AccountDetailsFaker().Generate();
         Sut.FirstName = accountDetails.FirstName;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = string.Empty;
@@ -183,7 +188,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     {
         // Arrange
         var sweId = "123";
-        var accountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        var accountDetails = new AccountDetailsFaker().Generate();
         Sut.FirstName = accountDetails.FirstName;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;

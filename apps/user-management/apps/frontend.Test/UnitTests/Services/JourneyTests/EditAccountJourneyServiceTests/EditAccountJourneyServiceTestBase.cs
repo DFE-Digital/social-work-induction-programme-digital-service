@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -12,7 +13,7 @@ public abstract class EditAccountJourneyServiceTestBase
 {
     private protected static string EditAccountSessionKey(Guid id) => "_editAccount-" + id;
 
-    private protected AccountFaker AccountFaker { get; }
+    private protected AccountBuilder AccountBuilder { get; }
     private protected AccountDetailsFaker AccountDetailsFaker { get; }
     private protected HttpContext HttpContext { get; }
     private protected ITempDataDictionary TempData { get; }
@@ -22,7 +23,7 @@ public abstract class EditAccountJourneyServiceTestBase
 
     protected EditAccountJourneyServiceTestBase()
     {
-        AccountFaker = new();
+        AccountBuilder = new();
         AccountDetailsFaker = new();
 
         HttpContext = new DefaultHttpContext

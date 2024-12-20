@@ -15,7 +15,7 @@ public class UnlinkAccountAsync : LinkingEmailServiceTestBase
     public async Task WhenCalled_CallsNotificationService_ReturnsTrue()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var unlinkTemplateId = Guid.NewGuid();
 

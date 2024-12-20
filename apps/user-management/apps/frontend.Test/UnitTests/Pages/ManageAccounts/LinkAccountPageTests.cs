@@ -1,7 +1,8 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -31,7 +32,7 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
     public async Task Get_WhenCalled_LoadsTheViewWithAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -79,7 +80,10 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
     public async Task Post_WhenCalledForSocialWorkerPendingRegistration_UpdatesAccountStatusAndRedirectsToAccountDetails()
     {
         // Arrange
-        var account = new AccountFaker().GenerateSocialWorkerWithNoSweNumber();
+        var account = AccountBuilder
+            .WithSocialWorkEnglandNumber(null)
+            .WithStatus(AccountStatus.PendingRegistration)
+            .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -148,7 +152,10 @@ public class LinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDetail
     public async Task Post_WhenCalledForSocialWorkerWithSweNumber_UpdatesAccountStatusAndRedirectsToAccountDetails()
     {
         // Arrange
-        var account = new AccountFaker().GenerateSocialWorker();
+        var account = AccountBuilder
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithSocialWorkEnglandNumber()
+            .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService

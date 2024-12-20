@@ -12,7 +12,7 @@ public class GetAccountTypesShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_ReturnAccountTypes()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         var expected = new EditAccountJourneyModel(account);
 

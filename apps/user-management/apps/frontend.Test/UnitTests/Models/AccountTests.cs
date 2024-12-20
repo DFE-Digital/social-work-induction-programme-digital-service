@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Xunit;
 
@@ -11,7 +11,7 @@ public class AccountTests
     [Fact]
     public void JsonSerialization_ShouldRetainAllValues()
     {
-        var account = new AccountFaker().Generate();
+        var account = new AccountBuilder().Build();
         var json = JsonSerializer.Serialize(account);
         var result = JsonSerializer.Deserialize<Account>(json);
 

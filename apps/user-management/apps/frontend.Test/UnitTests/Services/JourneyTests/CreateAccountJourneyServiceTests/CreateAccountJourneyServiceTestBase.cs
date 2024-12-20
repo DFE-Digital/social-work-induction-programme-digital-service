@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Configuration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
@@ -13,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccoun
 public abstract class CreateAccountJourneyServiceTestBase
 {
     private protected const string CreateAccountSessionKey = "_createAccount";
-    private protected AccountFaker AccountFaker { get; }
+    private protected AccountBuilder AccountBuilder { get; }
     private protected AccountDetailsFaker AccountDetailsFaker { get; }
     private protected HttpContext HttpContext { get; }
     private protected ITempDataDictionary TempData { get; }
@@ -26,7 +27,7 @@ public abstract class CreateAccountJourneyServiceTestBase
 
     protected CreateAccountJourneyServiceTestBase()
     {
-        AccountFaker = new AccountFaker();
+        AccountBuilder = new();
         AccountDetailsFaker = new AccountDetailsFaker();
 
         HttpContext = new DefaultHttpContext

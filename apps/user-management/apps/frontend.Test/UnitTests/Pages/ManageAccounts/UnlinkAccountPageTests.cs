@@ -1,9 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -33,7 +31,7 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
     public async Task Get_WhenCalled_LoadsTheViewWithAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -77,7 +75,7 @@ public class UnlinkAccountPageTests : ManageAccountsPageTestBase<EditAccountDeta
     public async Task Post_WhenCalled_UpdatesAccountStatusAndRedirectsToAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService

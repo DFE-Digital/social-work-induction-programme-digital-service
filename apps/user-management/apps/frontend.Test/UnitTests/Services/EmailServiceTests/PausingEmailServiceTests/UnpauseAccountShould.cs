@@ -15,7 +15,7 @@ public class UnpauseAccountShould : PausingEmailServiceTestBase
     public async Task WhenCalled_CallsNotificationService_ReturnsTrue()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var unpauseTemplateId = Guid.NewGuid();
 

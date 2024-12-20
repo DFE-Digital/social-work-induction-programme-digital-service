@@ -22,7 +22,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
     public async Task Get_WhenCalled_LoadsTheViewWithAccountsSortedByCreatedAt()
     {
         // Arrange
-        var expectedAccounts = AccountFaker.Generate(10);
+        var expectedAccounts = AccountBuilder.BuildMany(10);
 
         var paginationRequest = new PaginationRequest(0, 10);
         var paginationResponse = new PaginationResult<Account>

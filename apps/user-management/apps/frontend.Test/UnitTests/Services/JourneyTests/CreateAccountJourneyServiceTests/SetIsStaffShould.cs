@@ -12,8 +12,8 @@ public class SetIsStaffShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_SetsAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
-        var existingIsStaff = AccountFaker.Generate().IsStaff;
+        var account = AccountBuilder.Build();
+        var existingIsStaff = AccountBuilder.Build().IsStaff;
         var expected = !account.IsStaff;
         HttpContext.Session.Set(
             CreateAccountSessionKey,
@@ -39,7 +39,7 @@ public class SetIsStaffShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithBlankSession_SetsAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var expected = !account.IsStaff;
 
         // Act

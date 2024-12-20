@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Services.EmailServices.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,7 +12,8 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageModelTestBase<T>
     where T : PageModel
 {
-    private protected AccountFaker AccountFaker { get; }
+    private protected AccountBuilder AccountBuilder { get; }
+    private protected AccountDetailsFaker AccountDetailsFaker { get; }
 
     private protected SocialWorkerFaker SocialWorkerFaker { get; }
 
@@ -25,7 +27,8 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
 
     protected ManageAccountsPageTestBase()
     {
-        AccountFaker = new AccountFaker();
+        AccountBuilder = new();
+        AccountDetailsFaker = new AccountDetailsFaker();
         SocialWorkerFaker = new SocialWorkerFaker();
 
         MockCreateAccountJourneyService = new();

@@ -11,7 +11,7 @@ public class AccountNotFoundExceptionShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_ThrowsException()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         var expectedException = new KeyNotFoundException("Account not found with ID " + account.Id);
 

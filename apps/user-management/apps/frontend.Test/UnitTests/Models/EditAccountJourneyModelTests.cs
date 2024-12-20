@@ -1,5 +1,6 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Xunit;
 
@@ -21,7 +22,12 @@ public class EditAccountJourneyModelTests
     )
     {
         // Arrange
-        var account = new AccountFaker().GenerateSocialWorkerWithSweNumber(sweId, currentStatus);
+        var account = new AccountBuilder()
+            .WithSocialWorkEnglandNumber(sweId)
+            .WithStatus(currentStatus)
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .Build();
+
         var editModel = new EditAccountJourneyModel(account);
 
         // Act

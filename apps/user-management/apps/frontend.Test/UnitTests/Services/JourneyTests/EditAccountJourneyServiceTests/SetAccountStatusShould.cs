@@ -12,9 +12,9 @@ public class SetAccountStatusShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_SetsAccountStatus()
     {
         // Arrange
-        var originalAccount = AccountFaker.Generate();
+        var originalAccount = AccountBuilder.Build();
 
-        var updatedAccount = AccountFaker.Generate();
+        var updatedAccount = AccountBuilder.Build();
         var editedAccountStatus = new EditAccountJourneyModel(updatedAccount).AccountStatus!;
 
         MockAccountService

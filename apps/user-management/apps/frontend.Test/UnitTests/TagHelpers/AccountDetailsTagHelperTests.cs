@@ -1,8 +1,9 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.TagHelpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
 using Xunit;
@@ -16,9 +17,12 @@ public class AccountDetailsTagHelperTests
     {
         // Arrange
         var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
-        var sut = new AccountDetailsTagHelper()
+        var sut = new AccountDetailsTagHelper
         {
-            Account = new AccountFaker().GenerateSocialWorker(),
+            Account = new AccountBuilder()
+                .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+                .WithSocialWorkEnglandNumber()
+                .Build()
         };
 
         // Act
@@ -40,7 +44,11 @@ public class AccountDetailsTagHelperTests
         var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
         var sut = new AccountDetailsTagHelper()
         {
-            Account = new AccountFaker().GenerateSocialWorkerWithNoSweNumber(),
+            Account = new AccountBuilder()
+                .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+                .WithSocialWorkEnglandNumber(null)
+                .WithStatus(AccountStatus.PendingRegistration)
+                .Build()
         };
 
         // Act
@@ -72,7 +80,7 @@ public class AccountDetailsTagHelperTests
         var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
         var sut = new AccountDetailsTagHelper()
         {
-            Account = new AccountFaker().GenerateAccountWithTypes(accountTypes),
+            Account = new AccountBuilder().WithTypes(ImmutableList.Create(accountTypes)).Build()
         };
 
         // Act

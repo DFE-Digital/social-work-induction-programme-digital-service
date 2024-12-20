@@ -1,7 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -14,7 +13,10 @@ public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_CompletesJourney()
     {
         // Arrange
-        var account = AccountFaker.GenerateSocialWorkerWithSweNumber("123");
+        var account = AccountBuilder
+            .WithSocialWorkEnglandNumber()
+            .WithStatus(AccountStatus.Active)
+            .Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
         MockAccountService.Setup(x => x.UpdateAsync(account));

@@ -1,7 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -30,7 +29,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
-        var expectedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        var expectedAccountDetails = AccountDetailsFaker.Generate();
 
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountDetails())
@@ -59,8 +58,8 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public async Task GetUpdate_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
-        var account = AccountFaker.Generate();
-        var updatedAccountDetails = AccountDetails.FromAccount(AccountFaker.GenerateNewAccount());
+        var account = AccountBuilder.Build();
+        var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
 
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
@@ -91,7 +90,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public async Task Post_WhenCalled_CreatesAccountAndSendsEmailToNewAccountWithInvitationTokenLink()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService
@@ -138,7 +137,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public async Task PostUpdate_WhenCalled_UpdatesAccountDetailsAndRedirectsToAccountsIndex()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))

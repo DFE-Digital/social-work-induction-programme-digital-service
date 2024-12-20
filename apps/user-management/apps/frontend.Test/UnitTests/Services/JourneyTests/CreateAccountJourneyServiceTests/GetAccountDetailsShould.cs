@@ -12,7 +12,7 @@ public class GetAccountDetailsShould : CreateAccountJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_ReturnsAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var expected = AccountDetails.FromAccount(account);
         HttpContext.Session.Set(
             CreateAccountSessionKey,

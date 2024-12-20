@@ -12,7 +12,7 @@ public class GetIsStaffShould : EditAccountJourneyServiceTestBase
     {
         // Arrange
         var id = Guid.NewGuid();
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         var expected = new EditAccountJourneyModel(account);
 

@@ -15,7 +15,7 @@ public class LinkAccountShould : LinkingEmailServiceTestBase
     public async Task WhenCalled_CallsNotificationClient_ReturnsTrue()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var linkTemplateId = Guid.NewGuid();
 

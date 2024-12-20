@@ -1,8 +1,7 @@
+using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +54,7 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     public async Task GetEdit_WhenCalled_LoadsTheViewAndPopulatesModel()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
@@ -155,8 +154,8 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     public async Task PostEdit_WhenCalled_UpdatesAccountTypesAndRedirectsToViewAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
-        var random = new Bogus.Randomizer();
+        var account = AccountBuilder.Build();
+        var random = new Randomizer();
         var updatedAccountTypes = random.ArrayElements(
             [AccountType.Assessor, AccountType.Coordinator],
             random.Number(1, 2)
@@ -198,7 +197,7 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     public async Task PostEdit_WhenModelInvalid_AddsErrorsToModelState()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         Sut.SelectedAccountTypes = new List<AccountType>();
 

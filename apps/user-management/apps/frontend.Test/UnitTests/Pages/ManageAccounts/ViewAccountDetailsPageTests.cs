@@ -23,7 +23,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     public async Task Get_WhenCalledWithId_LoadsTheView()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 

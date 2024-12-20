@@ -1,10 +1,7 @@
-﻿using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
-using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccountJourneyServiceTests;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -17,7 +14,8 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
     public async Task WhenCalled_CompletesJourney()
     {
         // Arrange
-        var account = new AccountFaker().GenerateAccountWithoutId();
+        var account = AccountBuilder.WithId(Guid.Empty).Build();
+
         HttpContext.Session.Set(
             CreateAccountSessionKey,
             new CreateAccountJourneyModel
@@ -103,9 +101,8 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
     public async Task WhenCalled_WithBlankEmail_DoesNotSendEmail()
     {
         // Arrange
-        var account = new AccountFaker()
-            .RuleFor(x => x.Email, _ => null)
-            .GenerateAccountWithoutId();
+        var account = AccountBuilder.WithId(Guid.Empty).WithEmail(null).Build();
+
         HttpContext.Session.Set(
             CreateAccountSessionKey,
             new CreateAccountJourneyModel

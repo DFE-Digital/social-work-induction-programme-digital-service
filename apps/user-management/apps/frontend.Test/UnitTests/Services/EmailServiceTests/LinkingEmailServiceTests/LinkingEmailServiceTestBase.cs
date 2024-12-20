@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.EmailServices;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -9,7 +10,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests.Linking
 
 public abstract class LinkingEmailServiceTestBase
 {
-    private protected AccountFaker AccountFaker { get; }
+    private protected AccountBuilder AccountBuilder { get; }
 
     private protected Mock<INotificationServiceClient> MockNotificationClient { get; }
 
@@ -19,7 +20,7 @@ public abstract class LinkingEmailServiceTestBase
 
     protected LinkingEmailServiceTestBase()
     {
-        AccountFaker = new();
+        AccountBuilder = new();
         MockNotificationClient = new();
         MockEmailTemplateOptions = new();
 

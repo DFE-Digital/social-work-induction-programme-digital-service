@@ -12,7 +12,7 @@ public class ResetEditAccountJourneyModelShould : EditAccountJourneyServiceTestB
     public async Task WhenCalled_ResetsUserJourney()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 
@@ -37,7 +37,7 @@ public class ResetEditAccountJourneyModelShould : EditAccountJourneyServiceTestB
     public async Task WhenAccountNotFound_ThrowExpectedException()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         var expectedException = new KeyNotFoundException("Account not found with ID " + account.Id);
 

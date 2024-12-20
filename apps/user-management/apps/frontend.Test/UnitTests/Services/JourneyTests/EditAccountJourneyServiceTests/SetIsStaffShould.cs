@@ -12,7 +12,7 @@ public class SetIsStaffShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_SetsIsStaff()
     {
         // Arrange
-        var originalAccount = AccountFaker.Generate();
+        var originalAccount = AccountBuilder.Build();
 
         MockAccountService
             .Setup(x => x.GetByIdAsync(originalAccount.Id))

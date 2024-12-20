@@ -30,7 +30,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Get_WhenCalled_LoadsTheViewWithAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
@@ -84,7 +84,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task GetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -136,7 +136,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -179,7 +179,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndLoadsTheView()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         Sut.FirstName = account.FirstName;
         Sut.LastName = account.LastName;
@@ -229,7 +229,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task PostChange_WhenCalled_HasCorrectBackLink()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         Sut.FirstName = account.FirstName;

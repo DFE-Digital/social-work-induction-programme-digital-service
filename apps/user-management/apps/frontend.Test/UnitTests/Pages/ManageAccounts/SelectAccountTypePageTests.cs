@@ -65,7 +65,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
     public async Task GetEdit_WhenCalled_LoadsTheViewAndPopulatesModel()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
@@ -191,7 +191,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
     public async Task PostEdit_WhenIsStaffFalse_UpdatesAccountTypeAndRedirectsToViewAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         Sut.IsStaff = false;
 
         MockEditAccountJourneyService
@@ -231,7 +231,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
     public async Task PostEdit_WhenIsStaffTrue_RedirectsToEditUseCase()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         Sut.IsStaff = true;
 
         MockEditAccountJourneyService
@@ -260,7 +260,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
     public async Task PostEdit_WhenModelInvalid_AddsErrorsToModelState()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         Sut.IsStaff = null;
 
         // Act

@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Dfe.Sww.Ecf.Frontend.Models;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -12,7 +11,7 @@ public class GetAccountDetailsShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_ReturnAccountDetails()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
 
         var expected = new EditAccountJourneyModel(account);
 

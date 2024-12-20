@@ -11,7 +11,7 @@ public class ResetCreateAccountJourneyModelShould : CreateAccountJourneyServiceT
     public void WhenCalled_ResetsUserJourney()
     {
         // Arrange
-        var account = AccountFaker.Generate();
+        var account = AccountBuilder.Build();
         HttpContext.Session.Set(
             CreateAccountSessionKey,
             new CreateAccountJourneyModel
