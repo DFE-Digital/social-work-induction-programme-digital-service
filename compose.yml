@@ -1,0 +1,45 @@
+services:
+  moodleapp:
+    build:
+      context: ./moodle-docker
+    image: moodle-web:1.0
+    container_name: moodle-web
+    ports:
+      - 8080:80
+    volumes:
+      - moodledata:/var/www/moodledata
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_DB=moodle
+      - POSTGRES_USER=moodle_user
+      - POSTGRES_PASSWORD=moodle_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -h localhost -p 5432 -U moodle_user -d moodle",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "8081:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+  moodledata:
