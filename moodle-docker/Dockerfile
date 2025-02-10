@@ -33,13 +33,13 @@ WORKDIR /var/www/html
 ## Theme install
 
 # Set the GitHub release URL (modify this based on the actual repository)
-ARG GITHUB_RELEASE_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/2024200800/govuk-moodle-theme-2024200800.zip"
+ARG GITHUB_RELEASE_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/2024200800/govuk-moodle-theme.zip"
 
 # Download and extract the theme
-RUN curl -L -o /tmp/govuk-moodle-theme-2024200800.zip "$GITHUB_RELEASE_URL" \
-    && unzip /tmp/govuk-moodle-theme-2024200800.zip -d /tmp/theme \
-    && mv /tmp/theme/govuk-moodle-theme-2024200800/govuk/ /var/www/html/theme/ \
-    && rm /tmp/govuk-moodle-theme-2024200800.zip
+RUN curl -L -o /tmp/govuk-moodle-theme.zip "$GITHUB_RELEASE_URL" \
+    && unzip /tmp/govuk-moodle-theme.zip -d /tmp/theme \
+    && mv /tmp/theme/govuk/ /var/www/html/theme/ \
+    && rm /tmp/govuk-moodle-theme.zip
 
 # Set the correct permissions
 RUN chown -R www-data:www-data /var/www/ && chmod -R 755 /var/www
