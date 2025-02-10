@@ -30,8 +30,27 @@ RUN mkdir -p /var/www/moodledata
 # Set working directory
 WORKDIR /var/www/html
 
+## Theme install
+
+# Set the GitHub release URL (modify this based on the actual repository)
+ARG GITHUB_RELEASE_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/2024200800/govuk-moodle-theme.zip"
+
+# Download and extract the theme
+RUN curl -L -o /tmp/govuk-moodle-theme.zip "$GITHUB_RELEASE_URL" \
+    && unzip /tmp/govuk-moodle-theme.zip -d /tmp/theme \
+    && mv /tmp/theme/govuk/ /var/www/html/theme/ \
+    && rm /tmp/govuk-moodle-theme.zip
+
 # Set the correct permissions
 RUN chown -R www-data:www-data /var/www/ && chmod -R 755 /var/www
+
+# Enable Apache rewrite module (if needed for Moodle)
+RUN a2enmod rewrite
+
+# Restart Apache
+CMD ["apache2-foreground"]
+
+## End theme install 
 
 # Expose port 80
 EXPOSE 80
