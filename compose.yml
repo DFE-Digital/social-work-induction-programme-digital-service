@@ -8,6 +8,7 @@ services:
       - 8080:80
     volumes:
       - moodledata:/var/www/moodledata
+      - ${PWD}/moodle-docker/config.php:/var/www/html/config.php
     depends_on:
       postgres:
         condition: service_healthy
