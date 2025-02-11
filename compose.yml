@@ -6,6 +6,8 @@ services:
     container_name: moodle-web
     ports:
       - 8080:80
+    env_file:
+      - "development.env"
     volumes:
       - moodledata:/var/www/moodledata
       - ${PWD}/moodle-docker/config.php:/var/www/html/config.php
@@ -15,17 +17,15 @@ services:
 
   postgres:
     image: postgres:17-alpine
-    environment:
-      - POSTGRES_DB=moodle
-      - POSTGRES_USER=moodle_user
-      - POSTGRES_PASSWORD=moodle_password
+    env_file:
+      - "development.env"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -h localhost -p 5432 -U moodle_user -d moodle",
+          "pg_isready -h localhost -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB",
         ]
       interval: 5s
       timeout: 10s
