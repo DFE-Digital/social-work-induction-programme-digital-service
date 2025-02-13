@@ -40,8 +40,7 @@ $CFG->admin = getenv('MOODLE_ADMIN_USER');
 
 $CFG->directorypermissions = 02777;
 
-# Uncomment to set the theme
-#$CFG->theme = 'govuk';
+$CFG->theme = 'govuk';
 
 require_once(__DIR__ . '/lib/setup.php');
 
