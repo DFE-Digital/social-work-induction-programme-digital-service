@@ -1,0 +1,12 @@
+name: Dummy Workflow
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run dummy script
+        run: echo "Testing workflow trigger"
