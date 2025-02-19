@@ -12,3 +12,19 @@ provider "azurerm" {
     }
   }
 }
+
+# Create Resource Group
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.resource_name_prefix}-rg"
+  location = var.azure_region
+
+  tags = local.common_tags
+
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
+}
