@@ -1,12 +1,67 @@
-name: Dummy Workflow
+run-name: "Terraform Deploy - ${{inputs.environment}} (${{inputs.action}})"
+name: "Terraform Deploy"
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Azure deployment environment"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - test
+
+      action:
+        description: "Test the planned changes or plan and apply the changes"
+        default: "Plan Only"
+        type: choice
+        options:
+          - "Plan Only"
+          - "Plan & Apply"
+
+defaults:
+  run:
+    working-directory: ./terraform
+
+#permissions for oidc auth
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+
+env:
+  AZ_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  AZ_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+  AZ_TENANT_ID: ${{ secrets.TENANT_ID }}
+  AZ_USE_OIDC: true
+  AZ_SKIP_PROVIDER_REGISTRATION: true
 
 jobs:
-  test:
+  terraform:
+    name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    #outputs:
+    #  tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run dummy script
-        run: echo "Testing workflow trigger"
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install the latest version of the Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+          terraform_wrapper: false
+
+      # Login to Azure using OIDC
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
