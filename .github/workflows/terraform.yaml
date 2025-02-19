@@ -9,10 +9,10 @@ on:
         description: "Azure deployment environment"
         required: true
         default: "Development"
-        type: choice
-        options:
-          - Development
-          - test
+        #type: choice
+        #options:
+        # - Development
+        # - Test
 
       action:
         description: "Test the planned changes or plan and apply the changes"
