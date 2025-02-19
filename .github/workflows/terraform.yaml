@@ -8,10 +8,10 @@ on:
       environment:
         description: "Azure deployment environment"
         required: true
-        default: "development"
+        default: "Development"
         type: choice
         options:
-          - development
+          - Development
           - test
 
       action:
@@ -33,9 +33,9 @@ permissions:
   issues: write
 
 env:
-  AZ_CLIENT_ID: ${{ secrets.CLIENT_ID }}
-  AZ_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
-  AZ_TENANT_ID: ${{ secrets.TENANT_ID }}
+  AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
   AZ_USE_OIDC: true
   AZ_SKIP_PROVIDER_REGISTRATION: true
 
