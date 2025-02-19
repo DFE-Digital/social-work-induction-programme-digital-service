@@ -2,6 +2,7 @@ run-name: "Terraform Deploy - ${{inputs.environment}} (${{inputs.action}})"
 name: "Terraform Deploy"
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       environment:
@@ -58,6 +59,11 @@ jobs:
         with:
           terraform_version: 1.10.5
           terraform_wrapper: false
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      # Will fail the build if not
+      - name: Terraform Format
+        run: terraform fmt -check
 
       # Login to Azure using OIDC
       - name: Login to Azure CLI
