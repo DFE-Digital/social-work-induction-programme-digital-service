@@ -8,10 +8,10 @@ on:
       environment:
         description: "Azure deployment environment"
         required: true
-        default: "Development"
+        default: Dev
         type: choice
         options:
-          - Development
+          - Dev
           - Test
 
       action:
@@ -43,7 +43,7 @@ jobs:
   terraform:
     name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
-    environment: Development
+    environment: Dev
     #environment: ${{ inputs.environment }}
     #outputs:
     #  tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
