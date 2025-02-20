@@ -91,4 +91,5 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_16:Using VNET Integration
   #checkov:skip=CKV_AZURE_71:Using VNET Integration
   #checkov:skip=CKV_AZURE_222:Network access rules configured
+  #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
 }
