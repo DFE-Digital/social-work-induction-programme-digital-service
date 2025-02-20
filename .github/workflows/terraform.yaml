@@ -1,12 +1,116 @@
-name: Dummy Workflow
+run-name: "Terraform Deploy - ${{inputs.environment}} (${{inputs.action}})"
+name: "Terraform Deploy"
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Azure deployment environment"
+        required: true
+        default: Dev
+        type: choice
+        options:
+          - Dev
+          - Test
+
+      action:
+        description: "Test the planned changes or plan and apply the changes"
+        default: "Plan Only"
+        type: choice
+        options:
+          - "Plan Only"
+          - "Plan & Apply"
+
+defaults:
+  run:
+    working-directory: ./terraform
+
+#permissions for oidc auth
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+  ARM_USE_OIDC: true
+  ARM_SKIP_PROVIDER_REGISTRATION: true
 
 jobs:
-  test:
+  terraform:
+    name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
+    environment: Dev
+    #environment: ${{ inputs.environment }}
+    outputs:
+      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run dummy script
-        run: echo "Testing workflow trigger"
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install the latest version of the Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+          terraform_wrapper: false
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      # Will fail the build if not
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # Login to Azure using OIDC
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      # Initialise a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: >
+          terraform init
+          -backend-config="resource_group_name=${{ secrets.TERRAFORM_STATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ secrets.TERRAFORM_STATE_STORAGE_ACCOUNT_NAME }}"
+          -backend-config="container_name=${{ secrets.TERRAFORM_STATE_STORAGE_CONTAINER_NAME }}"
+          -backend-config="key=${{ secrets.TERRAFORM_STATE_KEY }}"
+
+      # Generates Terraform input variables
+      - name: Generate Terraform Variables
+        shell: bash
+        env:
+          WEB_SECRETS: ${{ toJSON(secrets) }}
+          WEB_VARS: ${{ toJSON(vars) }}
+        run: |
+          printf '%s\n' "$WEB_SECRETS" > tmp-secrets.json
+          printf '%s\n' "$WEB_VARS" > tmp-vars.json
+          jq 'with_entries(.key |= ascii_downcase)' tmp-secrets.json > web-secrets.auto.tfvars.json
+          jq 'with_entries(.key |= ascii_downcase)' tmp-vars.json > web-vars.auto.tfvars.json
+
+      # Generates an execution plan for Terraform
+      # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
+      - name: Terraform Plan
+        id: tf-plan
+        run: |
+          export exitcode=0
+          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else 
+            exit 0
+          fi
+
+      # Terraform Apply
+      - name: Terraform Apply
+        if: ${{ inputs.action == 'Plan & Apply' }}
+        run: terraform apply -auto-approve tfplan
