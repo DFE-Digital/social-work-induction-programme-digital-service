@@ -29,6 +29,15 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
+module "network" {
+  source = "./modules/azure-network"
+
+  environment          = var.environment
+  location             = var.azure_region
+  resource_group       = azurerm_resource_group.rg.name
+  resource_name_prefix = var.resource_name_prefix
+}
+
 # Create web application resources
 module "webapp" {
   source = "./modules/azure-web"
@@ -42,4 +51,5 @@ module "webapp" {
   webapp_name          = var.webapp_name
   webapp_app_settings  = local.webapp_app_settings
   tags                 = local.common_tags
+  depends_on           = [module.network]
 }
