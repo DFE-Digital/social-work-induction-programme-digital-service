@@ -2,7 +2,6 @@ run-name: "Terraform Deploy - ${{inputs.environment}} (${{inputs.action}})"
 name: "Terraform Deploy"
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       environment:
