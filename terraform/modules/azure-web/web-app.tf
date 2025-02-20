@@ -44,12 +44,6 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name = var.resource_group
   service_plan_id     = azurerm_service_plan.asp.id
   https_only          = true
-  app_settings = merge({
-    "APPINSIGHTS_INSTRUMENTATIONKEY"             = azurerm_application_insights.web.instrumentation_key
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"      = azurerm_application_insights.web.connection_string
-    "ApplicationInsightsAgent_EXTENSION_VERSION" = "~3"
-  }, var.webapp_app_settings)
-
   identity {
     type = "SystemAssigned"
   }
