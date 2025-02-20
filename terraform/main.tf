@@ -15,7 +15,7 @@ provider "azurerm" {
 
 # Create Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.resource_name_prefix}-rg"
+  name     = "${var.resource_name_prefix}-rg-webapp"
   location = var.azure_region
 
   tags = local.common_tags
@@ -27,4 +27,19 @@ resource "azurerm_resource_group" "rg" {
       tags["Service Offering"]
     ]
   }
+}
+
+# Create web application resources
+module "webapp" {
+  source = "./modules/azure-web"
+
+  environment          = var.environment
+  location             = var.azure_region
+  resource_group       = azurerm_resource_group.rg.name
+  resource_name_prefix = var.resource_name_prefix
+  asp_sku              = var.asp_sku
+  webapp_worker_count  = var.webapp_worker_count
+  webapp_name          = var.webapp_name
+  webapp_app_settings  = local.webapp_app_settings
+  tags                 = local.common_tags
 }

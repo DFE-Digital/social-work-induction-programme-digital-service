@@ -1,12 +1,15 @@
-variable "azure_region" {
-  default     = "westeurope"
+variable "environment" {
+  description = "Environment to deploy resources"
+  type        = string
+}
+
+variable "location" {
   description = "Name of the Azure region to deploy resources"
   type        = string
 }
 
-variable "environment" {
-  default     = "development"
-  description = "Environment to deploy resources"
+variable "resource_group" {
+  description = "Name of the Azure Resource Group to deploy resources"
   type        = string
 }
 
@@ -21,7 +24,6 @@ variable "asp_sku" {
 }
 
 variable "webapp_worker_count" {
-  default     = 1
   description = "Number of Workers for the App Service Plan"
   type        = string
 }
@@ -29,4 +31,14 @@ variable "webapp_worker_count" {
 variable "webapp_name" {
   description = "Name for the Web Application"
   type        = string
+}
+
+variable "webapp_app_settings" {
+  description = "App Settings are exposed as environment variables"
+  type        = map(string)
+}
+
+variable "tags" {
+  description = "Resource tags"
+  type        = map(string)
 }
