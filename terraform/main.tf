@@ -46,7 +46,6 @@ module "storage" {
   resource_group              = azurerm_resource_group.rg.name
   webapp_storage_account_name = var.webapp_storage_account_name
   kv_id                       = module.network.kv_id
-  webapp_subnet_id            = module.network.webapp_subnet_id
   tags                        = local.common_tags
 }
 
