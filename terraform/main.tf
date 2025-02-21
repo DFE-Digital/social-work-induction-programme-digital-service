@@ -44,7 +44,7 @@ module "storage" {
 
   location                    = var.azure_region
   resource_group              = azurerm_resource_group.rg.name
-  webapp_storage_account_name = var.webapp_storage_account_name
+  webapp_storage_account_name = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
   kv_id                       = module.network.kv_id
   tags                        = local.common_tags
 }

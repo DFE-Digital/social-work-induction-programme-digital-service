@@ -30,3 +30,8 @@ variable "webapp_name" {
   description = "Name for the Web Application"
   type        = string
 }
+
+variable "webapp_storage_account_name" {
+  description = "Storage Account name"
+  type        = string
+}
