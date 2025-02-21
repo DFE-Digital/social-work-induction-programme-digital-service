@@ -38,6 +38,17 @@ module "network" {
   resource_name_prefix = var.resource_name_prefix
 }
 
+# Create storage account for web app
+module "storage" {
+  source = "./modules/azure-storage"
+
+  location                    = var.azure_region
+  resource_group              = azurerm_resource_group.rg.name
+  webapp_storage_account_name = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
+  kv_id                       = module.network.kv_id
+  tags                        = local.common_tags
+}
+
 # Create web application resources
 module "webapp" {
   source = "./modules/azure-web"
