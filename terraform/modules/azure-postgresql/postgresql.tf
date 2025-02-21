@@ -37,7 +37,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   private_dns_zone_id           = azurerm_private_dns_zone.private_dns.id
   public_network_access_enabled = false
   administrator_login           = "psqladmin"
-  administrator_password        = "H@Sh1CoR3!"
+  administrator_password        = random_password.pass.result
   zone                          = "1"
 
   storage_mb   = 32768
@@ -46,4 +46,19 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   sku_name   = "B_Standard_B1ms"
   depends_on = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
 
+}
+
+locals {
+  // we're using timeadd and we can't pass the day directly need to be hours
+  days_to_hours = var.days_to_expire * 24
+  // expiration date need to be in a specific format as well
+  expiration_date = timeadd(formatdate("YYYY-MM-DD'T'HH:mm:ssZ", timestamp()), "${local.days_to_hours}h")
+}
+
+resource "azurerm_key_vault_secret" "database_password" {
+  name            = "postgresql--admin--password"
+  value           = azurerm_postgresql_flexible_server.swipdb.administrator_password
+  key_vault_id    = var.kv_id
+  content_type    = "password"
+  expiration_date = locals.expiration_date
 }

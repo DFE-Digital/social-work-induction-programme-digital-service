@@ -35,3 +35,8 @@ variable "webapp_storage_account_name" {
   description = "Storage Account name"
   type        = string
 }
+
+variable "days_to_expire" {
+  description = "The number of days to add for password expiration"
+  type        = string
+}
