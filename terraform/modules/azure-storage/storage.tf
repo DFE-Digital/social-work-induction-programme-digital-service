@@ -56,4 +56,11 @@ resource "azurerm_storage_account" "sa" {
   #checkov:skip=CKV2_AZURE_1:Microsoft Managed keys are sufficient
   #checkov:skip=CKV2_AZURE_38:Soft-delete not required
   #checkov:skip=CKV2_AZURE_33:VNet not configured
+  #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
+}
+
+resource "azurerm_key_vault_secret" "storage_connection_string" {
+  name         = "Storage--ConnectionString"
+  value        = azurerm_storage_account.sa.primary_connection_string
+  key_vault_id = var.kv_id
 }
