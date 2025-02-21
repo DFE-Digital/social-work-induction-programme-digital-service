@@ -73,7 +73,7 @@ module "postgres" {
   resource_group       = azurerm_resource_group.rg.name
   resource_name_prefix = var.resource_name_prefix
   vnet_id              = module.network.vnet_id
-  vnet_name            = module.vnet_name
+  vnet_name            = module.network.vnet_name
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
 }
