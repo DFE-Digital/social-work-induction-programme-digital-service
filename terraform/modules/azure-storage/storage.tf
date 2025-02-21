@@ -58,7 +58,7 @@ resource "azurerm_storage_account" "sa" {
   #checkov:skip=CKV2_AZURE_33:VNet not configured
   #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
   #checkov:skip=CKV2_AZURE_40:Shared access key are sufficient
-  #checkov:skip=CKV_AZURE_40:Connection string dont need expiry date
+  #checkov:skip=CKV_AZURE_41:Connection string dont need expiry date
 }
 
 resource "azurerm_key_vault_secret" "storage_connection_string" {
