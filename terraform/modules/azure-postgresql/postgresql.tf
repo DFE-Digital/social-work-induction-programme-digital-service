@@ -28,6 +28,10 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
   depends_on            = [azurerm_subnet.postgres_sn]
 }
 
+resource "random_password" "password" {
+  length = 16
+}
+
 resource "azurerm_postgresql_flexible_server" "swipdb" {
   name                          = "${var.resource_name_prefix}swipdb"
   resource_group_name           = var.resource_group
@@ -37,7 +41,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   private_dns_zone_id           = azurerm_private_dns_zone.private_dns.id
   public_network_access_enabled = false
   administrator_login           = "psqladmin"
-  administrator_password        = random_password.pass.result
+  administrator_password        = random_password.password.result
   zone                          = "1"
 
   storage_mb   = 32768
