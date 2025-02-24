@@ -21,7 +21,7 @@ resource "azurerm_private_dns_zone" "private_dns" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
-  name                  = "${var.resource_name_prefix}swipdb.com"
+  name                  = "swipdb-priv-vnet-link"
   private_dns_zone_name = azurerm_private_dns_zone.private_dns.name
   virtual_network_id    = var.vnet_id
   resource_group_name   = var.resource_group
