@@ -69,5 +69,5 @@ resource "azurerm_key_vault_secret" "database_password" {
   value           = azurerm_postgresql_flexible_server.swipdb.administrator_password
   key_vault_id    = var.kv_id
   content_type    = "password"
-  expiration_date = locals.expiration_date
+  expiration_date = local.expiration_date
 }
