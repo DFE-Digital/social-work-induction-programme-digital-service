@@ -33,20 +33,21 @@ resource "random_password" "password" {
 }
 
 resource "azurerm_postgresql_flexible_server" "swipdb" {
-  name                         = "${var.resource_name_prefix}swipdb"
-  resource_group_name          = var.resource_group
-  location                     = var.location
-  version                      = "15"
-  delegated_subnet_id          = azurerm_subnet.postgres_sn.id
-  private_dns_zone_id          = azurerm_private_dns_zone.private_dns.id
-  administrator_login          = "psqladmin"
-  administrator_password       = random_password.password.result
-  zone                         = "3"
-  storage_mb                   = 32768
-  sku_name                     = "B_Standard_B1ms"
-  backup_retention_days        = 7
-  geo_redundant_backup_enabled = false
-  depends_on                   = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
+  name                          = "${var.resource_name_prefix}swipdb"
+  resource_group_name           = var.resource_group
+  location                      = var.location
+  version                       = "15"
+  delegated_subnet_id           = azurerm_subnet.postgres_sn.id
+  private_dns_zone_id           = azurerm_private_dns_zone.private_dns.id
+  administrator_login           = "psqladmin"
+  administrator_password        = random_password.password.result
+  zone                          = "3"
+  storage_mb                    = 32768
+  sku_name                      = "B_Standard_B1ms"
+  backup_retention_days         = 7
+  geo_redundant_backup_enabled  = false
+  public_network_access_enabled = false
+  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
 
   lifecycle {
     ignore_changes = [
