@@ -36,7 +36,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   name                         = "${var.resource_name_prefix}swipdb"
   resource_group_name          = var.resource_group
   location                     = var.location
-  version                      = "16"
+  version                      = "15"
   delegated_subnet_id          = azurerm_subnet.postgres_sn.id
   private_dns_zone_id          = azurerm_private_dns_zone.private_dns.id
   administrator_login          = "psqladmin"
