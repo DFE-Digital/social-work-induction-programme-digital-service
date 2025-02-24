@@ -1,4 +1,4 @@
-resource "azurerm_subnet" "postgres-sn" {
+resource "azurerm_subnet" "postgres_sn" {
   name                 = "${var.resource_name_prefix}-sn"
   resource_group_name  = var.resource_group
   virtual_network_name = var.vnet_name
