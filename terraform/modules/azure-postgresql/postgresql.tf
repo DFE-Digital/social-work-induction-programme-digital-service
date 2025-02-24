@@ -43,12 +43,9 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   administrator_login           = "psqladmin"
   administrator_password        = random_password.password.result
   zone                          = "1"
-
-  storage_mb   = 32768
-  storage_tier = "P4"
-
-  sku_name   = "B_Standard_B1ms"
-  depends_on = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
+  storage_mb                    = 32768
+  sku_name                      = "B_Standard_B1ms"
+  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
 
   lifecycle {
     ignore_changes = [
