@@ -24,19 +24,24 @@ Follow the instruction at [Install DDEV](https://ddev.readthedocs.io/en/stable/u
 After configuring your project with DDEV, follow these steps from your project’s root (where your public folder is located):
 
 Configure DDEV with both the composer root and document root set to public:
-`ddev config --composer-root=public --docroot=public --webserver-type=apache-fpm --database=postgres:14 --project-name=moodle`
+
+- `ddev config --composer-root=public --docroot=public --webserver-type=apache-fpm --database=postgres:14 --project-name=moodle`
 
 Start your DDEV environment:
-`ddev start`
+
+- `ddev start`
 
 Use Composer to create a new Moodle installation:
-`ddev composer create moodle/moodle`
+
+- `ddev composer create moodle/moodle`
 
 Use the custom DDEV command to perform the full installation, theme import, configuration update, and cache purge:
-`ddev install-moodle`
+
+- `ddev install-moodle`
 
 Finally, launch your Moodle site in your default web browser:
-`ddev launch /login`
+
+- `ddev launch /login`
 
 
 ### Moodle Configuration
