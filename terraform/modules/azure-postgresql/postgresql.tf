@@ -41,7 +41,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   private_dns_zone_id          = azurerm_private_dns_zone.private_dns.id
   administrator_login          = "psqladmin"
   administrator_password       = random_password.password.result
-  zone                         = "1"
+  zone                         = "3"
   storage_mb                   = 32768
   sku_name                     = "B_Standard_B1ms"
   backup_retention_days        = 7

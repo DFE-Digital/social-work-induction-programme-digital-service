@@ -9,27 +9,6 @@ resource "azurerm_storage_account" "sa" {
   cross_tenant_replication_enabled = false
   shared_access_key_enabled        = true
 
-  queue_properties {
-    logging {
-      delete                = true
-      read                  = true
-      write                 = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-    hour_metrics {
-      enabled               = true
-      include_apis          = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-    minute_metrics {
-      enabled               = true
-      include_apis          = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-  }
 
   blob_properties {
     delete_retention_policy {
