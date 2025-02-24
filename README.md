@@ -21,7 +21,7 @@ Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/in
 
 ---
 ### Running the service
-After configuring your project with DDEV, follow these steps from your project’s root (where your public folder is located):
+After configuring your project with DDEV, follow these steps from this project’s root directory:
 
 Configure DDEV with both the composer root and document root set to public:
 
