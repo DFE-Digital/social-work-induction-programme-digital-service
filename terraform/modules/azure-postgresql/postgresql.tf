@@ -16,7 +16,7 @@ resource "azurerm_subnet" "postgres_sn" {
 }
 
 resource "azurerm_private_dns_zone" "private_dns" {
-  name                = "${var.resource_name_prefix}swipdb.postgres.database.azure.com"
+  name                = "pvtswipdb.postgres.database.azure.com"
   resource_group_name = var.resource_group
 }
 
