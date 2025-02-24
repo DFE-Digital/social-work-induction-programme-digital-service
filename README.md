@@ -16,10 +16,10 @@ The primary custom command, install-moodle, bundles all installation steps into 
 ### Windows Setup
 You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`. 
 
-#### DDEV Installation
-Follow the instruction at [Install DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
----
+### DDEV Installation
+Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
 
+---
 ### Running the service
 After configuring your project with DDEV, follow these steps from your project’s root (where your public folder is located):
 
