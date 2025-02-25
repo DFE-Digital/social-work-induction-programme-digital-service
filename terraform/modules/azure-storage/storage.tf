@@ -9,27 +9,6 @@ resource "azurerm_storage_account" "sa" {
   cross_tenant_replication_enabled = false
   shared_access_key_enabled        = true
 
-  queue_properties {
-    logging {
-      delete                = true
-      read                  = true
-      write                 = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-    hour_metrics {
-      enabled               = true
-      include_apis          = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-    minute_metrics {
-      enabled               = true
-      include_apis          = true
-      version               = "1.0"
-      retention_policy_days = 10
-    }
-  }
 
   blob_properties {
     delete_retention_policy {
@@ -58,6 +37,7 @@ resource "azurerm_storage_account" "sa" {
   #checkov:skip=CKV2_AZURE_33:VNet not configured
   #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
   #checkov:skip=CKV2_AZURE_40:Shared access key are sufficient
+  #checkov:skip=CKV_AZURE_33:Argument has been deprecated
 }
 
 resource "azurerm_key_vault_secret" "storage_connection_string" {
