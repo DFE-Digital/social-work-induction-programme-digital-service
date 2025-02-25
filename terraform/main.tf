@@ -62,3 +62,10 @@ module "postgres" {
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
 }
+
+module "frontdoor" {
+  source = "./modules/azure-frontdoor"
+
+  resource_name_prefix = var.resource_name_prefix
+  tags                 = local.common_tags
+}

@@ -51,6 +51,22 @@ resource "azurerm_linux_web_app" "webapp" {
   site_config {
     http2_enabled          = true
     vnet_route_all_enabled = true
+    ftps_state             = "Disabled"
+    minimum_tls_version    = "1.2"
+    ip_restriction {
+      service_tag               = "AzureFrontDoor.Backend"
+      ip_address                = null
+      virtual_network_subnet_id = null
+      action                    = "Allow"
+      priority                  = 100
+      headers {
+        x_azure_fdid      = [azurerm_cdn_frontdoor_profile.frontdoor_web_profile.resource_guid]
+        x_fd_health_probe = []
+        x_forwarded_for   = []
+        x_forwarded_host  = []
+      }
+      name = "Allow traffic from Front Door"
+    }
   }
 
   sticky_settings {
