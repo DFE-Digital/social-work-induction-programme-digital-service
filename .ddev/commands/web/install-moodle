@@ -24,25 +24,3 @@ php public/admin/cli/install.php \
   --adminemail=admin@example.com
 
 echo "Moodle installation complete."
-
-echo "Downloading and installing govuk theme..."
-rm -rf /tmp/theme
-curl -L -o /tmp/govuk-moodle-theme.zip "https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/2024200800/govuk-moodle-theme.zip"
-unzip -o /tmp/govuk-moodle-theme.zip -d /tmp/theme
-mkdir -p /var/www/html/public/theme
-mv /tmp/theme/govuk/ /var/www/html/public/theme/govuk
-rm -rf /tmp/govuk-moodle-theme.zip /tmp/theme
-echo "Govuk theme installed."
-
-echo "Updating config.php to set theme to govuk..."
-CONFIG_FILE="/var/www/html/public/config.php"
-if grep -q "\$CFG->theme" "$CONFIG_FILE"; then
-  sed -i "s/\(\$CFG->theme\s*=\s*\).*/\1'govuk';/" "$CONFIG_FILE"
-else
-  echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
-fi
-
-echo "Purging Moodle caches..."
-php public/admin/cli/purge_caches.php
-
-echo "All steps complete. Your Moodle installation is now using the govuk theme."

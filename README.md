@@ -35,9 +35,10 @@ Use Composer to create a new Moodle installation:
 
 - `ddev composer create moodle/moodle`
 
-Use the custom DDEV command to perform the full installation, theme import, configuration update, and cache purge:
+Use the custom DDEV commands to perform the full installation, theme import, configuration update, and cache purge:
 
 - `ddev install-moodle`
+- `ddev install-theme`
 
 Finally, launch your Moodle site in your default web browser:
 
