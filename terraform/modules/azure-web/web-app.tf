@@ -60,7 +60,7 @@ resource "azurerm_linux_web_app" "webapp" {
       action                    = "Allow"
       priority                  = 100
       headers {
-        x_azure_fdid      = [azurerm_cdn_frontdoor_profile.frontdoor_web_profile.resource_guid]
+        x_azure_fdid      = [azurerm_cdn_frontdoor_profile.frontdoor-web-profile.resource_guid]
         x_fd_health_probe = []
         x_forwarded_for   = []
         x_forwarded_host  = []
