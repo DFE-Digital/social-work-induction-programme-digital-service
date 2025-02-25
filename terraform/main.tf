@@ -68,4 +68,5 @@ module "frontdoor" {
 
   resource_name_prefix = var.resource_name_prefix
   tags                 = local.common_tags
+  resource_group       = azurerm_resource_group.rg.name
 }
