@@ -12,3 +12,8 @@ variable "resource_group" {
   description = "Name of the Azure Resource Group to deploy resources"
   type        = string
 }
+
+variable "default_hostname" {
+  description = "Name of the web app service host"
+  type        = string
+}

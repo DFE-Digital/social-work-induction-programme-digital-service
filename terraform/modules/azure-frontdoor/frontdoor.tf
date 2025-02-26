@@ -31,10 +31,10 @@ resource "azurerm_cdn_frontdoor_origin_group" "frontdoor-origin-group" {
 resource "azurerm_cdn_frontdoor_origin" "frontdoor-web-origin" {
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.frontdoor-origin-group.id
   certificate_name_check_enabled = false
-  host_name                      = azurerm_linux_web_app.web-app-service.default_hostname
+  host_name                      = var.default_hostname
   http_port                      = 80
   https_port                     = 443
-  origin_host_header             = azurerm_linux_web_app.web-app-service.default_hostname
+  origin_host_header             = var.default_hostname
   priority                       = 1
   weight                         = 1
   name                           = "${var.resource_name_prefix}-web-fd-origin"
