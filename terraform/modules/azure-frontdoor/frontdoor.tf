@@ -1,6 +1,6 @@
 resource "azurerm_cdn_frontdoor_profile" "frontdoor-web-profile" {
   name                = "${var.resource_name_prefix}-web-fd-profile"
-  resource_group_name = azurerm_resource_group.web-rg.name
+  resource_group_name = var.resource_group
   sku_name            = "Standard_AzureFrontDoor"
   tags                = var.tags
 }
