@@ -49,7 +49,11 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   site_config {
-    always_on = true
+    always_on              = true
+    http2_enabled          = true
+    vnet_route_all_enabled = true
+    ftps_state             = "Disabled"
+    minimum_tls_version    = "1.2"
 
     ip_restriction_default_action = "Deny"
 
