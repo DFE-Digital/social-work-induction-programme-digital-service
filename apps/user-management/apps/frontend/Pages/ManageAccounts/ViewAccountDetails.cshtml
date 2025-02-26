@@ -43,8 +43,6 @@
             Change status
         </h1>
 
-        <link-account-link condition="isAccountInactive" account-name="@Model.Account.FullName" href="@Model.LinkPath" />
-        <set-account-inactive-link condition="!isAccountInactive" account-name="@Model.Account.FullName" href="@Model.UnlinkPath" />
         <unpause-account-link condition="isAccountPaused" account-name="@Model.Account.FullName" href="@Model.UnpausePath" />
         <pause-account-link condition="!isAccountPaused && !isAccountInactive" account-name="@Model.Account.FullName" href="@Model.PausePath" />
     </div>

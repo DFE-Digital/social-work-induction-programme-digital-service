@@ -24,7 +24,6 @@ public static class InstallServices
         services.AddTransient<ISocialWorkEnglandService, SocialWorkEnglandService>();
         services.AddTransient<ISocialWorkerValidatorService, SocialWorkerValidatorService>();
         services.AddTransient<IEmailService, EmailService>();
-        services.AddTransient<ILinkingEmailService, LinkingEmailService>();
         services.AddTransient<IPausingEmailService, PausingEmailService>();
     }
 }

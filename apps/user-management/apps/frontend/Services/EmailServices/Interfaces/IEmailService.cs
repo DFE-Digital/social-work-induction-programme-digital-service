@@ -3,5 +3,4 @@
 public interface IEmailService
 {
     public IPausingEmailService Pausing { get; init; }
-    public ILinkingEmailService Linking { get; init; }
 }

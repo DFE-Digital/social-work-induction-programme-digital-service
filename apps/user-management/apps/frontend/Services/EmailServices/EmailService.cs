@@ -5,12 +5,10 @@ namespace Dfe.Sww.Ecf.Frontend.Services.EmailServices;
 
 public class EmailService : IEmailService
 {
-    public EmailService(IPausingEmailService pausing, ILinkingEmailService linking)
+    public EmailService(IPausingEmailService pausing)
     {
         Pausing = pausing;
-        Linking = linking;
     }
 
     public IPausingEmailService Pausing { get; init; }
-    public ILinkingEmailService Linking { get; init; }
 }
