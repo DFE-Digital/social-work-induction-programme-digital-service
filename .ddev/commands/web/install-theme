@@ -15,10 +15,16 @@ RELEASE=${1:-2024200800}
 
 THEME_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/${RELEASE}/govuk-moodle-theme.zip"
 
-echo "Downloading and installing govuk theme release ${RELEASE}..."
+echo "Downloading and installing govuk theme release ${RELEASE} from ${THEME_URL}..."
 rm -rf /tmp/theme
 curl -L -o /tmp/govuk-moodle-theme.zip "$THEME_URL"
 unzip -o /tmp/govuk-moodle-theme.zip -d /tmp/theme
+
+# Remove the old govuk directory if it exists
+if [ -d "/var/www/html/public/theme/govuk" ]; then
+  rm -rf /var/www/html/public/theme/govuk
+fi
+
 mkdir -p /var/www/html/public/theme
 mv /tmp/theme/govuk/ /var/www/html/public/theme/govuk
 rm -rf /tmp/govuk-moodle-theme.zip /tmp/theme
@@ -31,6 +37,9 @@ if grep -q "\$CFG->theme" "$CONFIG_FILE"; then
 else
   echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
 fi
+
+echo "Running Moodle upgrade..."
+php public/admin/cli/upgrade.php --non-interactive
 
 echo "Purging Moodle caches..."
 php public/admin/cli/purge_caches.php
