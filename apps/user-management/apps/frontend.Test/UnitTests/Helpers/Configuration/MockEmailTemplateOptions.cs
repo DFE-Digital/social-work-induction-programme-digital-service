@@ -16,11 +16,7 @@ public class MockEmailTemplateOptions : Mock<IOptions<EmailTemplateOptions>>
                     _ => new RoleEmailTemplateConfiguration
                     {
                         Invitation = Guid.NewGuid(),
-                        Welcome = Guid.NewGuid(),
-                        Pause = Guid.NewGuid(),
-                        Unpause = Guid.NewGuid(),
-                        Link = Guid.NewGuid(),
-                        Unlink = Guid.NewGuid()
+                        Welcome = Guid.NewGuid()
                     }
                 )
         };

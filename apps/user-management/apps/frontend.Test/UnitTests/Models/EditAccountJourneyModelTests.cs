@@ -9,8 +9,6 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Models;
 public class EditAccountJourneyModelTests
 {
     [Theory]
-    [InlineData(AccountStatus.Paused, AccountStatus.Paused, null)]
-    [InlineData(AccountStatus.Inactive, AccountStatus.Inactive, null)]
     [InlineData(AccountStatus.PendingRegistration, AccountStatus.PendingRegistration, null)]
     [InlineData(AccountStatus.Active, AccountStatus.Active, "123")]
     [InlineData(AccountStatus.PendingRegistration, AccountStatus.Active, "123")]

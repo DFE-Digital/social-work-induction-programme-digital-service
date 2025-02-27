@@ -13,11 +13,6 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 {
     public Account Account { get; set; } = default!;
 
-    public string? UnlinkPath { get; set; }
-    public string? LinkPath { get; set; }
-    public string? UnpausePath { get; set; }
-    public string? PausePath { get; set; }
-
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
         var account = await accountService.GetByIdAsync(id);
@@ -27,10 +22,6 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
         }
 
         BackLinkPath = linkGenerator.ManageAccounts();
-        UnlinkPath = linkGenerator.UnlinkAccount(id);
-        LinkPath = linkGenerator.LinkAccount(id);
-        UnpausePath = linkGenerator.UnpauseAccount(id);
-        PausePath = linkGenerator.PauseAccount(id);
         Account = account;
 
         return Page();

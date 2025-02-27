@@ -32,8 +32,6 @@ public class EditAccountJourneyModel(Account account)
             Types = AccountTypes,
             Status = AccountStatus switch
             {
-                Paused => Paused,
-                Inactive => Inactive,
                 _
                     => AccountTypes != null
                     && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)

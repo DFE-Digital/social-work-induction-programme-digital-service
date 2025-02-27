@@ -28,7 +28,7 @@ public static class InstallRepositories
                     LastName = "Ripley",
                     Email = "ellen@rbcouncil.org.uk",
                     SocialWorkEnglandNumber = "SW798",
-                    Status = AccountStatus.Paused,
+                    Status = AccountStatus.Active,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
@@ -65,7 +65,7 @@ public static class InstallRepositories
                     LastName = "Newman",
                     Email = "sheena@rbcouncil.org.uk",
                     SocialWorkEnglandNumber = "SW2478",
-                    Status = AccountStatus.Inactive,
+                    Status = AccountStatus.Active,
                     Types = [AccountType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
