@@ -42,8 +42,7 @@ jobs:
   terraform:
     name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
-    environment: Dev
-    #environment: ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
