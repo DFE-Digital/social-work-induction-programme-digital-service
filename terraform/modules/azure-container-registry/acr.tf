@@ -6,4 +6,11 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled                 = var.admin_enabled
   public_network_access_enabled = var.public_network_access_enabled
   tags                          = var.tags
+
+  #checkov:skip=CKV_AZURE_164:Content Trusted images not available on Basic SKU
+  #checkov:skip=CKV_AZURE_237:Dedicate data endpoint not available on Basic SKU
+  #checkov:skip=CKV_AZURE_163:Vulnerability scanned before image creation
+  #checkov:skip=CKV_AZURE_233:Zone redundancy not needed and not available on Basic SKU
+  #checkov:skip=CKV_AZURE_165:Geo-replication not needed and not available on Basic SKU
+  #checkov:skip=CKV_AZURE_166:Image quarantine not available on Basic SKU
 }
