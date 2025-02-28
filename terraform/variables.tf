@@ -40,3 +40,18 @@ variable "days_to_expire" {
   description = "The number of days to add for password expiration"
   type        = string
 }
+
+variable "acr_sku" {
+  description = "Azure Container Registry SKU"
+  type        = string
+}
+
+variable "public_network_access_enabled" {
+  description = "Is public network access enabled"
+  type        = string
+}
+
+variable "admin_enabled" {
+  description = "Is ACR admin enabled?"
+  type        = string
+}

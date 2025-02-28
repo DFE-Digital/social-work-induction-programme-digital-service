@@ -72,3 +72,15 @@ module "frontdoor" {
   default_hostname     = module.webapp.default_hostname
   depends_on           = [module.webapp]
 }
+
+module "acr" {
+  source = "./modules/azure-container-registry"
+
+  resource_name_prefix          = var.resource_name_prefix
+  resource_group                = azurerm_resource_group.rg.name
+  location                      = var.azure_region
+  acr_sku                       = var.acr_sku
+  tags                          = local.common_tags
+  admin_enabled                 = var.admin_enabled
+  public_network_access_enabled = var.public_network_access_enabled
+}
