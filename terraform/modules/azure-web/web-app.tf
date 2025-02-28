@@ -16,6 +16,23 @@ resource "azurerm_log_analytics_workspace" "webapp_logs" {
   }
 }
 
+resource "azurerm_application_insights" "web" {
+  name                = "${var.resource_name_prefix}-appinsights"
+  resource_group_name = var.resource_group
+  location            = var.location
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.webapp_logs.id
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
+}
+
 # Create App Service Plan
 resource "azurerm_service_plan" "asp" {
   name                = "${var.resource_name_prefix}-asp"
@@ -105,4 +122,27 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_71:Using VNET Integration
   #checkov:skip=CKV_AZURE_222:Network access rules configured
   #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
+}
+
+resource "azurerm_monitor_diagnostic_setting" "webapp_logs_monitor" {
+
+  name                       = "${var.resource_name_prefix}-webapp-mon"
+  target_resource_id         = azurerm_linux_web_app.webapp.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.webapp_logs.id
+
+  enabled_log {
+    category = "AppServiceConsoleLogs"
+  }
+
+  enabled_log {
+    category = "AppServicePlatformLogs"
+  }
+
+  timeouts {
+    read = "30m"
+  }
+
+  lifecycle {
+    ignore_changes = [metric]
+  }
 }
