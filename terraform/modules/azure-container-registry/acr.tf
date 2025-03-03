@@ -6,6 +6,14 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled       = var.admin_enabled
   tags                = var.tags
 
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
+
   #checkov:skip=CKV_AZURE_164:Content Trusted images not available on Basic SKU
   #checkov:skip=CKV_AZURE_237:Dedicate data endpoint not available on Basic SKU
   #checkov:skip=CKV_AZURE_163:Vulnerability scanned before image creation

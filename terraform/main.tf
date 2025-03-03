@@ -61,6 +61,7 @@ module "postgres" {
   vnet_name            = module.network.vnet_name
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
+  tags                 = local.common_tags
 }
 
 module "frontdoor" {
