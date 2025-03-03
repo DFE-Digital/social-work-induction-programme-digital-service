@@ -54,7 +54,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
-      password
+      administrator_password
     ]
   }
 
