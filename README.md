@@ -21,7 +21,7 @@ Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/in
 
 ---
 ### Running the service
-After configuring your project with DDEV, follow these steps from this project’s root directory:
+After configuring your project with DDEV, follow these steps from this project’s `moodle-app` directory:
 
 Configure DDEV with both the composer root and document root set to public:
 
