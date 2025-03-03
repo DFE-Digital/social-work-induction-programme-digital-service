@@ -25,6 +25,7 @@ env:
 jobs:
   build-image:
     runs-on: ubuntu-24.04
+    environment: Dev
     name: Build & Publish Image
     outputs:
       dockerImageTag: ${{ steps.image.outputs.dockerImageTag }}
