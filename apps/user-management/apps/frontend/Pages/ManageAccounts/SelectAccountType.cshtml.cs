@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,8 +12,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SelectAccountType(
     ICreateAccountJourneyService createAccountJourneyService,
-    EcfLinkGenerator linkGenerator,
-    IEditAccountJourneyService editAccountJourneyService
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty]
@@ -36,19 +34,6 @@ public class SelectAccountType(
         return Page();
     }
 
-    public async Task<IActionResult> OnGetEditAsync(Guid id)
-    {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-        {
-            return NotFound();
-        }
-
-        BackLinkPath = linkGenerator.ViewAccountDetails(id);
-        EditAccountId = id;
-
-        return Page();
-    }
-
     public IActionResult OnPost()
     {
         if (!ModelState.IsValid)
@@ -65,33 +50,5 @@ public class SelectAccountType(
         }
         createAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
         return Redirect(linkGenerator.AddAccountDetails());
-    }
-
-    public async Task<IActionResult> OnPostEditAsync(Guid id)
-    {
-        if (!ModelState.IsValid)
-        {
-            BackLinkPath = linkGenerator.ViewAccountDetails(id);
-            return Page();
-        }
-
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-        {
-            return NotFound();
-        }
-
-        await editAccountJourneyService.SetIsStaffAsync(id, IsStaff);
-
-        if (IsStaff is true)
-        {
-            return Redirect(linkGenerator.EditUseCase(id));
-        }
-
-        await editAccountJourneyService.SetAccountTypesAsync(
-            id,
-            [AccountType.EarlyCareerSocialWorker]
-        );
-        await editAccountJourneyService.CompleteJourneyAsync(id);
-        return Redirect(linkGenerator.ViewAccountDetails(id));
     }
 }

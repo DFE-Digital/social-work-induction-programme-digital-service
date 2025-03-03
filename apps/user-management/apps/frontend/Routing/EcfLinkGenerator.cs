@@ -66,24 +66,10 @@ public abstract class EcfLinkGenerator(
 
     public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
 
-    public string EditAccountType(Guid id) =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/SelectAccountType",
-            handler: "Edit",
-            routeValues: new { id }
-        );
-
     public string AddSomeoneNew() =>
         GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
 
     public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
-
-    public string EditUseCase(Guid id) =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/SelectUseCase",
-            handler: "Edit",
-            routeValues: new { id }
-        );
 
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
 

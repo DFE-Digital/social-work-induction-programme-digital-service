@@ -15,8 +15,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<SelectUseCase> validator,
-    EcfLinkGenerator linkGenerator,
-    IEditAccountJourneyService editAccountJourneyService
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty]
@@ -28,19 +27,6 @@ public class SelectUseCase(
     {
         BackLinkPath = linkGenerator.SelectAccountType();
         SelectedAccountTypes = createAccountJourneyService.GetAccountTypes();
-        return Page();
-    }
-
-    public async Task<IActionResult> OnGetEditAsync(Guid id)
-    {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-        {
-            return NotFound();
-        }
-
-        BackLinkPath = linkGenerator.EditAccountType(id);
-        EditAccountId = id;
-
         return Page();
     }
 
@@ -57,27 +43,5 @@ public class SelectUseCase(
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
 
         return Redirect(linkGenerator.AddAccountDetails());
-    }
-
-    public async Task<IActionResult> OnPostEditAsync(Guid id)
-    {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-        {
-            return NotFound();
-        }
-
-        var validationResult = await validator.ValidateAsync(this);
-        if (SelectedAccountTypes is null || !validationResult.IsValid)
-        {
-            validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EditAccountType(id);
-            EditAccountId = id;
-            return Page();
-        }
-
-        await editAccountJourneyService.SetAccountTypesAsync(id, SelectedAccountTypes);
-        await editAccountJourneyService.CompleteJourneyAsync(id);
-
-        return Redirect(linkGenerator.ViewAccountDetails(id));
     }
 }
