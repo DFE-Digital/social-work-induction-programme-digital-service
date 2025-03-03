@@ -13,4 +13,5 @@ resource "azurerm_container_registry" "acr" {
   #checkov:skip=CKV_AZURE_165:Geo-replication not needed and not available on Basic SKU
   #checkov:skip=CKV_AZURE_166:Image quarantine not available on Basic SKU
   #checkov:skip=CKV_AZURE_167:Retention policy not available on Basic SKU
+  #checkov:skip=CKV_AZURE_139:Disable public network access not available on Basic SKU
 }
