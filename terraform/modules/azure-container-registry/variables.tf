@@ -23,11 +23,6 @@ variable "acr_sku" {
   type        = string
 }
 
-variable "public_network_access_enabled" {
-  description = "Is public network access enabled"
-  type        = string
-}
-
 variable "admin_enabled" {
   description = "Is ACR admin enabled?"
   type        = string

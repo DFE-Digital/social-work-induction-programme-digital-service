@@ -4,8 +4,7 @@ resource "azurerm_container_registry" "acr" {
   location            = var.location
   sku                 = var.acr_sku
   admin_enabled       = var.admin_enabled
-  #public_network_access_enabled = var.public_network_access_enabled
-  tags = var.tags
+  tags                = var.tags
 
   #checkov:skip=CKV_AZURE_164:Content Trusted images not available on Basic SKU
   #checkov:skip=CKV_AZURE_237:Dedicate data endpoint not available on Basic SKU
