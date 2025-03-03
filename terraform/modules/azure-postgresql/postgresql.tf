@@ -74,4 +74,8 @@ resource "azurerm_key_vault_secret" "database_password" {
   key_vault_id    = var.kv_id
   content_type    = "password"
   expiration_date = local.expiration_date
+
+  lifecycle {
+    ignore_changes = [value, expiration_date]
+  }
 }
