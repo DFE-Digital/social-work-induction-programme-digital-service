@@ -53,7 +53,8 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
     ignore_changes = [
       tags["Environment"],
       tags["Product"],
-      tags["Service Offering"]
+      tags["Service Offering"],
+      password
     ]
   }
 
