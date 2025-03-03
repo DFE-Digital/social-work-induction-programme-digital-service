@@ -40,9 +40,9 @@ jobs:
           echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
 
       - name: "Login to ACR"
-        uses: azure/docker-login@v1
+        uses: azure/docker-login@v3
         with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.AZ_CLIENT_ID }}
           password: ${{ secrets.AZ_CLIENT_SECRET }}
 
