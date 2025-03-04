@@ -61,6 +61,7 @@ module "postgres" {
   vnet_name            = module.network.vnet_name
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
+  tags                 = local.common_tags
 }
 
 module "frontdoor" {
@@ -71,4 +72,15 @@ module "frontdoor" {
   resource_group       = azurerm_resource_group.rg.name
   default_hostname     = module.webapp.default_hostname
   depends_on           = [module.webapp]
+}
+
+module "acr" {
+  source = "./modules/azure-container-registry"
+
+  resource_name_prefix = var.resource_name_prefix
+  resource_group       = azurerm_resource_group.rg.name
+  location             = var.azure_region
+  acr_sku              = var.acr_sku
+  tags                 = local.common_tags
+  admin_enabled        = var.admin_enabled
 }

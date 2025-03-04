@@ -7,6 +7,7 @@ jobs:
   set-env:
     runs-on: ubuntu-24.04
     name: Set Environment Values
+    environment: Dev
     outputs:
       branch: ${{ steps.var.outputs.branch }}
       checked-out-sha: ${{ steps.var.outputs.checked-out-sha }}

@@ -18,6 +18,16 @@ resource "azurerm_subnet" "postgres_sn" {
 resource "azurerm_private_dns_zone" "private_dns" {
   name                = "pvtswipdb.postgres.database.azure.com"
   resource_group_name = var.resource_group
+
+  tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
@@ -26,6 +36,15 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
   virtual_network_id    = var.vnet_id
   resource_group_name   = var.resource_group
   depends_on            = [azurerm_subnet.postgres_sn]
+  tags                  = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
 }
 
 resource "random_password" "password" {
@@ -53,7 +72,8 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
     ignore_changes = [
       tags["Environment"],
       tags["Product"],
-      tags["Service Offering"]
+      tags["Service Offering"],
+      administrator_password
     ]
   }
 
@@ -73,4 +93,8 @@ resource "azurerm_key_vault_secret" "database_password" {
   key_vault_id    = var.kv_id
   content_type    = "password"
   expiration_date = local.expiration_date
+
+  lifecycle {
+    ignore_changes = [value, expiration_date]
+  }
 }

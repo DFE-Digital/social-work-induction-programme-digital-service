@@ -20,12 +20,12 @@ concurrency:
 
 env:
   DOCKER_IMAGE: social-work-induction-programme-digital-service
-  GITHUB_CONTAINER_REGISTRY: ghcr.io
   ORG_NAME: dfe-digital
 
 jobs:
   build-image:
     runs-on: ubuntu-24.04
+    environment: Dev
     name: Build & Publish Image
     outputs:
       dockerImageTag: ${{ steps.image.outputs.dockerImageTag }}
@@ -35,28 +35,28 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: GitHub Container Registry Login
+      - name: Azure Container Registry Login
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.GITHUB_CONTAINER_REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.AZ_CLIENT_ID }}
+          password: ${{ secrets.AZ_CLIENT_SECRET }}
 
       - name: Format branch name
         run: |
           branchName=${{ inputs.branch }}
           echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
 
-      - name: Build Image & Publish To GCR
+      - name: "Build the image and deploy to ACR"
         uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./moodle-docker/Dockerfile
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
-            ${{ env.GITHUB_CONTAINER_REGISTRY }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
           push: true
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ env.GITHUB_CONTAINER_REGISTRY }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "dockerImageTag=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT

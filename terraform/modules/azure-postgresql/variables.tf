@@ -37,3 +37,8 @@ variable "days_to_expire" {
   description = "The number of days to add for password expiration"
   type        = string
 }
+
+variable "tags" {
+  description = "Resource tags"
+  type        = map(string)
+}
