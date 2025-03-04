@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +18,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator,
-    EcfLinkGenerator linkGenerator,
-    ISocialWorkEnglandService socialWorkEnglandService
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     /// <summary>
@@ -100,31 +97,9 @@ public class AddAccountDetails(
             return Page();
         }
 
-        var socialWorker = await socialWorkEnglandService.GetByIdAsync(SocialWorkEnglandNumber);
-
-        if (!string.IsNullOrWhiteSpace(SocialWorkEnglandNumber) && socialWorker is null)
-        {
-            ModelState.AddModelError(
-                nameof(SocialWorkEnglandNumber),
-                "Failed to retrieve Social Work England record. Please try again later."
-            );
-            return Page();
-        }
-
-        string redirectLink;
-        if (socialWorker is null)
-        {
-            redirectLink = linkGenerator.ConfirmAccountDetails();
-        }
-        else
-        {
-            createAccountJourneyService.SetSocialWorkerDetails(socialWorker);
-            redirectLink = linkGenerator.AddExistingUser();
-        }
-
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect(redirectLink);
+        return Redirect(linkGenerator.ConfirmAccountDetails());
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

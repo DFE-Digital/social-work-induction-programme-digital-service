@@ -1,9 +1,7 @@
 using System.Collections.Immutable;
-using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -23,8 +21,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut = new AddAccountDetails(
             MockCreateAccountJourneyService.Object,
             new AccountDetailsValidator(),
-            new FakeLinkGenerator(),
-            MockSocialWorkEnglandService.Object
+            new FakeLinkGenerator()
         );
     }
 
@@ -87,37 +84,23 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         VerifyAllNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData("1")]
-    [InlineData(null)]
-    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmAccountDetails(
-        string? sweId
-    )
+    [Fact]
+    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmAccountDetails()
     {
         // Arrange
+        var sweId = "1";
         var account = AccountBuilder
             .WithSocialWorkEnglandNumber(sweId)
             .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
-        var socialWorker = sweId is null ? null : new SocialWorker();
         Sut.FirstName = accountDetails.FirstName;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;
         Sut.SocialWorkEnglandNumber = sweId;
 
         MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
-        MockSocialWorkEnglandService
-            .Setup(x => x.GetByIdAsync(sweId))
-            .ReturnsAsync(sweId is null ? null : socialWorker);
-        if (socialWorker != null)
-        {
-            MockCreateAccountJourneyService.Setup(x =>
-                x.SetSocialWorkerDetails(MoqHelpers.ShouldBeEquivalentTo(socialWorker))
-            );
-        }
-
         MockCreateAccountJourneyService.Setup(x =>
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
@@ -130,24 +113,9 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!
-            .Url.Should()
-            .Be(
-                sweId is null
-                    ? "/manage-accounts/confirm-account-details"
-                    : "/manage-accounts/add-existing-user"
-            );
+        redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        MockSocialWorkEnglandService.Verify(x => x.GetByIdAsync(sweId), Times.Once);
-        if (socialWorker != null)
-        {
-            MockCreateAccountJourneyService.Verify(
-                x => x.SetSocialWorkerDetails(MoqHelpers.ShouldBeEquivalentTo(socialWorker)),
-                Times.Once
-            );
-        }
-
         MockCreateAccountJourneyService.Verify(
             x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
@@ -180,44 +148,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task Post_WhenSocialWorkerReturnsNull_ReturnsErrors()
-    {
-        // Arrange
-        var sweId = "123";
-        var accountDetails = new AccountDetailsFaker().Generate();
-        Sut.FirstName = accountDetails.FirstName;
-        Sut.LastName = accountDetails.LastName;
-        Sut.Email = accountDetails.Email;
-        Sut.SocialWorkEnglandNumber = sweId;
-
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
-
-        MockSocialWorkEnglandService
-            .Setup(x => x.GetByIdAsync(sweId))
-            .ReturnsAsync((SocialWorker?)null);
-
-        // Act
-        var result = await Sut.OnPostAsync();
-
-        // Assert
-        result.Should().BeOfType<PageResult>();
-
-        var modelState = Sut.ModelState;
-        var modelStateKeys = modelState.Keys.ToList();
-        modelStateKeys.Count.Should().Be(1);
-        modelStateKeys.Should().Contain(nameof(Sut.SocialWorkEnglandNumber));
-        modelState[nameof(Sut.SocialWorkEnglandNumber)]!.Errors.Count.Should().Be(1);
-        modelState[nameof(Sut.SocialWorkEnglandNumber)]!
-            .Errors[0]
-            .ErrorMessage.Should()
-            .Be("Failed to retrieve Social Work England record. Please try again later.");
-
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        MockSocialWorkEnglandService.Verify(x => x.GetByIdAsync(sweId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
