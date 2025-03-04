@@ -3,37 +3,47 @@
 This repository houses the core digital service for the Social Work Induction programme in children's social care. The digital service is based on [Moodle LMS](https://moodle.org).
 
 ## Local development setup
-The `moodle-docker` image in this repository builds on the [official Moodle PHP-apache image](https://github.com/moodlehq/moodle-php-apache). There is a `compose.yml` that contains the necessary containers to run the service locally via `docker compose`.
-For local development, a `development.env` file which is referenced in the `compose.yml` defines values for the various environment variables needed to run the service and it's accompanying database.
+The `moodle-docker` image in this repository builds on the [official Moodle PHP-apache image](https://github.com/moodlehq/moodle-php-apache). 
+The configuration files in the .ddev directory provide a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
 
-To simplify local development, a `justfile` contains various scripts for building, starting, and configuring the service.
+The primary custom command, install-moodle, bundles all installation steps into a single command. It performs the following tasks:
 
+- Runs Moodle’s CLI installer.
+- Downloads and installs the govuk theme into the correct directory.
+- Updates config.php to set the default theme to govuk.
+- Purges Moodle caches so that changes take effect immediately.
 ---
 ### Windows Setup
-You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`. You will now need to install [Just](https://github.com/casey/just) to access the justfile commands, alternatively you can run the docker commands.
+You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`. 
 
-#### Just Installation
-In order to use the scripts in the `justfile`, you will need to install [just](https://github.com/casey/just) in your development environment.
-It's recommended to install [Homebrew](https://brew.sh/), a package management system. To do this open the WSL terminal and run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`.
-
-Followed by these commands:
-```
-test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.bashrc
-```
-
-To finalise the install of Brew you need to run the  `brew install gcc`. Once this command has successfully ran you can now install Just by running `brew install just`. Once the command finished you can run `just --version` to confirm that Just is installed and working.
+### DDEV Installation
+Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
 
 ---
-
 ### Running the service
-Once you have `just` installed you will be able to run the commands in the `justfile`.
-- `just start` to start Moodle.
-- `just stop` to stop Moodle.
-- `just clean` will stop the service and prune the volumes from docker.
-- `just install-moodle` to install/configure moodle. This is only needed on the first run.
-- `just build` will force rebuild the moodle-docker image.
+After configuring your project with DDEV, follow these steps from this project’s `moodle-app` directory:
+
+Configure DDEV with both the composer root and document root set to public:
+
+- `ddev config --composer-root=public --docroot=public --webserver-type=apache-fpm --database=postgres:14 --project-name=moodle`
+
+Start your DDEV environment:
+
+- `ddev start`
+
+Use Composer to create a new Moodle installation:
+
+- `ddev composer create moodle/moodle`
+
+Use the custom DDEV commands to perform the full installation, theme import, configuration update, and cache purge:
+
+- `ddev install-moodle`
+- `ddev install-theme`
+
+Finally, launch your Moodle site in your default web browser:
+
+- `ddev launch /login`
+
 
 ### Moodle Configuration
-
-When running the service via docker compose, the `config.php` file in `moodle-docker` is mapped to Moodle's own `config.php` in the webroot of the container. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).
+When running the service via DDEV, the `config.php` file is located in the `public` dir. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).

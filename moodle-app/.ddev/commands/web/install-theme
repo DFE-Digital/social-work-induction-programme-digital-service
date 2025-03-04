@@ -1,0 +1,47 @@
+#!/bin/bash
+# .ddev/commands/web/install-theme
+# This command updates the govuk theme for Moodle.
+# It downloads and installs a govuk theme release.
+# Usage:
+#   ddev install-theme           # Uses the default release 2024200800
+#   ddev install-theme 2025010100  # Uses the specified release version
+#
+# The script then updates config.php to set the theme to govuk and purges Moodle caches.
+
+set -e
+
+# Default release if no argument is provided.
+RELEASE=${1:-2024200800}
+
+THEME_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/${RELEASE}/govuk-moodle-theme.zip"
+
+echo "Downloading and installing govuk theme release ${RELEASE} from ${THEME_URL}..."
+rm -rf /tmp/theme
+curl -L -o /tmp/govuk-moodle-theme.zip "$THEME_URL"
+unzip -o /tmp/govuk-moodle-theme.zip -d /tmp/theme
+
+# Remove the old govuk directory if it exists
+if [ -d "/var/www/html/public/theme/govuk" ]; then
+  rm -rf /var/www/html/public/theme/govuk
+fi
+
+mkdir -p /var/www/html/public/theme
+mv /tmp/theme/govuk/ /var/www/html/public/theme/govuk
+rm -rf /tmp/govuk-moodle-theme.zip /tmp/theme
+echo "Govuk theme updated to release ${RELEASE}."
+
+echo "Updating config.php to set theme to govuk..."
+CONFIG_FILE="/var/www/html/public/config.php"
+if grep -q "\$CFG->theme" "$CONFIG_FILE"; then
+  sed -i "s/\(\$CFG->theme\s*=\s*\).*/\1'govuk';/" "$CONFIG_FILE"
+else
+  echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
+fi
+
+echo "Running Moodle upgrade..."
+php public/admin/cli/upgrade.php --non-interactive
+
+echo "Purging Moodle caches..."
+php public/admin/cli/purge_caches.php
+
+echo "Theme install complete."

@@ -1,0 +1,6 @@
+public/
+moodledata/
+
+.ddev/*
+!.ddev/commands/
+!.ddev/commands/web/*

@@ -1,0 +1,26 @@
+#!/bin/bash
+# .ddev/commands/web/install-moodle
+# This script performs a full Moodle installation:
+# 1. Runs the CLI installer.
+# 2. Downloads and installs the govuk theme.
+# 3. Updates config.php to set the govuk theme.
+# 4. Purges Moodle caches.
+
+set -e
+
+echo "Starting Moodle CLI installation..."
+php public/admin/cli/install.php \
+  --non-interactive \
+  --agree-license \
+  --wwwroot="$DDEV_PRIMARY_URL" \
+  --dbtype=pgsql \
+  --dbhost=db \
+  --dbname=db \
+  --dbuser=db \
+  --dbpass=db \
+  --fullname="Social Work Induction Programme" \
+  --shortname=SWIP \
+  --adminpass=password \
+  --adminemail=admin@example.com
+
+echo "Moodle installation complete."
