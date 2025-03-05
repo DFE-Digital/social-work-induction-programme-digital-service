@@ -15,7 +15,7 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1(@babel/core@7.25.2)(eslint@8.57.0)(ts-node@10.9.2(@types/node@20.16.5)(typescript@5.6.2))(webpack@5.94.0)
       govuk-frontend:
-        specifier: ^5.4.1
+        specifier: ^5.6.0
         version: 5.6.0
       playwright:
         specifier: ^1.47.1
@@ -9327,7 +9327,7 @@ snapshots:
       escape-html: 1.0.3
       escape-string-regexp: 1.0.5
       escodegen: 2.1.0
-      eslint-config-airbnb-base: 14.2.1(eslint-plugin-import@2.30.0(eslint@8.57.0)(supports-color@5.5.0))(eslint@8.57.0)
+      eslint-config-airbnb-base: 14.2.1(eslint-plugin-import@2.30.0(eslint@8.57.0))(eslint@8.57.0)
       eslint-import-resolver-node: 0.3.9(supports-color@5.5.0)
       eslint-module-utils: 2.11.0(eslint-import-resolver-node@0.3.9(supports-color@5.5.0))(eslint@8.57.0)(supports-color@5.5.0)
       eslint-plugin-import: 2.30.0(eslint@8.57.0)(supports-color@5.5.0)
@@ -9536,7 +9536,7 @@ snapshots:
       jest-environment-node: 26.6.2
       jest-get-type: 26.3.0
       jest-haste-map: 26.6.2(supports-color@5.5.0)
-      jest-jasmine2: 26.6.3(supports-color@5.5.0)(ts-node@10.9.2(@types/node@20.16.5)(typescript@5.6.2))
+      jest-jasmine2: 26.6.3(supports-color@5.5.0)
       jest-leak-detector: 26.6.2
       jest-matcher-utils: 26.6.2
       jest-message-util: 26.6.2
@@ -9730,7 +9730,7 @@ snapshots:
       portfinder: 1.0.32(supports-color@5.5.0)
       posix-character-classes: 0.1.1
       postcss: 7.0.39
-      postcss-html: 0.36.0(postcss-syntax@0.36.2)(postcss@7.0.39)
+      postcss-html: 0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39)
       postcss-less: 3.1.4
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.6
@@ -9739,7 +9739,7 @@ snapshots:
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.1.2
       postcss-sorting: 5.0.1
-      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
       postcss-value-parser: 4.2.0
       prelude-ls: 1.2.1
       pretty-format: 26.6.2
@@ -10316,7 +10316,7 @@ snapshots:
     optionalDependencies:
       source-map: 0.6.1
 
-  eslint-config-airbnb-base@14.2.1(eslint-plugin-import@2.30.0(eslint@8.57.0)(supports-color@5.5.0))(eslint@8.57.0):
+  eslint-config-airbnb-base@14.2.1(eslint-plugin-import@2.30.0(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       confusing-browser-globals: 1.0.11
       eslint: 8.57.0
@@ -11648,7 +11648,7 @@ snapshots:
       jest-environment-jsdom: 26.6.2(supports-color@5.5.0)
       jest-environment-node: 26.6.2
       jest-get-type: 26.3.0
-      jest-jasmine2: 26.6.3(supports-color@5.5.0)(ts-node@10.9.2(@types/node@20.16.5)(typescript@5.6.2))
+      jest-jasmine2: 26.6.3(supports-color@5.5.0)
       jest-regex-util: 26.0.0
       jest-resolve: 26.6.2
       jest-util: 26.6.2
@@ -11737,7 +11737,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jest-jasmine2@26.6.3(supports-color@5.5.0)(ts-node@10.9.2(@types/node@20.16.5)(typescript@5.6.2)):
+  jest-jasmine2@26.6.3(supports-color@5.5.0):
     dependencies:
       '@babel/traverse': 7.25.6(supports-color@5.5.0)
       '@jest/environment': 26.6.2
@@ -11758,11 +11758,7 @@ snapshots:
       pretty-format: 26.6.2
       throat: 5.0.0
     transitivePeerDependencies:
-      - bufferutil
-      - canvas
       - supports-color
-      - ts-node
-      - utf-8-validate
 
   jest-leak-detector@26.6.2:
     dependencies:
@@ -12912,11 +12908,11 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-html@0.36.0(postcss-syntax@0.36.2)(postcss@7.0.39):
+  postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39):
     dependencies:
       htmlparser2: 3.10.1
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39)
 
   postcss-less@3.1.4:
     dependencies:
@@ -12949,11 +12945,11 @@ snapshots:
       lodash: 4.17.21
       postcss: 7.0.39
 
-  postcss-syntax@0.36.2(postcss-html@0.36.0)(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
+  postcss-syntax@0.36.2(postcss-html@0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39))(postcss-less@3.1.4)(postcss-scss@2.1.1)(postcss@7.0.39):
     dependencies:
       postcss: 7.0.39
     optionalDependencies:
-      postcss-html: 0.36.0(postcss-syntax@0.36.2)(postcss@7.0.39)
+      postcss-html: 0.36.0(postcss-syntax@0.36.2(postcss@7.0.39))(postcss@7.0.39)
       postcss-less: 3.1.4
       postcss-scss: 2.1.1
 

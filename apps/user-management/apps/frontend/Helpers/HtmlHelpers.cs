@@ -7,7 +7,7 @@ public static class HtmlHelpers
     public static string IsActive(
         this IHtmlHelper html,
         string page,
-        string cssClass = "dfe-header__navigation-item--current"
+        string cssClass = "service-header__nav-list-item--active"
     )
     {
         var currentPage = html.ViewContext.RouteData.Values["page"]?.ToString();

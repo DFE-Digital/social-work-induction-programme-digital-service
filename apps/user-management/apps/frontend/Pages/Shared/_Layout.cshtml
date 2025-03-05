@@ -25,13 +25,22 @@
 
     @Html.GovUkFrontendStyleImports()
 
-    <link rel="stylesheet" href="~/govuk/dfefrontend-2.0.0.min.css" asp-add-nonce="true">
+    <link rel="stylesheet" href="~/govuk/service-header.css" asp-add-nonce="true">
 
     @await RenderSectionAsync("Styles", required: false)
 }
 
 @section Header {
-    <partial name="_Header"/>
+    @{
+        if (Context.User.Identity?.IsAuthenticated == true)
+        {
+            <partial name="_AuthenticatedHeader"/>
+        }
+        else
+        {
+            <partial name="_Header"/>
+        }
+    }
 
     @await RenderSectionAsync("Header", false)
 }
@@ -100,6 +109,4 @@
 
     <script src="~/js/site.js" asp-add-nonce="true" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
-    <script type="module" src="~/govuk/dfefrontend-2.0.0.min.js" asp-add-nonce="true"></script>
 }
