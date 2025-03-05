@@ -40,7 +40,7 @@ resource "azurerm_user_assigned_identity" "webapp_identity" {
 }
 
 resource "azurerm_role_assignment" "acr_pull_webapp" {
-  scope                = var.acr.id
+  scope                = var.acr_id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.webapp_identity.principal_id
 }
