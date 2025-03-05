@@ -62,3 +62,8 @@ variable "kv_id" {
   description = "ID of the Key Vault"
   type        = string
 }
+
+variable "acr_id" {
+  description = "The ID of the ACR"
+  type        = string
+}

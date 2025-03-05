@@ -33,6 +33,18 @@ resource "azurerm_application_insights" "web" {
   }
 }
 
+resource "azurerm_user_assigned_identity" "webapp_identity" {
+  name                = "webapp-identity"
+  resource_group_name = var.resource_group
+  location            = var.location
+}
+
+resource "azurerm_role_assignment" "acr_pull_webapp" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.webapp_identity.principal_id
+}
+
 # Create App Service Plan
 resource "azurerm_service_plan" "asp" {
   name                = "${var.resource_name_prefix}-asp"
@@ -62,7 +74,8 @@ resource "azurerm_linux_web_app" "webapp" {
   service_plan_id     = azurerm_service_plan.asp.id
   https_only          = true
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.webapp_identity.id]
   }
 
   site_config {
@@ -82,10 +95,7 @@ resource "azurerm_linux_web_app" "webapp" {
     health_check_path                 = "/health"
     health_check_eviction_time_in_min = 5
 
-    application_stack {
-      docker_image_name   = "${var.webapp_docker_image}:${var.webapp_docker_image_tag}"
-      docker_registry_url = var.webapp_docker_registry_url
-    }
+    linux_fx_version = "DOCKER|${var.webapp_docker_registry_url}/${var.webapp_docker_image}:${var.webapp_docker_image_tag}"
   }
 
   sticky_settings {

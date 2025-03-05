@@ -34,6 +34,17 @@ module "storage" {
   tags                        = local.common_tags
 }
 
+module "acr" {
+  source = "./modules/azure-container-registry"
+
+  resource_name_prefix = var.resource_name_prefix
+  resource_group       = azurerm_resource_group.rg.name
+  location             = var.azure_region
+  acr_sku              = var.acr_sku
+  tags                 = local.common_tags
+  admin_enabled        = var.admin_enabled
+}
+
 # Create web application resources
 module "webapp" {
   source = "./modules/azure-web"
@@ -51,7 +62,8 @@ module "webapp" {
   webapp_docker_image        = var.webapp_docker_image
   webapp_docker_image_tag    = var.webapp_docker_image_tag
   webapp_docker_registry_url = var.webapp_docker_registry_url
-  depends_on                 = [module.network]
+  acr_id                     = module.acr.acr_id
+  depends_on                 = [module.network, module.acr]
 }
 
 module "postgres" {
@@ -78,13 +90,4 @@ module "frontdoor" {
   depends_on           = [module.webapp]
 }
 
-module "acr" {
-  source = "./modules/azure-container-registry"
 
-  resource_name_prefix = var.resource_name_prefix
-  resource_group       = azurerm_resource_group.rg.name
-  location             = var.azure_region
-  acr_sku              = var.acr_sku
-  tags                 = local.common_tags
-  admin_enabled        = var.admin_enabled
-}
