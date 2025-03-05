@@ -124,13 +124,6 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
 }
 
-resource "azurerm_role_assignment" "acr_pull_webapp" {
-  scope                = var.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
-}
-
-
 resource "azurerm_monitor_diagnostic_setting" "webapp_logs_monitor" {
 
   name                       = "${var.resource_name_prefix}-webapp-mon"

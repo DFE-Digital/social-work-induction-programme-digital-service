@@ -49,21 +49,17 @@ module "acr" {
 module "webapp" {
   source = "./modules/azure-web"
 
-  environment                = var.environment
-  location                   = var.azure_region
-  resource_group             = azurerm_resource_group.rg.name
-  resource_name_prefix       = var.resource_name_prefix
-  asp_sku                    = var.asp_sku
-  webapp_worker_count        = var.webapp_worker_count
-  webapp_name                = var.webapp_name
-  webapp_app_settings        = local.webapp_app_settings
-  tags                       = local.common_tags
-  kv_id                      = module.network.kv_id
-  webapp_docker_image        = var.webapp_docker_image
-  webapp_docker_image_tag    = var.webapp_docker_image_tag
-  webapp_docker_registry_url = var.webapp_docker_registry_url
-  acr_id                     = module.acr.acr_id
-  depends_on                 = [module.network, module.acr]
+  environment          = var.environment
+  location             = var.azure_region
+  resource_group       = azurerm_resource_group.rg.name
+  resource_name_prefix = var.resource_name_prefix
+  asp_sku              = var.asp_sku
+  webapp_worker_count  = var.webapp_worker_count
+  webapp_name          = var.webapp_name
+  webapp_app_settings  = local.webapp_app_settings
+  tags                 = local.common_tags
+  kv_id                = module.network.kv_id
+  depends_on           = [module.network]
 }
 
 module "postgres" {
