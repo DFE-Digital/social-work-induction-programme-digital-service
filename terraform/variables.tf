@@ -50,3 +50,18 @@ variable "admin_enabled" {
   description = "Is ACR admin enabled?"
   type        = string
 }
+
+variable "webapp_docker_image" {
+  description = "docker image name"
+  type        = string
+}
+
+variable "webapp_docker_image_tag" {
+  description = "docker image tag"
+  type        = string
+}
+
+variable "webapp_docker_registry_url" {
+  description = "Container Registry URL"
+  type        = string
+}

@@ -81,6 +81,11 @@ resource "azurerm_linux_web_app" "webapp" {
 
     health_check_path                 = "/health"
     health_check_eviction_time_in_min = 5
+
+    application_stack {
+      docker_image_name   = "${var.webapp_docker_image}:${var.webapp_docker_image_tag}"
+      docker_registry_url = var.webapp_docker_registry_url
+    }
   }
 
   sticky_settings {
@@ -144,5 +149,27 @@ resource "azurerm_monitor_diagnostic_setting" "webapp_logs_monitor" {
 
   lifecycle {
     ignore_changes = [metric]
+  }
+}
+
+data "azurerm_client_config" "az_config" {}
+
+# References the web app to be used in KV access policy as it already existed when changes needed to be made
+data "azurerm_linux_web_app" "ref" {
+  name                = azurerm_linux_web_app.webapp.name
+  resource_group_name = azurerm_linux_web_app.webapp.resource_group_name
+}
+
+# Grants permissions to key vault for the managed identity of the App Service
+resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
+  key_vault_id            = var.kv_id
+  tenant_id               = data.azurerm_client_config.az_config.tenant_id
+  object_id               = data.azurerm_linux_web_app.ref.identity.0.principal_id
+  key_permissions         = ["Get", "UnwrapKey", "WrapKey"]
+  secret_permissions      = ["Get", "List"]
+  certificate_permissions = ["Get"]
+
+  lifecycle {
+    ignore_changes = [object_id, tenant_id]
   }
 }

@@ -42,3 +42,23 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "webapp_docker_image" {
+  description = "docker image name"
+  type        = string
+}
+
+variable "webapp_docker_image_tag" {
+  description = "docker image tag"
+  type        = string
+}
+
+variable "webapp_docker_registry_url" {
+  description = "Container Registry URL"
+  type        = string
+}
+
+variable "kv_id" {
+  description = "ID of the Key Vault"
+  type        = string
+}
