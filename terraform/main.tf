@@ -59,7 +59,8 @@ module "webapp" {
   webapp_app_settings  = local.webapp_app_settings
   tags                 = local.common_tags
   kv_id                = module.network.kv_id
-  depends_on           = [module.network]
+  acr_id               = module.acr.acr_id
+  depends_on           = [module.network, module.acr]
 }
 
 module "postgres" {
