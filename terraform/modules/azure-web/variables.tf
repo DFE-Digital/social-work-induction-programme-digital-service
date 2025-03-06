@@ -42,3 +42,8 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "kv_id" {
+  description = "ID of the Key Vault"
+  type        = string
+}

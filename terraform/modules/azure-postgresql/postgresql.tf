@@ -78,6 +78,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   }
 
   #checkov:skip=CKV_AZURE_136:Geo-redundant backups not required
+  #checkov:skip=CKV2_AZURE_57:Private link not required as using nsg
 }
 
 locals {

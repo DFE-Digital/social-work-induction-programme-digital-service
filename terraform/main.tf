@@ -34,6 +34,17 @@ module "storage" {
   tags                        = local.common_tags
 }
 
+module "acr" {
+  source = "./modules/azure-container-registry"
+
+  resource_name_prefix = var.resource_name_prefix
+  resource_group       = azurerm_resource_group.rg.name
+  location             = var.azure_region
+  acr_sku              = var.acr_sku
+  tags                 = local.common_tags
+  admin_enabled        = var.admin_enabled
+}
+
 # Create web application resources
 module "webapp" {
   source = "./modules/azure-web"
@@ -47,6 +58,7 @@ module "webapp" {
   webapp_name          = var.webapp_name
   webapp_app_settings  = local.webapp_app_settings
   tags                 = local.common_tags
+  kv_id                = module.network.kv_id
   depends_on           = [module.network]
 }
 
@@ -74,13 +86,4 @@ module "frontdoor" {
   depends_on           = [module.webapp]
 }
 
-module "acr" {
-  source = "./modules/azure-container-registry"
 
-  resource_name_prefix = var.resource_name_prefix
-  resource_group       = azurerm_resource_group.rg.name
-  location             = var.azure_region
-  acr_sku              = var.acr_sku
-  tags                 = local.common_tags
-  admin_enabled        = var.admin_enabled
-}
