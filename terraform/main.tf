@@ -34,16 +34,6 @@ module "storage" {
   tags                        = local.common_tags
 }
 
-module "acr" {
-  source = "./modules/azure-container-registry"
-
-  resource_name_prefix = var.resource_name_prefix
-  resource_group       = azurerm_resource_group.rg.name
-  location             = var.azure_region
-  acr_sku              = var.acr_sku
-  tags                 = local.common_tags
-  admin_enabled        = var.admin_enabled
-}
 
 module "postgres" {
   source = "./modules/azure-postgresql"
@@ -57,6 +47,19 @@ module "postgres" {
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
   tags                 = local.common_tags
+  depends_on           = [module.network]
+}
+
+module "acr" {
+  source = "./modules/azure-container-registry"
+
+  resource_name_prefix = var.resource_name_prefix
+  resource_group       = azurerm_resource_group.rg.name
+  location             = var.azure_region
+  acr_sku              = var.acr_sku
+  tags                 = local.common_tags
+  admin_enabled        = var.admin_enabled
+  depends_on           = [module.network]
 }
 
 # Create web application resources
@@ -75,7 +78,7 @@ module "webapp" {
   kv_id                 = module.network.kv_id
   moodle_db_name        = var.moodle_db_name
   postgres_username     = module.postgres.postgres_username
-  postgres_secret       = module.postgres.postgres_secret_uri
+  postgres_secret_uri   = module.postgres.postgres_secret_uri
   moodle_db_type        = var.moodle_db_type
   moodle_db_host        = module.postgres.postgres_db_host
   moodle_db_prefix      = var.moodle_db_prefix
@@ -97,5 +100,3 @@ module "frontdoor" {
   default_hostname     = module.webapp.default_hostname
   depends_on           = [module.webapp]
 }
-
-
