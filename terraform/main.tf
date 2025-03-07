@@ -45,24 +45,6 @@ module "acr" {
   admin_enabled        = var.admin_enabled
 }
 
-# Create web application resources
-module "webapp" {
-  source = "./modules/azure-web"
-
-  environment          = var.environment
-  location             = var.azure_region
-  resource_group       = azurerm_resource_group.rg.name
-  resource_name_prefix = var.resource_name_prefix
-  asp_sku              = var.asp_sku
-  webapp_worker_count  = var.webapp_worker_count
-  webapp_name          = var.webapp_name
-  webapp_app_settings  = local.webapp_app_settings
-  tags                 = local.common_tags
-  kv_id                = module.network.kv_id
-  acr_id               = module.acr.acr_id
-  depends_on           = [module.network, module.acr]
-}
-
 module "postgres" {
   source = "./modules/azure-postgresql"
 
@@ -75,6 +57,35 @@ module "postgres" {
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
   tags                 = local.common_tags
+}
+
+# Create web application resources
+module "webapp" {
+  source = "./modules/azure-web"
+
+  environment           = var.environment
+  location              = var.azure_region
+  resource_group        = azurerm_resource_group.rg.name
+  resource_name_prefix  = var.resource_name_prefix
+  asp_sku               = var.asp_sku
+  webapp_worker_count   = var.webapp_worker_count
+  webapp_name           = var.webapp_name
+  webapp_app_settings   = local.webapp_app_settings
+  tags                  = local.common_tags
+  kv_id                 = module.network.kv_id
+  moodle_db_name        = var.moodle_db_name
+  postgres_username     = module.postgres.postgres_username
+  postgres_secret       = module.postgres.postgres_secret_uri
+  moodle_db_type        = var.moodle_db_type
+  moodle_db_host        = module.postgres.postgres_db_host
+  moodle_db_prefix      = var.moodle_db_prefix
+  moodle_admin_user     = var.moodle_admin_user
+  moodle_admin_password = var.moodle_admin_password
+  moodle_admin_email    = var.moodle_admin_email
+  moodle_site_fullname  = var.moodle_site_fullname
+  moodle_site_shortname = var.moodle_site_shortname
+  moodle_web_port       = var.moodle_web_port
+  depends_on            = [module.network, module.postgres]
 }
 
 module "frontdoor" {
