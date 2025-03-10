@@ -62,11 +62,6 @@ variable "moodle_db_name" {
   type        = string
 }
 
-variable "moodle_db_host" {
-  description = "The hostname for the Postgresql database"
-  type        = string
-}
-
 variable "moodle_db_prefix" {
   description = "The prefix for the Moodle database"
   type        = string
