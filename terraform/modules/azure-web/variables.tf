@@ -48,11 +48,6 @@ variable "kv_id" {
   type        = string
 }
 
-variable "kv_id" {
-  description = "ID of the Key Vault"
-  type        = string
-}
-
 variable "moodle_db_name" {
   description = "The name of the postgres database"
   type        = string
