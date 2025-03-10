@@ -100,3 +100,9 @@ variable "moodle_admin_email" {
   description = "The email address to use for the admin user on Moodle"
   type        = string
 }
+
+variable "moodle_admin_password" {
+  description = "The password for Moodle admin user"
+  type        = string
+  sensitive   = true
+}

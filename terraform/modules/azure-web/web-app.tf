@@ -54,10 +54,6 @@ resource "azurerm_service_plan" "asp" {
   #checkov:skip=CKV_AZURE_225:Ensure the App Service Plan is zone redundant
 }
 
-resource "random_password" "password" {
-  length = 16
-}
-
 # Create Web Application
 resource "azurerm_linux_web_app" "webapp" {
   name                = var.webapp_name
@@ -117,7 +113,7 @@ resource "azurerm_linux_web_app" "webapp" {
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
-    "MOODLE_ADMIN_PASSWORD"               = random_password.password.result
+    "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
   }
 

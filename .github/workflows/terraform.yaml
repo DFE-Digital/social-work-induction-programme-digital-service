@@ -112,4 +112,6 @@ jobs:
       # Terraform Apply
       - name: Terraform Apply
         if: ${{ inputs.action == 'Plan & Apply' }}
+        env:
+          TF_VAR_moodle_admin_password: ${{ secrets.MOODLE_ADMIN_PASSWORD }}
         run: terraform apply -auto-approve tfplan
