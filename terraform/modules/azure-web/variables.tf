@@ -33,11 +33,6 @@ variable "webapp_name" {
   type        = string
 }
 
-variable "webapp_app_settings" {
-  description = "App Settings are exposed as environment variables"
-  type        = map(string)
-}
-
 variable "tags" {
   description = "Resource tags"
   type        = map(string)
@@ -98,11 +93,6 @@ variable "moodle_site_shortname" {
 
 variable "moodle_admin_user" {
   description = "The username for the admin account on Moodle"
-  type        = string
-}
-
-variable "moodle_admin_password" {
-  description = "The admin password for Moodle"
   type        = string
 }
 

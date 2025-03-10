@@ -94,11 +94,6 @@ variable "moodle_admin_user" {
   type        = string
 }
 
-variable "moodle_admin_password" {
-  description = "The admin password for Moodle"
-  type        = string
-}
-
 variable "moodle_admin_email" {
   description = "The email address to use for the admin user on Moodle"
   type        = string

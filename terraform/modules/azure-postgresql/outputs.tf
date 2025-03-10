@@ -3,7 +3,7 @@ output "postgres_secret_uri" {
   value       = azurerm_key_vault_secret.database_password.name
 }
 
-output "postgres_db" {
+output "postgres_db_host" {
   description = "The postgresql database server"
   value       = azurerm_private_dns_zone.private_dns.name
 }

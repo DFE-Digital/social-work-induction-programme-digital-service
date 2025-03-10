@@ -73,7 +73,6 @@ module "webapp" {
   asp_sku               = var.asp_sku
   webapp_worker_count   = var.webapp_worker_count
   webapp_name           = var.webapp_name
-  webapp_app_settings   = local.webapp_app_settings
   tags                  = local.common_tags
   kv_id                 = module.network.kv_id
   moodle_db_name        = var.moodle_db_name
@@ -83,7 +82,6 @@ module "webapp" {
   moodle_db_host        = module.postgres.postgres_db_host
   moodle_db_prefix      = var.moodle_db_prefix
   moodle_admin_user     = var.moodle_admin_user
-  moodle_admin_password = var.moodle_admin_password
   moodle_admin_email    = var.moodle_admin_email
   moodle_site_fullname  = var.moodle_site_fullname
   moodle_site_shortname = var.moodle_site_shortname

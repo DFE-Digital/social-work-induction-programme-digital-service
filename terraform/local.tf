@@ -6,11 +6,4 @@ locals {
     "Product"          = "Social Work Induction Programme"
     "Service Offering" = "Social Work Induction Programme"
   }
-
-  # Web Application Configuration
-  webapp_app_settings = {
-    "ENVIRONMENT"                         = var.environment
-    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-  }
-
 }

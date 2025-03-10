@@ -54,6 +54,10 @@ resource "azurerm_service_plan" "asp" {
   #checkov:skip=CKV_AZURE_225:Ensure the App Service Plan is zone redundant
 }
 
+resource "random_password" "password" {
+  length = 16
+}
+
 # Create Web Application
 resource "azurerm_linux_web_app" "webapp" {
   name                = var.webapp_name
@@ -83,10 +87,6 @@ resource "azurerm_linux_web_app" "webapp" {
     health_check_eviction_time_in_min = 5
   }
 
-  sticky_settings {
-    app_setting_names = keys(var.webapp_app_settings)
-  }
-
   logs {
     detailed_error_messages = true
     failed_request_tracing  = true
@@ -104,19 +104,21 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   app_settings = {
-    "POSTGRES_DB"             = var.moodle_db_name
-    "POSTGRES_USER"           = var.postgres_username
-    "POSTGRES_PASSWORD"       = "@Microsoft.KeyVault(SecretUri=${var.postgres_secret_uri})"
-    "MOODLE_DB_TYPE"          = var.moodle_db_type
-    "MOODLE_DB_HOST"          = var.moodle_db_host
-    "MOODLE_DB_PREFIX"        = var.moodle_db_prefix
-    "MOODLE_DOCKER_WEB_HOST"  = var.webapp_name
-    "MOODLE_DOCKER_WEB_PORT"  = var.moodle_web_port
-    "MOODLE_SITE_FULLNAME"    = var.moodle_site_fullname
-    "MOODLE_SITE_SHORTB=NAME" = var.moodle_site_shortname
-    "MOODLE_ADMIN_USER"       = var.moodle_admin_user
-    "MOODLE_ADMIN_PASSWORD"   = var.moodle_admin_password
-    "MOODLE_ADMIN_EMAIL"      = var.moodle_admin_email
+    "ENVIRONMENT"                         = var.environment
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "POSTGRES_DB"                         = var.moodle_db_name
+    "POSTGRES_USER"                       = var.postgres_username
+    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${var.postgres_secret_uri})"
+    "MOODLE_DB_TYPE"                      = var.moodle_db_type
+    "MOODLE_DB_HOST"                      = var.moodle_db_host
+    "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
+    "MOODLE_DOCKER_WEB_HOST"              = var.webapp_name
+    "MOODLE_DOCKER_WEB_PORT"              = var.moodle_web_port
+    "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
+    "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
+    "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
+    "MOODLE_ADMIN_PASSWORD"               = random_password.password.result
+    "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
   }
 
   lifecycle {
