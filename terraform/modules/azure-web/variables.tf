@@ -78,7 +78,7 @@ variable "moodle_db_prefix" {
 variable "moodle_web_port" {
   description = "The web server port being exposed by the docker container for Moodle"
   type        = string
-  default     = "8080"
+  default     = "80"
 }
 
 variable "moodle_site_fullname" {
