@@ -115,6 +115,9 @@ public class OAuth2Controller(
                 () => oneLoginUser.Person.Trn
             )
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
+        await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
+            dbContext);
+
     }
 
     private async Task<IActionResult> HandleAuthenticationFailureAsync(
@@ -337,6 +340,14 @@ public class OAuth2Controller(
 
             case ClaimTypes.OneLoginIdToken:
                 yield return Destinations.IdentityToken;
+                yield break;
+
+            case ClaimTypes.OrganisationId:
+                if (claim.Subject!.HasScope(CustomScopes.Organisation))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
                 yield break;
 
             default:

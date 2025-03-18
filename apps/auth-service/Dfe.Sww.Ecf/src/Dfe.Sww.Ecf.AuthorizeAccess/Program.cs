@@ -204,7 +204,8 @@ builder
             Scopes.Email,
             Scopes.Profile,
             CustomScopes.SocialWorkerRecord,
-            Scopes.Roles
+            Scopes.Roles,
+            CustomScopes.Organisation
         );
 
         options.AllowAuthorizationCodeFlow();

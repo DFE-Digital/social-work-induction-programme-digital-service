@@ -54,4 +54,33 @@ public class ClaimsBuilder(ClaimsIdentity identity, OpenIddictRequest request)
         _identity.AddClaims(roleClaims);
         return this;
     }
+
+    /// <summary>
+    /// Add the organisation id claim if the "organisation" scope is present.
+    /// </summary>
+    public async Task<ClaimsBuilder> AddOrganisationIdClaimIfScopeAsync(
+        string scope,
+        Guid personId,
+        EcfDbContext dbContext
+    )
+    {
+        if (!_request.HasScope(scope))
+        {
+            return this;
+        }
+
+        var organisationIdClaim = await dbContext
+            .PersonOrganisations.Where(po => po.PersonId == personId)
+            .Where(po => po.EndDate == null || (po.StartDate >= po.EndDate))
+            .Select(po => po.OrganisationId.ToString()
+            )
+            .FirstAsync();
+
+        if (!string.IsNullOrEmpty(organisationIdClaim))
+        {
+            _identity.SetClaim(ClaimTypes.OrganisationId, organisationIdClaim);
+        }
+
+        return this;
+    }
 }
