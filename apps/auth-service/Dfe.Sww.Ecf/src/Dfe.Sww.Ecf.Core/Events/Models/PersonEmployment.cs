@@ -7,25 +7,13 @@ public record PersonEmployment
     public required Guid EstablishmentId { get; init; }
     public required DateOnly StartDate { get; init; }
     public required DateOnly? EndDate { get; init; }
-    public required EmploymentType EmploymentType { get; init; }
-    public required DateOnly LastKnownEmployedDate { get; init; }
-    public required DateOnly LastExtractDate { get; init; }
-    public required string? NationalInsuranceNumber { get; init; }
-    public required string? PersonPostcode { get; init; }
-    public required string Key { get; init; }
 
-    public static PersonEmployment FromModel(DataStore.Postgres.Models.PersonEmployment model) => new()
+    public static PersonEmployment FromModel(DataStore.Postgres.Models.PersonOrganisation model) => new()
     {
-        PersonEmploymentId = model.PersonEmploymentId,
+        PersonEmploymentId = model.PersonOrganisationId,
         PersonId = model.PersonId,
-        EstablishmentId = model.EstablishmentId,
+        EstablishmentId = model.OrganisationId,
         StartDate = model.StartDate,
-        EndDate = model.EndDate,
-        EmploymentType = model.EmploymentType,
-        LastKnownEmployedDate = model.LastKnownEmployedDate,
-        LastExtractDate = model.LastExtractDate,
-        NationalInsuranceNumber = model.NationalInsuranceNumber,
-        PersonPostcode = model.PersonPostcode,
-        Key = model.Key
+        EndDate = model.EndDate
     };
 }

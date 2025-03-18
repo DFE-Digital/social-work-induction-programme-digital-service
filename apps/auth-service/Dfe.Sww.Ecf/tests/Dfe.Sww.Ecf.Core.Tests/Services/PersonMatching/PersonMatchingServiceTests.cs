@@ -56,9 +56,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             }
 
             var person = await TestData.CreatePerson(b => b.WithTrn().WithNationalInsuranceNumber().WithFirstName(firstName));
-            var establishment = await TestData.CreateEstablishment(localAuthorityCode: "321", establishmentNumber: "4321", establishmentStatusCode: 1);
-            var employmentNino = TestData.GenerateChangedNationalInsuranceNumber(person.NationalInsuranceNumber!);
-            var personEmployment = await TestData.CreatePersonEmployment(person, establishment, new DateOnly(2023, 08, 03), new DateOnly(2024, 05, 25), EmploymentType.FullTime, new DateOnly(2024, 05, 25), employmentNino);
 
             string[][] names = nameOption switch
             {
@@ -82,7 +79,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             var nationalInsuranceNumber = nationalInsuranceNumberOption switch
             {
                 NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesPersonNino => person.NationalInsuranceNumber!,
-                NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino => personEmployment.NationalInsuranceNumber!,
                 NationalInsuranceNumberArgumentOption.SpecifiedButDifferent => TestData.GenerateChangedNationalInsuranceNumber(person.NationalInsuranceNumber!),
                 _ => null
             };
@@ -181,23 +177,17 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             var lastName = TestData.GenerateLastName();
             var dateOfBirth = TestData.GenerateDateOfBirth();
             var nationalInsuranceNumber = TestData.GenerateNationalInsuranceNumber();
-            var alternativeNationalInsuranceNumber = TestData.GenerateChangedNationalInsuranceNumber(nationalInsuranceNumber);
 
             // Person who matches on last name & DOB
             var person1 = await TestData.CreatePerson(b => b.WithLastName(lastName).WithDateOfBirth(dateOfBirth));
 
-            // Person who matches on NINO
-            var person2 = await TestData.CreatePerson(b => b.WithNationalInsuranceNumber(usePersonNino ? nationalInsuranceNumber : alternativeNationalInsuranceNumber));
-            var establishment = await TestData.CreateEstablishment(localAuthorityCode: "321", establishmentNumber: "4321", establishmentStatusCode: 1);
-            var personEmployment = await TestData.CreatePersonEmployment(person2, establishment, new DateOnly(2023, 08, 03), new DateOnly(2024, 05, 25), EmploymentType.FullTime, new DateOnly(2024, 05, 25), usePersonNino ? alternativeNationalInsuranceNumber : nationalInsuranceNumber);
-
             // Person who matches on TRN
-            var person3 = await TestData.CreatePerson(b => b.WithTrn());
-            var trn = person3.Trn!;
+            var person2 = await TestData.CreatePerson(b => b.WithTrn());
+            var trn = person2.Trn!;
 
             // Person who matches on last name, DOB & TRN
-            var person4 = await TestData.CreatePerson(b => b.WithTrn().WithLastName(lastName).WithDateOfBirth(dateOfBirth));
-            var trnTokenHintTrn = person4.Trn!;
+            var person3 = await TestData.CreatePerson(b => b.WithTrn().WithLastName(lastName).WithDateOfBirth(dateOfBirth));
+            var trnTokenHintTrn = person3.Trn!;
 
             string[][] names = [[firstName, lastName]];
             DateOnly[] datesOfBirth = [dateOfBirth];
@@ -210,7 +200,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             // Assert
             Assert.Collection(
                 result,
-                r => Assert.Equal(person4.PersonId, r.PersonId),
                 r => Assert.Equal(person3.PersonId, r.PersonId),
                 r => Assert.Equal(person2.PersonId, r.PersonId),
                 r => Assert.Equal(person1.PersonId, r.PersonId));
@@ -230,9 +219,8 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             var alternativeNationalInsuranceNumber = TestData.GenerateChangedNationalInsuranceNumber(nationalInsuranceNumber);
 
             var person = await TestData.CreatePerson(b => b.WithFirstName(firstName).WithLastName(lastName).WithDateOfBirth(dateOfBirth).WithNationalInsuranceNumber(usePersonNino ? nationalInsuranceNumber : alternativeNationalInsuranceNumber));
-            var establishment = await TestData.CreateEstablishment(localAuthorityCode: "321", establishmentNumber: "4321", establishmentStatusCode: 1);
-            var personEmployment = await TestData.CreatePersonEmployment(person, establishment, new DateOnly(2023, 08, 03), new DateOnly(2024, 05, 25), EmploymentType.FullTime, new DateOnly(2024, 05, 25), usePersonNino ? alternativeNationalInsuranceNumber : nationalInsuranceNumber);
-
+            //var establishment = await TestData.CreateOrganisation(organisationName: "Test LA");
+            //var personEmployment = await TestData.CreatePersonOrganisation(person, establishment, new DateOnly(2023, 08, 03));
             string[][] names = [[firstName, lastName]];
             DateOnly[] datesOfBirth = [dateOfBirth];
 
@@ -334,36 +322,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             _matchNameDobAndTrnAttributes
         },
 
-        // Single name, single DOB, employment NINO and TRN all match
-        {
-            NameArgumentOption.MatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedAndMatches,
-            /*expectMatch: */ true,
-            _matchNameDobNinoAndTrnAttributes
-        },
-
-        // Single name, single DOB, employment NINO match but no TRN
-        {
-            NameArgumentOption.MatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.NotSpecified,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
-        },
-
-        // Single name, single DOB, employment NINO match but TRN doesn't match
-        {
-            NameArgumentOption.MatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedButDifferent,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
-        },
-
         // Single name with alias, single DOB, person NINO and TRN all match
         {
             NameArgumentOption.MatchesAlias,
@@ -412,36 +370,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             TrnArgumentOption.SpecifiedAndMatches,
             /*expectMatch: */ true,
             _matchNameDobAndTrnAttributes
-        },
-
-        // Single name with alias, single DOB, employment NINO and TRN all match
-        {
-            NameArgumentOption.MatchesAlias,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedAndMatches,
-            /*expectMatch: */ true,
-            _matchNameDobNinoAndTrnAttributes
-        },
-
-        // Single name with alias, single DOB, employment NINO match but no TRN
-        {
-            NameArgumentOption.MatchesAlias,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.NotSpecified,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
-        },
-
-        // Single name with alias, single DOB, employment NINO match but TRN doesn't match
-        {
-            NameArgumentOption.MatchesAlias,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedButDifferent,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
         },
 
         // Multiple names with one match, single DOB, person NINO and TRN all match
@@ -493,37 +421,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             /*expectMatch: */ true,
             _matchNameDobAndTrnAttributes
         },
-
-        // Multiple names with one match, single DOB, employment NINO and TRN all match
-        {
-            NameArgumentOption.MultipleSpecifiedAndOneMatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedAndMatches,
-            /*expectMatch: */ true,
-            _matchNameDobNinoAndTrnAttributes
-        },
-
-        // Multiple names with one match, single DOB, employment NINO match but no TRN
-        {
-            NameArgumentOption.MultipleSpecifiedAndOneMatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.NotSpecified,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
-        },
-
-        // Multiple names with one match, single DOB, employment NINO match but TRN doesn't match
-        {
-            NameArgumentOption.MultipleSpecifiedAndOneMatchesPersonName,
-            DateOfBirthArgumentOption.MatchesPersonDateOfBirth,
-            NationalInsuranceNumberArgumentOption.SpecifiedAndMatchesEmploymentNino,
-            TrnArgumentOption.SpecifiedButDifferent,
-            /*expectMatch: */ true,
-            _matchNameDobAndNinoAttributes
-        },
-
 
         // *** No match cases ***
 
@@ -651,7 +548,6 @@ public class PersonMatchingServiceTests : IAsyncLifetime
     {
         NotSpecified,
         SpecifiedAndMatchesPersonNino,
-        SpecifiedAndMatchesEmploymentNino,
         SpecifiedButDifferent
     }
 

@@ -4,6 +4,7 @@ using System.Text.Json;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
-    partial class EcfDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250228162403_UpdateSchemaForOrganisationsAndPersonOrganisations")]
+    partial class UpdateSchemaForOrganisationsAndPersonOrganisations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,18 +227,15 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.Property<Guid>("OrganisationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("organisation_id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasColumnName("organisation_id");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_on");
 
-                    b.Property<long>("ExternalOrganisationId")
+                    b.Property<long>("MoodleCourseId")
                         .HasColumnType("bigint")
-                        .HasColumnName("external_organisation_id");
+                        .HasColumnName("moodle_course_id");
 
                     b.Property<string>("OrganisationName")
                         .IsRequired()
@@ -243,15 +243,15 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("organisation_name");
 
-                    b.Property<DateTime?>("UpdatedOn")
+                    b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_on");
 
                     b.HasKey("OrganisationId")
                         .HasName("pk_organisations");
 
-                    b.HasIndex("ExternalOrganisationId")
-                        .HasDatabaseName("ix_organisation_external_organisation_id");
+                    b.HasIndex("MoodleCourseId")
+                        .HasDatabaseName("ix_organisation_moodle_course_id");
 
                     b.ToTable("organisations", (string)null);
                 });
@@ -337,14 +337,11 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.Property<Guid>("PersonOrganisationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("person_organisation_id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasColumnName("person_organisation_id");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_on");
 
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date")
@@ -359,12 +356,10 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("person_id");
 
                     b.Property<DateOnly>("StartDate")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("date")
-                        .HasColumnName("start_date")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("start_date");
 
-                    b.Property<DateTime?>("UpdatedOn")
+                    b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_on");
 

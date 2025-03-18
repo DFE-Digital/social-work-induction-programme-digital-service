@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using OpenIddict.EntityFrameworkCore.Models;
-using Establishment = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Establishment;
+using Establishment = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisation;
 using User = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.User;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
@@ -31,9 +31,9 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
 
     public DbSet<PersonSearchAttribute> PersonSearchAttributes => Set<PersonSearchAttribute>();
 
-    public DbSet<Establishment> Establishments => Set<Establishment>();
+    public DbSet<Organisation> Organisations => Set<Organisation>();
 
-    public DbSet<PersonEmployment> PersonEmployments => Set<PersonEmployment>();
+    public DbSet<PersonOrganisation> PersonOrganisations => Set<PersonOrganisation>();
 
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
 

@@ -16,4 +16,5 @@ public class Person
     public PersonStatus? Status { get; set; }
 
     public ICollection<PersonRole> PersonRoles { get; set; } = new List<PersonRole>();
+    public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
 }
