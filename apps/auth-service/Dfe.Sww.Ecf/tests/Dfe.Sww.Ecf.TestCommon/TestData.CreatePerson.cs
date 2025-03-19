@@ -14,6 +14,7 @@ public partial class TestData
         {
             var builder = new CreatePersonBuilder();
             configure?.Invoke(builder);
+
             var createPersonResult = await builder.Execute(this);
             var newPerson = new Person()
             {
@@ -27,6 +28,7 @@ public partial class TestData
                 NationalInsuranceNumber = createPersonResult.NationalInsuranceNumber,
                 CreatedOn = Clock.UtcNow,
                 Status = createPersonResult.Status,
+                PersonOrganisations = createPersonResult.PersonOrganisations
             };
 
             if (addToDb is not true)
@@ -41,13 +43,13 @@ public partial class TestData
         });
     }
 
-    public async Task<CreatePersonResult[]> CreatePersons(int count)
+    public async Task<CreatePersonResult[]> CreatePersons(int count, Guid organisationId)
     {
         var results = new CreatePersonResult[count];
 
         for (var i = 0; i < count; i++)
         {
-            results[i] = await CreatePerson();
+            results[i] = await CreatePerson(b => b.WithOrganisationId(organisationId));
         }
 
         return results.ToArray();
@@ -65,6 +67,7 @@ public partial class TestData
         private bool? _hasNationalInsuranceNumber;
         private string? _nationalInsuranceNumber;
         private PersonStatus? _status;
+        private Guid _organisationId;
 
         public Guid PersonId { get; } = Guid.NewGuid();
 
@@ -217,6 +220,17 @@ public partial class TestData
             return this;
         }
 
+        public CreatePersonBuilder WithOrganisationId(Guid organisationId)
+        {
+            if (_organisationId != Guid.Empty && _organisationId != organisationId)
+            {
+                throw new InvalidOperationException("WithOrganisationId cannot be changed after it's set.");
+            }
+
+            _organisationId = organisationId;
+            return this;
+        }
+
         internal async Task<CreatePersonResult> Execute(TestData testData)
         {
             var hasTrn = _hasTrn ?? true;
@@ -236,6 +250,18 @@ public partial class TestData
             var lastName = _lastName ?? testData.GenerateLastName();
             var dateOfBirth = _dateOfBirth ?? testData.GenerateDateOfBirth();
             var status = _status ?? PersonStatus.Active;
+            var personOrganisations = (_organisationId != Guid.Empty)
+                ?
+                [
+                    new PersonOrganisation
+                    {
+                        OrganisationId = _organisationId,
+                        PersonId = PersonId,
+                        PersonOrganisationId = Guid.NewGuid()
+                    }
+                ]
+                : new List<PersonOrganisation>();
+            ;
 
             return new CreatePersonResult()
             {
@@ -249,6 +275,7 @@ public partial class TestData
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
                 Status = status,
+                PersonOrganisations = personOrganisations
             };
         }
     }
@@ -266,6 +293,7 @@ public partial class TestData
         public DateTime? CreatedOn { get; init; }
         public DateTime? UpdatedOn { get; init; }
         public PersonStatus Status { get; init; }
+        public List<PersonOrganisation> PersonOrganisations { get; init; } = [];
 
         public Person ToPerson() =>
             new Person

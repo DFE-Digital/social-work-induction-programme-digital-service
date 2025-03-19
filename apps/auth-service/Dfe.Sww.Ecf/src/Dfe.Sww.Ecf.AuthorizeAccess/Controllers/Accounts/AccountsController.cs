@@ -18,9 +18,14 @@ public class AccountsController(
 {
     [HttpGet]
     [ActionName(nameof(GetAllAsync))]
-    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationRequest request)
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationRequest request, [FromQuery] string organisationId)
     {
-        var accounts = await accountsService.GetAllAsync(request);
+        if (!Guid.TryParse(organisationId, out Guid parsedOrganisationId))
+        {
+            return BadRequest("Invalid Organisation ID format. Must be a valid GUID.");
+        }
+
+        var accounts = await accountsService.GetAllAsync(request, parsedOrganisationId);
         if (!accounts.Records.Any())
         {
             return NoContent();

@@ -13,6 +13,7 @@ public record CreatePersonRequest
     public string? SocialWorkEnglandNumber { get; init; }
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
+    public Guid OrganisationId { get; init; }
 }
 
 public static class CreatePersonRequestExtensions
@@ -28,5 +29,10 @@ public static class CreatePersonRequestExtensions
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
                 .ToList(),
             Status = request.Status,
+            PersonOrganisations = new List<PersonOrganisation>
+            {
+                new() { OrganisationId = request.OrganisationId }
+            }
+
         };
 }

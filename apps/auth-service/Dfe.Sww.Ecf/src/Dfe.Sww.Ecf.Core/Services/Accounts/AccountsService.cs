@@ -6,9 +6,13 @@ namespace Dfe.Sww.Ecf.Core.Services.Accounts;
 
 public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsService
 {
-    public async Task<PaginationResult<PersonDto>> GetAllAsync(PaginationRequest request)
+    public async Task<PaginationResult<PersonDto>> GetAllAsync(PaginationRequest request, Guid organisationId)
     {
-        var accounts = dbContext.Persons.AsQueryable();
+        var accounts = dbContext.Persons
+            .Include(p => p.PersonOrganisations)
+            .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisationId))
+            .Select(p => p);
+
         var totalItems = await accounts.CountAsync();
 
         var paginatedResults = await accounts

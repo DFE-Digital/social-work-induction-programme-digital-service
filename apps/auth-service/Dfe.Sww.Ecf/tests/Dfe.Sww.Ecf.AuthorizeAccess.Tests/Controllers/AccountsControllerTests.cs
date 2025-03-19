@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
+using FakeXrmEasy.Extensions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -18,12 +19,20 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             const int expectedCount = 5;
-            await TestData.CreatePersons(expectedCount);
+            var organisationName = Faker.Address.City();
+            var organisation = await TestData.CreateOrganisation(organisationName);
+
+            await TestData.CreatePersons(expectedCount, organisation.OrganisationId);
 
             var request = new PaginationRequest(0, expectedCount);
 
-            var expectedAccounts = dbContext
-                .Persons.Include(p => p.PersonRoles)
+            var filteredAccounts = dbContext.Persons
+                .Include(p => p.PersonOrganisations)
+                .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisation.OrganisationId))
+                .Select(p => p);
+
+            var expectedAccounts = filteredAccounts
+                .Include(p => p.PersonRoles)
                 .ThenInclude(pr => pr.Role)
                 .Take(expectedCount)
                 .Select(p => p.ToDto())
@@ -37,7 +46,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
 
             // Act
-            var result = await controller.GetAllAsync(request);
+            var result = await controller.GetAllAsync(request, organisation.OrganisationId.ToString());
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -47,6 +56,31 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 .Subject.Records;
 
             resultAccounts.Should().BeEquivalentTo(expectedAccounts);
+        });
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ReturnsBadRequest_WhenOrganisationIdIsInvalid()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var organisationId = "invalid-guid";
+            var request = new PaginationRequest(0, 1);
+
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+
+            // Act
+            var result = await controller.GetAllAsync(request, organisationId);
+
+            // Assert
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should().Be("Invalid Organisation ID format. Must be a valid GUID.");
         });
     }
 
@@ -150,7 +184,15 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var expectedNewUser = (await TestData.CreatePerson(null, false)).ToPersonDto();
+            var organisationName = Faker.Address.City();
+            var organisation = await TestData.CreateOrganisation(organisationName);
+            var expectedNewUser =
+                (await TestData
+                    .CreatePerson(
+                        b => b.WithOrganisationId(organisation.OrganisationId),
+                        false
+                    )
+                ).ToPersonDto();
             expectedNewUser.Roles = new List<RoleType>
             {
                 Faker.Enum.Random<RoleType>(),
@@ -174,6 +216,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
                     Roles = expectedNewUser.Roles,
                     Status = expectedNewUser.Status,
+                    OrganisationId = organisation.OrganisationId
                 }
             );
 
