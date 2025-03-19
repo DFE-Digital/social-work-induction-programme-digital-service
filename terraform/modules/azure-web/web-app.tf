@@ -182,3 +182,10 @@ resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
     ignore_changes = [object_id, tenant_id]
   }
 }
+
+# Grants permission for the managed identity to pull images from ACR
+resource "azurerm_role_assignment" "acr_role" {
+  scope                = var.acr_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
+}

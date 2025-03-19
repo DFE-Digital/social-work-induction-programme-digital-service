@@ -87,7 +87,8 @@ module "webapp" {
   moodle_site_fullname  = var.moodle_site_fullname
   moodle_site_shortname = var.moodle_site_shortname
   moodle_web_port       = var.moodle_web_port
-  depends_on            = [module.network, module.postgres]
+  acr_id                = module.acr.acr_id
+  depends_on            = [module.network, module.postgres, module.acr]
 }
 
 module "frontdoor" {

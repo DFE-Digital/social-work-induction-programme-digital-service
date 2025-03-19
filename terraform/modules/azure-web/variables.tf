@@ -106,3 +106,8 @@ variable "moodle_admin_password" {
   type        = string
   sensitive   = true
 }
+
+variable "acr_id" {
+  description = "Resource ID of the ACR"
+  type        = string
+}
