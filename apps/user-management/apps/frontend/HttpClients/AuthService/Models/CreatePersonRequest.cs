@@ -13,4 +13,5 @@ public record CreatePersonRequest
     public string? SocialWorkEnglandNumber { get; init; }
     public AccountStatus? Status { get; init; }
     public ImmutableList<AccountType> Roles { get; init; } = [];
+    public Guid OrganisationId { get; init; }
 }

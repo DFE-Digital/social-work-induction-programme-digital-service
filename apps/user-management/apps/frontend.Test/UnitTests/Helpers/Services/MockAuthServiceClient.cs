@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
@@ -10,10 +12,18 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
 {
     public Mock<IAccountsOperations> MockAccountsOperations { get; }
 
+    private Mock<IHttpContextAccessor> MockHttpContextAccessor { get; }
+
+    public Mock<IHttpContextService> MockHttpContextService { get; }
+
     public MockAuthServiceClient()
     {
         MockAccountsOperations = new Mock<IAccountsOperations>();
+        MockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        MockHttpContextService = new Mock<IHttpContextService>();
+
         SetupMockAccountsOperations();
+        SetupMockHttpContextService();
     }
 
     private void SetupMockAccountsOperations()
@@ -51,7 +61,30 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
                         Roles = updatePersonRequest.Roles
                     }
             );
-
         Setup(x => x.Accounts).Returns(MockAccountsOperations.Object);
+    }
+
+    private void SetupMockHttpContextService()
+    {
+        MockHttpContextService.Setup(a => a.GetOrganisationId()).Returns(Guid.NewGuid().ToString);
+
+        Setup(x => x.HttpContextService).Returns(MockHttpContextService.Object);
+    }
+
+    public void SetupMockHttpContextAccessorWithOrganisationId()
+    {
+        var claims = new List<Claim> { new Claim("organisation_id", Guid.NewGuid().ToString()) };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        var mockHttpContext = new DefaultHttpContext { User = claimsPrincipal };
+        MockHttpContextAccessor.Setup(a => a.HttpContext).Returns(mockHttpContext);
+    }
+
+    public void SetupMockHttpContextAccessorWithEmptyClaimsPrincipal()
+    {
+        var emptyClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+        var mockHttpContext = new DefaultHttpContext { User = emptyClaimsPrincipal };
+
+        MockHttpContextAccessor.Setup(a => a.HttpContext).Returns(mockHttpContext);
     }
 }

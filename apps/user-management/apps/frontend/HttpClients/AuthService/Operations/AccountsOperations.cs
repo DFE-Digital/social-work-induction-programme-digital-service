@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Security.Claims;
+using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
@@ -6,14 +7,16 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Operations;
 
-public class AccountsOperations(AuthServiceClient authServiceClient) : IAccountsOperations
+public class AccountsOperations(AuthServiceClient authServiceClient)
+    : IAccountsOperations
 {
     private static JsonSerializerOptions? SerializerOptions { get; } =
         new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
 
     public async Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request)
     {
-        var route = $"/api/Accounts?Offset={request.Offset}&PageSize={request.PageSize}";
+        var organisationId = authServiceClient.HttpContextService.GetOrganisationId();
+        var route = $"/api/Accounts?Offset={request.Offset}&PageSize={request.PageSize}&organisationId={organisationId}";
         var httpResponse = await authServiceClient.HttpClient.GetAsync(route);
 
         if (!httpResponse.IsSuccessStatusCode)

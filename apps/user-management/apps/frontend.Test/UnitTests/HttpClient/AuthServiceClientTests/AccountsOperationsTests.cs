@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using System.Text.Json;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
@@ -8,6 +9,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using Dfe.Sww.Ecf.Frontend.Models;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -355,7 +357,19 @@ public class AccountsOperationsTests
                 }
             );
 
-        var sut = new AuthServiceClient(client);
+        var claims = new List<Claim>
+        {
+            new Claim("organisation_id", Guid.NewGuid().ToString())
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        var httpContext = new DefaultHttpContext
+        {
+            User = claimsPrincipal
+        };
+        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
+        var sut = new AuthServiceClient(client, mockHttpContextAccessor.Object);
 
         return sut;
     }

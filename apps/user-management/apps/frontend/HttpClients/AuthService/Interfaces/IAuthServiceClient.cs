@@ -3,4 +3,6 @@
 public interface IAuthServiceClient
 {
     public IAccountsOperations Accounts { get; init; }
+
+    public IHttpContextService HttpContextService { get; init; }
 }

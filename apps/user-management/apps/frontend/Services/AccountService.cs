@@ -1,4 +1,6 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+﻿using System.Security.Claims;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Mappers;
@@ -47,6 +49,9 @@ public class AccountService(
         {
             throw new ArgumentException("First name, last name, and email are required");
         }
+
+        var organisationId = authServiceClient.HttpContextService.GetOrganisationId();
+
         var person = await authServiceClient.Accounts.CreateAsync(
             new CreatePersonRequest
             {
@@ -55,7 +60,8 @@ public class AccountService(
                 EmailAddress = account.Email,
                 SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
                 Roles = account.Types ?? [],
-                Status = account.Status
+                Status = account.Status,
+                OrganisationId = new Guid(organisationId)
             }
         );
 

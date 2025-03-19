@@ -1,7 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -42,6 +40,11 @@ public class CreateShould : AccountServiceTestBase
                         && request.LastName == person.LastName
                     )
                 ),
+            Times.Once
+        );
+        MockClient.Verify(
+            x =>
+                x.HttpContextService.GetOrganisationId(),
             Times.Once
         );
         VerifyAllNoOtherCalls();

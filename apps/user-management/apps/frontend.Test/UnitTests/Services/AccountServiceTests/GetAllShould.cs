@@ -37,6 +37,8 @@ public class GetAllShould : AccountServiceTestBase
             MetaData = metaData
         };
 
+        MockClient.SetupMockHttpContextAccessorWithOrganisationId();
+
         MockClient
             .Setup(x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)))
             .ReturnsAsync(clientResponse);
@@ -54,5 +56,18 @@ public class GetAllShould : AccountServiceTestBase
             Times.Once
         );
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task WhenCalledAndOrganisationClaimIsMissing_ThrowNullReferenceException()
+    {
+        // Arrange
+        var paginationRequest = new PaginationRequest(0, 10);
+
+        MockClient.SetupMockHttpContextAccessorWithEmptyClaimsPrincipal();
+
+        // Act & Assert
+        await FluentActions.Awaiting(() => Sut.GetAllAsync(paginationRequest))
+            .Should().ThrowAsync<NullReferenceException>();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+﻿using System.Security.Claims;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.Mappers;
 using Dfe.Sww.Ecf.Frontend.Models;
@@ -6,6 +6,7 @@ using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
+using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.AccountServiceTests;
