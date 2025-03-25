@@ -55,4 +55,4 @@ jobs:
           -backend-config="key=${{ secrets.TERRAFORM_STATE_KEY }}"
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -var "resource_group_name=${{ secrets.TERRAFORM_STATE_RESOURCE_GROUP }}"
+        run: terraform destroy -auto-approve
