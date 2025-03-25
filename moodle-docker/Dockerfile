@@ -14,6 +14,9 @@ RUN curl -L -o /tmp/govuk-moodle-theme.zip "$GITHUB_RELEASE_URL" \
   && mv /tmp/theme/govuk/ /var/www/html/theme/ \
   && rm /tmp/govuk-moodle-theme.zip
 
+# Copy custom config.php into the correct location
+COPY config.php /var/www/html/config.php
+
 WORKDIR /var/www/html
 
 USER root
