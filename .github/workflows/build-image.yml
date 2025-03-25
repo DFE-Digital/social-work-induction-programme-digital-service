@@ -60,7 +60,7 @@ jobs:
       - name: "Build the image and deploy to ACR"
         uses: docker/build-push-action@v6
         with:
-          context: ./
+          context: .
           file: ./moodle-docker/Dockerfile
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
