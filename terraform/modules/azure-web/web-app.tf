@@ -81,6 +81,8 @@ resource "azurerm_linux_web_app" "webapp" {
 
     health_check_path                 = "/health"
     health_check_eviction_time_in_min = 5
+
+    container_registry_use_managed_identity = true
   }
 
   logs {
