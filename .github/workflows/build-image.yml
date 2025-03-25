@@ -64,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./
-          file: ./moodle-docker/Dockerfile
+          file: ./moodle-docker/Dockerfile-github
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
             ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
