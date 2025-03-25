@@ -187,6 +187,6 @@ resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
 resource "azurerm_role_assignment" "acr_role" {
   scope                = var.acr_id
   role_definition_name = "AcrPull"
-  principal_type       = "User"
+  principal_type       = "ServicePrincipal"
   principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
 }
