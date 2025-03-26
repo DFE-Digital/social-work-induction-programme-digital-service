@@ -81,10 +81,8 @@ resource "azurerm_linux_web_app" "webapp" {
 
     health_check_path                 = "/health"
     health_check_eviction_time_in_min = 5
-  }
 
-  sticky_settings {
-    app_setting_names = keys(var.webapp_app_settings)
+    container_registry_use_managed_identity = true
   }
 
   logs {
@@ -101,6 +99,24 @@ resource "azurerm_linux_web_app" "webapp" {
         retention_in_mb   = 25
       }
     }
+  }
+
+  app_settings = {
+    "ENVIRONMENT"                         = var.environment
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "POSTGRES_DB"                         = var.moodle_db_name
+    "POSTGRES_USER"                       = var.postgres_username
+    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${var.postgres_secret_uri})"
+    "MOODLE_DB_TYPE"                      = var.moodle_db_type
+    "MOODLE_DB_HOST"                      = var.moodle_db_host
+    "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
+    "MOODLE_DOCKER_WEB_HOST"              = var.webapp_name
+    "MOODLE_DOCKER_WEB_PORT"              = var.moodle_web_port
+    "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
+    "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
+    "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
+    "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
+    "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
   }
 
   lifecycle {
@@ -167,4 +183,12 @@ resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
   lifecycle {
     ignore_changes = [object_id, tenant_id]
   }
+}
+
+# Grants permission for the managed identity to pull images from ACR
+resource "azurerm_role_assignment" "acr_role" {
+  scope                = var.acr_id
+  role_definition_name = "AcrPull"
+  principal_type       = "ServicePrincipal"
+  principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
 }

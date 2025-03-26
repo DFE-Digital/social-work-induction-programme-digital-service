@@ -22,6 +22,7 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
   ARM_USE_OIDC: true
+  ARM_SKIP_PROVIDER_REGISTRATION: true
 
 jobs:
   destroy:
@@ -54,5 +55,9 @@ jobs:
           -backend-config="container_name=${{ secrets.TERRAFORM_STATE_STORAGE_CONTAINER_NAME }}"
           -backend-config="key=${{ secrets.TERRAFORM_STATE_KEY }}"
 
+      - name: Terraform Plan (Destroy)
+        id: plan
+        run: terraform plan -destroy -out=tfdestroy.tfplan
+
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -var "resource_group_name=${{ secrets.TERRAFORM_STATE_RESOURCE_GROUP }}"
+        run: terraform apply -destroy -auto-approve tfdestroy.tfplan
