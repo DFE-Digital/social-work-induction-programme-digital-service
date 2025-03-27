@@ -12,10 +12,14 @@ on:
           - Dev
           - Test
 
+defaults:
+  run:
+    working-directory: ./terraform
+
 #permissions for oidc auth
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
@@ -27,8 +31,7 @@ env:
 jobs:
   destroy:
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
