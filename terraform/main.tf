@@ -47,6 +47,7 @@ module "postgres" {
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
   tags                 = local.common_tags
+  moodle_db_name       = var.moodle_db_name
   depends_on           = [module.network]
 }
 
