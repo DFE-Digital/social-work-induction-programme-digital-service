@@ -12,3 +12,8 @@ output "kv_id" {
   description = "ID of the Key Vault"
   value       = azurerm_key_vault.kv.id
 }
+
+output "kv_vault_uri" {
+  description = "URI of the key vault"
+  value       = azurerm_key_vault.kv.vault_uri
+}

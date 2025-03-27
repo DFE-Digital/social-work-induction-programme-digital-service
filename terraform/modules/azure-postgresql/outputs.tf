@@ -1,6 +1,6 @@
 output "postgres_secret_uri" {
   description = "The Key Vault entry for the database password"
-  value       = azurerm_key_vault_secret.database_password.resource_id
+  value       = azurerm_key_vault_secret.database_password.name
 }
 
 output "postgres_db_host" {

@@ -89,6 +89,7 @@ module "webapp" {
   moodle_site_shortname = var.moodle_site_shortname
   moodle_web_port       = var.moodle_web_port
   acr_id                = module.acr.acr_id
+  kv_vault_uri          = module.network.kv_vault_uri
   depends_on            = [module.network, module.postgres, module.acr]
 }
 
