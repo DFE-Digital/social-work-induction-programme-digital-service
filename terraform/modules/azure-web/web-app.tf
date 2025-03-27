@@ -114,6 +114,7 @@ resource "azurerm_linux_web_app" "webapp" {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    DOCKER_ENABLE_CI                      = true
   }
 
   lifecycle {
