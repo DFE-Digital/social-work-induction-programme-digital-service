@@ -179,7 +179,7 @@ resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
   certificate_permissions = ["Get"]
 
   lifecycle {
-    ignore_changes = [object_id, tenant_id]
+    ignore_changes = [tenant_id]
   }
 }
 
