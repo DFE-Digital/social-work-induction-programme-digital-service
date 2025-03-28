@@ -166,10 +166,8 @@ public class PersonMatchingServiceTests : IAsyncLifetime
             Assert.NotNull(result);
         });
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public Task GetSuggestedMatches_ReturnsExpectedResults(bool usePersonNino) =>
+    [Fact]
+    public Task GetSuggestedMatches_ReturnsExpectedResults() =>
         DbFixture.WithDbContext(async dbContext =>
         {
             // Arrange

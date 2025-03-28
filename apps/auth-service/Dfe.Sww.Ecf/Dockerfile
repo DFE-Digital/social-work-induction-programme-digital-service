@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18
 ARG GIT_SHA
-ENV SENTRY_RELEASE ${GIT_SHA}
-ENV ASPNETCORE_HTTP_PORTS 80
-COPY src/Dfe.Sww.Ecf.Cli/bin/Release/net8.0/publish/ Apps/TrsCli/
+ENV SENTRY_RELEASE=${GIT_SHA}
+ENV ASPNETCORE_HTTP_PORTS=80
+COPY src/Dfe.Sww.Ecf.Cli/bin/Release/net8.0/publish/ Apps/EcfCli/
 COPY src/Dfe.Sww.Ecf.AuthorizeAccess/bin/Release/net8.0/publish/ Apps/AuthorizeAccess/
 COPY db.sh Apps/db.sh
 WORKDIR /Apps

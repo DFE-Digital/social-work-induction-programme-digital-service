@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
     [Migration("20240722163707_cleanup-redundant-auth-code")]
-    partial class cleanupredundantauthcode
+    partial class CleanupRedundantAuthCode
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

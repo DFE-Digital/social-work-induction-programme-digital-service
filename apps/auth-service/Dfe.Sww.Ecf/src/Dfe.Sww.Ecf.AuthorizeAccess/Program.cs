@@ -361,8 +361,6 @@ if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests()
     );
 }
 
-builder.AddBlobStorage();
-
 builder
     .Services.AddEcfBaseServices()
     .AddTransient<AuthorizeAccessLinkGenerator, RoutingAuthorizeAccessLinkGenerator>()
@@ -377,7 +375,6 @@ builder
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
-    .AddFileService()
     .AddPersonMatching()
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()

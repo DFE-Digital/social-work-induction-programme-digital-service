@@ -4,11 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
+#pragma warning disable EF1001 // Intentionally extending internal class
 internal class SnakeCaseNpgsqlHistoryRepository : NpgsqlHistoryRepository
 {
     public SnakeCaseNpgsqlHistoryRepository(HistoryRepositoryDependencies dependencies)
         : base(dependencies) { }
-
+#pragma warning restore EF1001
     protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
     {
         base.ConfigureTable(history);
