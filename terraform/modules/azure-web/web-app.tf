@@ -82,6 +82,7 @@ resource "azurerm_linux_web_app" "webapp" {
     container_registry_use_managed_identity = true
     application_stack {
       docker_registry_url = "${var.resource_name_prefix}acr.azurecr.io"
+      docker_image_name   = "dfe-digital/social-work-induction-programme-digital-service:latest"
     }
   }
 
