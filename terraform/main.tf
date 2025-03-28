@@ -32,6 +32,7 @@ module "storage" {
   webapp_storage_account_name = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
   kv_id                       = module.network.kv_id
   tags                        = local.common_tags
+  depends_on                  = [module.network]
 }
 
 
