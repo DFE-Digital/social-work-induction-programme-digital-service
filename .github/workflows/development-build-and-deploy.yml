@@ -3,6 +3,11 @@ name: Development build & deploy
 on:
   workflow_dispatch:
 
+env:
+  REGISTRY_NAME: s205d01acr
+  IMAGE_NAME: social-work-induction-programme-digital-service
+  ORG_NAME: dfe-digital
+
 jobs:
   set-env:
     runs-on: ubuntu-24.04
@@ -59,4 +64,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.WEBAPP_NAME }}
-          images: ${{ needs.create-and-publish-image.outputs.dockerImageTag }}
+          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.ORG_NAME }}/${{ env.IMAGE_NAME}}:latest
