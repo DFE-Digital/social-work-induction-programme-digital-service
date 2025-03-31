@@ -112,6 +112,11 @@ variable "acr_id" {
   type        = string
 }
 
+variable "acr_name" {
+  description = "Name of the ACR"
+  type        = string
+}
+
 variable "kv_vault_uri" {
   description = "URI for the key vault"
   type        = string
