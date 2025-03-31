@@ -118,6 +118,8 @@ resource "azurerm_linux_web_app" "webapp" {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    DOCKER_ENABLE_CI                      = "true"
+    DOCKER_REGISTRY_SERVER_URL            = "https://${var.resource_name_prefix}acr.azurecr.io"
   }
 
   lifecycle {
@@ -192,22 +194,4 @@ resource "azurerm_role_assignment" "acr_role" {
   role_definition_name = "AcrPull"
   principal_type       = "ServicePrincipal"
   principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
-}
-
-resource "azurerm_container_registry_webhook" "acr_webhook" {
-  name                = "webapp-webhook"
-  location            = var.location
-  resource_group_name = var.resource_group
-
-  registry_name = var.acr_name
-
-  scope   = "dfe-digital/social-work-induction-programme-digital-service:latest" # Trigger on pushes to this image:tag
-  status  = "enabled"
-  actions = ["push"]
-
-  custom_headers = {
-    "Content-Type" = "application/json"
-  }
-
-  service_uri = azurerm_linux_web_app.webapp.default_site_hostname
 }
