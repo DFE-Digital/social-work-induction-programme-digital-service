@@ -119,7 +119,6 @@ resource "azurerm_linux_web_app" "webapp" {
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "true"
-    DOCKER_REGISTRY_SERVER_URL            = "https://${var.resource_name_prefix}acr.azurecr.io"
   }
 
   lifecycle {
