@@ -13,10 +13,10 @@ The primary custom command, install-moodle, bundles all installation steps into 
 - Updates config.php to set the default theme to govuk.
 - Purges Moodle caches so that changes take effect immediately.
 ---
-### Windows Setup
+### Windows setup
 You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`. 
 
-### DDEV Installation
+### DDEV installation
 Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
 
 ---
@@ -45,5 +45,8 @@ Finally, launch your Moodle site in your default web browser:
 - `ddev launch /login`
 
 
-### Moodle Configuration
+### Moodle configuration
 When running the service via DDEV, the `config.php` file is located in the `public` dir. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).
+
+### Moodle tests
+For documentation on automated testing in Moodle and local dev setup, please see the dedicated files in the `moodle-docs` folder.
