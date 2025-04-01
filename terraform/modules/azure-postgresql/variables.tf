@@ -42,3 +42,8 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "moodle_db_name" {
+  description = "Name of the Moodle database"
+  type        = string
+}

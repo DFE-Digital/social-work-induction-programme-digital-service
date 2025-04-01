@@ -32,6 +32,7 @@ module "storage" {
   webapp_storage_account_name = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
   kv_id                       = module.network.kv_id
   tags                        = local.common_tags
+  depends_on                  = [module.network]
 }
 
 
@@ -47,6 +48,7 @@ module "postgres" {
   kv_id                = module.network.kv_id
   days_to_expire       = var.days_to_expire
   tags                 = local.common_tags
+  moodle_db_name       = var.moodle_db_name
   depends_on           = [module.network]
 }
 
@@ -88,6 +90,7 @@ module "webapp" {
   moodle_site_shortname = var.moodle_site_shortname
   moodle_web_port       = var.moodle_web_port
   acr_id                = module.acr.acr_id
+  kv_vault_uri          = module.network.kv_vault_uri
   depends_on            = [module.network, module.postgres, module.acr]
 }
 

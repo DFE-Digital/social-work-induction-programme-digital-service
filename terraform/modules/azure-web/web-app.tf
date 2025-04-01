@@ -70,7 +70,7 @@ resource "azurerm_linux_web_app" "webapp" {
     http2_enabled          = true
     vnet_route_all_enabled = true
     ftps_state             = "Disabled"
-    minimum_tls_version    = "1.2"
+    minimum_tls_version    = "1.3"
 
     ip_restriction_default_action = "Deny"
 
@@ -79,10 +79,11 @@ resource "azurerm_linux_web_app" "webapp" {
       service_tag = "AzureFrontDoor.Backend"
     }
 
-    health_check_path                 = "/health"
-    health_check_eviction_time_in_min = 5
-
     container_registry_use_managed_identity = true
+    application_stack {
+      docker_registry_url = "https://${var.resource_name_prefix}acr.azurecr.io"
+      docker_image_name   = "dfe-digital/social-work-induction-programme-digital-service:latest"
+    }
   }
 
   logs {
@@ -106,7 +107,7 @@ resource "azurerm_linux_web_app" "webapp" {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "POSTGRES_DB"                         = var.moodle_db_name
     "POSTGRES_USER"                       = var.postgres_username
-    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${var.postgres_secret_uri})"
+    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${var.kv_vault_uri}secrets/${var.postgres_secret_uri})"
     "MOODLE_DB_TYPE"                      = var.moodle_db_type
     "MOODLE_DB_HOST"                      = var.moodle_db_host
     "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
@@ -117,6 +118,7 @@ resource "azurerm_linux_web_app" "webapp" {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    DOCKER_ENABLE_CI                      = "true"
   }
 
   lifecycle {
@@ -175,13 +177,13 @@ data "azurerm_linux_web_app" "ref" {
 resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
   key_vault_id            = var.kv_id
   tenant_id               = data.azurerm_client_config.az_config.tenant_id
-  object_id               = data.azurerm_linux_web_app.ref.identity.0.principal_id
+  object_id               = azurerm_linux_web_app.webapp.identity[0].principal_id
   key_permissions         = ["Get", "UnwrapKey", "WrapKey"]
   secret_permissions      = ["Get", "List"]
   certificate_permissions = ["Get"]
 
   lifecycle {
-    ignore_changes = [object_id, tenant_id]
+    ignore_changes = [tenant_id]
   }
 }
 

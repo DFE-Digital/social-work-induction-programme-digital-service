@@ -81,6 +81,12 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   #checkov:skip=CKV2_AZURE_57:Private link not required as using nsg
 }
 
+# Create the database for Moodle
+resource "azurerm_postgresql_flexible_server_database" "moodle" {
+  server_id = azurerm_postgresql_flexible_server.swipdb.id
+  name      = var.moodle_db_name # The name of your Moodle database
+}
+
 locals {
   // we're using timeadd and we can't pass the day directly need to be hours
   days_to_hours = var.days_to_expire * 24

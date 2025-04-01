@@ -65,6 +65,7 @@ jobs:
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
             ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:latest
           push: true
 
       - name: Output Docker Image Tag
