@@ -23,6 +23,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "service_plan_id" {
+  description = "ID of the app service plan"
+  type        = string
+}
+
 variable "web_app_name" {
   description = "Name of the web app"
   type        = string

@@ -2,7 +2,7 @@ resource "azurerm_linux_web_app" "webapp" {
   name                = var.web_app_name
   location            = var.location
   resource_group_name = var.resource_group
-  service_plan_id     = azurerm_service_plan.asp.id
+  service_plan_id     = var.service_plan_id
   https_only          = true
   identity {
     type = "SystemAssigned"

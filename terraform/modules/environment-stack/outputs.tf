@@ -52,3 +52,9 @@ output "subnet_webapps_id" {
   description = "The ID of the web apps subnet"
   value = azurerm_subnet.sn_webapps.id
 }
+
+output "service_plan_id" {
+  description = "ID of the app service plan"
+  value       = azurerm_service_plan.asp.id
+}
+

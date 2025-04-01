@@ -8,6 +8,7 @@ module "web-app" {
   web_app_name              = var.webapp_name
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_webapps_id
+  service_plan_id           = module.stack.service_plan_id
   tags                      = local.common_tags
 
   app_settings = {
