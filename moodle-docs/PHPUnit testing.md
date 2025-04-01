@@ -124,124 +124,71 @@ To run PHPUnit tests in a CI/CD pipeline, these are the envisaged next steps:
 The following is potentially a useful resources on Moodle CI:
 [Add support for running database replicas](https://github.com.mcas.ms/moodlehq/moodle-docker/issues/217)
 
-## Recommended core test suites to consider running
+## Recommended core test
 
-core_phpunit_testsuite
+<details>
 
-core_test_testsuite
+<summary>The following core test suites are recommended to be run.</summary>
 
-core_ddl_testsuite
+* core_phpunit_testsuite
+* core_test_testsuite
+* core_ddl_testsuite
+* core_dml_testsuite
+* core_testsuite
+* core_external_testsuite
+* core_favourites_testsuite
+* core_form_testsuite
+* core_files_testsuite
+* core_filter_testsuite
+* core_role_testsuite
+* core_cohort_testsuite
+* core_grades_testsuite
+* core_analytics_testsuite
+* core_availability_testsuite
+* core_backup_testsuite
+* core_badges_testsuite
+* core_blog_testsuite
+* core_customfield_testsuite
+* core_iplookup_testsuite
+* core_course_testsuite
+* core_courseformat_testsuite
+* core_privacy_testsuite
+* core_question_testsuite
+* core_cache_testsuite
+* core_calendar_testsuite
+* core_enrol_testsuite
+* core_group_testsuite
+* core_message_testsuite
+* core_notes_testsuite
+* core_tag_testsuite
+* core_rating_testsuite
+* core_repository_testsuite
+* core_userkey_testsuite
+* core_user_testsuite
+* core_webservice_testsuite
+* core_mnet_testsuite
+* core_completion_testsuite
+* core_comment_testsuite
+* core_search_testsuite
+* core_competency_testsuite
+* core_my_testsuite
+* core_auth_testsuite
+* core_block_testsuite
+* core_login_testsuite
+* core_plagiarism_testsuite
+* core_portfolio_testsuite
+* core_editor_testsuite
+* core_rss_testsuite
+* core_table_testsuite
+* core_h5p_testsuite
+* core_xapi_testsuite
+* core_contentbank_testsuite
+* core_payment_testsuite
+* core_reportbuilder_testsuite
+* core_adminpresets_testsuite
+* core_admin_testsuite
+* core_communication_testsuite
+* core_ai_testsuite
+* core_sms_testsuite
 
-core_dml_testsuite
-
-core_testsuite
-
-core_external_testsuite
-
-core_favourites_testsuite
-
-core_form_testsuite
-
-core_files_testsuite
-
-core_filter_testsuite
-
-core_role_testsuite
-
-core_cohort_testsuite
-
-core_grades_testsuite
-
-core_analytics_testsuite
-
-core_availability_testsuite
-
-core_backup_testsuite
-
-core_badges_testsuite
-
-core_blog_testsuite
-
-core_customfield_testsuite
-
-core_iplookup_testsuite
-
-core_course_testsuite
-
-core_courseformat_testsuite
-
-core_privacy_testsuite
-
-core_question_testsuite
-
-core_cache_testsuite
-
-core_calendar_testsuite
-
-core_enrol_testsuite
-
-core_group_testsuite
-
-core_message_testsuite
-
-core_notes_testsuite
-
-core_tag_testsuite
-
-core_rating_testsuite
-
-core_repository_testsuite
-
-core_userkey_testsuite
-
-core_user_testsuite
-
-core_webservice_testsuite
-
-core_mnet_testsuite
-
-core_completion_testsuite
-
-core_comment_testsuite
-
-core_search_testsuite
-
-core_competency_testsuite
-
-core_my_testsuite
-
-core_auth_testsuite
-
-core_block_testsuite
-
-core_login_testsuite
-
-core_plagiarism_testsuite
-
-core_portfolio_testsuite
-
-core_editor_testsuite
-
-core_rss_testsuite
-
-core_table_testsuite
-
-core_h5p_testsuite
-
-core_xapi_testsuite
-
-core_contentbank_testsuite
-
-core_payment_testsuite
-
-core_reportbuilder_testsuite
-
-core_adminpresets_testsuite
-
-core_admin_testsuite
-
-core_communication_testsuite
-
-core_ai_testsuite
-
-core_sms_testsuite
+</details>
