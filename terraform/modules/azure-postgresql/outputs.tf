@@ -1,3 +1,8 @@
+output "postgres_subnet_id" {
+  description = "The ID of the Postgresql subnet"
+  value       = azurerm_subnet.postgres_sn.id  
+}
+
 output "postgres_secret_uri" {
   description = "The Key Vault entry for the database password"
   value       = azurerm_key_vault_secret.database_password.name

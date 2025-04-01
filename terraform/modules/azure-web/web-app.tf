@@ -173,6 +173,11 @@ data "azurerm_linux_web_app" "ref" {
   resource_group_name = azurerm_linux_web_app.webapp.resource_group_name
 }
 
+resource "azurerm_app_service_virtual_network_swift_connection" "swift_webapp" {
+  app_service_id = azurerm_linux_web_app.webapp.id
+  subnet_id      = var.postgres_subnet_id
+}
+
 # Grants permissions to key vault for the managed identity of the App Service
 resource "azurerm_key_vault_access_policy" "webapp_kv_app_service" {
   key_vault_id            = var.kv_id
