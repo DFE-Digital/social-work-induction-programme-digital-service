@@ -22,7 +22,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_vnet_link"
 }
 
 resource "azurerm_subnet" "sn_postgres" {
-  name                 = "${var.resource_name_prefix}-sn"
+  name                 = "${var.resource_name_prefix}-subnet-postgres"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet_stack.name
   address_prefixes     = ["10.0.2.0/24"]
