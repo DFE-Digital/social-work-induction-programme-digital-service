@@ -31,6 +31,6 @@ module "web-app" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "moodle" {
-  server_id = azurerm_postgresql_flexible_server.swipdb.id
+  server_id = module.stack.db_server_id
   name      = var.moodle_db_name
 }

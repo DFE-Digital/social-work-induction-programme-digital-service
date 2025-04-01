@@ -24,7 +24,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_vnet_link"
 resource "azurerm_subnet" "sn_postgres" {
   name                 = "${var.resource_name_prefix}-sn"
   resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.vnet_name
+  virtual_network_name = azurerm_virtual_network.vnet_stack.vnet_name
   address_prefixes     = ["10.0.2.0/24"]
   service_endpoints    = ["Microsoft.Storage"]
 
@@ -52,8 +52,8 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = var.location
   version                       = "15"
-  delegated_subnet_id           = azurerm_subnet.postgres_sn.id
-  private_dns_zone_id           = azurerm_private_dns_zone.private_dns.id
+  delegated_subnet_id           = azurerm_subnet.sn_postgres.id
+  private_dns_zone_id           = azurerm_private_dns_zone.private_dns_postgres.id
   administrator_login           = "psqladmin"
   administrator_password        = random_password.password.result
   zone                          = "3"
@@ -63,7 +63,6 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   geo_redundant_backup_enabled  = false
   public_network_access_enabled = false
   tags                          = var.tags
-  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.vnetlink]
 
   lifecycle {
     ignore_changes = [tags]

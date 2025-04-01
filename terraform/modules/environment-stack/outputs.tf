@@ -5,12 +5,12 @@ output "resource_group_name" {
 
 output "vnet_id" {
   description = "ID of the Virtual Network"
-  value       = azurerm_virtual_network.vnet.id
+  value       = azurerm_virtual_network.vnet_stack.id
 }
 
 output "vnet_name" {
   description = "Name of the Virtual Network"
-  value       = azurerm_virtual_network.vnet.name
+  value       = azurerm_virtual_network.vnet_stack.name
 }
 
 output "kv_id" {
@@ -30,7 +30,7 @@ output "db_server_id" {
 
 output "postgres_db_host" {
   description = "The postgresql database server"
-  value       = azurerm_private_dns_zone.private_dns.name
+  value       = azurerm_private_dns_zone.private_dns_postgres.name
 }
 
 output "postgres_username" {
