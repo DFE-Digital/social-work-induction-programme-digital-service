@@ -81,25 +81,6 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   #checkov:skip=CKV2_AZURE_57:Private link not required as using nsg
 }
 
-resource "azurerm_private_endpoint" "pg_private_endpoint" {
-  name                = "${var.resource_name_prefix}-pg-private-endpoint"
-  location            = var.location
-  resource_group_name = var.resource_group
-  subnet_id           = azurerm_subnet.postgres_sn.id
-
-  private_service_connection {
-    name                           = "${var.resource_name_prefix}-pg-connection"
-    private_connection_resource_id = azurerm_subnet.postgres_sn.id
-    subresource_names              = ["postgresqlServer"]
-    is_manual_connection           = false
-  }
-
-  private_dns_zone_group {
-    name                 = "${var.resource_name_prefix}-pg-private-endpoint-dns-zone-group"
-    private_dns_zone_ids = [ azurerm_private_dns_zone.private_dns.id ]
-  }
-}
-
 # Create the database for Moodle
 resource "azurerm_postgresql_flexible_server_database" "moodle" {
   server_id = azurerm_postgresql_flexible_server.swipdb.id

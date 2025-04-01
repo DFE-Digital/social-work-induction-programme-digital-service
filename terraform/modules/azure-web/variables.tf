@@ -117,6 +117,10 @@ variable "postgres_subnet_id" {
   type        = string
 }
 
+variable "postgres_private_dns_zone_id" {
+  description = "The ID of the Postgresql private DNS zone"
+  type        = string
+}
 
 variable "kv_vault_uri" {
   description = "URI for the key vault"

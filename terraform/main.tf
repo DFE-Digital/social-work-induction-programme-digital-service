@@ -68,31 +68,32 @@ module "acr" {
 module "webapp" {
   source = "./modules/azure-web"
 
-  environment           = var.environment
-  location              = var.azure_region
-  resource_group        = azurerm_resource_group.rg.name
-  resource_name_prefix  = var.resource_name_prefix
-  asp_sku               = var.asp_sku
-  webapp_worker_count   = var.webapp_worker_count
-  webapp_name           = var.webapp_name
-  tags                  = local.common_tags
-  kv_id                 = module.network.kv_id
-  moodle_db_name        = var.moodle_db_name
-  postgres_username     = module.postgres.postgres_username
-  postgres_secret_uri   = module.postgres.postgres_secret_uri
-  moodle_db_type        = var.moodle_db_type
-  moodle_db_host        = module.postgres.postgres_db_host
-  moodle_db_prefix      = var.moodle_db_prefix
-  moodle_admin_user     = var.moodle_admin_user
-  moodle_admin_password = var.moodle_admin_password
-  moodle_admin_email    = var.moodle_admin_email
-  moodle_site_fullname  = var.moodle_site_fullname
-  moodle_site_shortname = var.moodle_site_shortname
-  moodle_web_port       = var.moodle_web_port
-  acr_id                = module.acr.acr_id
-  postgres_subnet_id    = module.postgres.postgres_subnet_id
-  kv_vault_uri          = module.network.kv_vault_uri
-  depends_on            = [module.network, module.postgres, module.acr]
+  environment                  = var.environment
+  location                     = var.azure_region
+  resource_group               = azurerm_resource_group.rg.name
+  resource_name_prefix         = var.resource_name_prefix
+  asp_sku                      = var.asp_sku
+  webapp_worker_count          = var.webapp_worker_count
+  webapp_name                  = var.webapp_name
+  tags                         = local.common_tags
+  kv_id                        = module.network.kv_id
+  moodle_db_name               = var.moodle_db_name
+  postgres_username            = module.postgres.postgres_username
+  postgres_secret_uri          = module.postgres.postgres_secret_uri
+  moodle_db_type               = var.moodle_db_type
+  moodle_db_host               = module.postgres.postgres_db_host
+  moodle_db_prefix             = var.moodle_db_prefix
+  moodle_admin_user            = var.moodle_admin_user
+  moodle_admin_password        = var.moodle_admin_password
+  moodle_admin_email           = var.moodle_admin_email
+  moodle_site_fullname         = var.moodle_site_fullname
+  moodle_site_shortname        = var.moodle_site_shortname
+  moodle_web_port              = var.moodle_web_port
+  acr_id                       = module.acr.acr_id
+  postgres_subnet_id           = module.postgres.postgres_subnet_id
+  postgres_private_dns_zone_id = module.postgres.postgres_private_dns_zone_id
+  kv_vault_uri                 = module.network.kv_vault_uri
+  depends_on                   = [module.network, module.postgres, module.acr]
 }
 
 module "frontdoor" {

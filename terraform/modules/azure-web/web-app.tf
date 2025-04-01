@@ -173,6 +173,25 @@ data "azurerm_linux_web_app" "ref" {
   resource_group_name = azurerm_linux_web_app.webapp.resource_group_name
 }
 
+resource "azurerm_private_endpoint" "app_pg_private_endpoint" {
+  name                = "${var.resource_name_prefix}-pg-private-endpoint"
+  location            = var.location
+  resource_group_name = var.resource_group
+  subnet_id           = var.postgres_subnet_id
+
+  private_service_connection {
+    name                           = "${var.resource_name_prefix}-pg-connection"
+    private_connection_resource_id = azurerm_linux_web_app.webapp.id
+    subresource_names              = ["sites"]
+    is_manual_connection           = false
+  }
+
+  private_dns_zone_group {
+    name                 = "${var.resource_name_prefix}-pg-private-endpoint-dns-zone-group"
+    private_dns_zone_ids = [ var.postgres_private_dns_zone_id ]
+  }
+}
+
 resource "azurerm_app_service_virtual_network_swift_connection" "swift_webapp" {
   app_service_id = azurerm_linux_web_app.webapp.id
   subnet_id      = var.postgres_subnet_id
