@@ -85,7 +85,7 @@ resource "azurerm_private_endpoint" "pg_private_endpoint" {
   name                = "${var.resource_name_prefix}-pg-private-endpoint"
   location            = var.location
   resource_group_name = var.resource_group
-  subnet_id           = azurerm_subnet.private_endpoint_subnet.id
+  subnet_id           = azurerm_subnet.postgres_sn.id
 
   private_service_connection {
     name                           = "${var.resource_name_prefix}-pg-connection"
