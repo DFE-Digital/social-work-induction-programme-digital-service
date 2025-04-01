@@ -1,0 +1,58 @@
+variable "environment" {
+  description = "Environment to deploy resources"
+  type        = string
+}
+
+variable "location" {
+  description = "Name of the Azure region to deploy resources"
+  type        = string
+}
+
+variable "resource_name_prefix" {
+  description = "Prefix for resource names"
+  type        = string
+}
+
+variable "tags" {
+  description = "Resource tags"
+  type        = map(string)
+}
+
+variable "asp_sku" {
+  type = string
+  description = "The app service plan SKU"
+  default = "S3"
+}
+
+variable "autoscale_rule_default_capacity" {
+  type = number
+  description = "The default app service capacity"
+  default = 1
+}
+
+variable "autoscale_rule_minimum_capacity" {
+  type = number
+  description = "The minimum app service capacity"
+  default = 1
+}
+
+variable "autoscale_rule_maximum_capacity" {
+  type = number
+  description = "The maximum app service capacity"
+  default = 2
+}
+
+variable "acr_sku" {
+  description = "Azure Container Registry SKU"
+  type        = string
+}
+
+variable "admin_enabled" {
+  description = "Is Azure Container Registry admin enabled?"
+  type        = string
+}
+
+variable "webapp_storage_account_name"  {
+  description = "Storage Account name"
+  type        = string
+}

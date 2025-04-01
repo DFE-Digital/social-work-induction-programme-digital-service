@@ -99,9 +99,3 @@ variable "moodle_admin_email" {
   description = "The email address to use for the admin user on Moodle"
   type        = string
 }
-
-variable "moodle_db_type" {
-  description = "The database type for Moodle"
-  type        = string
-  default     = "pgsql"
-}
