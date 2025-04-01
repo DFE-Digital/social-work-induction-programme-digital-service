@@ -36,7 +36,7 @@ Had to point `behat_wwwroot` to `http://moodle.ddev.site` as `http://host.docker
 
 `php admin/tool/behat/cli/init.php`
 
-8. Exited the ddev ssh (run `exit`) and installed selenium web driver, then ran `ddev restart`:
+8. Exited the ddev ssh (run `exit`) and installed selenium web driver, then ran `ddev restart`. You don’t need to setup java etc locally for selenium. You can run this in ddev via ([A DDEV service for running standalone Chrome](https://github.com.mcas.ms/ddev/ddev-selenium-standalone-chrome))
 
 `ddev add-on get ddev/ddev-selenium-standalone-chrome`
 `ddev restart`
@@ -68,4 +68,4 @@ In VSCode, updated the moodle-browser-config `config.php` file with the correct 
 
 ## Accessibility tests
 
-The Moodle Behat tests also include accessibility checks.
+The Moodle Behat tests also include accessibility checks. For examples, look for `@accessibility` in the Behat test `.feature` files.
