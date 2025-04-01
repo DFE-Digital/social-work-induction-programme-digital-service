@@ -72,33 +72,6 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   #checkov:skip=CKV2_AZURE_57:Private link not required as using nsg
 }
 
-resource "azurerm_private_endpoint" "pe_postgres" {
-  name                = "${var.resource_name_prefix}-pe-postgres"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.sn_postgres.id
-  custom_network_interface_name = "${var.resource_name_prefix}-cnin-postgres"
-  tags = var.tags
-
-  ip_configuration {
-    name                       = "${var.resource_name_prefix}-ipc-postgres"
-    private_ip_address         = "10.0.2.2"
-    subresource_name           = "postgresqlServer" 
-  }
-
- private_service_connection {
-    name                           = "${var.resource_name_prefix}-psc-postgres"
-    private_connection_resource_id = azurerm_postgresql_flexible_server.swipdb.id
-    is_manual_connection           = false
-    subresource_names              = [ "postgresqlServer" ]
-  }
-
-  private_dns_zone_group {
-    name                 = azurerm_private_dns_zone.private_dns_postgres.name
-    private_dns_zone_ids = [ azurerm_private_dns_zone.private_dns_postgres.id ]
-  }
-}
-
 resource "azurerm_key_vault_secret" "database_password" {
   name            = "postgresql--admin--password"
   value           = azurerm_postgresql_flexible_server.swipdb.administrator_password

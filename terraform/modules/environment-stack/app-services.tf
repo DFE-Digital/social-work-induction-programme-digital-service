@@ -4,6 +4,7 @@ resource "azurerm_subnet" "sn_webapps" {
   virtual_network_name              = azurerm_virtual_network.vnet_stack.name
   address_prefixes                  = ["10.0.3.0/24"]
   private_endpoint_network_policies = "Disabled"
+  service_endpoints                 = ["Microsoft.Sql"]
 
   delegation {
     name = "delegation"
@@ -92,4 +93,12 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
   lifecycle {
     ignore_changes = [tags]
   }
+}
+
+resource "azurerm_postgresql_firewall_rule" "app_subnet_rule" {
+  name                = "AllowAppSubnet"
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_postgresql_flexible_server.swipdb.name
+  start_ip_address    = "10.0.3.0"
+  end_ip_address      = "10.0.3.255"
 }
