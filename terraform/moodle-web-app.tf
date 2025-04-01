@@ -1,14 +1,14 @@
 module "web-app" {
   source = "./modules/web-app"
 
-  environment                  = var.environment
-  location                     = var.azure_region
-  resource_group               = module.stack.resource_group_name
-  resource_name_prefix         = var.resource_name_prefix
-  web_app_name                 = var.webapp_name
-  front_door_profile_web_id    = module.stack.front_door_profile_web_id
-  subnet_webapps_id            = module.stack.subnet_webapps_id
-  tags                         = local.common_tags
+  environment               = var.environment
+  location                  = var.azure_region
+  resource_group            = module.stack.resource_group_name
+  resource_name_prefix      = var.resource_name_prefix
+  web_app_name              = var.webapp_name
+  front_door_profile_web_id = module.stack.front_door_profile_web_id
+  subnet_webapps_id         = module.stack.subnet_webapps_id
+  tags                      = local.common_tags
 
   app_settings = {
     "ENVIRONMENT"                         = var.environment
