@@ -76,7 +76,7 @@ resource "azurerm_private_endpoint" "pe_postgres" {
   name                = "${var.resource_name_prefix}-pe-postgres"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.postgres_sn.id
+  subnet_id           = azurerm_subnet.sn_postgres.id
   custom_network_interface_name = "${var.resource_name_prefix}-cnin-postgres"
   tags = var.tags
 
