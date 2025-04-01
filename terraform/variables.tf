@@ -51,12 +51,6 @@ variable "admin_enabled" {
   type        = string
 }
 
-variable "moodle_db_type" {
-  description = "The database type for Moodle"
-  type        = string
-  default     = "pgsql"
-}
-
 variable "moodle_db_name" {
   description = "The name of the database"
   type        = string
