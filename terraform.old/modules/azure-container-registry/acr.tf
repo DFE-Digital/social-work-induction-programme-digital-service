@@ -7,11 +7,7 @@ resource "azurerm_container_registry" "acr" {
   tags                = var.tags
 
   lifecycle {
-    ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"]
-    ]
+    ignore_changes = [tags]
   }
 
   #checkov:skip=CKV_AZURE_164:Content Trusted images not available on Basic SKU

@@ -95,10 +95,9 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
   }
 }
 
-resource "azurerm_postgresql_firewall_rule" "app_subnet_rule" {
+resource "azurerm_postgresql_flexible_server_firewall_rule" "app_subnet_rule" {
   name                = "AllowAppSubnet"
-  resource_group_name = azurerm_resource_group.rg.name
-  server_name         = azurerm_postgresql_flexible_server.swipdb.name
+  server_id           = azurerm_postgresql_flexible_server.swipdb.id
   start_ip_address    = "10.0.3.0"
   end_ip_address      = "10.0.3.255"
 }
