@@ -74,13 +74,15 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
 
 data "external" "postgres_private_ip" {
   program = ["bash", "-c", <<EOT
-    az network private-dns record-set list \
+    ip=$(az network private-dns record-set list \
       --resource-group ${azurerm_resource_group.rg.name} \
       --zone-name ${azurerm_private_dns_zone.private_dns_postgres.name} \
       --query "[?type=='Microsoft.Network/privateDnsZones/A'].aRecords[0].ipv4Address" \
-      --output tsv
+      --output tsv)
+    jq -n --arg ip "$ip" '{"ip_address": $ip}'
   EOT
   ]
+  depends_on = [azurerm_private_dns_zone.private_dns_postgres, azurerm_postgresql_flexible_server.swipdb]
 }
 
 resource "azurerm_private_dns_a_record" "dns_a_postgres" {
@@ -88,7 +90,7 @@ resource "azurerm_private_dns_a_record" "dns_a_postgres" {
   zone_name           = azurerm_private_dns_zone.private_dns_postgres.name
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = "10"
-  records             = [data.external.postgres_private_ip.result]
+  records             = [data.external.postgres_private_ip.result.ip_address]
   tags                = var.tags
 
   lifecycle {
