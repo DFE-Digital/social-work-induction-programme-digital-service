@@ -86,7 +86,7 @@ data "external" "postgres_private_ip" {
 }
 
 resource "azurerm_private_dns_a_record" "dns_a_postgres" {
-  name                = "${var.resource_name_prefix}-dns-a-postgres"
+  name                = azurerm_postgresql_flexible_server.swipdb.name
   zone_name           = azurerm_private_dns_zone.private_dns_postgres.name
   resource_group_name = azurerm_resource_group.rg.name
   ttl                 = "10"

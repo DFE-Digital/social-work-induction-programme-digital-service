@@ -30,7 +30,7 @@ output "db_server_id" {
 
 output "postgres_db_host" {
   description = "The postgresql database server"
-  value       = azurerm_private_dns_zone.private_dns_postgres.name
+  value       = azurerm_private_dns_a_record.dns_a_postgres.fqdn
 }
 
 output "postgres_username" {
