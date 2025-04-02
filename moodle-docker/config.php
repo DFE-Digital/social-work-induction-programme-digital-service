@@ -7,27 +7,10 @@ $CFG = new stdClass();
 $CFG->dbtype = getenv('MOODLE_DB_TYPE');
 $CFG->dblibrary = 'native';
 $CFG->dbhost = getenv('MOODLE_DB_HOST');
-print_r($CFG->dbhost);
-$result = dns_get_record($CFG->dbhost);
-print_r($result);
-$connection = @fsockopen($CFG->dbhost, 5432);
-if (is_resource($connection))
-{
-    echo '<h2>' . $CFG->dbhost . ':' . 5432 . ' ' . '(' . getservbyport(5432, 'tcp') . ') is open.</h2>' . "\n";
-
-    fclose($connection);
-}
-else
-{
-    echo '<h2>' . $CFG->dbhost . ':' . 5432 . ' is not responding.</h2>' . "\n";
-}
-
 $CFG->dbname = getenv('POSTGRES_DB');
-print_r($CFG->dbname);
 $CFG->dbuser = getenv('POSTGRES_USER');
-print_r($CFG->dbuser);
+$CFG->dbpass = getenv('POSTGRES_PASSWORD');
 $CFG->prefix = getenv('MOODLE_DB_PREFIX');
-print_r($CFG->prefix);
 $CFG->dboptions = [
   'dbpersist' => 0,
   'dbport' => 5432,
