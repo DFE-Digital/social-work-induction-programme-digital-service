@@ -20,13 +20,7 @@ variable "asp_sku" {
   type        = string
 }
 
-variable "webapp_worker_count" {
-  default     = 1
-  description = "Number of Workers for the App Service Plan"
-  type        = string
-}
-
-variable "webapp_name" {
+variable "moodle_webapp_name" {
   description = "Name for the Web Application"
   type        = string
 }
@@ -98,4 +92,14 @@ variable "moodle_db_type" {
   description = "The database type for Moodle"
   type        = string
   default     = "pgsql"
+}
+
+variable "trace_utility_admin_user" {
+  description = "The basic auth admin user for trace utility login"
+  type        = string
+}
+
+variable "trace_utility_admin_password" {
+  description = "The basic auth admin password for trace utility login"
+  type        = string
 }

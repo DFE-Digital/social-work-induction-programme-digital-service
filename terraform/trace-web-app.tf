@@ -1,4 +1,4 @@
-module "web_app_moodle" {
+module "web_app_trace" {
   source = "./modules/web-app"
 
   environment               = var.environment
@@ -29,13 +29,6 @@ module "web_app_moodle" {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
-    "TRACE_UTILITY_ADMIN_USER"            = var.trace_utility_admin_user
-    "TRACE_UTILITY_ADMIN_PASSWORD"        = var.trace_utility_admin_password
     DOCKER_ENABLE_CI                      = "true"
   }
-}
-
-resource "azurerm_postgresql_flexible_server_database" "moodle" {
-  server_id = module.stack.db_server_id
-  name      = var.moodle_db_name
 }

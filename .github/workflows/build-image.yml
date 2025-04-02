@@ -1,4 +1,4 @@
-name: Build Image and Publish to GCR
+name: Build Image and Publish to ACR
 
 on:
   workflow_call:
@@ -9,18 +9,24 @@ on:
       checked-out-sha:
         type: string
         required: true
+      docker-build-file:
+        type: string
+        required: true
+      org-name:
+        type: string
+        required: true
+      docker-image-name:
+        type: string
+        required: true
+
     outputs:
       dockerImageTag:
-        description: "The image written to the GCR"
+        description: "The image written to the ACR"
         value: ${{ jobs.build-image.outputs.dockerImageTag }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.environment }}
   cancel-in-progress: true
-
-env:
-  DOCKER_IMAGE: social-work-induction-programme-digital-service
-  ORG_NAME: dfe-digital
 
 jobs:
   build-image:
@@ -61,13 +67,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./
-          file: ./moodle-docker/Dockerfile-github
+          file: ${{ inputs.docker-build-file }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:latest
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
           push: true
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.ORG_NAME }}/${{ env.DOCKER_IMAGE }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "dockerImageTag=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT

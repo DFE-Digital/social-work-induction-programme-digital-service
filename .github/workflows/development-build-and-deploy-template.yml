@@ -1,18 +1,28 @@
 name: Development build & deploy
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      docker-build-file:
+        type: string
+        required: true
+      shortimage-name:
+        required: true
+        type: string
 
 env:
   REGISTRY_NAME: s205d01acr
-  IMAGE_NAME: social-work-induction-programme-digital-service
   ORG_NAME: dfe-digital
+  FULL_IMAGE_NAME: swip-digital-service-${{ inputs.shortimage-name }}
 
 jobs:
   set-env:
     runs-on: ubuntu-24.04
     name: Set Environment Values
-    environment: Dev
+    environment: ${{ inputs.environment }}
     outputs:
       branch: ${{ steps.var.outputs.branch }}
       checked-out-sha: ${{ steps.var.outputs.checked-out-sha }}
@@ -36,12 +46,15 @@ jobs:
     with:
       branch: ${{ needs.set-env.outputs.branch }}
       checked-out-sha: ${{ needs.set-env.outputs.checked-out-sha }}
+      docker-build-file: ${{ inputs.docker-build-file }}
+      org-name: ${{ env.ORG_NAME }}
+      docker-image-name: ${{ inputs.image-name }}
 
   deploy-to-dev:
     runs-on: ubuntu-24.04
     needs: create-and-publish-image
     name: Deploy to development
-    environment: Dev
+    environment: ${{ inputs.environment }}
     # Permissions for OIDC authentication
     permissions:
       id-token: write
@@ -64,4 +77,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.WEBAPP_NAME }}
-          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.ORG_NAME }}/${{ env.IMAGE_NAME}}:latest
+          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.ORG_NAME }}/{{ env.FULL_IMAGE_NAME }}:latest
