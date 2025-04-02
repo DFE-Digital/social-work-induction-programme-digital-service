@@ -23,6 +23,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "key_vault_id" {
+  description = "ID of the key vault"
+  type        = string
+}
+
 variable "service_plan_id" {
   description = "ID of the app service plan"
   type        = string

@@ -1,4 +1,3 @@
-# Create Key Vault
 data "azurerm_client_config" "az_config" {}
 
 resource "azurerm_key_vault" "kv" {
