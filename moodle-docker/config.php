@@ -26,8 +26,6 @@ $CFG->dbname = getenv('POSTGRES_DB');
 print_r($CFG->dbname);
 $CFG->dbuser = getenv('POSTGRES_USER');
 print_r($CFG->dbuser);
-$CFG->dbpass = getenv('POSTGRES_PASSWORD');
-print_r($CFG->dbpass);
 $CFG->prefix = getenv('MOODLE_DB_PREFIX');
 print_r($CFG->prefix);
 $CFG->dboptions = [
