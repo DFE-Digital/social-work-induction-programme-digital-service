@@ -80,7 +80,7 @@ Navigate to the `AuthorizeAccess` project in the `csc-social-work-ecf-digital-au
 `    -subj "//CN=localhost" \`
 `    -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"`
 
-Then generate a `pfx` file based on the key and the certificate  and set a password:
+Then generate a `pfx` file based on the key and the certificate  and set a password (the password must match the app settings in the SWIP auth service):
 `openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:PASSWORD`
 
 If using Windows, double-click on the generated `aspnet-dev-cert.pfx` file and select Current User for the Store Location. Continue with the setup until you have to select the certificate store. Select to use Trusted Root Certification Authorities and complete the installation process. 
