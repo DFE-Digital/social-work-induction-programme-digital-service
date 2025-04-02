@@ -23,6 +23,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "acr_id" {
+  description = "ID of the Container Registry"
+  type        = string
+}
+
 variable "key_vault_id" {
   description = "ID of the key vault"
   type        = string
