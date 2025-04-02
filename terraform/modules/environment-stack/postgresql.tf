@@ -72,6 +72,30 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   #checkov:skip=CKV2_AZURE_57:Private link not required as using nsg
 }
 
+data "external" "postgres_private_ip" {
+  program = ["bash", "-c", <<EOT
+    az network private-dns record-set list \
+      --resource-group ${azurerm_resource_group.rg.name} \
+      --zone-name ${azurerm_private_dns_zone.private_dns_postgres.name} \
+      --query "[?type=='Microsoft.Network/privateDnsZones/A'].aRecords[0].ipv4Address" \
+      --output tsv
+  EOT
+  ]
+}
+
+resource "azurerm_private_dns_a_record" "dns_a_postgres" {
+  name                = "${var.resource_name_prefix}-dns-a-postgres"
+  zone_name           = azurerm_private_dns_zone.private_dns_postgres.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = "10"
+  records             = [data.external.postgres_private_ip.result]
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_key_vault_secret" "database_password" {
   name            = "postgresql--admin--password"
   value           = azurerm_postgresql_flexible_server.swipdb.administrator_password
