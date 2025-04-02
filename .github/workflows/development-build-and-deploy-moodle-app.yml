@@ -1,0 +1,14 @@
+name: Development build & deploy Moodle app
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-and-publish-image:
+    name: Build & Deploy Moodle
+    uses: ./.github/workflows/development-build-and-deploy-template.yml
+    secrets: inherit
+    with:
+      environment: Development
+      docker-build-file: ./moodle-docker/Dockerfile-github
+      image_name: swip-digital-service-moodle-app

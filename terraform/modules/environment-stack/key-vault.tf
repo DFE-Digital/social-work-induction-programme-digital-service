@@ -1,9 +1,8 @@
-# Create Key Vault
 data "azurerm_client_config" "az_config" {}
 
 resource "azurerm_key_vault" "kv" {
-  name                        = "${var.resource_name_prefix}-kv-01"
-  resource_group_name         = var.resource_group
+  name                        = "${var.resource_name_prefix}-kv-1"
+  resource_group_name         = azurerm_resource_group.rg.name
   location                    = var.location
   tenant_id                   = data.azurerm_client_config.az_config.tenant_id
   enabled_for_disk_encryption = true
@@ -12,11 +11,7 @@ resource "azurerm_key_vault" "kv" {
   sku_name                    = "standard"
 
   lifecycle {
-    ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"]
-    ]
+    ignore_changes = [tags]
   }
 
   #checkov:skip=CKV_AZURE_109:Access Policies configured

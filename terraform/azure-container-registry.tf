@@ -1,17 +1,13 @@
 resource "azurerm_container_registry" "acr" {
   name                = "${var.resource_name_prefix}acr"
-  resource_group_name = var.resource_group
-  location            = var.location
+  resource_group_name = module.stack.resource_group_name
+  location            = var.azure_region
   sku                 = var.acr_sku
   admin_enabled       = var.admin_enabled
-  tags                = var.tags
+  tags                = local.common_tags
 
   lifecycle {
-    ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"]
-    ]
+    ignore_changes = [tags]
   }
 
   #checkov:skip=CKV_AZURE_164:Content Trusted images not available on Basic SKU

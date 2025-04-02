@@ -1,6 +1,6 @@
 resource "azurerm_storage_account" "sa" {
-  name                             = var.webapp_storage_account_name
-  resource_group_name              = var.resource_group
+  name                             = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
+  resource_group_name              = azurerm_resource_group.rg.name
   location                         = var.location
   account_tier                     = "Standard"
   min_tls_version                  = "TLS1_2"
@@ -43,7 +43,7 @@ resource "azurerm_storage_account" "sa" {
 resource "azurerm_key_vault_secret" "storage_connection_string" {
   name         = "Storage--ConnectionString"
   value        = azurerm_storage_account.sa.primary_connection_string
-  key_vault_id = var.kv_id
+  key_vault_id = azurerm_key_vault.kv.id
   content_type = "connection string"
   #checkov:skip=CKV_AZURE_41:Connection string dont need expiry date
 }
