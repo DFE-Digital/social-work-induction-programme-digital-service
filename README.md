@@ -74,20 +74,24 @@ Once the OIDC plugin is installed and configured, the login page will be bypasse
 For the Moodle instance running in a container to connect with the SWIP authentication service running on localhost, custom SSL certificates are needed. These steps are carried out once, as part of local Moodle setup.
 Navigate to the `AuthorizeAccess` project in the `csc-social-work-ecf-digital-auth` repository on your machine and open Git bash in that location. From Git bash, generate a self-signed SSL certificate using openssl:
 
-`openssl req -x509 -nodes -days 365 -newkey rsa:2048 \`
-`    -keyout aspnet-dev-cert.key \`
-`    -out aspnet-dev-cert.crt \`
-`    -subj "//CN=localhost" \`
-`    -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"`
+```sh
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout aspnet-dev-cert.key \
+    -out aspnet-dev-cert.crt \
+    -subj "//CN=localhost" \
+    -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"
+```
 
 Then generate a `pfx` file based on the key and the certificate  and set a password (the password must match the app settings in the SWIP auth service):
 `openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:PASSWORD`
 
-If using Windows, double-click on the generated `aspnet-dev-cert.pfx` file and select Current User for the Store Location. Continue with the setup until you have to select the certificate store. Select to use Trusted Root Certification Authorities and complete the installation process. 
+You will need administrative privileges on your local machine to install the certificate.
+
+If using Windows, double-click on the generated `aspnet-dev-cert.pfx` file and select "Local machine" for the "Store Location". Continue with the setup until you have to select the certificate store. Select to use Trusted Root Certification Authorities and complete the installation process. 
 
 If using a Mac, run:
 `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain aspnet-dev-cert.crt`
- apparently
+
 Or, you can manually add the certificate via Keychain Access:
 - Open Keychain Access
 - Press Cmd + Space, type "Keychain Access", and hit Enter.
@@ -99,11 +103,9 @@ Or, you can manually add the certificate via Keychain Access:
 - Expand "Trust" and set "Always Trust".
 - Close the window and enter your password to confirm.
 
-You will need administrative privileges on your local machine to do this.
-
 Next:
 - create a `custom_certs` folder under `.ddev` where your Moodle code is stored (e.g. `\\wsl.localhost\Ubuntu\home\{username}\repos\social-work-induction-programme-digital-service\moodle-app\.ddev`) 
-- copy the `aspnet-dev-cert.key` and `aspnet-dev-cert.crt` files to the `custom-certs` directory
+- copy the `aspnet-dev-cert.key` and `aspnet-dev-cert.crt` files to the `custom_certs` directory
 - rename the files to the name of the ddev project (`moodle.key` and `moodle.crt`)
 - open the moodle certificate file and select "Install Certificate..."; follow the same steps as above to select the Trusted Root certificate store and install the certificate
 

@@ -50,7 +50,7 @@ else
     echo "Token endpoint:"
     moosh config-set tokenendpoint https://host.docker.internal:7236/oauth2/token auth_oidc
     echo "Scopes:"
-    moosh config-set oidcscope "openid profile roles email social_worker_record organisation auth_oidc"
+    moosh config-set oidcscope "openid profile roles email social_worker_record organisation" auth_oidc
     echo "Identity provider name:"
     moosh config-set providername "GOV.UK OneLogin" auth_oidc
     echo "Force redirect:"
@@ -59,7 +59,7 @@ else
     moosh config-set forcelogin 1
     echo "Silent login:"
     moosh config-set silentloginmode 1 auth_oidc
-    echo "Single sign-on:"
+    echo "Single sign out:"
     moosh config-set single_sign_off 1 auth_oidc
     echo "Logout URI:"
     moosh config-set logouturi https://localhost:7236/oauth2/logout auth_oidc
