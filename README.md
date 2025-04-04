@@ -49,17 +49,19 @@ Moodle integrates with the SWIP authentication service for users to log in via s
 
 #### Install and configure OIDC plugin
 
-The following steps are required to install and configure the plugin. These should be run after `ddev start` and if this is done as part of initial moodle setup on your local environment, after the commands in [Running the service](#running-the-service). 
+The following steps are required to install and configure the plugin. These should be carried out after `ddev start`. If this is done as part of initial moodle setup on your local environment, then follow this guide after you complete the setup in [Running the service](#running-the-service). 
 
 1. Run `ddev install-moosh`
+
 The command will download and install the [moosh plugin](https://moosh-online.com/) which exposes Moodle functionality to the command line. This will be used to configure the OIDC plugin.
 
 2. Run `ddev install-oidc-plugin`
+
 The command will download, install and configure the OIDC plugin. It will also purge all caches, which is needed for the config changes to take effect.
 This script can also take an OIDC plugin release URL as a parameter, which will be used instead of the default release URL.
 If the OIDC plugin is already installed, the script will exit.
 
-Once the OIDC plugin is installed and configured, the login page will be bypassed by default. To access Moodle as admin use the URL https://moodle.ddev.site/?noredirect=1.
+Once the OIDC plugin is installed and configured, the login page will be bypassed by default. To access Moodle as admin, use the query string parameter `noredirect=1`, e.g. https://moodle.ddev.site/?noredirect=1.
 
 #### Generate and install SSL certificates
 
@@ -103,7 +105,11 @@ Next:
 
 #### Testing the SSO integration
 To test the integration, ensure there is an account in the SWIP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database. 
+
 To create this account in Moodle, navigate to `Site administration > Users > Accounts > Add a new user`. Set the `username` to the value of the email address stored for the SWIP user account. This will be used for account matching after authentication. Also select OpenID Connect for the authentication method of this account.
+
+If needed, enable Moodle OIDC plugin debug manually in the user interface (Site Administration > Plugins > Authentication > OpenId Connect > Debugging section) or by using `moosh config-set debugmode 1 auth_oidc` with moosh installed and after running `ddev ssh`.
+
 Manually creating the user account in Moodle which will be authenticating via SSO is a workaround until Moodle is integrated with the account management app and users are created programmatically. 
 
 ### Moodle configuration

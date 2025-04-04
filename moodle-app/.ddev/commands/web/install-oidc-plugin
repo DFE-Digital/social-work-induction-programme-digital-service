@@ -71,9 +71,6 @@ else
     echo "OIDC resource:"
     moosh config-set oidcresource resource auth_oidc 
 
-    echo "Enabling oidc plugin debug mode for development purposes ..."
-    moosh config-set debugmode 1 auth_oidc
-
     echo "Clearing list of blocked cURL hosts and opening all cURL ports to allow for localhost connectivity..."
     echo "Curl blocked hosts:"
     moosh config-set curlsecurityblockedhosts ""
