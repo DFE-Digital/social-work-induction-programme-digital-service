@@ -1,0 +1,19 @@
+#!/bin/bash
+# .ddev/commands/web/install-moosh
+# This command downloads and installs moosh shell plugin in the tmp directory. 
+# Usage:
+#   ddev install-moosh        
+
+set -e
+
+echo "In the moosh script"
+
+echo "Cloning Moosh repository..."
+git clone https://github.com/tmuras/moosh.git /tmp/moosh
+
+echo "Installing Moosh..."
+cd /tmp/moosh
+composer install
+
+echo "Making Moosh globally available..."
+ln -s /tmp/moosh/moosh.php /usr/local/bin/moosh
