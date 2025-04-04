@@ -1,10 +1,10 @@
 #!/bin/bash
-# /var/www/html/scripts/install-oidc-plugin
-# This bash script downloads and installs Moodle Open ID Connect (OIDC) authentication plugin and configures it, if not already present. 
-# It also downloads and installs the Moosh plugin as a prerequisite for OIDC plugin configuration, by executing the dedicate script for moosh installation. 
+# .ddev/commands/web/install-oidc-plugin
+# This command downloads and installs Moodle Open ID Connect (OIDC) authentication plugin and configures it, if not already present. 
+# Prerequisite: The Moosh plugin is needed for OIDC plugin configuration.  
 # Usage:
-#   /var/www/html/scripts/install-oidc-plugin           # Uses the default release https://moodle.org/plugins/download.php/35133/auth_oidc_moodle45_2024100710.zip
-#   /var/www/html/scripts/install-oidc-plugin https://moodle.org/plugins/download.php/35132/auth_oidc_moodle44_2024042215.zip   # Uses the specified release version
+#   ddev install-oidc-plugin           # Uses the default release https://moodle.org/plugins/download.php/35133/auth_oidc_moodle45_2024100710.zip
+#   ddev install-oidc-plugin https://moodle.org/plugins/download.php/35132/auth_oidc_moodle44_2024042215.zip   # Uses the specified release version
 
 set -e
 
@@ -17,8 +17,11 @@ cd "${MOODLE_PUBLIC}auth" || { echo "Moodle auth directory not found."; exit 1; 
 if [ -d "oidc" ]; then
     echo "OIDC plugin is already installed."
 else
-    echo "Installing moosh..."
-    ${MOODLE_ROOT}/scripts/install-moosh
+    echo "Checking if moosh is installed..."
+    if ! command -v moosh > /dev/null 2>&1; then
+        echo "Moosh is not installed. Please install and try again as moosh is used to set the config settings. Exiting."
+        exit 1
+    fi
     
     echo "Downloading and unzipping OpenID Connect plugin files..."
     wget -O auth_oidc.zip $OIDC_PLUGIN_RELEASE_URL
@@ -65,6 +68,8 @@ else
     moosh config-set logouturi https://localhost:7236/oauth2/logout auth_oidc
     echo "Binding username claim:"
     moosh config-set bindingusernameclaim email auth_oidc
+    echo "OIDC resource:"
+    moosh config-set oidcresource resource auth_oidc 
 
     echo "Enabling oidc plugin debug mode for development purposes ..."
     moosh config-set debugmode 1 auth_oidc
@@ -74,4 +79,7 @@ else
     moosh config-set curlsecurityblockedhosts ""
     echo "Curl allowed ports:"
     moosh config-set curlsecurityallowedport ""
+
+    echo "Clearing cache to apply all settings changes..."
+    moosh cache-clear
 fi

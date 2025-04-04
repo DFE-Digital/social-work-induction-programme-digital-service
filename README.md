@@ -31,7 +31,7 @@ Start your DDEV environment:
 
 - `ddev start`
 
-Use Composer to create a new Moodle installation:
+Use Composer to create the new Moodle installation:
 
 - `ddev composer create moodle/moodle`
 
@@ -44,26 +44,18 @@ Finally, launch your Moodle site in your default web browser:
 
 - `ddev launch /login`
 
-
-### Moodle configuration
-When running the service via DDEV, the `config.php` file is located in the `public` dir. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).
-
-### Moodle tests
-For documentation on automated testing in Moodle and local dev setup, please see the dedicated files in the `moodle-docs` folder.
-
 ### Single sign-on (SSO) configuration
 Moodle integrates with the SWIP authentication service for users to log in via single sign-on and GOV.UK One Login. The [Moodle OpenID Connect (OIDC)](https://moodle.org/plugins/auth_oidc) plugin is used. 
 
 #### Install and configure OIDC plugin
 
-The following steps are required to install and configure the plugin: 
+The following steps are required to install and configure the plugin. These should be run after `ddev start` and if this is done as part of initial moodle setup on your local environment, after the commands in [Running the service](#running-the-service). 
 
-1. Set script execution permissions by running `ddev set-permissions`
+1. Run `ddev install-moosh`
+The command will download and install the [moosh plugin](https://moosh-online.com/) which exposes Moodle functionality to the command line. This will be used to configure the OIDC plugin.
 
-2. Run `ddev ssh`
-
-3. Run `/var/www/html/scripts/install-oidc-plugin`
-The script will download and install the [moosh plugin](https://moodle.org/plugins/view.php?id=522) that exposes Moodle functionality to the command line, as well download, install and configure the OIDC plugin.
+2. Run `ddev install-oidc-plugin`
+The command will download, install and configure the OIDC plugin. It will also purge all caches, which is needed for the config changes to take effect.
 This script can also take an OIDC plugin release URL as a parameter, which will be used instead of the default release URL.
 If the OIDC plugin is already installed, the script will exit.
 
@@ -113,3 +105,9 @@ Next:
 To test the integration, ensure there is an account in the SWIP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database. 
 To create this account in Moodle, navigate to `Site administration > Users > Accounts > Add a new user`. Set the `username` to the value of the email address stored for the SWIP user account. This will be used for account matching after authentication. Also select OpenID Connect for the authentication method of this account.
 Manually creating the user account in Moodle which will be authenticating via SSO is a workaround until Moodle is integrated with the account management app and users are created programmatically. 
+
+### Moodle configuration
+When running the service via DDEV, the `config.php` file is located in the `public` dir. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).
+
+### Moodle tests
+For documentation on automated testing in Moodle and local dev setup, please see the dedicated files in the `moodle-docs` folder.
