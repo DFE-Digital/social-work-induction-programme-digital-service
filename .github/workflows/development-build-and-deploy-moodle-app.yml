@@ -2,13 +2,21 @@ name: Development build & deploy Moodle app
 
 on:
   workflow_dispatch:
+    inputs:
+      instance:
+        description: "Moodle instance to deploy to"
+        default: primary
+        type: choice
+        options:
+          - primary
 
 jobs:
   create-and-publish-image:
-    name: Build & Deploy Moodle
+    name: Build & Deploy Moodle App
     uses: ./.github/workflows/development-build-and-deploy-template.yml
     secrets: inherit
     with:
-      environment: Development
+      environment: Dev
       docker-build-file: ./moodle-docker/Dockerfile-github
-      image_name: swip-digital-service-moodle-app
+      short-image-name: moodle-app
+      web-app-name: webapp-moodle-${{ inputs.instance }}

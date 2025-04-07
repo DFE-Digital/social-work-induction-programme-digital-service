@@ -16,19 +16,23 @@ resource "azurerm_linux_web_app" "webapp" {
     ftps_state             = "Disabled"
     minimum_tls_version    = "1.3"
 
-    ip_restriction_default_action = "Deny"
+    # TODO: Re-enable front-door only integration when Moodle is completely working under the 
+    #       default .azurewebsites.net domain, so no routing intereference.
 
-    ip_restriction {
-      name        = "Access from Front Door"
-      service_tag = "AzureFrontDoor.Backend"
-    }
+    #ip_restriction_default_action = "Deny"
+    ip_restriction_default_action = "Allow"
+
+    # ip_restriction {
+    #   name        = "Access from Front Door"
+    #   service_tag = "AzureFrontDoor.Backend"
+    # }
 
     container_registry_use_managed_identity = true
     application_stack {
       // TODO: Parameterize this
       docker_registry_url = "https://${var.resource_name_prefix}acr.azurecr.io"
       // TODO: Proper version management
-      docker_image_name   = "dfe-digital/social-work-induction-programme-digital-service:latest"
+      docker_image_name   = var.docker_image_name
     }
   }
 
@@ -55,7 +59,14 @@ resource "azurerm_linux_web_app" "webapp" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
-      site_config.0.application_stack
+      site_config.0.application_stack,
+      # This is particularly sneaky. When the swift network connection is set later on, the
+      # virtual_network_subnet_id is updated and the next time around, Terraform will reset
+      # it back to null, removing the vnet / dbs integration. Then re-create it. 
+      # Then set it to null...So the behaviour will alternate on each GA workflow run.
+      # Hence we ignore any changes to virtual_network_subnet_id.
+      virtual_network_subnet_id, 
+      logs
     ]
   }
 

@@ -45,11 +45,6 @@ variable "admin_enabled" {
   type        = string
 }
 
-variable "moodle_db_name" {
-  description = "The name of the database"
-  type        = string
-}
-
 variable "moodle_db_prefix" {
   description = "The prefix for the Moodle database"
   type        = string
@@ -94,12 +89,12 @@ variable "moodle_db_type" {
   default     = "pgsql"
 }
 
-variable "trace_utility_admin_user" {
+variable "trace_webapp_admin_user" {
   description = "The basic auth admin user for trace utility login"
   type        = string
 }
 
-variable "trace_utility_admin_password" {
+variable "trace_webapp_admin_password" {
   description = "The basic auth admin password for trace utility login"
   type        = string
 }

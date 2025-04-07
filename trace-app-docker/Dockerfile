@@ -1,5 +1,8 @@
 FROM tsl0922/ttyd:latest
 
+# Set non-interactive mode for apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
   iputils-ping \
   dnsutils \
@@ -12,10 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   iperf \
   tcpdump \
   netcat \
-  mysql-client \
+#  mysql-client \
   mariadb-client \
   postgresql-client \
   mtr-tiny && rm -rf /var/lib/apt/lists/*
 
-  CMD ["/bin/sh", "-c", "exec ttyd -W -c \"${TTYD_USER}:${TTYD_PASSWORD}\" bash"]
+  CMD ["/bin/sh", "-c", "exec ttyd -W -c \"${TRACE_WEBAPP_ADMIN_USER}:${TRACE_WEBAPP_ADMIN_PASSWORD}\" bash"]
   

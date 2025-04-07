@@ -17,14 +17,16 @@ $CFG->dboptions = [
   'dbsocket' => '',
 ];
 
+$host = $_SERVER['HTTP_HOST'] ?? getenv('MOODLE_DOCKER_WEB_HOST') ?? 'localhost';
 if (empty($_SERVER['HTTP_HOST'])) {
-  $_SERVER['HTTP_HOST'] = 'localhost';
+  $_SERVER['HTTP_HOST'] = $host;
 }
-$host = 'localhost';
-if (!empty(getenv('MOODLE_DOCKER_WEB_HOST'))) {
-  $host = getenv('MOODLE_DOCKER_WEB_HOST');
+$httpOrS = '';
+if (getenv('MOODLE_DOCKER_SSL_TERMINATION') === 'true') {
+  $CFG->sslproxy = true;
+  $httpOrS = 's';
 }
-$CFG->wwwroot = "http://{$host}";
+$CFG->wwwroot = "http{$httpOrS}://{$host}";
 $port = getenv('MOODLE_DOCKER_WEB_PORT');
 if (!empty($port)) {
   // Extract port in case the format is bind_ip:port.

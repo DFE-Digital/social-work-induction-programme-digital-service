@@ -26,3 +26,5 @@ provider "azurerm" {
     }
   }
 }
+
+data "azurerm_client_config" "az_config" {}

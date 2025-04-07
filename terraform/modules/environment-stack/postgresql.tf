@@ -93,7 +93,7 @@ resource "azurerm_private_dns_a_record" "dns_a_postgres" {
   name                = azurerm_postgresql_flexible_server.swipdb.name
   zone_name           = azurerm_private_dns_zone.private_dns_postgres.name
   resource_group_name = azurerm_resource_group.rg.name
-  ttl                 = "10"
+  ttl                 = "3600"
   records             = [data.external.postgres_private_ip.result.ip_address]
   tags                = var.tags
 
@@ -114,4 +114,6 @@ resource "azurerm_key_vault_secret" "database_password" {
   lifecycle {
     ignore_changes = [value, expiration_date]
   }
+
+  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }

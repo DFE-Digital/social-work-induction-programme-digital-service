@@ -1,11 +1,13 @@
 module "web_app_trace" {
-  source = "./modules/web-app"
-
+  source                    = "./modules/web-app"
+  tenant_id                 = data.azurerm_client_config.az_config.tenant_id
   environment               = var.environment
   location                  = var.azure_region
   resource_group            = module.stack.resource_group_name
   resource_name_prefix      = var.resource_name_prefix
-  web_app_name              = var.moodle_webapp_name
+  web_app_name              = "${var.resource_name_prefix}-webapp-trace"
+  web_app_short_name        = "wa-trace"
+  docker_image_name         = "dfe-digital/swip-digital-service-trace-app:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_webapps_id
   acr_id                    = azurerm_container_registry.acr.id
@@ -16,19 +18,8 @@ module "web_app_trace" {
   app_settings = {
     "ENVIRONMENT"                         = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "POSTGRES_DB"                         = var.moodle_db_name
-    "POSTGRES_USER"                       = module.stack.postgres_username
-    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_uri})"
-    "MOODLE_DB_TYPE"                      = var.moodle_db_type
-    "MOODLE_DB_HOST"                      = module.stack.postgres_db_host
-    "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
-    "MOODLE_DOCKER_WEB_HOST"              = var.moodle_webapp_name
-    "MOODLE_DOCKER_WEB_PORT"              = var.moodle_web_port
-    "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
-    "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
-    "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
-    "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
-    "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    "TRACE_WEBAPP_ADMIN_USER"             = var.trace_webapp_admin_user
+    "TRACE_WEBAPP_ADMIN_PASSWORD"         = var.trace_webapp_admin_password
     DOCKER_ENABLE_CI                      = "true"
   }
 }
