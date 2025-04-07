@@ -6,17 +6,24 @@ on:
       environment:
         required: true
         type: string
+      org-name:
+        type: string
+        default: dfe-digital
       docker-build-file:
         type: string
         required: true
-      shortimage-name:
+      image-stem:
+        type: string        
+        default: swip-digital-service
+      short-image-name:
+        required: true
+        type: string
+      web-app-name:
         required: true
         type: string
 
 env:
   REGISTRY_NAME: s205d01acr
-  ORG_NAME: dfe-digital
-  FULL_IMAGE_NAME: swip-digital-service-${{ inputs.shortimage-name }}
 
 jobs:
   set-env:
@@ -47,8 +54,8 @@ jobs:
       branch: ${{ needs.set-env.outputs.branch }}
       checked-out-sha: ${{ needs.set-env.outputs.checked-out-sha }}
       docker-build-file: ${{ inputs.docker-build-file }}
-      org-name: ${{ env.ORG_NAME }}
-      docker-image-name: ${{ inputs.image-name }}
+      org-name: ${{ inputs.org-name }}
+      docker-image-name: ${{ inputs.image-stem }}-${{ inputs.short-image-name }}
 
   deploy-to-dev:
     runs-on: ubuntu-24.04
@@ -76,5 +83,5 @@ jobs:
       - name: Deploy to Azure App Services
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ vars.WEBAPP_NAME }}
-          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.ORG_NAME }}/{{ env.FULL_IMAGE_NAME }}:latest
+          app-name: ${{ vars.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
