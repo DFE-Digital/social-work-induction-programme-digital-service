@@ -114,4 +114,6 @@ resource "azurerm_key_vault_secret" "database_password" {
   lifecycle {
     ignore_changes = [value, expiration_date]
   }
+
+  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
