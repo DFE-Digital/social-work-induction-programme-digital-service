@@ -12,10 +12,7 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.TagHelpers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
-using Dfe.Sww.Ecf.Core.Infrastructure;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
-using Dfe.Sww.Ecf.Core.Services.Files;
-using Dfe.Sww.Ecf.Core.Services.PersonMatching;
 using Dfe.Sww.Ecf.ServiceDefaults;
 using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Filters;
@@ -375,11 +372,9 @@ builder
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
-    .AddPersonMatching()
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>();
-;
 
 builder
     .Services.AddOptions<AuthorizeAccessOptions>()
