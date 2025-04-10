@@ -3,6 +3,11 @@ variable "environment" {
   type        = string
 }
 
+variable "primary_resource_group" {
+  description = "Name of the main resource group to deploy resources within"
+  type        = string
+}
+
 variable "location" {
   description = "Name of the Azure region to deploy resources"
   type        = string
@@ -42,17 +47,17 @@ variable "autoscale_rule_maximum_capacity" {
   default = 2
 }
 
-variable "acr_sku" {
-  description = "Azure Container Registry SKU"
-  type        = string
-}
-
 variable "admin_enabled" {
   description = "Is Azure Container Registry admin enabled?"
   type        = string
 }
 
-variable "webapp_storage_account_name"  {
+variable "webapp_storage_account_name" {
   description = "Storage Account name"
   type        = string
+}
+
+variable "kv_purge_protection_enabled" {
+  description = "Whether purge protection is enabled for key vaults"
+  type        = bool
 }

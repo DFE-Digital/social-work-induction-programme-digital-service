@@ -1,14 +1,9 @@
 locals {
   moodle_webapp_name_stem    = "${var.resource_name_prefix}-webapp-moodle"
   moodle_webapp_db_name_stem = "${var.resource_name_prefix}-webapp-moodle-db"
-  moodle_instances = {
-    # Capability to add multiple instances in the future (secondary = {} etc.)
-    # They will each have their own dedicated DB
-    primary = {}
-  }
 
   moodle_instance_resource_naming = {
-    for instance in keys(local.moodle_instances) : instance => {
+    for instance in keys(var.moodle_instances) : instance => {
       webapp_name        = "${local.moodle_webapp_name_stem}-${instance}"
       web_app_short_name = "wa-moodle-${instance}"
       db_name            = "${local.moodle_webapp_db_name_stem}-${instance}"

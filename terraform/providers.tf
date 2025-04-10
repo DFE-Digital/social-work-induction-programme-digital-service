@@ -1,13 +1,24 @@
 # Configure the Azure provider
 terraform {
   required_providers {
+    # The following versions are pinned for build repeatability and should be reviewed and
+    # updated regularly
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.10.0"
+      version = "= 4.26.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "= 3.7.1"
+    }
+    external = {
+      source  = "hashicorp/external"
+      version = "= 2.3.4"
     }
   }
 
-  required_version = ">= 1.5.0"
+  # Terraform is version pinned within the Github Actions workflow file
+  # required_version = ???
 
   backend "azurerm" {
     use_oidc = true

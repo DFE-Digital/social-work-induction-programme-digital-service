@@ -1,0 +1,50 @@
+name: Pre-process Terraform Variables
+description: Merges the global and environment specific variables, optionally exporting as environment variables
+
+inputs:
+  environment: 
+    required: true
+    description: Environment to process
+  terraform_folder:
+    default: ./terraform
+    description: Path to terraform folder
+  output_file:
+    default: /tmp/merged.tfvars
+    description: Path to output file
+  add_as_env_vars:
+    default: false
+    description: Whether to export as environment variables
+
+runs:
+  using: composite
+
+  steps:
+    - name: Pre-Process TF Vars With Optional Export
+      id: pre-process-tf-vars
+      shell: bash
+      run: |
+        if [ -d "${{ inputs.terraform_folder }}" ]; then
+          cd "${{ inputs.terraform_folder }}"
+        fi
+        REPLACEMENTS=$(awk -F '=' '/^[^#]/ && NF>=2 {
+          gsub(/^[ \t]+|[ \t]+$/, "", $1);
+          gsub(/^[ \t]+|[ \t]+$/, "", $2);
+          gsub(/"/, "", $1);
+          gsub(/"/, "", $2);
+          print "s#\\${" $1 "}#" $2 "#g"
+        }' envs/global.tfvars)
+        sed "$REPLACEMENTS" envs/${{ inputs.environment }}/env.tfvars > /tmp/env_subbed.tfvars
+        cat envs/global.tfvars /tmp/env_subbed.tfvars > ${{ inputs.output_file }}
+        cat ${{ inputs.output_file }}
+        if ${{ inputs.add_as_env_vars }}; then
+          # Optionally export only plain (var = value) variables, not maps etc
+          grep -E '^[^#].*=\s*".*"' /tmp/merged.tfvars | \
+          awk -F '=' '{
+            gsub(/"/, "", $2);
+            gsub(/^[ \t]+/, "", $1);
+            gsub(/[ \t]+$/, "", $1);
+            gsub(/^[ \t]+/, "", $2);
+            gsub(/[ \t]+$/, "", $2);
+            print toupper($1)"="$2
+          }' >> $GITHUB_ENV        
+        fi
