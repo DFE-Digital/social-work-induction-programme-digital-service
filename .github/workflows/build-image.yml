@@ -3,6 +3,9 @@ name: Build Image and Publish to ACR
 on:
   workflow_call:
     inputs:
+      environment:
+        type: string
+        required: true
       branch:
         type: string
         required: true
@@ -25,13 +28,13 @@ on:
         value: ${{ jobs.build-image.outputs.dockerImageTag }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.environment }}
+  group: ${{ github.workflow }}-${{ inputs.environment }}
   cancel-in-progress: true
 
 jobs:
   build-image:
     runs-on: ubuntu-24.04
-    environment: Dev
+    environment: ${{ inputs.environment }}
     name: Build & Publish Image
     # Permissions for OIDC authentication
     permissions:
@@ -54,9 +57,9 @@ jobs:
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
       - name: Azure Container Registry Login
-        run: az acr login --name ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        run: az acr login --name ${{ vars.IMAGE_REGISTRY_NAME }}
         env:
-          ACR_NAME: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          ACR_NAME: ${{ vars.IMAGE_REGISTRY_NAME }}
 
       - name: Format branch name
         run: |
@@ -70,10 +73,10 @@ jobs:
           file: ${{ inputs.docker-build-file }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
+            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
           push: true
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "dockerImageTag=${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT

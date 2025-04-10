@@ -1,6 +1,6 @@
 output "resource_group_name" {
   description = "Name of the stack Resource Group"
-  value       = azurerm_resource_group.rg.name
+  value       = azurerm_resource_group.rg_primary.name
 }
 
 output "vnet_id" {

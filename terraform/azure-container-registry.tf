@@ -1,5 +1,5 @@
 resource "azurerm_container_registry" "acr" {
-  name                = "${var.resource_name_prefix}acr"
+  name                = var.acr_name
   resource_group_name = module.stack.resource_group_name
   location            = var.azure_region
   sku                 = var.acr_sku

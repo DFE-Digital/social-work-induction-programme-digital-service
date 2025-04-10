@@ -51,6 +51,7 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
+      environment: ${{ inputs.environment }}
       branch: ${{ needs.set-env.outputs.branch }}
       checked-out-sha: ${{ needs.set-env.outputs.checked-out-sha }}
       docker-build-file: ${{ inputs.docker-build-file }}
@@ -79,9 +80,16 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
+      # Need to retrieve RESOURCE_NAME_PREFIX in particular for next step
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment }}
+          add_as_env_vars: true
+
       # Deploy Web Application
       - name: Deploy to Azure App Services
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ vars.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-          images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+          images: ${{ vars.IMAGE_REGISTRY_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest

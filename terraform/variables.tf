@@ -1,12 +1,40 @@
+variable "project_code" {
+  description = "Project code"
+  type        = string
+}
+
 variable "azure_region" {
-  default     = "westeurope"
   description = "Name of the Azure region to deploy resources"
   type        = string
 }
 
+variable "primary_resource_group" {
+  description = "Name of the main resource group to deploy resources within"
+  type        = string
+}
+
 variable "environment" {
-  default     = "development"
-  description = "Environment to deploy resources"
+  description = "Environment to deploy resources into"
+  type        = string
+}
+
+variable "environment_tag" {
+  description = "Environment tag for resources - should match the environment name dictated by central policy"
+  type        = string
+}
+
+variable "parent_business_tag" {
+  description = "Parent business tag for resources"
+  type        = string
+}
+
+variable "product_tag" {
+  description = "Product tag for resources"
+  type        = string
+}
+
+variable "service_offering_tag" {
+  description = "Service offering tag for resources"
   type        = string
 }
 
@@ -20,11 +48,6 @@ variable "asp_sku" {
   type        = string
 }
 
-variable "moodle_webapp_name" {
-  description = "Name for the Web Application"
-  type        = string
-}
-
 variable "webapp_storage_account_name" {
   description = "Storage Account name"
   type        = string
@@ -32,6 +55,11 @@ variable "webapp_storage_account_name" {
 
 variable "days_to_expire" {
   description = "The number of days to add for password expiration"
+  type        = string
+}
+
+variable "acr_name" {
+  description = "Azure Container Registry name"
   type        = string
 }
 
@@ -97,4 +125,14 @@ variable "trace_webapp_admin_user" {
 variable "trace_webapp_admin_password" {
   description = "The basic auth admin password for trace utility login"
   type        = string
+}
+
+variable "kv_purge_protection_enabled" {
+  description = "Whether purge protection is enabled for key vaults"
+  type        = bool
+}
+
+variable "moodle_instances" {
+  description = "The names of the moodle instances to be created"
+  type        = map(map(any))
 }

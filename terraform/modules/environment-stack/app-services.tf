@@ -1,6 +1,6 @@
 resource "azurerm_subnet" "sn_webapps" {
   name                              = "${var.resource_name_prefix}-subnet-webapps"
-  resource_group_name               = azurerm_resource_group.rg.name
+  resource_group_name               = azurerm_resource_group.rg_primary.name
   virtual_network_name              = azurerm_virtual_network.vnet_stack.name
   address_prefixes                  = ["10.0.3.0/24"]
   private_endpoint_network_policies = "Disabled"
@@ -23,7 +23,7 @@ resource "azurerm_subnet" "sn_webapps" {
 resource "azurerm_service_plan" "asp" {
   name                = "${var.resource_name_prefix}-asp"
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = azurerm_resource_group.rg_primary.name
   os_type             = "Linux"
   sku_name            = var.asp_sku
   tags                = var.tags
@@ -39,8 +39,9 @@ resource "azurerm_service_plan" "asp" {
 resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
   name                = "${var.resource_name_prefix}-asp-autoscale-rule"
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = azurerm_resource_group.rg_primary.name
   target_resource_id  = azurerm_service_plan.asp.id
+  enabled             = var.autoscale_rule_minimum_capacity != var.autoscale_rule_maximum_capacity
   tags                = var.tags
 
   profile {
