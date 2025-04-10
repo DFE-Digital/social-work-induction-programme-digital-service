@@ -71,39 +71,33 @@ jobs:
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
       # Generates Terraform input variables by merging the global and environment variables
-      # Supports substitution of global variable values in environment variables
-      - name: Generate Terraform Input Variables
-        shell: bash
-        run: |
-          REPLACEMENTS=$(awk -F '=' '/^[^#]/ && NF>=2 {
-            gsub(/^[ \t]+|[ \t]+$/, "", $1);
-            gsub(/^[ \t]+|[ \t]+$/, "", $2);
-            gsub(/"/, "", $1);
-            gsub(/"/, "", $2);
-            print "s#\\${" $1 "}#" $2 "#g"
-          }' envs/global.tfvars)
-          sed "$REPLACEMENTS" envs/${{ inputs.environment }}/env.tfvars > env_subbed.tfvars
-          cat envs/global.tfvars env_subbed.tfvars > merged.tfvars
-          cat merged.tfvars
+      # Supports substitution of global variable values in environment specific variables
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment }}
+          add_as_env_vars: true
 
       - name: Generate Terraform State Variables
         shell: bash
         run: |
-          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' merged.tfvars)
-          echo "TF_STATE_AZURE_REGION=$(awk -F'\"' '/azure_region/ {print $2}' merged.tfvars)" >> $GITHUB_ENV
+          export TF_VAR_FILE=/tmp/merged.tfvars
+          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
+          echo "TF_STATE_AZURE_REGION=$(awk -F'\"' '/azure_region/ {print $2}' $TF_VAR_FILE)" >> $GITHUB_ENV
           echo "TF_STATE_RESOURCE_GROUP=$RESOURCE_NAME_PREFIX-swip-rg-tfstate" >> $GITHUB_ENV
           echo "TF_STATE_STORAGE_ACCOUNT_NAME=${RESOURCE_NAME_PREFIX}swipsatfstate" >> $GITHUB_ENV
           echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
           echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
+          echo "TF_VAR_FILE=$TF_VAR_FILE" >> $GITHUB_ENV
 
       # Idempotent step - create Terraform state resources if they don't exist
       # CIP policy requires use of standard tags for resources
       - name: Ensure Terraform State Resources Exist
         run: |
-          export ENVIRONMENT_TAG=$(awk -F'"' '/environment_tag/ {print $2}' merged.tfvars)
-          export PARENT_BUSINESS_TAG=$(awk -F'"' '/parent_business_tag/ {print $2}' merged.tfvars)
-          export PRODUCT_TAG=$(awk -F'"' '/product_tag/ {print $2}' merged.tfvars)
-          export SERVICE_OFFERING_TAG=$(awk -F'"' '/service_offering_tag/ {print $2}' merged.tfvars)
+          export ENVIRONMENT_TAG=$(awk -F'"' '/environment_tag/ {print $2}' $TF_VAR_FILE)
+          export PARENT_BUSINESS_TAG=$(awk -F'"' '/parent_business_tag/ {print $2}' $TF_VAR_FILE)
+          export PRODUCT_TAG=$(awk -F'"' '/product_tag/ {print $2}' $TF_VAR_FILE)
+          export SERVICE_OFFERING_TAG=$(awk -F'"' '/service_offering_tag/ {print $2}' $TF_VAR_FILE)
           export TAGS=(
             "Environment=$ENVIRONMENT_TAG"
             "Parent Business=$PARENT_BUSINESS_TAG"
@@ -131,7 +125,7 @@ jobs:
           # Only import the variables we need
           export exitcode=0
           terraform plan -detailed-exitcode -no-color -out tfplan \
-            -var-file=merged.tfvars \
+            -var-file=$TF_VAR_FILE \
             -var='moodle_admin_password=${{ secrets.MOODLE_ADMIN_PASSWORD }}' \
             -var='trace_webapp_admin_password=${{ secrets.TRACE_WEBAPP_ADMIN_PASSWORD }}' \
             -var='moodle_admin_email=${{ secrets.MOODLE_ADMIN_EMAIL }}' \
