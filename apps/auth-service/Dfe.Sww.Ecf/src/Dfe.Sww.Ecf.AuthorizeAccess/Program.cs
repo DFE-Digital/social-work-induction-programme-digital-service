@@ -415,8 +415,7 @@ app.UseCsp(csp =>
 
     csp.AllowScripts.FromSelf().From(pageTemplateHelper.GetCspScriptHashes()).AddNonce();
 
-    csp.AllowScripts.AllowUnsafeInline()
-        .WithHash(scriptHash);
+    csp.AllowScripts.AllowUnsafeInline().WithHash(scriptHash);
 
     csp.AllowStyles.FromSelf().AddNonce();
 

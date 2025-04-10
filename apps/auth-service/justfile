@@ -5,6 +5,8 @@ user-secrets-id := "Dfe.Sww.Ecf"
 cli-user-secrets-id := "Dfe.Sww.Ecf.Cli"
 test-user-secrets-id := "Dfe.Sww.EcfTests"
 
+mod onelogin-sim
+
 default:
   @just --list
 

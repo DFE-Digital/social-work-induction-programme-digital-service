@@ -86,13 +86,34 @@ You also need to create an entry in the `organisations` table and insert a row i
 
 ##### Applying migrations
 If changes have been made in the repo that include migrations, these need to be applied locally. You should be able to use the following command in the terminal while in the Core project:
-`dotnet ef database update`   
- 
+`dotnet ef database update`
+
 ### OneLogin Integration
 
-We integrate with [Gov.UK OneLogin](https://www.sign-in.service.gov.uk/documentation) to provide us authentication services for our users. The application needs to be configured with the API account details in order for this to work.
+We integrate with [Gov.UK OneLogin](https://www.sign-in.service.gov.uk/documentation) to provide us authentication services for our users. To utilise the integration locally, there are two methods; the GOV.UK One Login [integration environment](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/), or the [simulator](https://github.com/govuk-one-login/simulator).
 
-These can be configured using user-secrets, the same way we specify database connection details.
+#### Simulator
+
+The [simulator](https://github.com/govuk-one-login/simulator) is a Node application that acts as the OpenID authentication server in place of the real One Login service. It runs entirely locally as a container and allows us full control over what the response is from the auth flow. It also features a [config](https://github.com/govuk-one-login/simulator/blob/main/docs/configuration.md) endpoint that can be used to change the responses of the service on-the-fly. Further information and guides can be found in the official [GitHub repo](https://github.com/govuk-one-login/simulator) for the simulator.
+
+The development configurations for the auth service are already pre-configured to use the simulator by default, all you have to do is generate some local SSL certificates and start it up.
+This process has been simplified with the some `just` commands.
+
+Ensure you have [mkcert](https://github.com/FiloSottile/mkcert?tab=readme-ov-file#installation) installed on your machine (to generate the necessary SSL certificates) and run `just onelogin-sim setup`. This will generate the certificates needed, trust them, and place them in the `tools/onelogin-simulator/certs` directory.
+
+After this, you can simply run `just onelogin-sim start` to start the simulator. By default, it will be hosted at https://localhost:3000/onelogin. You can confirm it is working by going to https://localhost:3000/onelogin/config in your browser and you should see the current configuration of the simulator as a JSON object.
+
+`just onelogin-sim stop` can be used to stop the simulator.
+
+Note: The simulator does *not* emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
+
+#### Integration environment
+
+In order to use the official GOV.UK One Login [integration environment](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/), the application needs to be configured with the API account details in order for this to work.
+
+The endpoint used by the auth service can be changed in the [appsettings.development.json](Dfe.Sww.Ecf\src\Dfe.Sww.Ecf.AuthorizeAccess\appsettings.Development.json). Update the `OneLogin.Url` to point at `https://oidc.integration.account.gov.uk` instead. The `ClientId` and `PrivateKeyPem` will need to be deleted or commented out as they will be specified via user-secrets instead.
+
+The `ClientId` and `PrivateKeyPem` can be configured using user-secrets, the same way we specify database connection details.
 The two values to configure are `OneLogin:ClientId` and `OneLogin:PrivateKeyPem`. Speak to the team to acquire these details.
 
 To set these, run the following:
