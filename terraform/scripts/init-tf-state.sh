@@ -112,34 +112,4 @@ else
     echo "Terraform state: container exists."
 fi
 
-##########################
-# Terraform State Blob   #
-##########################
-
-# echo "Checking if Terraform state blob '$STATE_BLOB_NAME' exists in container '$CONTAINER_NAME'..."
-# BLOB_EXISTS=$(az storage blob exists \
-#     --container-name "$CONTAINER_NAME" \
-#     --name "$STATE_BLOB_NAME" \
-#     --account-name "$STORAGE_ACCOUNT_NAME" \
-#     --account-key "$ACCOUNT_KEY" \
-#     --query "exists" -o tsv)
-
-# if [ "$BLOB_EXISTS" != "true" ]; then
-#     echo "Terraform state: blob not found. Creating an initial state file..."
-#     # Create an empty state file (using {} as an empty state in JSON)
-#     echo "{}" > empty_tf_state.json
-
-#     az storage blob upload \
-#         --container-name "$CONTAINER_NAME" \
-#         --file empty_tf_state.json \
-#         --name "$STATE_BLOB_NAME" \
-#         --account-name "$STORAGE_ACCOUNT_NAME" \
-#         --account-key "$ACCOUNT_KEY" \
-#         --overwrite
-
-#     rm empty_tf_state.json
-# else
-#     echo "Terraform state: blob exists."
-# fi
-
 echo "Terraform state: all resources are in place."
