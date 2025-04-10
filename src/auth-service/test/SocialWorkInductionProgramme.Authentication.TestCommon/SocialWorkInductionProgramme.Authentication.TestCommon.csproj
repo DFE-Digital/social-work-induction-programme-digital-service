@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsTestProject>false</IsTestProject>
+    <UserSecretsId>SocialWorkInductionProgramme.AuthenticationTests</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Faker.Net" />
+    <PackageReference Include="FakeXrmEasy.v9" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Respawn" />
+    <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="xunit.assert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SocialWorkInductionProgramme.Authentication.Core\SocialWorkInductionProgramme.Authentication.Core.csproj" />
+  </ItemGroup>
+
+</Project>

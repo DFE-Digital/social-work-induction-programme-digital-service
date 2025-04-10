@@ -10,6 +10,6 @@ jobs:
     secrets: inherit
     with:
       environment: Dev
-      docker-build-file: ./trace-app-docker/Dockerfile
+      docker-build-file: ./src/trace-app-docker/Dockerfile
       short-image-name: trace-app
       web-app-name: webapp-trace

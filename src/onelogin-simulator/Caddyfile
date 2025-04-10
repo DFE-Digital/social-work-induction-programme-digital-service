@@ -1,0 +1,12 @@
+{
+  http_port 9000
+  https_port 9010
+}
+
+localhost {
+  tls /certs/localhost.pem /certs/localhost-key.pem
+
+  handle_path /onelogin* {
+    reverse_proxy onelogin-simulator:3000
+  }
+}

@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <IsTestProject Condition="'$(IsTestProject)' == '' and $(MSBuildProjectName.EndsWith('Tests'))">true</IsTestProject>
+
+    <UserSecretsId>SocialWorkInductionProgramme.Authentication</UserSecretsId>
+    <UserSecretsId Condition="'$(IsTestProject)' == 'true'">SocialWorkInductionProgramme.AuthenticationTests</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="SocialWorkInductionProgramme.Authentication.Core" />
+    <Using Include="SocialWorkInductionProgramme.Authentication.Core.Events" />
+    <Using Include="SocialWorkInductionProgramme.Authentication.Core.Models" />
+    <Using Include="System.Threading.Tasks.Task" Alias="Task" />
+    <Using Include="SocialWorkInductionProgramme.Authentication.Core.Events.Models" Alias="EventModels" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <Using Include="Moq" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

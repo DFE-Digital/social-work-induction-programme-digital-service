@@ -1,0 +1,3 @@
+global using SocialWorkInductionProgramme.Authentication.TestCommon;
+global using SocialWorkInductionProgramme.Authentication.UiTestCommon;
+global using AssertEx = SocialWorkInductionProgramme.Authentication.UiTestCommon.AssertEx;

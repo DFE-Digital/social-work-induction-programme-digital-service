@@ -17,6 +17,6 @@ jobs:
     secrets: inherit
     with:
       environment: Dev
-      docker-build-file: ./moodle-docker/Dockerfile-github
+      docker-build-file: ./src/moodle-docker/Dockerfile-github
       short-image-name: moodle-app
       web-app-name: webapp-moodle-${{ inputs.instance }}

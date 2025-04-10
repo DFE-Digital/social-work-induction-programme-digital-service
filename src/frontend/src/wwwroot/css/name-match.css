@@ -1,0 +1,38 @@
+﻿.strength-bar-container {
+    display: flex;
+    height: 10px;
+    width: 100%;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 20%;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+}
+
+.strength-bar:not(:last-child) {
+    margin-right: 4px;
+}
+
+.match-0 { background-color: #ff0000; }
+.match-20 { background-color: #ff4d4d; }
+.match-40 { background-color: #ffa500; }
+.match-60 { background-color: #FFD900; }
+.match-80 { background-color: #66cc66; }
+.match-100 { background-color: #33cc33; }
+
+.strength-label {
+    font-weight: bold;
+    color: #666;
+    text-align: left;
+}
+
+.label-0 { color: #ff0000; }
+.label-20 { color: #ff4d4d; }
+.label-40 { color: #ffa500; }
+.label-60 { color: #FFD900; }
+.label-80 { color: #66cc66; }
+.label-100 { color: #33cc33 }
