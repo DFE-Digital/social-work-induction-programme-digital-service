@@ -80,7 +80,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.docker-build-folder }}
-          file: ${{ inputs.docker-build-file }}
+          file: ${{ inputs.docker-build-folder }}/${{ inputs.docker-build-file }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
             ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
