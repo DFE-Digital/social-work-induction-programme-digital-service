@@ -31,6 +31,8 @@ module "web_app_deploy" {
     "ENVIRONMENT"                         = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "SSH_CERT_BASE64"                     = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.deploy_ssh_cert.name})"
+    "POSTGRES_USER"                       = module.stack.postgres_username
+    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
   }
 }

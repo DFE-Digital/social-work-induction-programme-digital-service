@@ -41,7 +41,7 @@ module "web_app_moodle" {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "POSTGRES_DB"                         = each.value.db_name
     "POSTGRES_USER"                       = module.stack.postgres_username
-    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_uri})"
+    "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
     "MOODLE_DB_TYPE"                      = var.moodle_db_type
     "MOODLE_DB_HOST"                      = module.stack.postgres_db_host
     "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix

@@ -38,7 +38,7 @@ output "postgres_username" {
   value       = azurerm_postgresql_flexible_server.swipdb.administrator_login
 }
 
-output "full_postgres_secret_uri" {
+output "full_postgres_secret_password_uri" {
   description = "The full Key Vault URI for the database password"
   value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.database_password.name}"
 }
