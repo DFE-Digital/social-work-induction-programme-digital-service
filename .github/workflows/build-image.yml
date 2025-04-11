@@ -68,22 +68,24 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
-      - name: Format branch name
+      - name: Format branch name and docker build variables
         run: |
           branchName=${{ inputs.branch }}
           echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
+          echo BUILD_PATH=$(dirname "${{ inputs.docker-build-file }}") >> $GITHUB_ENV
+          echo BUILD_FILE=$(basename "${{ inputs.docker-build-file }}") >> $GITHUB_ENV
 
       - name: "Build the image and deploy to ACR"
         uses: docker/build-push-action@v6
         with:
-          context: ./
-          file: ${{ inputs.docker-build-file }}
+          context: ${{ env.BUILD_PATH }}
+          file: ${{ env.BUILD_FILE }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
-            ${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
+            ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
           push: true
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "dockerImageTag=${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
