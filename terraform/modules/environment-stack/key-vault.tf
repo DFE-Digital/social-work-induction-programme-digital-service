@@ -99,7 +99,7 @@ resource "azurerm_key_vault_access_policy" "kv_gh_ap" {
   for_each     = { for k, v in local.service_principals : k => v if v.assign_permissions }
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id    = data.azurerm_client_config.az_config.tenant_id
-  object_id    = [each.value.object_id]
+  object_id    = each.value.object_id
 
   key_permissions = local.principal_key_permissions
   secret_permissions = local.principal_secret_permissions
