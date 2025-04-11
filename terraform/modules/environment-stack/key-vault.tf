@@ -51,17 +51,6 @@ locals {
     "Set",
   ]
 
-  app_secret_permissions = [
-    "Get",
-    "List"
-  ]
-
-  app_key_permissions = [
-    "Get",
-    "List",
-    "UnwrapKey"
-  ]
-
   service_principals = {
     # For convenience, we give the delivery team read / write access to secrets in non-prod envs
     # Note that they can do this anyway manually, but Terraform will reset to known state

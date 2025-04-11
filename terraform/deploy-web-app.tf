@@ -23,6 +23,7 @@ module "web_app_deploy" {
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_webapps_id
   acr_id                    = azurerm_container_registry.acr.id
+  acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
   service_plan_id           = module.stack.service_plan_id
   tags                      = local.common_tags

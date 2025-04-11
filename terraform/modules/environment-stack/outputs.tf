@@ -23,16 +23,6 @@ output "kv_vault_uri" {
   value       = azurerm_key_vault.kv.vault_uri
 }
 
-output "kv_app_key_permissions" {
-  description = "General key vault key permissions allowed to be assigned to web apps"
-  value       = local.app_key_permissions
-}
-
-output "kv_app_secret_permissions" {
-  description = "General key vault secret permissions allowed to be assigned to web apps"
-  value       = local.app_secret_permissions
-}
-
 output "db_server_id" {
   description = "The ID of the Postgresql database server"
   value       = azurerm_postgresql_flexible_server.swipdb.id
