@@ -30,6 +30,8 @@ resource "azurerm_linux_web_app" "webapp" {
     container_registry_use_managed_identity = true
     application_stack {
       docker_registry_url = "https://${var.acr_name}.azurecr.io"
+      // TODO: Proper version management
+      docker_image_name   = var.docker_image_name
     }
   }
 
