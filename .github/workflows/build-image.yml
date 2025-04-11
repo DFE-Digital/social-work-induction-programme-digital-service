@@ -12,6 +12,9 @@ on:
       checked-out-sha:
         type: string
         required: true
+      docker-build-folder:
+        type: string
+        required: true
       docker-build-file:
         type: string
         required: true
@@ -68,18 +71,16 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
-      - name: Format branch name and docker build variables
+      - name: Format branch name
         run: |
           branchName=${{ inputs.branch }}
           echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
-          echo BUILD_PATH=$(dirname "${{ inputs.docker-build-file }}") >> $GITHUB_ENV
-          echo BUILD_FILE=$(basename "${{ inputs.docker-build-file }}") >> $GITHUB_ENV
 
       - name: "Build the image and deploy to ACR"
         uses: docker/build-push-action@v6
         with:
-          context: ${{ env.BUILD_PATH }}
-          file: ${{ env.BUILD_FILE }}
+          context: ${{ inputs.docker-build-folder }}
+          file: ${{ inputs.docker-build-file }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
             ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}

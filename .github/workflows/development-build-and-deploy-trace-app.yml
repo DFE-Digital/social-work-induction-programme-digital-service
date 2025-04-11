@@ -19,6 +19,7 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ inputs.environment }}
-      docker-build-file: ./deploy-app-docker/Dockerfile
+      docker-build-folder: ./deploy-app-docker/
+      docker-build-file: Dockerfile
       short-image-name: deploy-app
       web-app-name: webapp-deploy
