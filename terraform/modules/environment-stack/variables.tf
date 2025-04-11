@@ -44,7 +44,7 @@ variable "autoscale_rule_minimum_capacity" {
 variable "autoscale_rule_maximum_capacity" {
   type = number
   description = "The maximum app service capacity"
-  default = 2
+  default = 1
 }
 
 variable "admin_enabled" {
