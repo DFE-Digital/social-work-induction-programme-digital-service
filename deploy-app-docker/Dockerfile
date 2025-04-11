@@ -15,7 +15,9 @@ RUN apk update && apk add \
 RUN mkdir -p /var/run/sshd /app
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+# Modify to run SSH on port 80 for web app service compatibility
+RUN sed -i 's/^#\?Port.*22/Port 80/' /etc/ssh/sshd_config
 
-EXPOSE 22
+EXPOSE 80
 
 CMD ["/app/entrypoint.sh"]
