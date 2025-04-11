@@ -5,3 +5,4 @@ webapp_storage_account_name = "webappsa"
 parent_business_tag = "Children and Families"
 product_tag = "Social Work Induction Programme"
 service_offering_tag = "Social Work Induction Programme"
+assign_delivery_team_key_vault_permissions = true
