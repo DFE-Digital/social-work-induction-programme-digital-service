@@ -101,9 +101,9 @@ resource "azurerm_key_vault_access_policy" "kv_gh_ap" {
   tenant_id    = data.azurerm_client_config.az_config.tenant_id
   object_id    = [each.value.object_id]
 
-  key_permissions = principal_key_permissions
-  secret_permissions = principal_secret_permissions
-  certificate_permissions = principal_certificate_permissions
+  key_permissions = local.principal_key_permissions
+  secret_permissions = local.principal_secret_permissions
+  certificate_permissions = local.principal_certificate_permissions
 
   lifecycle {
     ignore_changes = [object_id]
