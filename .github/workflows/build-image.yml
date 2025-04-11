@@ -56,10 +56,17 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
+      # Need to retrieve ACR_NAME in particular for next steps
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment }}
+          add_as_env_vars: true
+
       - name: Azure Container Registry Login
-        run: az acr login --name ${{ vars.IMAGE_REGISTRY_NAME }}
+        run: az acr login --name ${{ env.ACR_NAME }}
         env:
-          ACR_NAME: ${{ vars.IMAGE_REGISTRY_NAME }}
+          ACR_NAME: ${{ env.ACR_NAME }}
 
       - name: Format branch name
         run: |
@@ -73,10 +80,10 @@ jobs:
           file: ${{ inputs.docker-build-file }}
           build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
           tags: |
-            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
+            ${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
+            ${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
           push: true
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "dockerImageTag=${{ env.ACR_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
