@@ -25,7 +25,7 @@ output "kv_vault_uri" {
 
 output "db_server_id" {
   description = "The ID of the Postgresql database server"
-  value       = azurerm_postgresql_flexible_server.swipdb.id  
+  value       = azurerm_postgresql_flexible_server.swipdb.id
 }
 
 output "postgres_db_host" {

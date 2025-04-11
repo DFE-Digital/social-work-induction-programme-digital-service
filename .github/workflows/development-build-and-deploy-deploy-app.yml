@@ -1,4 +1,4 @@
-name: Development build & deploy trace app
+name: Development build & deploy deploy app
 
 on:
   workflow_dispatch:
@@ -14,11 +14,11 @@ on:
 
 jobs:
   create-and-publish-image:
-    name: Build & Deploy Trace App
+    name: Build & Deploy Deploy App
     uses: ./.github/workflows/development-build-and-deploy-template.yml
     secrets: inherit
     with:
       environment: ${{ inputs.environment }}
-      docker-build-file: ./trace-app-docker/Dockerfile
-      short-image-name: trace-app
-      web-app-name: webapp-trace
+      docker-build-file: ./deploy-app-docker/Dockerfile
+      short-image-name: deploy-app
+      web-app-name: webapp-deploy
