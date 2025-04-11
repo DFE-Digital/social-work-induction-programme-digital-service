@@ -9,6 +9,9 @@ on:
       org-name:
         type: string
         default: dfe-digital
+      docker-build-folder:
+        type: string
+        required: true
       docker-build-file:
         type: string
         required: true
@@ -51,6 +54,7 @@ jobs:
       environment: ${{ inputs.environment }}
       branch: ${{ needs.set-env.outputs.branch }}
       checked-out-sha: ${{ needs.set-env.outputs.checked-out-sha }}
+      docker-build-folder: ${{ inputs.docker-build-folder }}
       docker-build-file: ${{ inputs.docker-build-file }}
       org-name: ${{ inputs.org-name }}
       docker-image-name: ${{ inputs.image-stem }}-${{ inputs.short-image-name }}
