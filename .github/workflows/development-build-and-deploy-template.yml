@@ -88,6 +88,13 @@ jobs:
           environment: ${{ inputs.environment }}
           add_as_env_vars: true
 
+      # Deploy Web Application
+      - name: Deploy to Azure App Services
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+          images: ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
+
       - name: Test deploy
         run: |
           # Create remote tunnel connection to deploy web app
@@ -103,11 +110,3 @@ jobs:
           send "exit\r"
           expect eof
           EOF
-          
-
-      # # Deploy Web Application
-      # - name: Deploy to Azure App Services
-      #   uses: azure/webapps-deploy@v2
-      #   with:
-      #     app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-      #     images: ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
