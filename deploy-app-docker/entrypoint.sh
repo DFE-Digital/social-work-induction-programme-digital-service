@@ -8,4 +8,5 @@ echo "Starting SSH ..."
 /usr/sbin/sshd
 
 echo "Starting HTTPD ..."
-httpd -f -p 80 -h /www & /usr/sbin/sshd -D
+httpd -f -p 80 -h /www
+
