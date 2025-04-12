@@ -15,8 +15,8 @@ RUN apk update && apk add --no-cache \
 COPY sshd_config /etc/ssh/sshd_config
 COPY entrypoint.sh /app/entrypoint.sh
 
-RUN apk add openssh \
-  && echo "root:Docker!" | chpasswd \
+RUN echo "root:Docker!" | chpasswd \
+  && > /etc/motd \
   && chmod +x /app/entrypoint.sh \
   && cd /etc/ssh/ \
   && ssh-keygen -A

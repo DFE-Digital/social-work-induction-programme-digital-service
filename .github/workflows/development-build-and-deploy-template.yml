@@ -97,13 +97,12 @@ jobs:
             --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} \
             --resource-group s205d01-swip-rg \
             -n s205d01-webapp-deploy
-          expect \"#\"
-          send \"pwd\r\"
-          expect \"#\"
-          send \"exit\r\"
+          expect "#"
+          send "pwd\r"
+          expect "#"
+          send "exit\r"
           EOF
           )
-          kill $TUNNEL_PID
 
       # # Deploy Web Application
       # - name: Deploy to Azure App Services
