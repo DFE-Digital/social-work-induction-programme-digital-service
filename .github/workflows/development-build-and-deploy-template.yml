@@ -88,9 +88,29 @@ jobs:
           environment: ${{ inputs.environment }}
           add_as_env_vars: true
 
-      # Deploy Web Application
-      - name: Deploy to Azure App Services
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-          images: ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
+      - name: Test deploy
+        run: |
+          # Create remote tunnel connection to deploy web app
+          az webapp create-remote-connection \
+            --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} \
+            --resource-group s205d01-swip-rg \
+            -n s205d01-webapp-deploy \
+            -p 3010 > tunnel.log 2>&1 &
+          TUNNEL_PID=$!
+          echo "Waiting for SSH tunnel to be ready..."
+          timeout 600 bash -c 'until grep -q "SSH is available" tunnel.log; do sleep 1; done'
+          expect <(cat <<EOF
+          ssh -o "StrictHostKeyChecking=no" -m hmac-sha1 root@127.0.0.1 -p 3010
+          expect "assword:"
+          send "Docker!\r"
+          wait 
+          EOF
+          )
+          kill $TUNNEL_PID
+
+      # # Deploy Web Application
+      # - name: Deploy to Azure App Services
+      #   uses: azure/webapps-deploy@v2
+      #   with:
+      #     app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+      #     images: ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
