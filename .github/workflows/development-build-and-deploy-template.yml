@@ -91,6 +91,7 @@ jobs:
       - name: Test deploy
         run: |
           # Create remote tunnel connection to deploy web app
+          sudo apt install -y expect
           az webapp create-remote-connection \
             --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} \
             --resource-group s205d01-swip-rg \
