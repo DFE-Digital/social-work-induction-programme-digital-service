@@ -92,7 +92,7 @@ jobs:
         run: |
           # Create remote tunnel connection to deploy web app
           sudo apt install -y expect
-          expect <(cat <<EOF
+          expect <<'EOF'
           spawn az webapp ssh \
             --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} \
             --resource-group s205d01-swip-rg \
@@ -101,8 +101,9 @@ jobs:
           send "pwd\r"
           expect "#"
           send "exit\r"
+          expect eof
           EOF
-          )
+          
 
       # # Deploy Web Application
       # - name: Deploy to Azure App Services
