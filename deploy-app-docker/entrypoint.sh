@@ -1,8 +1,11 @@
-if [ -n "$SSH_CERT_BASE64" ]; then
-  echo "$SSH_CERT_BASE64" | base64 -d > /etc/ssh/ssh_host_rsa_key
-  chmod 600 /etc/ssh/ssh_host_rsa_key
-  ssh-keygen -y -f /etc/ssh/ssh_host_rsa_key > /etc/ssh/ssh_host_rsa_key.pub
-else
-  ssh-keygen -A
-fi
-exec /usr/sbin/sshd -D
+#!/bin/sh
+set -e
+
+# Get env vars in the Dockerfile to show up in the SSH session
+eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
+
+echo "Starting SSH ..."
+/usr/sbin/sshd
+
+echo "Starting HTTPD ..."
+httpd -f -p 80 -h /www & /usr/sbin/sshd -D

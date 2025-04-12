@@ -41,7 +41,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale" {
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
   target_resource_id  = azurerm_service_plan.asp.id
-  enabled             = true
+  enabled             = var.autoscale_rule_minimum_capacity != var.autoscale_rule_maximum_capacity
   tags                = var.tags
 
   profile {

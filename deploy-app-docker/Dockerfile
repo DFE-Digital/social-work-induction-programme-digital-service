@@ -1,6 +1,6 @@
 FROM alpine:3.21.3
 
-RUN apk update && apk add \
+RUN apk update && apk add --no-cache \
   iputils \
   bind-tools \
   net-tools \
@@ -12,12 +12,18 @@ RUN apk update && apk add \
   openssh \
   coreutils
 
-RUN mkdir -p /var/run/sshd /app
+COPY sshd_config /etc/ssh/sshd_config
 COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-# Modify to run SSH on port 80 for web app service compatibility
-RUN sed -i 's/^#\?Port.*22/Port 80/' /etc/ssh/sshd_config
 
-EXPOSE 80
+RUN apk add openssh \
+  && echo "root:Docker!" | chpasswd \
+  && chmod +x /app/entrypoint.sh \
+  && cd /etc/ssh/ \
+  && ssh-keygen -A
+
+RUN mkdir -p /www \
+  && echo "Initialised..." > /www/index.html
+
+EXPOSE 80 2222
 
 CMD ["/app/entrypoint.sh"]
