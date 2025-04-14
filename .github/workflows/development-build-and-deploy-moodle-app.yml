@@ -23,8 +23,7 @@ jobs:
       docker-build-file: Dockerfile-github
       docker-image-name: wa-moodle
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      web-app-name: wa-moodle
-      deploy-instance: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || github.event.inputs.deploy_instance }}
+      web-app-name: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
 
   create-and-publish-moodle-install-image:
     name: Create & Publish Moodle Install Image
@@ -37,5 +36,4 @@ jobs:
       docker-image-name: wa-moodle-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
       build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
-      web-app-name: wa-moodle-install
-      deploy-instance: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || github.event.inputs.deploy_instance }}
+      web-app-name: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
