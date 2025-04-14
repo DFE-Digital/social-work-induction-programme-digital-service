@@ -90,7 +90,7 @@ module "web_app_moodle_install" {
     "MOODLE_DB_TYPE"                      = var.moodle_db_type
     "MOODLE_DB_HOST"                      = module.stack.postgres_db_host
     "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
-    "MOODLE_DOCKER_WEB_HOST"              = "${each.value.webapp_name}.azurewebsites.net"
+    "MOODLE_DOCKER_WEB_HOST"              = "${local.moodle_webapp_name_stem}-install.azurewebsites.net"
     "MOODLE_DOCKER_SSL_TERMINATION"       = "true"
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
