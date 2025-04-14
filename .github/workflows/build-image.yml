@@ -21,6 +21,12 @@ on:
       build-args:
         type: string
         default: ''
+      web-app-name:
+        type: string
+        default: ''
+      deploy-instance:
+        type: string
+        default: ''
 
     outputs:
       docker-image-tag:
@@ -110,6 +116,13 @@ jobs:
 
       - name: Push Image
         run: docker push "${{ env.FULL_TAG }}"
+
+      - name: Optional deploy to Azure App Services (Dev)
+        if: inputs.web-app-name != '' && inputs.deploy-instance != ''
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}-${{ inputs.deploy-instance}}
+          images: "${{ env.FULL_TAG }}"
 
       - name: Return Outputs
         id: return

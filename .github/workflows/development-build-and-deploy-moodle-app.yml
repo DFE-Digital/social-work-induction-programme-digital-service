@@ -23,23 +23,8 @@ jobs:
       docker-build-file: Dockerfile-github
       docker-image-name: wa-moodle
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-
-  deploy-moodle-image-to-dev:
-    runs-on: ubuntu-24.04
-    needs: create-and-publish-moodle-image
-    name: Deploy Moodle Image To Dev
-    if: inputs.deploy_instance != 'none - no deploy'
-    # Permissions for OIDC authentication
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-    steps:
-      - name: Deploy to Azure App Services
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ needs.create-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle
-          images: "${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
+      web-app-name: wa-moodle
+      deploy-instance: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || github.event.inputs.deploy_instance }}
 
   create-and-publish-moodle-install-image:
     name: Create & Publish Moodle Install Image
@@ -51,21 +36,5 @@ jobs:
       docker-image-name: wa-moodle-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
       build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
-
-  deploy-moodle-install-image-to-dev:
-    runs-on: ubuntu-24.04
-    needs: create-and-publish-moodle-install-image
-    name: Deploy Moodle Install Image To Dev
-    if: inputs.deploy_instance != 'none - no deploy'
-    # Permissions for OIDC authentication
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-    steps:
-      - name: Deploy to Azure App Services
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ needs.create-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-install
-          images: "${{ needs.create-and-publish-moodle-install-image.outputs.docker-image-tag }}"
-
+      web-app-name: wa-moodle-install
+      deploy-instance: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || github.event.inputs.deploy_instance }}
