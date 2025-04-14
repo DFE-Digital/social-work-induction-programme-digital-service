@@ -29,7 +29,6 @@ jobs:
     needs: create-and-publish-moodle-image
     name: Deploy Moodle Image To Dev
     if: inputs.deploy_instance != 'none - don't deploy'
-    secrets: inherit
     # Permissions for OIDC authentication
     permissions:
       id-token: write
@@ -58,7 +57,6 @@ jobs:
     needs: create-and-publish-moodle-install-image
     name: Deploy Moodle Install Image To Dev
     if: inputs.deploy_instance != 'none - don't deploy'
-    secrets: inherit
     # Permissions for OIDC authentication
     permissions:
       id-token: write
