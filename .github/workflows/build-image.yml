@@ -12,6 +12,9 @@ on:
       org-name:
         type: string
         default: dfe-digital
+      project-name:
+        type: string
+        default: swip-digital-service
       docker-image-name:
         type: string
         required: true
@@ -89,7 +92,7 @@ jobs:
             BASE_VERSION="${{ inputs.base-image-version }}-"
           fi
           echo COMMIT_HASH_SHORT="$COMMIT_HASH_SHORT" >> $GITHUB_ENV
-          FULL_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
+          FULL_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}-${{inputs.project-name}}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
           if [[ "${{ github.ref_name }}" != "main" ]]; then
             FULL_TAG="$FULL_TAG.dev"
           fi
