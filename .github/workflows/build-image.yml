@@ -47,6 +47,8 @@ jobs:
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+    env:
+      ENVIRONMENT: Dev
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -64,7 +66,7 @@ jobs:
       - name: Load Terraform Variables
         uses: ./.github/actions/pre-process-terraform-variables
         with:
-          environment: ${{ github.environment }}
+          environment: ${{ env.ENVIRONMENT }}
           add_as_env_vars: true
 
       - name: Azure Container Registry Login
