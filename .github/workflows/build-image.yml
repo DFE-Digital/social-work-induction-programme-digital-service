@@ -86,7 +86,7 @@ jobs:
           FULL_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
           if [[ "${{ github.ref_name }}" != "main" ]]; then
             FULL_TAG="$FULL_TAG.dev"
-          if  
+          fi
           echo FULL_TAG="$FULL_TAG" >> $GITHUB_ENV
           echo "Docker build: full tag - $FULL_TAG"
 
