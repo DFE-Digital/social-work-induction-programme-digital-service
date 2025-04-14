@@ -28,6 +28,7 @@ jobs:
 
   create-and-publish-moodle-install-image:
     name: Create & Publish Moodle Install Image
+    needs: create-and-publish-moodle-image
     uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
