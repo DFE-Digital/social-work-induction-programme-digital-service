@@ -26,6 +26,9 @@ on:
       docker-image-tag:
         description: "The tag of the image pushed to the ACR"
         value: ${{ jobs.build-image.outputs.docker-image-tag }}
+      dev-resource-name-prefix:
+        description: "The resource name prefix for the Dev environment"
+        value: ${{ jobs.build-image.outputs.dev-resource-name-prefix }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
@@ -43,7 +46,7 @@ jobs:
       issues: write
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
-      docker-image-tag: ${{ steps.return.outputs.dev-resource-name-prefix }}
+      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

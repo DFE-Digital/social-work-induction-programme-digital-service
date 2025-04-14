@@ -25,7 +25,7 @@ jobs:
       base-image-version: "{{ vars.MOODLE_BRANCH_VERSION }}"
 
   deploy-moodle-image-to-dev:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: create-and-publish-moodle-image
     name: Deploy Moodle Image To Dev
     if: inputs.deploy_instance != 'none - don't deploy'
@@ -54,7 +54,7 @@ jobs:
       build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
 
   deploy-moodle-install-image-to-dev:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: create-and-publish-moodle-install-image
     name: Deploy Moodle Install Image To Dev
     if: inputs.deploy_instance != 'none - don't deploy'
