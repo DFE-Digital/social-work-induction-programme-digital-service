@@ -11,7 +11,7 @@ on:
         required: true
       org-name:
         type: string
-        required: true
+        default: dfe-digital
       docker-image-name:
         type: string
         required: true
