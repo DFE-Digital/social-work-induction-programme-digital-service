@@ -3,15 +3,6 @@ name: Build Image and Publish to ACR
 on:
   workflow_call:
     inputs:
-      environment:
-        type: string
-        required: true
-      branch:
-        type: string
-        required: true
-      checked-out-sha:
-        type: string
-        required: true
       docker-build-folder:
         type: string
         required: true
@@ -24,11 +15,17 @@ on:
       docker-image-name:
         type: string
         required: true
+      base-image-version:
+        type: string
+        default: ''
+      build-args:
+        type: string
+        default: ''
 
     outputs:
-      dockerImageTag:
-        description: "The image written to the ACR"
-        value: ${{ jobs.build-image.outputs.dockerImageTag }}
+      docker-image-tag:
+        description: "The tag of the image pushed to the ACR"
+        value: ${{ jobs.build-image.outputs.docker-image-tag }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.environment }}
@@ -37,7 +34,7 @@ concurrency:
 jobs:
   build-image:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.environment }}
+    environment: Dev
     name: Build & Publish Image
     # Permissions for OIDC authentication
     permissions:
@@ -45,7 +42,7 @@ jobs:
       contents: write
       issues: write
     outputs:
-      dockerImageTag: ${{ steps.image.outputs.dockerImageTag }}
+      docker-image-tag: ${{ steps.image.outputs.docker-image-tag }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -71,22 +68,43 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
-      - name: Format branch name
+      - name: Format standard image tag
         run: |
-          branchName=${{ inputs.branch }}
-          echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
+          COMMIT_HASH=${{ github.sha }}
+          COMMIT_HASH_SHORT="${github_sha_hash:0:7}"
+          BUILD_DATE=$(date +%Y%m%d)
+          if [[ -n "${{ inputs.base-image-version }}" ]]; then
+            BASE_VERSION="${{ inputs.base-image-version }}-"
+          fi
+          echo COMMIT_HASH_SHORT="$COMMIT_HASH_SHORT" >> $GITHUB_ENV
+          FULL_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            FULL_TAG="$FULL_TAG.dev"
+          if  
+          echo FULL_TAG="${FULL_TAG" >> $GITHUB_ENV
+          echo "Docker build: full tag - $FULL_TAG"
 
-      - name: "Build the image and deploy to ACR"
-        uses: docker/build-push-action@v6
-        with:
-          context: ${{ inputs.docker-build-folder }}
-          file: ${{ inputs.docker-build-folder }}/${{ inputs.docker-build-file }}
-          build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
-          tags: |
-            ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
-          push: true
+      - name: Docker build
+        run: |
+          cd ${{ inputs.docker-build-folder }}
+          echo "Docker build: specified build args - ${{ inputs.build-args }}"
+          BUILD_ARGS=""
+          # Split build args by semicolon
+          IFS=';' read -ra KVPAIRS <<< "${{ inputs.build-args }}"
+          for pair in "${KVPAIRS[@]}"; do
+            trimmed=$(echo "$pair" | xargs)
+            if [[ -n "$trimmed" ]]; then
+              BUILD_ARGS="$BUILD_ARGS --build-arg $trimmed"
+            fi
+          done
+          echo "Docker build: Using build args - $BUILD_ARGS"
+          docker build $BUILD_ARGS \
+            -f "./${{ inputs.docker-build-file }}" \
+            -t "${{ env.FULL_TAG }}" .
+
+      - name: Push Image
+        run: docker push "${{ env.FULL_TAG }}"
 
       - name: Output Docker Image Tag
         id: image
-        run: echo "dockerImageTag=${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+        run: echo "docker-image-tag=${{ env.FULL_TAG }}" >> $GITHUB_OUTPUT

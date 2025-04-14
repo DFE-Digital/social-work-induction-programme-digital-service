@@ -1,32 +1,71 @@
-name: Development build & deploy Moodle app
+name: Build Moodle apps (optionally deploy to dev)
 
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Azure deployment environment"
+      deploy_instance:
+        description: "Dev environment deployment instance"
         required: true
-        default: Dev
+        default: none - don't deploy
         type: choice
         options:
-          - Dev
-          - Test
-
-      instance:
-        description: "Moodle instance to deploy to"
-        default: primary
-        type: choice
-        options:
+          - none - don't deploy
           - primary
 
 jobs:
-  create-and-publish-image:
-    name: Build & Deploy Moodle App
-    uses: ./.github/workflows/development-build-and-deploy-template.yml
+
+  create-and-publish-moodle-image:
+    name: Create & Publish Moodle Image
+    uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
-      environment: ${{ inputs.environment }}
       docker-build-folder: ./moodle-docker/
       docker-build-file: Dockerfile-github
-      short-image-name: moodle-app
-      web-app-name: webapp-moodle-${{ inputs.instance }}
+      docker-image-name: wa-moodle
+      base-image-version: "{{ vars.MOODLE_BRANCH_VERSION }}"
+
+  deploy-moodle-image-to-dev:
+    needs: create-and-publish-moodle-image
+    name: Deploy Moodle Image To Dev
+    if: ${{ inputs.deploy_instance != 'none - don't deploy' }}
+    secrets: inherit
+    # Permissions for OIDC authentication
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    steps:
+      - name: Deploy to Azure App Services
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-wa-moodle
+          images: "${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
+
+  create-and-publish-moodle-install-image:
+    name: Create & Publish Moodle Install Image
+    uses: ./.github/workflows/build-image.yml
+    secrets: inherit
+    with:
+      docker-build-folder: ./moodle-docker/
+      docker-build-file: Dockerfile-github-install
+      docker-image-name: wa-moodle-install
+      base-image-version: "{{ vars.MOODLE_BRANCH_VERSION }}"
+      build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
+
+  deploy-moodle-install-image-to-dev:
+    needs: create-and-publish-moodle-install-image
+    name: Deploy Moodle Install Image To Dev
+    if: ${{ inputs.deploy_instance != 'none - don't deploy' }}
+    secrets: inherit
+    # Permissions for OIDC authentication
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    steps:
+      - name: Deploy to Azure App Services
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-wa-moodle-install
+          images: "${{ needs.create-and-publish-moodle-install-image.outputs.docker-image-tag }}"
+

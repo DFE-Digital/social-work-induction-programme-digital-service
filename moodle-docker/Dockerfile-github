@@ -6,8 +6,7 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
       git \
       curl \
-      unzip && \
-    rm -rf /var/lib/apt/lists/*
+      unzip
 
 WORKDIR /build
 
@@ -20,7 +19,7 @@ RUN curl -L -o govuk-moodle-theme.zip "$GITHUB_RELEASE_URL" && \
 RUN git clone -b MOODLE_405_STABLE --single-branch --depth=1 git://git.moodle.org/moodle.git
 
 # Copy custom config.php into the correct location
-COPY /moodle-docker/config.php ./moodle/config.php
+COPY config.php ./moodle/config.php
 # Re-enable if DB connectivity tracing is required
 #COPY /moodle-docker/dmllib.trace.php ./moodle/lib/dmllib.php
 
@@ -35,6 +34,9 @@ RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
 FROM moodlehq/moodle-php-apache:8.3-bookworm
 
 WORKDIR /var/www/html
+RUN mkdir -p /app
+COPY entry-point-azure.sh /app/entry-point.sh
+RUN chmod +x /app/entry-point.sh
 
 # Copy the pruned Moodle source / downloaded theme
 COPY --from=builder --chown=www-data:www-data /build/moodle/ ./
@@ -44,6 +46,6 @@ COPY --from=builder --chown=www-data:www-data /build/theme/govuk/ ./theme/
 # Apache is configured to run as www-data
 USER root
 
-CMD ["apache2-foreground"]
+CMD ["/app/entry-point.sh"]
 
 EXPOSE 80

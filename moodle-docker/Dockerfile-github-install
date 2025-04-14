@@ -1,0 +1,11 @@
+
+ARG FULL_MOODLE_IMAGE_VERSION
+
+# The install image is based off exactly the same image as the Moodle image
+FROM ${FULL_MOODLE_IMAGE_VERSION}
+
+RUN test -n "$FULL_MOODLE_IMAGE_VERSION" || (echo "Error: FULL_MOODLE_IMAGE_VERSION is required" && exit 1)
+
+RUN apt-get install -y --no-install-recommends postgresql-client
+
+COPY entry-point-azure-install.sh /app/entry-point.sh
