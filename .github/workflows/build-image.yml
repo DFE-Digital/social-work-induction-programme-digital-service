@@ -42,7 +42,8 @@ jobs:
       contents: write
       issues: write
     outputs:
-      docker-image-tag: ${{ steps.image.outputs.docker-image-tag }}
+      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
+      docker-image-tag: ${{ steps.return.outputs.dev-resource-name-prefix }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -105,6 +106,9 @@ jobs:
       - name: Push Image
         run: docker push "${{ env.FULL_TAG }}"
 
-      - name: Output Docker Image Tag
-        id: image
-        run: echo "docker-image-tag=${{ env.FULL_TAG }}" >> $GITHUB_OUTPUT
+      - name: Return Outputs
+        id: return
+        run: |
+          echo "docker-image-tag=${{ env.FULL_TAG }}" >> $GITHUB_OUTPUT
+          # Returned as a convenience if the caller wants to subsequently deploy to dev
+          echo "dev-resource-name-prefix=${{ env.RESOURCE_NAME_PREFIX }}" >> $GITHUB_OUTPUT

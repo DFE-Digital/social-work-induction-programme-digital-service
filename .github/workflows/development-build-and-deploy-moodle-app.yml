@@ -38,7 +38,7 @@ jobs:
       - name: Deploy to Azure App Services
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-wa-moodle
+          app-name: ${{ needs.create-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle
           images: "${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
 
   create-and-publish-moodle-install-image:
@@ -66,6 +66,6 @@ jobs:
       - name: Deploy to Azure App Services
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-wa-moodle-install
+          app-name: ${{ needs.create-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-install
           images: "${{ needs.create-and-publish-moodle-install-image.outputs.docker-image-tag }}"
 
