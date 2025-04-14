@@ -31,7 +31,7 @@ on:
         value: ${{ jobs.build-image.outputs.dev-resource-name-prefix }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.environment }}
+  group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
@@ -64,7 +64,7 @@ jobs:
       - name: Load Terraform Variables
         uses: ./.github/actions/pre-process-terraform-variables
         with:
-          environment: ${{ inputs.environment }}
+          environment: ${{ github.environment }}
           add_as_env_vars: true
 
       - name: Azure Container Registry Login
