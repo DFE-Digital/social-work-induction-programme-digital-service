@@ -6,10 +6,10 @@ on:
       deploy_instance:
         description: "Dev environment deployment instance"
         required: true
-        default: none - don't deploy
+        default: none - no deploy
         type: choice
         options:
-          - none - don't deploy
+          - none - no deploy
           - primary
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: create-and-publish-moodle-image
     name: Deploy Moodle Image To Dev
-    if: inputs.deploy_instance != 'none - don't deploy'
+    if: inputs.deploy_instance != 'none - no deploy'
     # Permissions for OIDC authentication
     permissions:
       id-token: write
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: create-and-publish-moodle-install-image
     name: Deploy Moodle Install Image To Dev
-    if: inputs.deploy_instance != 'none - don't deploy'
+    if: inputs.deploy_instance != 'none - no deploy'
     # Permissions for OIDC authentication
     permissions:
       id-token: write
