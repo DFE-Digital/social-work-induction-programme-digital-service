@@ -77,7 +77,7 @@ jobs:
       - name: Format standard image tag
         run: |
           COMMIT_HASH=${{ github.sha }}
-          COMMIT_HASH_SHORT="${github_sha_hash:0:7}"
+          COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
           BUILD_DATE=$(date +%Y%m%d)
           if [[ -n "${{ inputs.base-image-version }}" ]]; then
             BASE_VERSION="${{ inputs.base-image-version }}-"

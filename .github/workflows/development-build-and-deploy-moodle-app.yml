@@ -22,7 +22,7 @@ jobs:
       docker-build-folder: ./moodle-docker/
       docker-build-file: Dockerfile-github
       docker-image-name: wa-moodle
-      base-image-version: "{{ vars.MOODLE_BRANCH_VERSION }}"
+      base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
 
   deploy-moodle-image-to-dev:
     runs-on: ubuntu-24.04
@@ -49,7 +49,7 @@ jobs:
       docker-build-folder: ./moodle-docker/
       docker-build-file: Dockerfile-github-install
       docker-image-name: wa-moodle-install
-      base-image-version: "{{ vars.MOODLE_BRANCH_VERSION }}"
+      base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
       build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
 
   deploy-moodle-install-image-to-dev:
