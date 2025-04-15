@@ -24,7 +24,7 @@ RUN chmod +x /app/entry-point.sh
 COPY sshd_config /etc/ssh/sshd_config
 RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
   export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
-  && echo "User: ${AZURE_KUDU_SSH_USER}, Password: $AZURE_KUDU_SSH_PASSWORD" \
+  && echo "User: $AZURE_KUDU_SSH_USER, Password: $AZURE_KUDU_SSH_PASSWORD" \
   && echo "${AZURE_KUDU_SSH_USER}:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
   && > /etc/motd \
   && cd /etc/ssh/ \
