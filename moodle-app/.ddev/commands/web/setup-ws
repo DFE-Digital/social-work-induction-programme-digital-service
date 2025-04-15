@@ -1,0 +1,15 @@
+#!/bin/bash
+webservice_user=${1:-wsuser}
+webservice_password=${2:-StrongPass123!}
+webservice_email=${3:-wsuser@example.com}
+webservice_servicename=${4:-SwipServiceName}
+
+echo "Updating config.php to set enablewebservices to 1..."
+CONFIG_FILE="/var/www/html/public/config.php"
+if grep -q "^\$CFG->enablewebservices" "$CONFIG_FILE"; then
+  sed -i "s/^\(\$CFG->enablewebservices\)\s*=.*/\1 = 1;/" "$CONFIG_FILE"
+else
+  echo "\$CFG->enablewebservices = 1;" >> "$CONFIG_FILE"
+fi
+
+php /var/www/html/public/setup_webservice.php --username=$webservice_user --password=$webservice_password --email=$webservice_email --servicename=${webservice_servicename}
