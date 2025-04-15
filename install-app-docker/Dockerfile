@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     openssh-server \
     && rm -rf /var/lib/apt/lists/*
-  
+
 COPY entry-point-azure.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
 
@@ -29,3 +29,7 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
   && chmod 0755 /var/run/sshd \
   && cd /etc/ssh/ \
   && ssh-keygen -A
+
+USER www-data
+COPY index.html /var/www/html/index.html
+USER root

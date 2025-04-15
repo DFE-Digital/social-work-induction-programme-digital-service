@@ -54,7 +54,7 @@ INSERT INTO moodle_migration.moodle_migration (version, install_status, success)
 VALUES ('$VERSION', 'Installation successful', true);
 EOF
     else
-        echo "Install script failed. Recording failure in the migration table and exiting..."
+        echo "Install script failed"
     fi
 else
     echo "Last successful install entry: $LAST_SUCCESS"
@@ -78,5 +78,5 @@ EOF
     fi
 fi
 
-# Prevent container exit (or replace with your main process startup command).
-pause
+apache2-foreground
+
