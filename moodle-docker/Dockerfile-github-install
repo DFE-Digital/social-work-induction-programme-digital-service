@@ -7,3 +7,4 @@ FROM ${FULL_MOODLE_IMAGE_VERSION}
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client
 
 COPY entry-point-azure-install.sh /app/entry-point.sh
+RUN chmod +x /app/entry-point.sh
