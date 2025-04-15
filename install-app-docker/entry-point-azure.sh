@@ -29,7 +29,7 @@ VERSION=$(awk -F"'" '/\$release[[:space:]]*=/ {print $2}' version.php)
 if [[ -z "$LAST_SUCCESS" ]]; then
     echo "No successful install found; creating Moodle database from version $VERSION..."
 
-    su -s /bin/sh www-data -c 'php admin/cli/install_database.php --lang=cs --adminpass=$MOODLE_ADMIN_PASSWORD --agree-license --non-interactive'
+    su -s /bin/sh www-data -c 'php admin/cli/install_database.php --lang=en --adminpass=$MOODLE_ADMIN_PASSWORD --agree-license'
   
     if [ $? -eq 0 ]; then
         # Required to make sure GOVUK plug-in is OK
