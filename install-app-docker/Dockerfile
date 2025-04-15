@@ -25,7 +25,7 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
   export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
   && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
   && > /etc/motd \
-  && mkdir /var/run/sshd \
+  && mkdir -p /var/run/sshd \
   && chmod 0755 /var/run/sshd \
   && cd /etc/ssh/ \
   && ssh-keygen -A
