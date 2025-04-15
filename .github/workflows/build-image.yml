@@ -100,6 +100,9 @@ jobs:
           echo "Docker build: full tag - $FULL_TAG"
 
       - name: Docker build
+        env:
+          DOCKER_BUILDKIT: 1
+          AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
         run: |
           cd ${{ inputs.docker-build-folder }}
           echo "Docker build: specified build args - ${{ inputs.build-args }}"
@@ -119,7 +122,6 @@ jobs:
           for secret in "${SECRETS[@]}"; do
             trimmed=$(echo "$secret" | xargs)
             if [[ "$trimmed" == "AZURE_KUDU_SSH_PASSWORD" ]]; then
-              AZURE_KUDU_SSH_PASSWORD=${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
               SECRET_ARGS="$SECRET_ARGS --secret id=AZURE_KUDU_SSH_PASSWORD,env=AZURE_KUDU_SSH_PASSWORD"
             fi
           done
