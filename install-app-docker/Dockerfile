@@ -1,5 +1,7 @@
 
 ARG FULL_MOODLE_IMAGE_VERSION
+ARG AZURE_KUDU_SSH_USER
+ARG AZURE_KUDU_SSH_PASSWORD
 
 # The install image is based off exactly the same image as the Moodle image
 FROM ${FULL_MOODLE_IMAGE_VERSION}
@@ -20,7 +22,7 @@ RUN chmod +x /app/entry-point.sh
 
 # Support kudu tools SSH for remote debug
 COPY sshd_config /etc/ssh/sshd_config
-RUN echo "root:Docker!" | chpasswd \
+RUN echo "${AZURE_KUDU_SSH_USER}:${AZURE_KUDU_SSH_PASSWORD}" | chpasswd \
   && > /etc/motd \
   && cd /etc/ssh/ \
   && ssh-keygen -A
