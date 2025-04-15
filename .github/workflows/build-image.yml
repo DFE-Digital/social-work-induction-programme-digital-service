@@ -24,6 +24,9 @@ on:
       build-args:
         type: string
         default: ''
+      build-secrets:
+        type: string
+        default: ''
       web-app-name:
         type: string
         default: ''
@@ -100,6 +103,7 @@ jobs:
         run: |
           cd ${{ inputs.docker-build-folder }}
           echo "Docker build: specified build args - ${{ inputs.build-args }}"
+
           BUILD_ARGS=""
           # Split build args by semicolon
           IFS=';' read -ra KVPAIRS <<< "${{ inputs.build-args }}"
@@ -109,8 +113,20 @@ jobs:
               BUILD_ARGS="$BUILD_ARGS --build-arg $trimmed"
             fi
           done
-          echo "Docker build: Using build args - $BUILD_ARGS"
-          docker build $BUILD_ARGS \
+
+          SECRET_ARGS=""
+          IFS=';' read -ra SECRETS <<< "${{ inputs.build-secrets }}"
+          for secret in "${SECRETS[@]}"; do
+            trimmed=$(echo "$secret" | xargs)
+            if [[ "$trimmed" == "AZURE_KUDU_SSH_PASSWORD" ]]; then
+              SECRET_ARGS="$SECRET_ARGS --secret AZURE_KUDU_SSH_PASSWORD=${{ secrets.AZURE_KUDU_SSH_PASSWORD }}"
+            fi
+          done
+          
+          echo "Docker build: Using build args - $BUILD_ARGS, secrets - $SECRET_ARGS"
+          docker build \
+            $BUILD_ARGS \
+            $SECRET_ARGS \
             -f "./${{ inputs.docker-build-file }}" \
             -t "${{ env.FULL_TAG }}" .
 
