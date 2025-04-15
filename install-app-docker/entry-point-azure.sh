@@ -34,6 +34,7 @@ if [[ -z "$LAST_SUCCESS" ]]; then
     if [ $? -eq 0 ]; then
         # Required to make sure GOVUK plug-in is OK
         #su -s /bin/sh www-data -c 'php admin/cli/upgrade.php --non-interactive'
+        echo ''
     fi
     if [ $? -eq 0 ]; then
         
