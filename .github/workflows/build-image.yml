@@ -113,7 +113,7 @@ jobs:
           for pair in "${KVPAIRS[@]}"; do
             trimmed=$(echo "$pair" | xargs)
             if [[ -n "$trimmed" ]]; then
-              BUILD_ARGS="$BUILD_ARGS --build-arg $trimmed"
+              BUILD_ARGS="$BUILD_ARGS \"--build-arg $trimmed\""
             fi
           done
 
