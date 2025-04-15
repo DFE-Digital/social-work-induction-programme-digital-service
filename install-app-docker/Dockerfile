@@ -5,8 +5,6 @@ FROM ${FULL_MOODLE_IMAGE_VERSION}
 
 ARG AZURE_KUDU_SSH_USER
 
-RUN echo "User: $AZURE_KUDU_SSH_USER, Image: $FULL_MOODLE_IMAGE_VERSION"
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     dnsutils \
@@ -25,8 +23,9 @@ RUN chmod +x /app/entry-point.sh
 COPY sshd_config /etc/ssh/sshd_config
 RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
   export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
-  && echo "User: $AZURE_KUDU_SSH_USER, Password: $AZURE_KUDU_SSH_PASSWORD" \
   && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
   && > /etc/motd \
+  && mkdir /var/run/sshd \
+  && chmod 0755 /var/run/sshd \
   && cd /etc/ssh/ \
   && ssh-keygen -A
