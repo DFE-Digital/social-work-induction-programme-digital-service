@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+# Get env vars in the Dockerfile to show up in the SSH session
+eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
+
+# Suport SSH for troubleshooting
+echo "Starting SSH ..."
+/usr/sbin/sshd
+
 # Construct the PostgreSQL connection using environment variables.
 # Required env variables: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, MOODLE_DB_HOST.
 # PGPASSWORD is used by psql for authentication.
@@ -32,6 +39,8 @@ echo "Retrieving last successful install entry..."
 if [ "$TABLE_EXISTED" = "true" ]; then
     # Retrieve the latest successful install entry as a formatted string, or return an empty string.
     LAST_SUCCESS=$($PG_CONN -tAc "SELECT to_char(migrated_at, 'YYYY-MM-DD HH24:MI:SS') || ' version ' || version FROM moodle_migration.moodle_migration WHERE success = true ORDER BY migrated_at DESC LIMIT 1;" | xargs)
+else
+    LAST_SUCCESS=''
 fi
 
 # Moodle maintains its latest version in /version.php

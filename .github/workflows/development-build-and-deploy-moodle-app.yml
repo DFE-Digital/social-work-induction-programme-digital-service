@@ -31,8 +31,8 @@ jobs:
     uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
-      docker-build-folder: ./moodle-docker/
-      docker-build-file: Dockerfile-github-install
+      docker-build-folder: ./install-app-docker/
+      docker-build-file: Dockerfile
       docker-image-name: wa-moodle-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
       build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
