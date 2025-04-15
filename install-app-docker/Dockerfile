@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh \
     && rm -rf /var/lib/apt/lists/*
   
-COPY entry-point-azure-install.sh /app/entry-point.sh
+COPY entry-point-azure.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
 
 # Support kudu tools SSH for remote debug
