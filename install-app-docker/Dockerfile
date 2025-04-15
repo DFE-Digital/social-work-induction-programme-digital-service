@@ -5,6 +5,8 @@ ARG AZURE_KUDU_SSH_USER
 # The install image is based off exactly the same image as the Moodle image
 FROM ${FULL_MOODLE_IMAGE_VERSION}
 
+RUN echo "User: $AZURE_KUDU_SSH_USER, Image: $FULL_MOODLE_IMAGE_VERSION"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     dnsutils \
