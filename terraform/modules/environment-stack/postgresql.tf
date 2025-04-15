@@ -44,7 +44,9 @@ resource "azurerm_subnet" "sn_postgres" {
 }
 
 resource "random_password" "password" {
-  length = 16
+  length = 25
+  special          = true
+  override_special = "!#$%&*-_=+<>:?"
 }
 
 resource "azurerm_postgresql_flexible_server" "swipdb" {
@@ -121,6 +123,6 @@ resource "azurerm_key_vault_secret" "database_password" {
   }
 
   depends_on = [ azurerm_key_vault_access_policy.kv_gh_ap ]
-  
+
   #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
