@@ -29,8 +29,12 @@ VERSION=$(awk -F"'" '/\$release[[:space:]]*=/ {print $2}' version.php)
 if [[ -z "$LAST_SUCCESS" ]]; then
     echo "No successful install found; creating Moodle database from version $VERSION..."
 
-    su -s /bin/sh www-data -c 'php admin/cli/install_database.php --lang=cs --adminpass=$MOODLE_ADMIN_PASSWORD --agree-license'
-
+    su -s /bin/sh www-data -c 'php admin/cli/install_database.php --lang=cs --adminpass=$MOODLE_ADMIN_PASSWORD --agree-license --non-interactive'
+  
+    if [ $? -eq 0 ]; then
+        # Required to make sure GOVUK plug-in is OK
+        su -s /bin/sh www-data -c 'php admin/cli/upgrade.php --non-interactive'
+    fi
     if [ $? -eq 0 ]; then
         
         if [[ -z "$TABLE_EXISTS" || "$TABLE_EXISTS" == "NULL" ]]; then
@@ -60,7 +64,7 @@ else
     echo "Last successful install entry: $LAST_SUCCESS"
     echo "Now upgrading to version $VERSION..."
 
-    su -s /bin/sh www-data -c 'bin/php admin/cli/upgrade.php'
+    su -s /bin/sh www-data -c 'bin/php admin/cli/upgrade.php --non-interactive'
 
     if [ $? -eq 0 ]; then
 
@@ -79,4 +83,3 @@ EOF
 fi
 
 apache2-foreground
-
