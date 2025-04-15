@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
     postgresql-client \
-    openssh \
+    openssh-server \
     && rm -rf /var/lib/apt/lists/*
   
 COPY entry-point-azure.sh /app/entry-point.sh
