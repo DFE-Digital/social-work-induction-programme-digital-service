@@ -35,6 +35,6 @@ jobs:
       docker-build-file: Dockerfile
       docker-image-name: wa-moodle-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }};AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};
+      build-args: "FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }};AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}""
       build-secrets: AZURE_KUDU_SSH_PASSWORD
       web-app-name: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
