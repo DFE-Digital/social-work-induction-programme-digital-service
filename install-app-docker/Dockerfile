@@ -1,7 +1,6 @@
 
 ARG FULL_MOODLE_IMAGE_VERSION
 ARG AZURE_KUDU_SSH_USER
-ARG AZURE_KUDU_SSH_PASSWORD
 
 # The install image is based off exactly the same image as the Moodle image
 FROM ${FULL_MOODLE_IMAGE_VERSION}
