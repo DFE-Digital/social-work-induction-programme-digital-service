@@ -13,7 +13,7 @@ RUN git clone -b MOODLE_${MOODLE_BRANCH_VERSION}_STABLE --single-branch --depth=
 
 # Prune folders and files beginning with '.' as well as other non-essential files
 RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
-    find ./moodle -type f \( -name ".*" -o -name "*.txt" -o -name "*.md" -o -name "*.dist" -o -name "*.lock" \) -delete && \
+    find ./moodle -type f \( -name ".*" -o -name "*.md" -o -name "*.dist" -o -name "*.lock" \) -delete && \
     rm -f ./moodle/*.json && \
     rm -f ./moodle/*.js && \
     rm -f ./moodle/config-dist.php
