@@ -88,6 +88,7 @@ runs:
           $BUILD_ARGS \
           $BUILD_SECRETS \
           -f "./${{ inputs.docker-build-file }}" \
+          --network=host \
           --target ${{ inputs.build-target }} \
           -t "${{ env.FULL_APP_TAG }}" .
 

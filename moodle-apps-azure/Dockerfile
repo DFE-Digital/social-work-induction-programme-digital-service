@@ -102,12 +102,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS install-app
 
 ARG AZURE_KUDU_SSH_USER
 
-# Install tools needed for cloning, downloading, and unzipping
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git \
-      curl \
-      unzip
 
 WORKDIR /var/www/html/public
 
