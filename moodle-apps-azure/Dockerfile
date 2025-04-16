@@ -6,7 +6,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS base-moodle-install-builder
 
 ARG MOODLE_BRANCH_VERSION
 
-WORKDIR /var/www/html/public
+WORKDIR /build
 
 # Clone the Moodle source code.
 RUN git clone -b MOODLE_${MOODLE_BRANCH_VERSION}_STABLE --single-branch --depth=1 git://git.moodle.org/moodle.git
@@ -19,6 +19,7 @@ RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
     rm -f ./moodle/*.txt && \
     rm -f ./moodle/config-dist.php
 
+RUN ls 
 RUN echo "Starting Moodle CLI installation..." \
     && cd moodle \
     && php admin/cli/install.php \
@@ -35,6 +36,7 @@ RUN echo "Starting Moodle CLI installation..." \
     --adminpass=password \
     --adminemail=admin@example.com \
     && echo "Moodle installation complete."
+RUN ls 
 
 ######################################################
 # Stage 2: Fully customised Moodle app with local DB #
@@ -49,13 +51,14 @@ USER root
 WORKDIR /var/www/html
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/html/public/ ./public/
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./public/
 
 RUN ls public
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme
+RUN ls public
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
