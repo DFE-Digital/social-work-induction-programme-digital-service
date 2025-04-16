@@ -81,8 +81,8 @@ jobs:
       # The build process requires these additional files
       - name: Copy Docker build files
         run: |
-          copy moodle-docker/config.php moodle-apps-azure/
-          copy moodle-app/.ddev/commands/web/* moodle-apps-azure/
+          cp moodle-docker/config.php moodle-apps-azure/
+          cp moodle-app/.ddev/commands/web/* moodle-apps-azure/
 
       - name: Build, push and optionally deploy Moodle install app
         uses: ./.github/actions/image-build-push-deploy
