@@ -41,7 +41,7 @@ else
 fi
 
 # For Azure, we want the ability to copy the theme but delay the upgrade til deployment
-if [[ "$2" != "--copy-only"]]; then
+if [[ "$2" != "--copy-only" ]]; then
   echo "Running Moodle upgrade..."
   php public/admin/cli/upgrade.php --non-interactive
 
