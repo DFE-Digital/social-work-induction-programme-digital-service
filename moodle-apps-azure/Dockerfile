@@ -42,7 +42,7 @@ RUN echo "Starting Moodle CLI installation..." \
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
 # Install tools needed for cloning, downloading, and unzipping.
-USER root
+USER www-data
 
 WORKDIR /var/www/html/public
 
@@ -62,6 +62,8 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS moodle-app
 
 WORKDIR /var/www/html/public
 
+USER www-data
+
 # Copy the pruned Moodle source / downloaded theme
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
@@ -70,23 +72,19 @@ COPY config.php ./config.php
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
 
-# For Apache: Update DocumentRoot to point to /var/www/html/public
-ENV APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
-RUN if grep -q "^DocumentRoot " "$APACHE_CONF"; then \
-        sed -i 's|^DocumentRoot .*|DocumentRoot /var/www/html/public|' "$APACHE_CONF"; \
-    else \
-        echo "DocumentRoot /var/www/html/public" >> "$APACHE_CONF"; \
-    fi
+# Needs to run as root for various standard mount point permissions in Azure
+# Apache is configured to run as www-data
+USER root
 
-RUN cat "$APACHE_CONF"
+# For Apache: Update DocumentRoot to point to /var/www/html/public
+COPY fix-apache-config.sh /tmp/fix-apache-config.sh
+RUN chmod +x /tmp/fix-apache-config.sh \
+    && /tmp/fix-apache-config.sh \
+    && rm /tmp/fix-apache-config.sh
 
 RUN mkdir -p /app
 COPY entry-point-moodle.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
-
-# Needs to run as root for various standard mount point permissions in Azure
-# Apache is configured to run as www-data
-USER root
 
 CMD ["/app/entry-point.sh"]
 
@@ -103,7 +101,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS install-app
 
 ARG AZURE_KUDU_SSH_USER
 
-USER root
+USER www-data
 
 WORKDIR /var/www/html/public
 
@@ -119,6 +117,10 @@ RUN chmod +x install-theme \
 COPY config.php ./config.php
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
+
+COPY index.html /var/www/html/index.html
+
+USER root
 
 # Mandatory tools for installation + remote SSH
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -149,22 +151,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY entry-point-install.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
     
-USER www-data
-
+# Need to be root to update the apache config file and for Azure
 # For Apache: Update DocumentRoot to point to /var/www/html/public
 # Add / update DirectoryIndex just need to server a default html doc for the install app service
-COPY index.html /var/www/html/index.html
-
-# Need to be root to update the config file
 USER root
-ENV APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
-RUN if grep -q "^DocumentRoot " "$APACHE_CONF"; then \
-        sed -i 's|^DocumentRoot .*|DocumentRoot /var/www/html/public|' "$APACHE_CONF"; \
-    else \
-        echo "DocumentRoot /var/www/html/public" >> "$APACHE_CONF"; \
-    fi && \
-    if grep -q "^DirectoryIndex " "$APACHE_CONF"; then \
-        sed -i 's|^DirectoryIndex .*|DirectoryIndex index.html|' "$APACHE_CONF"; \
-    else \
-        echo "DirectoryIndex index.html" >> "$APACHE_CONF"; \
-    fi
+COPY fix-apache-config.sh /tmp/fix-apache-config.sh
+RUN chmod +x /tmp/fix-apache-config.sh \
+    && /tmp/fix-apache-config.sh \
+    && rm /tmp/fix-apache-config.sh
