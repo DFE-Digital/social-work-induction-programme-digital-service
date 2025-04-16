@@ -111,7 +111,7 @@ USER root
 WORKDIR /var/www/html/public
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodle/ ./public/
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodle/ .
 
 # Copy the moodledata directory created during the install
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodledata/ /var/www/moodledata/
@@ -121,7 +121,8 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodl
 COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme default --copy-only \
-    && chown -R www-data:www-data /var/www/html/public/theme
+    && chown -R www-data:www-data /var/www/html/public/theme \
+    && rm install-theme
 
 USER www-data
 
@@ -130,7 +131,7 @@ COPY config.php ./config.php
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
 
-COPY index.html /var/www/html/index.html
+COPY index.html /var/www/html/public/index.html
 
 USER root
 
