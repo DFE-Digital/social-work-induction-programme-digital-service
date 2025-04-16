@@ -28,7 +28,7 @@ inputs:
     type: string
     description: Semicolon separated list of build arguments (key1=value1;key2=value2)
     default: ''
-  secret-args:
+  build-secrets:
     description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
     default: ''
   build-target:
@@ -53,7 +53,7 @@ runs:
       uses: ./.github/actions/extract-docker-build-arguments
       with:
         build-args: ${{ inputs.build-args }}
-        secret-args: ${{ inputs.build-secrets }}
+        build-secrets: ${{ inputs.build-secrets }}
 
     - name: Format standard image tag
       shell: bash

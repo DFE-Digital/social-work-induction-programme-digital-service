@@ -48,6 +48,7 @@ jobs:
           ref: ${{ github.ref }}
 
       # Run temporary postgres DB in the background for the build process
+      # Moodle requires this for upgrading, so we provide it for the install as well
       - name: Bootstrap database
         run: |
           docker run --rm -d \
