@@ -36,19 +36,19 @@ RUN echo "Starting Moodle CLI installation..." \
     --adminemail=admin@example.com \
     && echo "Moodle installation complete."
 
-#####################################################
-# Stage 2: Fully installed Moodle app with local DB #
-#####################################################
+######################################################
+# Stage 2: Fully customised Moodle app with local DB #
+######################################################
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
 # Install tools needed for cloning, downloading, and unzipping.
 USER root
 
-WORKDIR /var/www/html/public
+WORKDIR /var/www/html
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/html/public/ ./
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/html/public/ ./public/
 
 # Install the custom GOVUK theme
 COPY install-theme install-theme
@@ -56,7 +56,7 @@ RUN chmod +x install-theme \
     && ./install-theme
 
 ###############################################################
-# Stage 3: Fully installed Moodle app customised for Azure DB #
+# Stage 3: Fully customised Moodle app prepped for Azure DB   #
 ###############################################################
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS moodle-app
