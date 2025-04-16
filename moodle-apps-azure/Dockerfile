@@ -18,6 +18,7 @@ RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
     rm -f ./moodle/config-dist.php
 
 RUN echo "Starting Moodle CLI installation..." \
+    && cd moodle \
     && php admin/cli/install.php \
     --non-interactive \
     --agree-license \
@@ -41,10 +42,6 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
 # Install tools needed for cloning, downloading, and unzipping.
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git \
-      curl \
-      unzip
 
 WORKDIR /var/www/html/public
 
