@@ -52,7 +52,7 @@ WORKDIR /var/www/html/public
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
 # Install the custom GOVUK theme
-COPY ../moodle-app/.ddev/commands/web/install-theme install-theme
+COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme
 
@@ -68,9 +68,9 @@ WORKDIR /var/www/html/public
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
 # Copy custom config.php into the correct location
-COPY ../moodle-docker/config.php ./moodle/config.php
+COPY config.php ./config.php
 # Re-enable if DB connectivity tracing is required
-#COPY dmllib.trace.php ./moodle/lib/dmllib.php
+#COPY dmllib.trace.php ./lib/dmllib.php
 
 # For Apache: Update DocumentRoot to point to /var/www/html/public
 ENV APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
@@ -118,12 +118,12 @@ WORKDIR /var/www/html/public
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
 # Copy custom config.php into the correct location
-COPY ../moodle-docker/config.php ./moodle/config.php
+COPY config.php ./config.php
 # Re-enable if DB connectivity tracing is required
-#COPY dmllib.trace.php ./moodle/lib/dmllib.php
+#COPY dmllib.trace.php ./lib/dmllib.php
 
 # Copy the custom GOVUK theme
-COPY ../moodle-app/.ddev/commands/web/install-theme install-theme
+COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme --copy-only
 

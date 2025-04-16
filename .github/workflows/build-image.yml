@@ -78,6 +78,12 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
+      # The build process requires these additional files
+      - name: Copy Docker build files
+        run: |
+          copy moodle-docker/config.php moodle-apps-azure/
+          copy moodle-app/.ddev/commands/web/* moodle-apps-azure/
+
       - name: Build, push and optionally deploy Moodle install app
         uses: ./.github/actions/image-build-push-deploy
         with:
