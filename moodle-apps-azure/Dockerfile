@@ -42,7 +42,7 @@ RUN echo "Starting Moodle CLI installation..." \
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
 # Install tools needed for cloning, downloading, and unzipping.
-USER www-data
+USER root
 
 WORKDIR /var/www/html/public
 
@@ -65,7 +65,7 @@ WORKDIR /var/www/html/public
 USER www-data
 
 # Copy the pruned Moodle source / downloaded theme
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
+COPY --from=full-moodle-builder --chown=www-data:www-data /build/moodle/ ./
 
 # Copy custom config.php into the correct location
 COPY config.php ./config.php
@@ -108,10 +108,12 @@ WORKDIR /var/www/html/public
 # Copy the pruned / installed Moodle source
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
-# Copy the custom GOVUK theme
+# Copy the custom GOVUK theme - but don't install - this will be done at install time
+# when the Azure DB is accessible
 COPY install-theme install-theme
 RUN chmod +x install-theme \
-    && ./install-theme default --copy-only
+    && ./install-theme default --copy-only \
+    && chown -R www-data:www-data /var/www/html/public/theme
 
 USER www-data
 
