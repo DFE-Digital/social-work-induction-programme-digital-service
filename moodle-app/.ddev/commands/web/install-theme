@@ -11,7 +11,7 @@
 set -e
 
 # Default release if no argument is provided.
-if [[ "$1" == "" || "$1" == "default"]]; then
+if [[ "$1" == "" || "$1" == "default" ]]; then
   RELEASE=2024200800
 fi
 

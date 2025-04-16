@@ -113,7 +113,7 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/
 # Copy the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
-    && ./install-theme --copy-only
+    && ./install-theme default --copy-only
 
 # Copy custom config.php into the correct location
 COPY config.php ./config.php
