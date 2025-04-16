@@ -7,6 +7,11 @@ eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/
 echo "Starting SSH ..."
 /usr/sbin/sshd
 
+# Start Apache in the background - we start it early so the container can pass http health checks
+echo "Starting Apache ..."
+apache2-foreground &
+APACHE_PID=$!
+
 # PGPASSWORD is used by psql for authentication.
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 PG_CONN="psql -h ${MOODLE_DB_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
@@ -81,4 +86,4 @@ EOF
     fi
 fi
 
-apache2-foreground
+wait $APACHE_PID
