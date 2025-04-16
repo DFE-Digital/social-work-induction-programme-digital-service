@@ -14,27 +14,13 @@ on:
 
 jobs:
 
-  create-and-publish-moodle-image:
-    name: Create & Publish Moodle Image
+  create-and-publish-moodle-images:
+    name: Create & Publish Moodle Image - OPtionally Deploy
     uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
-      docker-build-folder: ./moodle-docker/
-      docker-build-file: Dockerfile-github
-      docker-image-name: wa-moodle
+      docker-image-name-moodle: wa-moodle
+      docker-image-name-install: wa-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      web-app-name: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
-
-  create-and-publish-moodle-install-image:
-    name: Create & Publish Moodle Install Image
-    needs: create-and-publish-moodle-image
-    uses: ./.github/workflows/build-image.yml
-    secrets: inherit
-    with:
-      docker-build-folder: ./install-app-docker/
-      docker-build-file: Dockerfile
-      docker-image-name: wa-moodle-install
-      base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};FULL_MOODLE_IMAGE_VERSION=${{ needs.create-and-publish-moodle-image.outputs.docker-image-tag }}"
-      build-secrets: AZURE_KUDU_SSH_PASSWORD
-      web-app-name: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
+      web-app-name-moodle: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
+      web-app-name-install: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}

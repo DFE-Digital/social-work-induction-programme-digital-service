@@ -38,10 +38,13 @@ else
   echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
 fi
 
-echo "Running Moodle upgrade..."
-php public/admin/cli/upgrade.php --non-interactive
+# For Azure, we want the ability to copy the theme but delay the upgrade til deployment
+if [[ "$1" != "--copy-only"]]; then
+  echo "Running Moodle upgrade..."
+  php public/admin/cli/upgrade.php --non-interactive
 
-echo "Purging Moodle caches..."
-php public/admin/cli/purge_caches.php
+  echo "Purging Moodle caches..."
+  php public/admin/cli/purge_caches.php
+fi
 
 echo "Theme install complete."

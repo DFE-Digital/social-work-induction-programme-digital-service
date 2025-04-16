@@ -1,0 +1,103 @@
+name: Image Build Push Deploy
+description: Builds, pushes and optionally deploys an image 
+
+inputs:
+
+  docker-build-folder:
+    type: string
+    required: true
+  docker-build-file:
+    type: string
+    default: Dockerfile
+  acr-name:
+    type: string
+    required: true
+  org-name:
+    type: string
+    default: dfe-digital
+  project-name:
+    type: string
+    default: swip-digital-service
+  docker-image-name:
+    type: string
+    required: true
+  base-image-version:
+    type: string
+    default: ''
+  build-args: 
+    type: string
+    description: Semicolon separated list of build arguments (key1=value1;key2=value2)
+    default: ''
+  secret-args:
+    description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
+    default: ''
+  build-target:
+    type: string
+    description: Dockerfile build target
+    required: true
+  resource-name-prefix:
+    type: string
+    description: Standard string prefix for Azure resource names
+    required: true
+  web-app-name:
+    type: string
+    description: Name of web app to deploy to, leave empty for no deploy
+    default: ''
+
+runs:
+  using: composite
+
+  steps:
+    - name: Extract the supplied docker build arguments
+      id: extract-docker-build-args
+      uses: ./.github/actions/extract-docker-build-arguments
+      with:
+        build-args: ${{ inputs.build-args }}
+        secret-args: ${{ inputs.build-secrets }}
+
+    - name: Format standard image tag
+      run: |
+        COMMIT_HASH=${{ github.sha }}
+        COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
+        BUILD_DATE=$(date +%Y%m%d)
+        if [[ -n "${{ inputs.base-image-version }}" ]]; then
+          BASE_VERSION="${{ inputs.base-image-version }}-"
+        fi
+        echo COMMIT_HASH_SHORT="$COMMIT_HASH_SHORT" >> $GITHUB_ENV
+        FULL_APP_TAG="${{ inputs.acr-name }}.azurecr.io/${{ inputs.org-name }}-${{inputs.project-name}}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
+        if [[ "${{ github.ref_name }}" != "main" ]]; then
+          FULL_APP_TAG="$FULL_APP_TAG.dev"
+        fi
+        echo FULL_APP_TAG="$FULL_APP_TAG" >> $GITHUB_ENV
+        echo "Docker build: full app tag for: ${{ inputs.docker-image-name }} - $FULL_APP_TAG"
+
+    - name: Docker build
+      env:
+        DOCKER_BUILDKIT: 1
+        # Need to reference any secrets that could possibly be passed to the image 
+        # Github Actions won't allow you to pass them from the top level job
+        AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
+        BUILD_ARGS: ${{ steps.extract-docker-build-args.outputs.build-arg-string }}
+        BUILD_SECRETS: ${{ steps.extract-docker-build-args.outputs.secret-arg-string }}
+      run: |
+        cd ${{ inputs.docker-build-folder }}
+        
+        echo "Docker build: specified args - ${{ inputs.build-args }}, ${{ inputs.build-secrets }}"
+        echo "Docker build: Using extracted build args - $BUILD_ARGS, secrets - $BUILD_SECRETS"
+
+        docker build \
+          $BUILD_ARGS \
+          $BUILD_SECRETS \
+          -f "./${{ inputs.docker-build-file }}" \
+          --target ${{ inputs.build-target }} \
+          -t "${{ env.FULL_MOODLE_APP_TAG }}" .
+
+    - name: Docker push
+      run: docker push "${{ env.FULL_APP_TAG }}"
+
+    - name: Optional deploy to Azure App Services (Dev)
+      if: inputs.web-app-name != ''
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+        images: "${{ env.FULL_TAG }}"
