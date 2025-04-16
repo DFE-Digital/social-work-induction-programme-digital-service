@@ -91,7 +91,7 @@ jobs:
           acr-name: ${{ env.ACR_NAME }}
           docker-image-name: ${{ inputs.docker-image-name-install }}
           base-image-version: ${{ inputs.base-image-version }}
-          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }}"
           build-secrets: "AZURE_KUDU_SSH_PASSWORD"
           build-target: install-app
           resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
