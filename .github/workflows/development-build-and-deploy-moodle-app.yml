@@ -15,7 +15,7 @@ on:
 jobs:
 
   create-and-publish-moodle-images:
-    name: Create & Publish Moodle Image - OPtionally Deploy
+    name: Create & Publish Moodle Image - Optionally Deploy
     uses: ./.github/workflows/build-image.yml
     secrets: inherit
     with:
