@@ -102,7 +102,7 @@ jobs:
         with:
           docker-build-folder: ./moodle-apps-azure
           acr-name: ${{ env.ACR_NAME }}
-          docker-image-name: ${{ inputs.docker-image-name-install }}
+          docker-image-name: ${{ inputs.docker-image-name-moodle }}
           base-image-version: ${{ inputs.base-image-version }}
           build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }}"
           build-secrets: "AZURE_KUDU_SSH_PASSWORD"
