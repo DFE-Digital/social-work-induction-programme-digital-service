@@ -56,6 +56,7 @@ runs:
         secret-args: ${{ inputs.build-secrets }}
 
     - name: Format standard image tag
+      shell: bash
       run: |
         COMMIT_HASH=${{ github.sha }}
         COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
@@ -72,6 +73,7 @@ runs:
         echo "Docker build: full app tag for: ${{ inputs.docker-image-name }} - $FULL_APP_TAG"
 
     - name: Docker build
+      shell: bash
       env:
         DOCKER_BUILDKIT: 1
         # Need to reference any secrets that could possibly be passed to the image 
@@ -93,6 +95,7 @@ runs:
           -t "${{ env.FULL_MOODLE_APP_TAG }}" .
 
     - name: Docker push
+      shell: bash
       run: docker push "${{ env.FULL_APP_TAG }}"
 
     - name: Optional deploy to Azure App Services (Dev)
