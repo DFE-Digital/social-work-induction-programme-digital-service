@@ -1,15 +1,33 @@
 #!/bin/bash
+# .ddev/commands/web/setup-ws
+# This command adds config lines to Moodle's config.php file.
+# It adds the following config settings - enablewebservices = 1 | auth = "webservice,oidc".
+# Usage:
+#   ddev setup-ws                                                                                           # It will use default values if no parameters are passed
+#   ddev setup-ws {webservice_user} {webservice_password} {webservice_email} {webservice_servicename}       # Example with paramater names
+#   ddev setup-ws test password123! wsuser@example.com SwipService                                          # Example with actual values
+
 webservice_user=${1:-wsuser}
 webservice_password=${2:-StrongPass123!}
 webservice_email=${3:-wsuser@example.com}
 webservice_servicename=${4:-SwipServiceName}
+
+set -eo pipefail
 
 echo "Updating config.php to set enablewebservices to 1..."
 CONFIG_FILE="/var/www/html/public/config.php"
 if grep -q "^\$CFG->enablewebservices" "$CONFIG_FILE"; then
   sed -i "s/^\(\$CFG->enablewebservices\)\s*=.*/\1 = 1;/" "$CONFIG_FILE"
 else
-  echo "\$CFG->enablewebservices = 1;" >> "$CONFIG_FILE"
+  echo -e "\n\$CFG->enablewebservices = 1;" >> "$CONFIG_FILE"
+fi
+
+echo "Updating config.php to set auth to \"webservice,oidc\"..."
+CONFIG_FILE="/var/www/html/public/config.php"
+if grep -q "^\$CFG->auth" "$CONFIG_FILE"; then
+  sed -i "s|^\(\$CFG->auth\s*=\s*\).*|\1\"webservice,oidc\";|" "$CONFIG_FILE"
+else
+  echo -e "\n\$CFG->auth = \"webservice,oidc\";" >> "$CONFIG_FILE"
 fi
 
 php /var/www/html/public/setup_webservice.php --username=$webservice_user --password=$webservice_password --email=$webservice_email --servicename=${webservice_servicename}

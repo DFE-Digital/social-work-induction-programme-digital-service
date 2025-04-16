@@ -68,9 +68,18 @@ if (!$user) {
     $user->auth = 'manual';
     $user->confirmed = 1;
     $user->mnethostid = $CFG->mnet_localhost_id;
+    
+    // Create the user in the database
     $userid = user_create_user($user, false);
     $user = $DB->get_record('user', ['id' => $userid]);
     echo "Created user: $username\n";
+
+    // Update the 'auth' field to 'webservice'
+    $user->auth = 'webservice'; 
+    $DB->update_record('user', $user); 
+    user_update_user($user);
+
+    echo "User updated: {$user->username}, Auth: {$user->auth}\n";
 } else {
     echo "User already exists: $username\n";
 }
