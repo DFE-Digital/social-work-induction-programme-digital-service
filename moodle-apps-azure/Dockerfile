@@ -154,6 +154,8 @@ USER www-data
 # For Apache: Update DocumentRoot to point to /var/www/html/public
 # Add / update DirectoryIndex just need to server a default html doc for the install app service
 COPY index.html /var/www/html/index.html
+
+USER root
 ENV APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
 RUN if grep -q "^DocumentRoot " "$APACHE_CONF"; then \
         sed -i 's|^DocumentRoot .*|DocumentRoot /var/www/html/public|' "$APACHE_CONF"; \
@@ -165,6 +167,3 @@ RUN if grep -q "^DocumentRoot " "$APACHE_CONF"; then \
     else \
         echo "DirectoryIndex index.html" >> "$APACHE_CONF"; \
     fi
-
-USER root
-    
