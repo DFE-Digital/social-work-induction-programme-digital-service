@@ -6,7 +6,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS base-moodle-install-builder
 
 ARG MOODLE_BRANCH_VERSION
 
-WORKDIR /build
+WORKDIR /var/www/html/public
 
 # Clone the Moodle source code.
 RUN git clone -b MOODLE_${MOODLE_BRANCH_VERSION}_STABLE --single-branch --depth=1 git://git.moodle.org/moodle.git
@@ -48,7 +48,7 @@ USER root
 WORKDIR /var/www/html/public
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/html/public/ ./
 
 # Install the custom GOVUK theme
 COPY install-theme install-theme
