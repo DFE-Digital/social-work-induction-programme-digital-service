@@ -16,6 +16,7 @@ RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
     find ./moodle -type f \( -name ".*" -o -name "*.md" -o -name "*.dist" -o -name "*.lock" \) -delete && \
     rm -f ./moodle/*.json && \
     rm -f ./moodle/*.js && \
+    rm -f ./moodle/*.txt && \
     rm -f ./moodle/config-dist.php
 
 RUN echo "Starting Moodle CLI installation..." \
@@ -65,7 +66,7 @@ WORKDIR /var/www/html/public
 USER www-data
 
 # Copy the pruned Moodle source / downloaded theme
-COPY --from=full-moodle-builder --chown=www-data:www-data /build/moodle/ ./
+COPY --from=full-moodle-builder --chown=www-data:www-data /var/www/html/public/ ./
 
 # Copy custom config.php into the correct location
 COPY config.php ./config.php
