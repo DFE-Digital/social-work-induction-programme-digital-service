@@ -38,6 +38,9 @@ jobs:
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     env:
       ENVIRONMENT: Dev
+      # This will make the secret available to Docker Build
+      # Any other secrets that need to be added to Docker Build should also be added here
+      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -82,7 +85,7 @@ jobs:
           docker-image-name: ${{ inputs.docker-image-name-install }}
           base-image-version: ${{ inputs.base-image-version }}
           build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
-          build-secrets: AZURE_KUDU_SSH_PASSWORD
+          build-secrets: "AZURE_KUDU_SSH_PASSWORD"
           build-target: install-app
           resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
           web-app-name: ${{ inputs.web-app-name-install }}

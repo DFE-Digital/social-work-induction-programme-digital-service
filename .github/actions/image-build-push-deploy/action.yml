@@ -76,9 +76,6 @@ runs:
       shell: bash
       env:
         DOCKER_BUILDKIT: 1
-        # Need to reference any secrets that could possibly be passed to the image 
-        # Github Actions won't allow you to pass them from the top level job
-        AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
         BUILD_ARGS: ${{ steps.extract-docker-build-args.outputs.build-arg-string }}
         BUILD_SECRETS: ${{ steps.extract-docker-build-args.outputs.secret-arg-string }}
       run: |

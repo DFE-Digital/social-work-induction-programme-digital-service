@@ -39,8 +39,8 @@ runs:
         IFS=';' read -ra SECRETS <<< "${{ inputs.secret-args }}"
         for secret in "${SECRETS[@]}"; do
           trimmed=$(echo "$secret" | xargs)
-          if [[ "$trimmed" == "AZURE_KUDU_SSH_PASSWORD" ]]; then
-            SECRET_ARGS="$SECRET_ARGS --secret id=AZURE_KUDU_SSH_PASSWORD,env=AZURE_KUDU_SSH_PASSWORD"
+          if [[ -n "$trimmed" ]]; then
+            SECRET_ARGS="$SECRET_ARGS --secret id=$trimmed,env=$trimmed"
           fi
         done
 
