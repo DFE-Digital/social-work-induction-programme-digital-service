@@ -5,7 +5,7 @@ inputs:
   build-args: 
     required: ''
     description: Semicolon separated list of build arguments (key1=value1;key2=value2)
-  secret-args:
+  build-secrets:
     default: ''
     description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
 
