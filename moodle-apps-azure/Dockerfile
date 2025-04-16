@@ -45,11 +45,13 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 # Install tools needed for cloning, downloading, and unzipping.
 USER root
 
+# The theme script below runs the Moodle upgrade script from public/...
 WORKDIR /var/www/html
 
 # Copy the pruned / installed Moodle source
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/html/public/ ./public/
 
+RUN ls public
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
