@@ -50,7 +50,7 @@ runs:
   steps:
     - name: Extract the supplied docker build arguments
       id: extract-docker-build-args
-      uses: ../actions/extract-docker-build-arguments
+      uses: ./.github/actions/extract-docker-build-args
       with:
         build-args: ${{ inputs.build-args }}
         build-secrets: ${{ inputs.build-secrets }}
