@@ -22,7 +22,7 @@ RUN echo "Starting Moodle CLI installation..." \
     && php admin/cli/install.php \
     --non-interactive \
     --agree-license \
-    --wwwroot="$DDEV_PRIMARY_URL" \
+    --wwwroot="http://localhost/" \
     --dbtype=pgsql \
     --dbhost=localhost \
     --dbname=moodle \
