@@ -152,5 +152,8 @@ COPY entry-point-install.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
     
 # Need to be root to update the apache config file and for Azure
-USER root
 COPY apache-config-install.conf /etc/apache2/sites-available/000-default.conf
+
+CMD ["/app/entry-point.sh"]
+
+EXPOSE 80
