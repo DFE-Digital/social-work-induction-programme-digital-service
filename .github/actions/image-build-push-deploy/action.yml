@@ -89,7 +89,7 @@ runs:
           $BUILD_SECRETS \
           -f "./${{ inputs.docker-build-file }}" \
           --target ${{ inputs.build-target }} \
-          -t "${{ env.FULL_MOODLE_APP_TAG }}" .
+          -t "${{ env.FULL_APP_TAG }}" .
 
     - name: Docker push
       shell: bash
