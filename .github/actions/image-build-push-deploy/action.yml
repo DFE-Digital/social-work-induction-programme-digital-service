@@ -101,4 +101,4 @@ runs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-        images: "${{ env.FULL_TAG }}"
+        images: "${{ env.FULL_APP_TAG }}"
