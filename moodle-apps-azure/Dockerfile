@@ -6,7 +6,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS base-moodle-install-builder
 
 ARG MOODLE_BRANCH_VERSION
 
-WORKDIR /build
+WORKDIR /var/www
 
 # Clone the Moodle source code.
 RUN git clone -b MOODLE_${MOODLE_BRANCH_VERSION}_STABLE --single-branch --depth=1 git://git.moodle.org/moodle.git
@@ -51,7 +51,10 @@ USER root
 WORKDIR /var/www/html
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./public/
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodle/ ./public/
+
+# Copy the moodledata directory created during the install
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodledata/ /var/www/moodledata/
 
 RUN ls public
 # Install the custom GOVUK theme
@@ -70,8 +73,8 @@ WORKDIR /var/www/html/public
 
 USER www-data
 
-# Copy the pruned Moodle source / downloaded theme
-COPY --from=full-moodle-builder --chown=www-data:www-data /var/www/html/public/ ./
+# Copy the pruned Moodle source / downloaded theme / data
+COPY --from=full-moodle-builder --chown=www-data:www-data /var/www/ /var/www
 
 # Copy custom config.php into the correct location
 COPY config.php ./config.php
@@ -108,7 +111,10 @@ USER root
 WORKDIR /var/www/html/public
 
 # Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodle/ ./public/
+
+# Copy the moodledata directory created during the install
+COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodledata/ /var/www/moodledata/
 
 # Copy the custom GOVUK theme - but don't install - this will be done at install time
 # when the Azure DB is accessible
