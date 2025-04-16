@@ -19,7 +19,6 @@ RUN find ./moodle -mindepth 1 -type d -name '.*' -exec rm -rf {} + && \
     rm -f ./moodle/*.txt && \
     rm -f ./moodle/config-dist.php
 
-RUN ls 
 RUN echo "Starting Moodle CLI installation..." \
     && cd moodle \
     && php admin/cli/install.php \
@@ -36,7 +35,6 @@ RUN echo "Starting Moodle CLI installation..." \
     --adminpass=password \
     --adminemail=admin@example.com \
     && echo "Moodle installation complete."
-RUN ls 
 
 ######################################################
 # Stage 2: Fully customised Moodle app with local DB #
@@ -56,12 +54,10 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodl
 # Copy the moodledata directory created during the install
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodledata/ /var/www/moodledata/
 
-RUN ls public
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme
-RUN ls public
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #

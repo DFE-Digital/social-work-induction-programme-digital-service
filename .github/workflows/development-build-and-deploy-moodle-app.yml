@@ -16,7 +16,7 @@ jobs:
 
   create-and-publish-moodle-images:
     name: Create & Publish Moodle Image - Optionally Deploy
-    uses: ./.github/workflows/build-image.yml
+    uses: ./.github/workflows/build-moodle-images.yml
     secrets: inherit
     with:
       docker-image-name-moodle: wa-moodle
