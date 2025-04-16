@@ -110,36 +110,22 @@ WORKDIR /var/www/html/public
 # Copy the pruned / installed Moodle source
 COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/ ./
 
-# Copy custom config.php into the correct location
-COPY config.php ./config.php
-# Re-enable if DB connectivity tracing is required
-#COPY dmllib.trace.php ./lib/dmllib.php
-
 # Copy the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme --copy-only
+
+# Copy custom config.php into the correct location
+COPY config.php ./config.php
+# Re-enable if DB connectivity tracing is required
+#COPY dmllib.trace.php ./lib/dmllib.php
 
 # Mandatory tools for installation + remote SSH
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     openssh-server \
     && rm -rf /var/lib/apt/lists/*
-    
-# Helpful tools for remote debug via SSH
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    iputils-ping \
-    dnsutils \
-    net-tools \
-    traceroute \
-    curl \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
 
-# Custom installation entry point - will run the entire install process
-COPY entry-point-install.sh /app/entry-point.sh
-RUN chmod +x /app/entry-point.sh
-    
 # Support kudu tools SSH for remote debug
 COPY sshd_config /etc/ssh/sshd_config
 RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
@@ -150,11 +136,23 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
     && chmod 0755 /var/run/sshd \
     && cd /etc/ssh/ \
     && ssh-keygen -A
+        
+# Helpful tools for remote debug via SSH
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    iputils-ping \
+    dnsutils \
+    net-tools \
+    traceroute \
+    && rm -rf /var/lib/apt/lists/*
+
+# Custom installation entry point - will run the entire install process
+COPY entry-point-install.sh /app/entry-point.sh
+RUN chmod +x /app/entry-point.sh
     
 USER www-data
 
 # For Apache: Update DocumentRoot to point to /var/www/html/public
-# Add / update DirectoryIndex just need to server a default html doc for the install app serviec
+# Add / update DirectoryIndex just need to server a default html doc for the install app service
 COPY index.html /var/www/html/index.html
 ENV APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
 RUN if grep -q "^DocumentRoot " "$APACHE_CONF"; then \
