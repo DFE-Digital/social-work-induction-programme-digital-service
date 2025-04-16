@@ -21,7 +21,7 @@ Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/in
 
 ---
 ### Running the service
-After configuring your project with DDEV, follow these steps from this project’s `local\moodle-ddev` directory:
+After configuring your project with DDEV, follow these steps from this project’s `apps\moodle-ddev` directory:
 
 Configure DDEV with both the composer root and document root set to public:
 
@@ -110,7 +110,7 @@ Or, you can manually add the certificate via Keychain Access:
 - Close the window and enter your password to confirm.
 
 Next:
-- create a `custom_certs` folder under `.ddev` where your Moodle code is stored (e.g. `\\wsl.localhost\Ubuntu\home\{username}\repos\social-work-induction-programme-digital-service\local\moodle-ddev\.ddev`)
+- create a `custom_certs` folder under `.ddev` where your Moodle code is stored (e.g. `\\wsl.localhost\Ubuntu\home\{username}\repos\social-work-induction-programme-digital-service\apps\moodle-ddev\.ddev`)
 - copy the `aspnet-dev-cert.key` and `aspnet-dev-cert.crt` files to the `custom_certs` directory
 - rename the files to the name of the ddev project (`moodle.key` and `moodle.crt`)
 - open the moodle certificate file and select "Install Certificate..."; follow the same steps as above to select the Trusted Root certificate store and install the certificate
