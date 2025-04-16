@@ -65,7 +65,7 @@ workspace "Social Work Induction Programme" "A high level architectural overview
                 moodleService = container "Moodle Application" {
                     socialWorker -> this "completes assigments and tracks their progress"
                     userAssessor -> this "assesses assignments"
-                    this -> onelogin "verifies identity"
+                    this -> swipAuthentication.userAuthentication "verifies identity"
                     swipUserManagement.userManageFE -> this "administers user on"
                     this -> govNotify "sends communication"
                     tags "moodle"
