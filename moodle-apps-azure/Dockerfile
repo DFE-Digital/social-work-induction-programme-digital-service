@@ -76,11 +76,7 @@ COPY config.php ./config.php
 # Apache is configured to run as www-data
 USER root
 
-# For Apache: Update DocumentRoot to point to /var/www/html/public
-COPY fix-apache-config.sh /tmp/fix-apache-config.sh
-RUN chmod +x /tmp/fix-apache-config.sh \
-    && /tmp/fix-apache-config.sh \
-    && rm /tmp/fix-apache-config.sh
+COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
 
 RUN mkdir -p /app
 COPY entry-point-moodle.sh /app/entry-point.sh
@@ -156,10 +152,5 @@ COPY entry-point-install.sh /app/entry-point.sh
 RUN chmod +x /app/entry-point.sh
     
 # Need to be root to update the apache config file and for Azure
-# For Apache: Update DocumentRoot to point to /var/www/html/public
-# Add / update DirectoryIndex just need to server a default html doc for the install app service
 USER root
-COPY fix-apache-config.sh /tmp/fix-apache-config.sh
-RUN chmod +x /tmp/fix-apache-config.sh \
-    && /tmp/fix-apache-config.sh \
-    && rm /tmp/fix-apache-config.sh
+COPY apache-config-install.conf /etc/apache2/sites-available/000-default.conf
