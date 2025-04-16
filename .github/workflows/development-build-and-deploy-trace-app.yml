@@ -19,6 +19,6 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ inputs.environment }}
-      docker-build-file: ./trace-app-docker/Dockerfile
+      docker-build-file: ./projects/trace-app-docker/Dockerfile
       short-image-name: trace-app
       web-app-name: webapp-trace

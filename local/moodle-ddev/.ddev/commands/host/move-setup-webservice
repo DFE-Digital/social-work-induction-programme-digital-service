@@ -1,13 +1,13 @@
 #!/bin/bash
 # .ddev/commands/web/move-setup-webservice
-# This command moves the `install-scripts\setup_webservice.php` file into the Moodle directory, so it can be used in the ddev scripts
+# This command moves the `scripts\setup_moodle_webservice.php` file into the Moodle directory, so it can be used in the ddev scripts
 # Usage:
 #   ddev move-setup-webservice
 
 set -eo pipefail
 
 # Define source and destination
-SOURCE="../install-scripts/setup_webservice.php"
+SOURCE="../scripts/setup_moodle_webservice.php"
 DESTINATION="public/"
 
 # Check if the file exists in the repo root
