@@ -101,7 +101,7 @@ FROM moodlehq/moodle-php-apache:8.3-bookworm AS install-app
 
 ARG AZURE_KUDU_SSH_USER
 
-USER www-data
+USER root
 
 WORKDIR /var/www/html/public
 
@@ -112,6 +112,8 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /build/moodle/
 COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme default --copy-only
+
+USER www-data
 
 # Copy custom config.php into the correct location
 COPY config.php ./config.php
