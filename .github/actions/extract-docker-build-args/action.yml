@@ -36,7 +36,7 @@ runs:
         done
 
         SECRET_ARGS=""
-        IFS=';' read -ra SECRETS <<< "${{ inputs.secret-args }}"
+        IFS=';' read -ra SECRETS <<< "${{ inputs.build-secrets }}"
         for secret in "${SECRETS[@]}"; do
           trimmed=$(echo "$secret" | xargs)
           if [[ -n "$trimmed" ]]; then
