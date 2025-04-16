@@ -44,6 +44,18 @@ Finally, launch your Moodle site in your default web browser:
 
 - `ddev launch /login`
 
+---
+### Create a Moodle a web service
+[Web services](https://docs.moodle.org/405/en/Web_services) enable other systems to login to Moodle and perform operations. We have created scripts to automate this process.
+
+- Run `ddev move-setup-webservice`
+  - This moves the `install-scripts\setup_webservice.php` file into Moodle's public folder, making it available to ddev.
+  - **Important** - You will need to run this command everytime before running the below command. Any updates to the `setup_webservice.php` are commited to the `install-scripts\setup_webservice.php` version of this file. We need to run this script to move the newest version of the file into Moodle's `public` directory.
+
+- Run `ddev setup-ws {webservice_user} {webservice_password} {webservice_email} {webservice_servicename}`
+  - This will run the `setup-ws` ddev script, which references the above `setup_webservice.php` file. It has four optional inputs, e.g. `ddev setup-ws test password123! wsuser@example.com SwipService`. You can also run this script without any inputs and it will use default parameters by running `ddev setup-ws`.
+
+---
 ### Single sign-on (SSO) configuration
 Moodle integrates with the SWIP authentication service for users to log in via single sign-on and GOV.UK One Login. The [Moodle OpenID Connect (OIDC)](https://moodle.org/plugins/auth_oidc) plugin is used. 
 
