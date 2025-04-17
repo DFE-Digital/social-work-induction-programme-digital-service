@@ -3,7 +3,7 @@
 This repository houses the core digital service for the Social Work Induction programme in children's social care. The digital service is based on [Moodle LMS](https://moodle.org).
 
 ## Local development setup
-The `moodle-docker` image in this repository builds on the [official Moodle PHP-apache image](https://github.com/moodlehq/moodle-php-apache). 
+The `moodle-docker` image in this repository builds on the [official Moodle PHP-apache image](https://github.com/moodlehq/moodle-php-apache).
 The configuration files in the .ddev directory provide a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
 
 The primary custom command, install-moodle, bundles all installation steps into a single command. It performs the following tasks:
@@ -14,14 +14,14 @@ The primary custom command, install-moodle, bundles all installation steps into 
 - Purges Moodle caches so that changes take effect immediately.
 ---
 ### Windows setup
-You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`. 
+You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`.
 
 ### DDEV installation
 Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
 
 ---
 ### Running the service
-After configuring your project with DDEV, follow these steps from this project’s `moodle-app` directory:
+After configuring your project with DDEV, follow these steps from this project’s `apps\moodle-ddev` directory:
 
 Configure DDEV with both the composer root and document root set to public:
 
@@ -57,11 +57,11 @@ Finally, launch your Moodle site in your default web browser:
 
 ---
 ### Single sign-on (SSO) configuration
-Moodle integrates with the SWIP authentication service for users to log in via single sign-on and GOV.UK One Login. The [Moodle OpenID Connect (OIDC)](https://moodle.org/plugins/auth_oidc) plugin is used. 
+Moodle integrates with the SWIP authentication service for users to log in via single sign-on and GOV.UK One Login. The [Moodle OpenID Connect (OIDC)](https://moodle.org/plugins/auth_oidc) plugin is used.
 
 #### Install and configure OIDC plugin
 
-The following steps are required to install and configure the plugin. These should be carried out after `ddev start`. If this is done as part of initial moodle setup on your local environment, then follow this guide after you complete the setup in [Running the service](#running-the-service). 
+The following steps are required to install and configure the plugin. These should be carried out after `ddev start`. If this is done as part of initial moodle setup on your local environment, then follow this guide after you complete the setup in [Running the service](#running-the-service).
 
 1. Run `ddev install-moosh`
 
@@ -93,7 +93,7 @@ Then generate a `pfx` file based on the key and the certificate  and set a passw
 
 You will need administrative privileges on your local machine to install the certificate.
 
-If using Windows, double-click on the generated `aspnet-dev-cert.pfx` file and select "Local machine" for the "Store Location". Continue with the setup until you have to select the certificate store. Select to use Trusted Root Certification Authorities and complete the installation process. 
+If using Windows, double-click on the generated `aspnet-dev-cert.pfx` file and select "Local machine" for the "Store Location". Continue with the setup until you have to select the certificate store. Select to use Trusted Root Certification Authorities and complete the installation process.
 
 If using a Mac, run:
 `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain aspnet-dev-cert.crt`
@@ -110,22 +110,22 @@ Or, you can manually add the certificate via Keychain Access:
 - Close the window and enter your password to confirm.
 
 Next:
-- create a `custom_certs` folder under `.ddev` where your Moodle code is stored (e.g. `\\wsl.localhost\Ubuntu\home\{username}\repos\social-work-induction-programme-digital-service\moodle-app\.ddev`) 
+- create a `custom_certs` folder under `.ddev` where your Moodle code is stored (e.g. `\\wsl.localhost\Ubuntu\home\{username}\repos\social-work-induction-programme-digital-service\apps\moodle-ddev\.ddev`)
 - copy the `aspnet-dev-cert.key` and `aspnet-dev-cert.crt` files to the `custom_certs` directory
 - rename the files to the name of the ddev project (`moodle.key` and `moodle.crt`)
 - open the moodle certificate file and select "Install Certificate..."; follow the same steps as above to select the Trusted Root certificate store and install the certificate
 
 #### Testing the SSO integration
-To test the integration, ensure there is an account in the SWIP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database. 
+To test the integration, ensure there is an account in the SWIP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database.
 
 To create this account in Moodle, navigate to `Site administration > Users > Accounts > Add a new user`. Set the `username` to the value of the email address stored for the SWIP user account. This will be used for account matching after authentication. Also select OpenID Connect for the authentication method of this account.
 
 If needed, enable Moodle OIDC plugin debug manually in the user interface (Site Administration > Plugins > Authentication > OpenId Connect > Debugging section) or by using `moosh config-set debugmode 1 auth_oidc` with moosh installed and after running `ddev ssh`.
 
-Manually creating the user account in Moodle which will be authenticating via SSO is a workaround until Moodle is integrated with the account management app and users are created programmatically. 
+Manually creating the user account in Moodle which will be authenticating via SSO is a workaround until Moodle is integrated with the account management app and users are created programmatically.
 
 ### Moodle configuration
 When running the service via DDEV, the `config.php` file is located in the `public` dir. The documentation for this configuration can be found [here](https://docs.moodle.org/405/en/Configuration_file).
 
 ### Moodle tests
-For documentation on automated testing in Moodle and local dev setup, please see the dedicated files in the `moodle-docs` folder.
+For documentation on automated testing in Moodle and local dev setup, please see the dedicated files in the `docs\moodle-docs` folder.

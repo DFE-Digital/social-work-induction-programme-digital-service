@@ -1,7 +1,7 @@
 services:
   moodleapp:
     build:
-      context: ./moodle-docker
+      context: .
     image: moodle-web:1.0
     container_name: moodle-web
     ports:
@@ -10,7 +10,7 @@ services:
       - "development.env"
     volumes:
       - moodledata:/var/www/moodledata
-      - ${PWD}/moodle-docker/config.php:/var/www/html/config.php
+      - ${PWD}/config.php:/var/www/html/config.php
     depends_on:
       postgres:
         condition: service_healthy
