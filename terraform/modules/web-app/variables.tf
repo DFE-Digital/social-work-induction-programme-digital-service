@@ -33,6 +33,11 @@ variable "acr_id" {
   type        = string
 }
 
+variable "acr_name" {
+  description = "Azure Container Registry name"
+  type        = string
+}
+
 variable "key_vault_id" {
   description = "ID of the key vault"
   type        = string

@@ -127,10 +127,8 @@ jobs:
           terraform plan -detailed-exitcode -no-color -out tfplan \
             -var-file=$TF_VAR_FILE \
             -var='moodle_admin_password=${{ secrets.MOODLE_ADMIN_PASSWORD }}' \
-            -var='trace_webapp_admin_password=${{ secrets.TRACE_WEBAPP_ADMIN_PASSWORD }}' \
-            -var='moodle_admin_email=${{ secrets.MOODLE_ADMIN_EMAIL }}' \
-            -var='moodle_admin_user=${{ secrets.MOODLE_ADMIN_USER }}' \
-            -var='trace_webapp_admin_user=${{ secrets.TRACE_WEBAPP_ADMIN_USER }}' \
+            -var='moodle_admin_email=${{ vars.MOODLE_ADMIN_EMAIL }}' \
+            -var='moodle_admin_user=${{ vars.MOODLE_ADMIN_USER }}' \
             || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT

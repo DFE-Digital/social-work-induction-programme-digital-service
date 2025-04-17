@@ -1,31 +1,27 @@
-name: Development build & deploy Moodle app
+name: Build Moodle apps (optionally deploy to dev)
 
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Azure deployment environment"
+      deploy_instance:
+        description: "Dev environment deployment instance"
         required: true
-        default: Dev
+        default: none - no deploy
         type: choice
         options:
-          - Dev
-          - Test
-
-      instance:
-        description: "Moodle instance to deploy to"
-        default: primary
-        type: choice
-        options:
+          - none - no deploy
           - primary
 
 jobs:
-  create-and-publish-image:
-    name: Build & Deploy Moodle App
-    uses: ./.github/workflows/development-build-and-deploy-template.yml
+
+  create-and-publish-moodle-images:
+    name: Create & Publish Moodle Image - Optionally Deploy
+    uses: ./.github/workflows/build-moodle-images.yml
     secrets: inherit
     with:
-      environment: ${{ inputs.environment }}
-      docker-build-file: ./apps/moodle-docker/Dockerfile-github
-      short-image-name: moodle-app
-      web-app-name: webapp-moodle-${{ inputs.instance }}
+      docker-image-name-moodle: wa-moodle
+      docker-image-name-install: wa-install
+      base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
+      web-app-name-moodle: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
+      web-app-name-install: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
+      moodle-instance: ${{ github.event.inputs.deploy_instance }}

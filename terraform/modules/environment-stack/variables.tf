@@ -44,7 +44,7 @@ variable "autoscale_rule_minimum_capacity" {
 variable "autoscale_rule_maximum_capacity" {
   type = number
   description = "The maximum app service capacity"
-  default = 2
+  default = 1
 }
 
 variable "admin_enabled" {
@@ -59,5 +59,10 @@ variable "webapp_storage_account_name" {
 
 variable "kv_purge_protection_enabled" {
   description = "Whether purge protection is enabled for key vaults"
+  type        = bool
+}
+
+variable "assign_delivery_team_key_vault_permissions" {
+  description = "Whether to assign the delivery team key vault permissions as a convenience"
   type        = bool
 }

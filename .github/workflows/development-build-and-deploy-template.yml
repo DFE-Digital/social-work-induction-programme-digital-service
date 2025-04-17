@@ -9,6 +9,9 @@ on:
       org-name:
         type: string
         default: dfe-digital
+      docker-build-folder:
+        type: string
+        required: true
       docker-build-file:
         type: string
         required: true
@@ -21,9 +24,6 @@ on:
       web-app-name:
         required: true
         type: string
-
-env:
-  REGISTRY_NAME: s205d01acr
 
 jobs:
   set-env:
@@ -54,6 +54,7 @@ jobs:
       environment: ${{ inputs.environment }}
       branch: ${{ needs.set-env.outputs.branch }}
       checked-out-sha: ${{ needs.set-env.outputs.checked-out-sha }}
+      docker-build-folder: ${{ inputs.docker-build-folder }}
       docker-build-file: ${{ inputs.docker-build-file }}
       org-name: ${{ inputs.org-name }}
       docker-image-name: ${{ inputs.image-stem }}-${{ inputs.short-image-name }}
@@ -80,7 +81,7 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      # Need to retrieve RESOURCE_NAME_PREFIX in particular for next step
+      # Need to retrieve ACR_NAME / RESOURCE_NAME_PREFIX in particular for next step
       - name: Load Terraform Variables
         uses: ./.github/actions/pre-process-terraform-variables
         with:
@@ -92,4 +93,20 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-          images: ${{ vars.IMAGE_REGISTRY_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
+          images: ${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}/${{ inputs.image-stem }}-${{ inputs.short-image-name }}:latest
+
+      - name: Test deploy
+        run: |
+          # Create remote tunnel connection to deploy web app
+          sudo apt install -y expect
+          expect <<'EOF'
+          spawn az webapp ssh \
+            --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }} \
+            --resource-group s205d01-swip-rg \
+            -n s205d01-webapp-deploy
+          expect "#"
+          send "pwd\r"
+          expect "#"
+          send "exit\r"
+          expect eof
+          EOF

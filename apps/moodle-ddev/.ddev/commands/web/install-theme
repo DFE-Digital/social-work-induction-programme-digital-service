@@ -11,7 +11,9 @@
 set -e
 
 # Default release if no argument is provided.
-RELEASE=${1:-2024200800}
+if [[ "$1" == "" || "$1" == "default" ]]; then
+  RELEASE=2024200800
+fi
 
 THEME_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/${RELEASE}/govuk-moodle-theme.zip"
 
@@ -38,10 +40,13 @@ else
   echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
 fi
 
-echo "Running Moodle upgrade..."
-php public/admin/cli/upgrade.php --non-interactive
+# For Azure, we want the ability to copy the theme but delay the upgrade til deployment
+if [[ "$2" != "--copy-only" ]]; then
+  echo "Running Moodle upgrade..."
+  php public/admin/cli/upgrade.php --non-interactive
 
-echo "Purging Moodle caches..."
-php public/admin/cli/purge_caches.php
+  echo "Purging Moodle caches..."
+  php public/admin/cli/purge_caches.php
+fi
 
 echo "Theme install complete."
