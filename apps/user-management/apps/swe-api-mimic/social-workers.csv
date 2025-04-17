@@ -1,0 +1,42 @@
+Id,Registration Number,Registered Name,Status,Town of employment,Registered from,Registered until,Registered,Test Scenario
+5604,SW5604,Ralph Cormier,Registered,Workington,2012-08-01 00:00:00,2024-11-30 00:00:00,True,Valid SWEAPI
+2,SW2,Nelda Schroeder,No Longer Registered,,2012-08-01 00:00:00,2016-12-01 00:00:00,False,Valid SWEAPI
+1,SW1,Lisa MacGyver,No Longer Registered - Failed to Renew,,2012-08-01 00:00:00,2021-11-30 00:00:00,False,Valid SWEAPI
+1961,SW1961,Aliya Rowe,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2022-11-30 00:00:00,False,Valid SWEAPI
+2107,SW2107,Xander Davis,No Longer Registered - Deceased,,2012-08-01 00:00:00,2015-06-02 00:00:00,False,Valid SWEAPI
+9905,SW9905,Prince Nolan,Registered,Birmingham,2012-08-01 00:00:00,2024-11-30 00:00:00,True,Valid SWEAPI
+4773,SW4773,Madaline Hansen,Registered,Ipswich,2012-08-01 00:00:00,2024-11-30 00:00:00,True,Valid SWEAPI
+4504,SW4504,Heath Sauer,No Longer Registered - Failed to meet CPD requirements,,2012-08-01 00:00:00,2021-11-30 00:00:00,False,Valid SWEAPI
+9210,SW9210,Candace Bosco,No Longer Registered - Removed,,2012-08-01 00:00:00,2018-02-05 00:00:00,False,Valid SWEAPI
+4296,SW4296,Salma Boyle,No Longer Registered,,2012-08-01 00:00:00,,False,INVALID(no registered until date)
+95,SW95,Hailey Sanford,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2024-10-24 00:00:00,False,INVALID(very old registered until date)
+832,SW832,Kelsie Blanda,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2012-09-11 00:00:00,False,INVALID (No Data set)
+154516,SW154516,Myah Spencer,Registered,Eastleigh,2024-07-03 00:00:00,2024-11-30 00:00:00,True,Highest SWE Number
+874,SW874,Jayden Smith Koch,Registered,Gateshead,2012-08-01 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+875,SW875,Hayden Smith Koch,No Longer Registered - Voluntary Removal,,2012-01-08 00:00:00,2020-10-06 00:00:00,False,Pattern matching
+1766,SW1766,Samuel Bogan,"No Longer Registered,",,2012-08-01 00:00:00,2013-03-01 00:00:00,False,Pattern matching
+1767,SW1767,Sam Bogan,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2018-08-11 00:00:00,False,Pattern matching
+1880,SW1880,Rory Ann Hintz,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2012-09-28 00:00:00,False,Pattern matching
+1881,SW1881,Rory Jane Hintz,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2015-08-10 00:00:00,False,Pattern matching
+5626,SW5626,Jeramy Abshire,No Longer Registered - Voluntary Removal,,2012-08-01 00:00:00,2015-09-10 00:00:00,False,Pattern matching
+5627,SW5627,Jeramy Abshire,Registered,STOCKPORT,2012-08-01 00:00:00,2024-10-30 00:00:00,True,Pattern matching
+5746,SW5746,Marlin Fay,Registered,London,2022-12-22 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+5747,SW5747,Marlin Danielle Fay,Registered,Nottingham,2012-08-01 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+8866,SW8866,Anne-Marie Lowe,Registered,Liverpool,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+8867,SW8867,Anne Marie Lowe,No Longer Registered - Failed to Renew,Manchester,2012-08-01 00:00:00,2024-11-30 00:00:00,False,Pattern matching
+9845,SW9845,Gwendolyn Pauline Mertz,Registered,Portsmouth,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+9846,SW9846,Gwendolyn Pauline Mertz,Registered,Ledbury,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Pattern matching
+541,SW541,Fay Gwendolyn Quitzon Chelsie Goodwin-MacGyver,Registered,London,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Long names
+4126,SW4126,Arielle McClure Novella Hamill Abshire Runolfsson,No Longer Registered - Failed to Renew,,2012-01-08 00:00:00,2022-11-30 00:00:00,False,Long names
+2013,SW2013,Sam Mac-Donald,Registered,Bournemouth,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Hypen
+2043,SW2043,Xander-Idell Hamill,Registered,Southampton,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Hypen
+2733,SW2733,Ruby-Julio Kreiger-Joy Lakin,No Longer Registered,,2012-01-08 00:00:00,2014-01-12 00:00:00,False,Name with Hypen
+9054,SW9054,Rocky Goodwin,Registered,St. Helen's,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Hypen
+5198,SW5198,William Shakespeare,Registered,Stratford-upon-Avon,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Hypen
+2585,SW2585,Chelsie D'Amore,Registered,,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Special character
+8670,SW8670,Novella Quitzon,Registered,Fareham & Gosport,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Name with Special character
+7627,SW7627,Cory Mayer,No Longer Registered - Failed to Renew,*,2012-01-08 00:00:00,2024-11-30 00:00:00,False,Name with Special character
+7132,SW7132,Julio A.B.C Stehr,Registered,Wembley,2022-01-11 00:00:00,2024-11-30 00:00:00,True,Name with Special character
+109191,SW109191,Heath I Lakin,No Longer Registered - Voluntary Removal,,2016-01-14 00:00:00,2020-11-30 00:00:00,False,Name with roman
+1,SW01,Willow Lowe,Registered,Stowmarket,2012-01-08 00:00:00,2024-11-30 00:00:00,True,Negative
+-1,-1,Sebastian Marvin,Registered,Lanhydrock Bodmin,2012-01-08 00:00:00,2024-11-30 00:00:00,,Negative

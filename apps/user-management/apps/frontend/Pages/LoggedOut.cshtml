@@ -1,0 +1,21 @@
+@page
+@model Dfe.Sww.Ecf.Frontend.Pages.LoggedOut
+@{
+    Model.Title = "Logged out";
+}
+
+<div class="text-center">
+    <h1 class="govuk-heading-l">
+        <span class="govuk-label--l">You have successfully signed out</span>
+    </h1>
+
+    <div class="govuk-body">
+        <p>
+            You have signed out of the post qualifying pathway digital service.
+        </p>
+
+        <p>
+            To sign back in, <a href="@LinkGenerator.Home()" class="govuk-link govuk-link--no-visited-state">return to the home page</a>
+        </p>
+    </div>
+</div>

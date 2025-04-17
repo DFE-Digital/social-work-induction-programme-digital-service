@@ -1,0 +1,45 @@
+# This workflow will build a .NET project
+# For more information see: https://nx.dev/ci/intro/tutorials/github-actions
+
+name: .NET build and test nx affected
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Restore cached npm dependencies
+        id: cache-dependencies-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+          key: npm-dependencies-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm install --frozen-lockfile
+      - name: Cache npm dependencies
+        if: steps.cache-dependencies-restore.outputs.cache-hit != 'true'
+        id: cache-dependencies-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ steps.cache-dependencies-restore.outputs.cache-primary-key }}
+      - uses: nrwl/nx-set-shas@v4
+      # This line is needed for nx affected to work when CI is running on a PR
+      - run: git branch --track main origin/main
+        if: ${{ github.event_name == 'pull_request' }}
+
+      - run: pnpm nx affected -t build test --exclude='tag:deploy' --parallel=3
