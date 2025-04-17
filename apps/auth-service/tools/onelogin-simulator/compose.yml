@@ -1,0 +1,25 @@
+services:
+  onelogin-simulator:
+    image: ghcr.io/govuk-one-login/simulator:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - SIMULATOR_URL=https://localhost:9010/onelogin
+      - REDIRECT_URLS=https://localhost:7236/_onelogin/callback
+      - INTERACTIVE_MODE=true
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9010:9010"
+      - "9010:9010/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certs:/certs
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
