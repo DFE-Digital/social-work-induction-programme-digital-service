@@ -1,0 +1,99 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DataStore\Postgres\Procedures\fn_delete_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_delete_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_insert_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_insert_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_update_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_update_person_employments_person_search_attributes_v2.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_update_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_update_person_search_attributes_v2.sql" />
+    <None Remove="DataStore\Postgres\Procedures\fn_update_person_search_attributes_v3.sql" />
+    <None Remove="DataStore\Postgres\Procedures\p_refresh_name_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\p_refresh_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\p_refresh_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Procedures\p_refresh_person_search_attributes_v2.sql" />
+    <None Remove="DataStore\Postgres\Procedures\p_refresh_person_search_attributes_v3.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_delete_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_delete_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_insert_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_insert_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_update_person_employments_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v1.sql" />
+    <None Remove="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v2.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_delete_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_delete_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_insert_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_insert_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_update_person_employments_person_search_attributes_v2.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\fn_update_person_search_attributes_v3.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\p_refresh_name_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\p_refresh_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Procedures\p_refresh_person_search_attributes_v3.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_delete_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_insert_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_insert_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_delete_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_update_person_employments_person_search_attributes_v1.sql" />
+    <EmbeddedResource Include="DataStore\Postgres\Triggers\trg_update_person_search_attributes_v2.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="dbup-sqlserver" />
+    <PackageReference Include="DistributedLock.Azure" />
+    <PackageReference Include="DistributedLock.FileSystem" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="GovukNotify" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Hangfire.NetCore" />
+    <PackageReference Include="Hangfire.PostgreSql" />
+    <PackageReference Include="IdentityModel" />
+    <PackageReference Include="Microsoft.ApplicationInsights" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Azure" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" />
+    <PackageReference Include="Optional" />
+    <PackageReference Include="PdfSharpCore" />
+    <PackageReference Include="Polly.Core" />
+    <PackageReference Include="Scrutor" />
+    <PackageReference Include="System.Net.Http.Json" />
+    <PackageReference Include="Sentry.Serilog" />
+    <PackageReference Include="Serilog.Formatting.Compact" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="SerilogTimings" />
+    <PackageReference Include="System.Reactive" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataStore\Postgres\Migrations\" />
+  </ItemGroup>
+
+</Project>

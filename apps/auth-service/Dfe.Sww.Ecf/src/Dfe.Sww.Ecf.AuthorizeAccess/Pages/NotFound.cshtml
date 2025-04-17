@@ -1,0 +1,23 @@
+@page "/not-found"
+@model Dfe.Sww.Ecf.AuthorizeAccess.Pages.NotFoundModel
+@{
+    ViewBag.Title = "We haven’t found your ECF account";
+}
+
+<govuk-panel class="govuk-panel--interruption">
+    <govuk-panel-title>@ViewBag.Title</govuk-panel-title>
+
+    <govuk-panel-body class="govuk-panel__body">
+        <div class="trs-two-thirds">
+            <p class="govuk-body govuk-!-margin-bottom-0">
+                We’ve been unable to match you to an ECF account.
+            </p>
+
+            <h2 class="govuk-heading-l">Get support</h2>
+
+            <p class="govuk-body">
+                Please contact your organisation for help.
+            </p>
+        </div>
+    </govuk-panel-body>
+</govuk-panel>
