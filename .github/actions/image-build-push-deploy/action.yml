@@ -99,14 +99,14 @@ runs:
       shell: bash
       run: docker push "${{ env.FULL_APP_TAG }}"
 
-    - name: Optional web app settings
+    - name: Optional set web app settings (Dev)
       if: inputs.web-app-settings != ''
       uses: Azure/appservice-settings@v1
       with:
        app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
        web-app-settings: '${{ inputs.web-app-settings }}'
 
-    - name: Optional deploy to Azure App Services (Dev)
+    - name: Optional deploy web app (Dev)
       if: inputs.web-app-name != ''
       uses: azure/webapps-deploy@v2
       with:
