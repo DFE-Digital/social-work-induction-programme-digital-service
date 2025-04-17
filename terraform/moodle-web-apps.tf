@@ -50,11 +50,10 @@ module "web_app_moodle" {
     "MOODLE_DOCKER_SSL_TERMINATION"       = "true"
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
+    "MOODLE_ADMIN_USER"                   = "${var.moodle_admin_user}"
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
-    # TODO: Reset to "moodle_admin" by using the variable when the custom moodle build is done
-    "MOODLE_ADMIN_USER" = "admin" #var.moodle_admin_user
   }
 
   depends_on = [

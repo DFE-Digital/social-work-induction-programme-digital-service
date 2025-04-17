@@ -30,7 +30,6 @@ resource "azurerm_linux_web_app" "webapp" {
     container_registry_use_managed_identity = true
     application_stack {
       docker_registry_url = "https://${var.acr_name}.azurecr.io"
-      // TODO: Proper version management
       docker_image_name   = var.docker_image_name
     }
   }
@@ -58,6 +57,7 @@ resource "azurerm_linux_web_app" "webapp" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
+      # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
       # virtual_network_subnet_id is updated and the next time around, Terraform will reset

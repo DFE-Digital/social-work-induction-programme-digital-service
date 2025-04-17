@@ -33,7 +33,13 @@ VERSION=$(awk -F"'" '/\$release[[:space:]]*=/ {print $2}' version.php)
 
 if [[ -z "$LAST_SUCCESS" ]]; then
     echo "No successful install found; creating Moodle database from version $VERSION..."
-    su -s /bin/sh www-data -c 'php admin/cli/install_database.php --lang=en --adminpass=$MOODLE_ADMIN_PASSWORD --agree-license'
+    su -s /bin/sh www-data -c 'php admin/cli/install_database.php \
+        --lang=en \
+        --adminemail=$MOODLE_ADMIN_EMAIL \
+        --adminpass=$MOODLE_ADMIN_PASSWORD \
+        --shortname="$MOODLE_SITE_SHORTNAME" \
+        --fullname="$MOODLE_SITE_FULLNAME" \
+        --agree-license'
 
     if [ $? -eq 0 ]; then
         # Required to make sure plug-ins / themes are OK
