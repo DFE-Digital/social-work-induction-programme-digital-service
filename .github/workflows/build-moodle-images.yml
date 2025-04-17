@@ -90,7 +90,7 @@ jobs:
       - name: Build, push and optionally deploy Moodle install app
         uses: ./.github/actions/image-build-push-deploy
         with:
-          docker-build-folder: ./moodle-apps-azure
+          docker-build-folder: ./apps/moodle-apps-azure
           acr-name: ${{ env.ACR_NAME }}
           docker-image-name: ${{ inputs.docker-image-name-install }}
           base-image-version: ${{ inputs.base-image-version }}
@@ -104,7 +104,7 @@ jobs:
       - name: Build, push and optionally deploy Moodle app
         uses: ./.github/actions/image-build-push-deploy
         with:
-          docker-build-folder: ./moodle-apps-azure
+          docker-build-folder: ./apps/moodle-apps-azure
           acr-name: ${{ env.ACR_NAME }}
           docker-image-name: ${{ inputs.docker-image-name-moodle }}
           base-image-version: ${{ inputs.base-image-version }}
