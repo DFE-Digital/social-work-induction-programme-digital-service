@@ -80,6 +80,10 @@ module "web_app_moodle_install" {
   service_plan_id           = module.stack.service_plan_id
   tags                      = local.common_tags
 
+  # POSTGRES_DB should be changed when deploying the installation webapp.
+  # This is because one installation webapp can service multiple moodle
+  # instances, the only difference being the database name.
+
   app_settings = {
     "ENVIRONMENT"                         = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
