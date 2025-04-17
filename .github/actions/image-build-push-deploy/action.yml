@@ -104,7 +104,7 @@ runs:
       uses: Azure/appservice-settings@v1
       with:
        app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-       app-settings-json: '${{ inputs.web-app-settings }}'
+       web-app-settings: '${{ inputs.web-app-settings }}'
 
     - name: Optional deploy to Azure App Services (Dev)
       if: inputs.web-app-name != ''
