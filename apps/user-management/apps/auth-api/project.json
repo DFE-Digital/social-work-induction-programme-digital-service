@@ -1,0 +1,17 @@
+{
+  "name": "auth-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/auth-api",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "swagger": {
+      "executor": "@nx-dotnet/core:update-swagger",
+      "outputs": ["{workspaceRoot}/generated/auth-api-swagger/swagger.json"],
+      "options": {
+        "output": "generated/auth-api-swagger/swagger.json"
+      },
+      "dependsOn": ["build"]
+    }
+  }
+}

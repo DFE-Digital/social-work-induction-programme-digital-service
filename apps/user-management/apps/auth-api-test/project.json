@@ -1,0 +1,9 @@
+{
+	"name": "auth-api-test",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/auth-api-test",
+	"projectType": "application",
+  "implicitDependencies": ["auth-api"],
+	"targets": {},
+	"tags": []
+}

@@ -1,0 +1,116 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index
+
+@{
+    Model.Title = "Manage accounts";
+
+    var notifiedEmail = TempData["NotifyEmail"]?.ToString();
+    var notificationBannerSubject = TempData["NotificationBannerSubject"]?.ToString();
+
+    var paging = Model.Pagination;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        @if (!string.IsNullOrWhiteSpace(notifiedEmail) && !string.IsNullOrWhiteSpace(notificationBannerSubject))
+        {
+            <govuk-notification-banner>
+                <govuk-notification-banner-title heading-level="2" id="banner-title">
+                    @notificationBannerSubject
+                </govuk-notification-banner-title>
+                <p class="govuk-notification-banner__heading">
+                    An email notification was sent to @notifiedEmail
+                </p>
+            </govuk-notification-banner>
+        }
+
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--l">
+                Manage accounts
+            </caption>
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].FullName"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].Status"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <label asp-for="@Model.Accounts[0].Types"></label>
+                </th>
+                <th scope="col" class="govuk-table__header">
+                    <span class="govuk-visually-hidden">Action</span>
+                </th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var account in Model.Accounts)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header" data-test-class="account-name">
+                        @Html.DisplayFor(model => account.FullName)
+                    </th>
+                    <td class="govuk-table__cell">
+                        @{
+                            var tagClass = account.Status switch
+                            {
+                                AccountStatus.Active => "govuk-tag--green",
+                                AccountStatus.PendingRegistration => "govuk-tag--orange",
+                                _ => "govuk-tag--yellow"
+                            };
+                        }
+                        @if (account.Status is not null)
+                        {
+                            <strong class="govuk-tag @tagClass" data-test-class="account-status">
+                                @account.Status.GetDisplayName()
+                            </strong>
+                            <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                                @account.Status.GetDescription()
+                            </span>
+                        }
+                    </td>
+                    <td class="govuk-table__cell">
+                        <account-types types="account.Types"/>
+                    </td>
+                    <td class="govuk-table__cell">
+                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">View</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <govuk-pagination>
+            @if (paging?.Links?["previous"] != null)
+            {
+                var prev = paging.Links["previous"];
+                <govuk-pagination-previous href="@LinkGenerator.ManageAccounts(prev.Offset, prev.PageSize)"/>
+            }
+
+            @for (var i = 1; i < paging?.PageCount + 1; i++)
+            {
+                var pageNo = i;
+                var currentPage = paging?.Page ?? 0;
+
+                <govuk-pagination-item
+                    is-current=@(currentPage == pageNo)
+                    href=@LinkGenerator.ManageAccounts((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                    @pageNo
+                </govuk-pagination-item>
+            }
+
+            @if (paging?.Links?["next"] != null)
+            {
+                var next = paging.Links["next"];
+                <govuk-pagination-next href="@LinkGenerator.ManageAccounts(next.Offset, next.PageSize)"/>
+            }
+        </govuk-pagination>
+
+        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add someone</govuk-button-link>
+    </div>
+</div >

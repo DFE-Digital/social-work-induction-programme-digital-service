@@ -1,0 +1,6 @@
+@Dfe.Sww.Ecf.AuthApi_HostAddress = http://localhost:5147
+
+GET {{Dfe.Sww.Ecf.AuthApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

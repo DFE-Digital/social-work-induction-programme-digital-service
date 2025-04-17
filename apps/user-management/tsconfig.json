@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+      "target": "es2019",
+      "lib": ["es2019", "dom"],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      "declaration": true,
+      "types": [
+        "node",
+        "@serenity-js/core",
+        "@serenity-js/rest",
+        "@serenity-js/assertions",
+        "@serenity-js/playwright-test"
+
+      ]
+    },
+  
+    "include": [
+      "apps/frontend.Test/FunctionalTests/**/*.ts",
+      "apps/swe-api-mimic-test/DfeSwwEcf.SweApiSimulator.Tests/FunctionalTests/**/*.ts"
+    ],
+  
+    "exclude": [
+      "node_modules"
+    ],
+    "baseUrl": "."
+  }

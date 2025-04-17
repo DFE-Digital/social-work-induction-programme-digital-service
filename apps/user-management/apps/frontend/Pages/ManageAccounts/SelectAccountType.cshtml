@@ -1,0 +1,31 @@
+﻿@page "{id:Guid?}"
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model SelectAccountType
+
+@{
+    Model.Title = "Choose account type";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" asp-page-handler="@(Model.EditAccountId is not null ? "Edit" : "")">
+            <div class="govuk-form-group">
+
+                <govuk-radios asp-for="IsStaff">
+                    <govuk-radios-fieldset>
+                        <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                            @(Model.EditAccountId is not null ? "What is their role?" : "Who do you want to add?")
+                        </govuk-radios-fieldset-legend>
+
+                        <govuk-radios-item value="@false">An early career social worker taking part in the PQP programme</govuk-radios-item>
+                        <govuk-radios-item value="@true">A staff member supporting the PQP programme</govuk-radios-item>
+                    </govuk-radios-fieldset>
+                </govuk-radios>
+            </div>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+
+    </div>
+</div>
