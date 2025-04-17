@@ -39,6 +39,9 @@ inputs:
     type: string
     description: Standard string prefix for Azure resource names
     required: true
+  web-app-settings:
+    description: Optional app settings JSON to apply to web app before deployment
+    required: false
   web-app-name:
     type: string
     description: Name of web app to deploy to, leave empty for no deploy
@@ -95,6 +98,13 @@ runs:
     - name: Docker push
       shell: bash
       run: docker push "${{ env.FULL_APP_TAG }}"
+
+    - name: Optional web app settings
+      if: inputs.web-app-settings != ''
+      uses: Azure/appservice-settings@v1
+      with:
+       app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+       app-settings-json: '${{ inputs.web-app-settings }}'
 
     - name: Optional deploy to Azure App Services (Dev)
       if: inputs.web-app-name != ''

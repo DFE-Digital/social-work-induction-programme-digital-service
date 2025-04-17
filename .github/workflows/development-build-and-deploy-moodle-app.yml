@@ -24,3 +24,4 @@ jobs:
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
       web-app-name-moodle: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
       web-app-name-install: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
+      moodle-instance: ${{ github.event.inputs.deploy_instance }}

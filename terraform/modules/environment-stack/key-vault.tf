@@ -66,14 +66,14 @@ locals {
 }
 
 resource "azurerm_key_vault" "kv" {
-  name                        = "${var.resource_name_prefix}-kv-primary"
-  resource_group_name         = azurerm_resource_group.rg_primary.name
-  location                    = var.location
-  tenant_id                   = data.azurerm_client_config.az_config.tenant_id
-  enabled_for_disk_encryption = true
-  soft_delete_retention_days  = 7
-  purge_protection_enabled    = var.kv_purge_protection_enabled
-  sku_name                    = "standard"
+  name                         = "${var.resource_name_prefix}-kv-primary"
+  resource_group_name          = azurerm_resource_group.rg_primary.name
+  location                     = var.location
+  tenant_id                    = data.azurerm_client_config.az_config.tenant_id
+  enabled_for_disk_encryption  = true
+  soft_delete_retention_days   = 7
+  purge_protection_enabled     = var.kv_purge_protection_enabled
+  sku_name                     = "standard"
 
   lifecycle {
     ignore_changes = [tags]
