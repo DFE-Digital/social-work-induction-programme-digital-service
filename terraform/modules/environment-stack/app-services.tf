@@ -206,7 +206,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
   name                = "${var.resource_name_prefix}-asp-autoscale-services"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
-  target_resource_id  = azurerm_service_plan.asp_moodle_app.id
+  target_resource_id  = azurerm_service_plan.asp_service_apps.id
   enabled             = var.service_apps_minimum_instances != var.service_apps_maximum_instances
   tags                = var.tags
 
@@ -222,7 +222,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
     rule {
       metric_trigger {
         metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.asp_moodle_app.id
+        metric_resource_id = azurerm_service_plan.asp_service_apps.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
@@ -242,7 +242,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
     rule {
       metric_trigger {
        metric_name        =  "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.asp_moodle_app.id
+        metric_resource_id = azurerm_service_plan.asp_service_apps.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
