@@ -34,7 +34,7 @@ module "web_app_moodle" {
   acr_id                    = azurerm_container_registry.acr.id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.service_plan_id
+  service_plan_id           = module.stack.moodle_service_plan_id
   tags                      = local.common_tags
 
   app_settings = {
@@ -77,7 +77,7 @@ module "web_app_moodle_install" {
   acr_id                    = azurerm_container_registry.acr.id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.service_plan_id
+  service_plan_id           = module.stack.moodle_service_plan_id
   tags                      = local.common_tags
 
   # POSTGRES_DB should be changed when deploying the installation webapp.

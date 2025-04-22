@@ -23,27 +23,45 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "asp_sku" {
+variable "asp_sku_moodle" {
   type = string
   description = "The app service plan SKU"
   default = "S3"
 }
 
-variable "autoscale_rule_default_capacity" {
+variable "moodle_default_instances" {
   type = number
-  description = "The default app service capacity"
+  description = "The default number of instances for the Moodle app service"
   default = 1
 }
 
-variable "autoscale_rule_minimum_capacity" {
+variable "moodle_minimum_instances" {
   type = number
-  description = "The minimum app service capacity"
+  description = "The minimum number of instances for the Moodle app service"
   default = 1
 }
 
-variable "autoscale_rule_maximum_capacity" {
+variable "moodle_maximum_instances" {
   type = number
-  description = "The maximum app service capacity"
+  description = "The maximum number of instances for the Moodle app service"
+  default = 1
+}
+
+variable "service_apps_default_instances" {
+  type = number
+  description = "The default number of instances for the service apps app service"
+  default = 1
+}
+
+variable "service_apps_minimum_instances" {
+  type = number
+  description = "The minimum number of instances for the service apps app service"
+  default = 1
+}
+
+variable "service_apps_maximum_instances" {
+  type = number
+  description = "The maximum number of instances for the service apps app service"
   default = 1
 }
 
