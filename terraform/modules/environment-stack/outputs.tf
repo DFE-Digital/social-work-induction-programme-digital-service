@@ -48,12 +48,32 @@ output "front_door_profile_web_id" {
   value = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
 }
 
-output "subnet_webapps_id" {
-  description = "The ID of the web apps subnet"
-  value = azurerm_subnet.sn_webapps.id
+output "subnet_moodle_id" {
+  description = "The ID of the Moodle subnet"
+  value = azurerm_subnet.sn_moodle_app.id
 }
 
-output "service_plan_id" {
-  description = "ID of the app service plan"
-  value       = azurerm_service_plan.asp.id
+output "subnet_maintenance_id" {
+  description = "The ID of the maintenance apps subnet"
+  value = azurerm_subnet.sn_maintenance_apps.id
+}
+
+output "subnet_services_id" {
+  description = "The ID of the service apps subnet"
+  value = azurerm_subnet.sn_service_apps.id
+}
+
+output "moodle_service_plan_id" {
+  description = "ID of the Moodle app service plan"
+  value       = azurerm_service_plan.asp_moodle_app.id
+}
+
+output "maintenance_service_plan_id" {
+  description = "ID of the maintenance service plan"
+  value       = azurerm_service_plan.asp_maintenance_apps.id
+}
+
+output "services_service_plan_id" {
+  description = "ID of the service apps service plan"
+  value       = azurerm_service_plan.asp_service_apps.id
 }

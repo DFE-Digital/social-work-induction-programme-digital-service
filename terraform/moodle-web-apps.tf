@@ -30,11 +30,11 @@ module "web_app_moodle" {
   web_app_short_name        = each.value.web_app_short_name
   docker_image_name         = "dfe-digital/swip-digital-service-moodle-app:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
-  subnet_webapps_id         = module.stack.subnet_webapps_id
+  subnet_webapps_id         = module.stack.subnet_moodle_id
   acr_id                    = azurerm_container_registry.acr.id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.service_plan_id
+  service_plan_id           = module.stack.moodle_service_plan_id
   tags                      = local.common_tags
 
   app_settings = {
@@ -73,11 +73,11 @@ module "web_app_moodle_install" {
   web_app_short_name        = "wa-moodle-install"
   docker_image_name         = "dfe-digital/swip-digital-service-moodle-app:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
-  subnet_webapps_id         = module.stack.subnet_webapps_id
+  subnet_webapps_id         = module.stack.subnet_maintenance_id
   acr_id                    = azurerm_container_registry.acr.id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.service_plan_id
+  service_plan_id           = module.stack.maintenance_service_plan_id
   tags                      = local.common_tags
 
   # POSTGRES_DB should be changed when deploying the installation webapp.

@@ -43,8 +43,18 @@ variable "resource_name_prefix" {
   type        = string
 }
 
-variable "asp_sku" {
-  description = "SKU name for the App Service Plan"
+variable "asp_sku_moodle" {
+  description = "SKU name for the Moodle App Service Plan"
+  type        = string
+}
+
+variable "asp_sku_maintenance" {
+  description = "SKU name for the maintenance App Service Plan"
+  type        = string
+}
+
+variable "asp_sku_services" {
+  description = "SKU name for the service apps App Service Plan"
   type        = string
 }
 
