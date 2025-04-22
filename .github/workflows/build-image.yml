@@ -3,13 +3,7 @@ name: Build Image and Publish to ACR
 on:
   workflow_call:
     inputs:
-      environment:
-        type: string
-        required: true
-      branch:
-        type: string
-        required: true
-      checked-out-sha:
+      docker-build-folder:
         type: string
         required: true
       docker-build-file:
@@ -17,24 +11,42 @@ on:
         required: true
       org-name:
         type: string
-        required: true
+        default: dfe-digital
+      project-name:
+        type: string
+        default: swip-digital-service
       docker-image-name:
         type: string
         required: true
+      base-image-version:
+        type: string
+        default: ''
+      build-args:
+        type: string
+        default: ''
+      build-secrets:
+        type: string
+        default: ''
+      web-app-name:
+        type: string
+        default: ''
 
     outputs:
-      dockerImageTag:
-        description: "The image written to the ACR"
-        value: ${{ jobs.build-image.outputs.dockerImageTag }}
+      docker-image-tag:
+        description: "The tag of the image pushed to the ACR"
+        value: ${{ jobs.build-image.outputs.docker-image-tag }}
+      dev-resource-name-prefix:
+        description: "The resource name prefix for the Dev environment"
+        value: ${{ jobs.build-image.outputs.dev-resource-name-prefix }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.environment }}
+  group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
   build-image:
     runs-on: ubuntu-24.04
-    environment: ${{ inputs.environment }}
+    environment: Dev
     name: Build & Publish Image
     # Permissions for OIDC authentication
     permissions:
@@ -42,7 +54,10 @@ jobs:
       contents: write
       issues: write
     outputs:
-      dockerImageTag: ${{ steps.image.outputs.dockerImageTag }}
+      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
+      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+    env:
+      ENVIRONMENT: Dev
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -56,27 +71,81 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Azure Container Registry Login
-        run: az acr login --name ${{ vars.IMAGE_REGISTRY_NAME }}
-        env:
-          ACR_NAME: ${{ vars.IMAGE_REGISTRY_NAME }}
-
-      - name: Format branch name
-        run: |
-          branchName=${{ inputs.branch }}
-          echo FORMATTED_BRANCH_NAME="${branchName//\//-}" >> $GITHUB_ENV
-
-      - name: "Build the image and deploy to ACR"
-        uses: docker/build-push-action@v6
+      # Need to retrieve ACR_NAME in particular for next steps
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
         with:
-          context: ./
-          file: ${{ inputs.docker-build-file }}
-          build-args: COMMIT_SHA=${{ inputs.checked-out-sha }}
-          tags: |
-            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}
-            ${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:latest
-          push: true
+          environment: ${{ env.ENVIRONMENT }}
+          add_as_env_vars: true
 
-      - name: Output Docker Image Tag
-        id: image
-        run: echo "dockerImageTag=${{ vars.IMAGE_REGISTRY_NAME }}/${{ inputs.org-name }}/${{ inputs.docker-image-name }}:${{ env.FORMATTED_BRANCH_NAME }}-${{ inputs.checked-out-sha }}" >> $GITHUB_OUTPUT
+      - name: Azure Container Registry Login
+        run: az acr login --name ${{ env.ACR_NAME }}
+        env:
+          ACR_NAME: ${{ env.ACR_NAME }}
+
+      - name: Format standard image tag
+        run: |
+          COMMIT_HASH=${{ github.sha }}
+          COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
+          BUILD_DATE=$(date +%Y%m%d)
+          if [[ -n "${{ inputs.base-image-version }}" ]]; then
+            BASE_VERSION="${{ inputs.base-image-version }}-"
+          fi
+          echo COMMIT_HASH_SHORT="$COMMIT_HASH_SHORT" >> $GITHUB_ENV
+          FULL_TAG="${{ env.ACR_NAME }}.azurecr.io/${{ inputs.org-name }}-${{inputs.project-name}}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            FULL_TAG="$FULL_TAG.dev"
+          fi
+          echo FULL_TAG="$FULL_TAG" >> $GITHUB_ENV
+          echo "Docker build: full tag - $FULL_TAG"
+
+      - name: Docker build
+        env:
+          DOCKER_BUILDKIT: 1
+          AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
+        run: |
+          cd ${{ inputs.docker-build-folder }}
+          echo "Docker build: specified build args - ${{ inputs.build-args }}"
+
+          BUILD_ARGS=""
+          # Split build args by semicolon
+          IFS=';' read -ra KVPAIRS <<< "${{ inputs.build-args }}"
+          for pair in "${KVPAIRS[@]}"; do
+            trimmed=$(echo "$pair" | xargs)
+            if [[ -n "$trimmed" ]]; then
+              BUILD_ARGS="$BUILD_ARGS --build-arg $trimmed"
+            fi
+          done
+
+          SECRET_ARGS=""
+          IFS=';' read -ra SECRETS <<< "${{ inputs.build-secrets }}"
+          for secret in "${SECRETS[@]}"; do
+            trimmed=$(echo "$secret" | xargs)
+            if [[ "$trimmed" == "AZURE_KUDU_SSH_PASSWORD" ]]; then
+              SECRET_ARGS="$SECRET_ARGS --secret id=AZURE_KUDU_SSH_PASSWORD,env=AZURE_KUDU_SSH_PASSWORD"
+            fi
+          done
+          
+          echo "Docker build: Using build args - $BUILD_ARGS, secrets - $SECRET_ARGS"
+          docker build \
+            $BUILD_ARGS \
+            $SECRET_ARGS \
+            -f "./${{ inputs.docker-build-file }}" \
+            -t "${{ env.FULL_TAG }}" .
+
+      - name: Push Image
+        run: docker push "${{ env.FULL_TAG }}"
+
+      - name: Optional deploy to Azure App Services (Dev)
+        if: inputs.web-app-name != ''
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
+          images: "${{ env.FULL_TAG }}"
+
+      - name: Return Outputs
+        id: return
+        run: |
+          echo "docker-image-tag=${{ env.FULL_TAG }}" >> $GITHUB_OUTPUT
+          # Returned as a convenience if the caller wants to subsequently deploy to dev
+          echo "dev-resource-name-prefix=${{ env.RESOURCE_NAME_PREFIX }}" >> $GITHUB_OUTPUT

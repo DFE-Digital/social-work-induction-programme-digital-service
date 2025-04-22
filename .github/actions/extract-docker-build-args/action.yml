@@ -1,0 +1,48 @@
+name: Extract Docker Build Arguments
+description: Merges the global and environment specific variables, optionally exporting as environment variables
+
+inputs:
+  build-args: 
+    required: ''
+    description: Semicolon separated list of build arguments (key1=value1;key2=value2)
+  build-secrets:
+    default: ''
+    description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
+
+outputs:
+  build-arg-string:
+    description: "Docker build args in the format: --build-arg key1=value1 --build-arg key2=value2"
+    value: ${{ steps.extract-docker-build-args.outputs.build-arg-string }}
+  secret-arg-string:
+    description: "Docker build secrets in the format: --secret id=secretname1,env=secretname1 --secret id=secretname2,env=secretname2"
+    value: ${{ steps.extract-docker-build-args.outputs.secret-arg-string }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Extract 
+      id: extract-docker-build-args
+      shell: bash
+      run: |
+        BUILD_ARGS=""
+        # Split build args by semicolon
+        IFS=';' read -ra KVPAIRS <<< "${{ inputs.build-args }}"
+        for pair in "${KVPAIRS[@]}"; do
+          trimmed=$(echo "$pair" | xargs)
+          if [[ -n "$trimmed" ]]; then
+            BUILD_ARGS="$BUILD_ARGS --build-arg $trimmed"
+          fi
+        done
+
+        SECRET_ARGS=""
+        IFS=';' read -ra SECRETS <<< "${{ inputs.build-secrets }}"
+        for secret in "${SECRETS[@]}"; do
+          trimmed=$(echo "$secret" | xargs)
+          if [[ -n "$trimmed" ]]; then
+            SECRET_ARGS="$SECRET_ARGS --secret id=$trimmed,env=$trimmed"
+          fi
+        done
+
+        echo "build-arg-string=$BUILD_ARGS" >> "$GITHUB_OUTPUT"
+        echo "secret-arg-string=$SECRET_ARGS" >> "$GITHUB_OUTPUT"
