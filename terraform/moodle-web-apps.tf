@@ -28,7 +28,7 @@ module "web_app_moodle" {
   resource_name_prefix      = var.resource_name_prefix
   web_app_name              = each.value.webapp_name
   web_app_short_name        = each.value.web_app_short_name
-  docker_image_name         = "dfe-digital/swip-digital-service-moodle-app:latest"
+  docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_moodle_id
   acr_id                    = azurerm_container_registry.acr.id
@@ -71,7 +71,7 @@ module "web_app_moodle_install" {
   resource_name_prefix      = var.resource_name_prefix
   web_app_name              = "${local.moodle_webapp_name_stem}-install"
   web_app_short_name        = "wa-moodle-install"
-  docker_image_name         = "dfe-digital/swip-digital-service-moodle-app:latest"
+  docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_maintenance_id
   acr_id                    = azurerm_container_registry.acr.id
@@ -97,11 +97,10 @@ module "web_app_moodle_install" {
     "MOODLE_DOCKER_SSL_TERMINATION"       = "true"
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
+    "MOODLE_ADMIN_USER"                   = "${var.moodle_admin_user}"
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
-    # TODO: Reset to "moodle_admin" by using the variable when the custom moodle build is done
-    "MOODLE_ADMIN_USER" = "admin" #var.moodle_admin_user
   }
 
   depends_on = [

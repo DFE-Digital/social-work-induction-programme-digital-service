@@ -1,0 +1,58 @@
+name: Sync Secrets to Azure Key Vault 
+description: >
+  Compare each supplied secret value with the value stored in an Azure Key Vault
+  secret and update the vault if they differ.
+
+inputs:
+  vault-name:
+    description: Name of the Azure Key Vault
+    required: true
+  secret-names:
+    description: |
+      New-line-separated list of Key Vault secret names
+      (must line up 1-for-1 with secret-values)
+    required: true
+  secret-values:
+    description: |
+      New-line-separated list of secret values,
+      **use GitHub Secrets here** (same order as secret-names)
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+
+        # split the two newline-delimited inputs into parallel bash arrays
+        IFS=$'\n' read -d '' -r -a NAMES   <<< "${{ inputs.secret-names }}"$'\n'
+        IFS=$'\n' read -d '' -r -a VALUES  <<< "${{ inputs.secret-values }}"$'\n'
+
+        if [[ "${#NAMES[@]}" -ne "${#VALUES[@]}" ]]; then
+          echo "::error::secret-names and secret-values count mismatch"
+          exit 1
+        fi
+
+        VAULT="${{ inputs.vault-name }}"
+
+        for i in "${!NAMES[@]}"; do
+          NAME="${NAMES[$i]}"
+          VALUE="${VALUES[$i]}"
+
+          # Compare base64-encoded blobs to avoid newline / UTF-8 issues
+          DESIRED_B64=$(printf '%s' "$VALUE" | base64 -w0)
+
+          CURRENT=$(az keyvault secret show \
+                      --vault-name "$VAULT" \
+                      --name "$NAME" \
+                      --query value -o tsv 2>/dev/null || echo '')
+          CURRENT_B64=$(printf '%s' "$CURRENT" | base64 -w0)
+
+          if [[ "$DESIRED_B64" != "$CURRENT_B64" ]]; then
+            echo "🔄  Updating secret: $NAME"
+            az keyvault secret set --vault-name "$VAULT" \
+                                   --name "$NAME" --value "$VALUE" >/dev/null
+          else
+            echo "✅  Secret: $NAME is up-to-date"
+          fi
+        done

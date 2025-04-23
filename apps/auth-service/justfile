@@ -28,6 +28,9 @@ cli *ARGS:
 build:
   @cd {{solution-root}} && dotnet build
 
+build-project project:
+  @dotnet build {{solution-root}}/src/{{project}}
+
 # Test the .NET solution
 test:
   @cd {{solution-root}} && dotnet test
@@ -67,6 +70,12 @@ ef *ARGS:
 # Run the AuthorizeAccess project in Development mode and watch for file changes
 watch-authz:
   @cd {{solution-root / "src" / "Dfe.Sww.Ecf.AuthorizeAccess"}} && dotnet watch
+
+publish:
+  @cd {{solution-root}} && dotnet publish -c Release --no-restore
+
+publish-project project:
+  @dotnet publish {{solution-root}}/src/{{project}} -c Release --no-restore
 
 # Build the Docker image
 docker-build *ARGS: install-tools restore

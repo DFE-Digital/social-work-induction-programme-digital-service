@@ -61,6 +61,7 @@ runs:
     - name: Format standard image tag
       shell: bash
       run: |
+        pwd
         COMMIT_HASH=${{ github.sha }}
         COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
         BUILD_DATE=$(date +%Y%m%d)

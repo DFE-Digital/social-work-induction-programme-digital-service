@@ -1,0 +1,92 @@
+name: Build auth service (optionally deploy to dev) 
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy to dev environment?
+        required: true
+        default: No
+        type: choice
+        options:
+          - No
+          - Yes
+
+defaults:
+  run:
+    working-directory: ./apps/auth-service
+
+env:
+  ENVIRONMENT: Dev
+
+jobs:
+  build-image:
+    runs-on: ubuntu-24.04
+    environment: Dev
+    name: Build & Publish Image
+    # Permissions for OIDC authentication
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    outputs:
+      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
+      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+    env:
+      ENVIRONMENT: Dev
+      # This will make the secret available to Docker Build
+      # Any other secrets that need to be added to Docker Build should also be added here
+      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Restore tools
+        run: just install-tools
+
+      - name: Restore packages
+        run: just restore
+
+      - name: Build solution
+        run: just build
+
+      - name: Package auth service
+        run: just publish-project Dfe.Sww.Ecf.AuthorizeAccess
+
+      - name: Package CLI
+        run: just publish-project Dfe.Sww.Ecf.Cli
+
+      - name: Log in to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Load Terraform environment variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ env.ENVIRONMENT }}
+          add_as_env_vars: true
+
+      - name: Azure Container Registry login
+        run: az acr login --name ${{ env.ACR_NAME }}
+        env:
+          ACR_NAME: ${{ env.ACR_NAME }}
+
+      - name: Build, push and optionally deploy auth service
+        uses: ./.github/actions/image-build-push-deploy
+        with:
+          docker-build-folder: ./apps/auth-service/Dfe.Sww.Ecf
+          acr-name: ${{ env.ACR_NAME }}
+          docker-image-name: auth-service
+          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+          build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+          build-target: auth-service
+          resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
+          web-app-name: ${{ github.event.inputs.deploy == 'No' && '' || 'wa-auth-service' }}
