@@ -27,6 +27,14 @@ on:
       build-secrets:
         type: string
         default: ''
+      app-secret-names:
+        description: |
+          New-line-separated list of Key Vault secret names
+          (must line up 1-for-1 with secret-values)
+      app-secret-values:
+        description: |
+          New-line-separated list of secret values,
+          **use GitHub Secrets here** (same order as secret-names)
       web-app-name:
         type: string
         default: ''
@@ -135,6 +143,14 @@ jobs:
 
       - name: Push Image
         run: docker push "${{ env.FULL_TAG }}"
+
+      - name: Optional sync Key Vault secrets (Dev)
+        if: inputs.web-app-name != '' && inputs.app-secret-names != ''
+        uses: ./.github/actions/sync-key-vault-secrets
+        with:
+          vault-name: ${{ env.RESOURCE_NAME_PREFIX }}-kv-primary
+          secret-names: ${{ inputs.app-secret-names }}
+          secret-values: ${{ inputs.app-secret-values }}
 
       - name: Optional deploy to Azure App Services (Dev)
         if: inputs.web-app-name != ''

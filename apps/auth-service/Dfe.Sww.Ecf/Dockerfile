@@ -1,16 +1,14 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18
-ARG GIT_SHA
-ENV SENTRY_RELEASE=${GIT_SHA}
-ENV ASPNETCORE_HTTP_PORTS=80
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18 AS auth-service
+ARG AZURE_KUDU_SSH_USER
 COPY src/Dfe.Sww.Ecf.Cli/bin/Release/net8.0/publish/ Apps/EcfCli/
 COPY src/Dfe.Sww.Ecf.AuthorizeAccess/bin/Release/net8.0/publish/ Apps/AuthorizeAccess/
-COPY db.sh Apps/db.sh
+RUN rm Apps/AuthorizeAccess/appsettings.*
+COPY src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Production.json Apps/AuthorizeAccess/appsettings.json
+
 WORKDIR /Apps
 
-RUN chmod +x /Apps/db.sh
-
-# Install Culture prerequisities
+# Install culture prerequisities
 RUN apk add --no-cache \
     tzdata \
     icu-data-full \
@@ -19,9 +17,21 @@ RUN apk add --no-cache \
 # Enable all cultures
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
-# Install Postgres client
-RUN apk --no-cache add postgresql14-client
+# Install Postgres client / SSH Server for Kudu
+RUN apk --no-cache add postgresql15-client \
+    openssh \
+    shadow
 
+# Support kudu tools SSH for remote debug
+COPY sshd_config /etc/ssh/sshd_config
+RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
+    export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
+    && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
+    && > /etc/motd \
+    && mkdir -p /var/run/sshd \
+    && chmod 0755 /var/run/sshd \
+    && ssh-keygen -A
+        
 # Fix for invoking ecfcli
 RUN apk --no-cache add libc6-compat
 
@@ -31,3 +41,8 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
     fc-cache -f
 
 ENV PATH="${PATH}:/Apps/EcfCli"
+ENV ASPNETCORE_HTTP_PORTS=80
+
+ENTRYPOINT ["dotnet","/Apps/AuthorizeAccess/Dfe.Sww.Ecf.AuthorizeAccess.dll"]
+
+EXPOSE 80
