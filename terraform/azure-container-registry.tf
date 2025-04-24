@@ -31,5 +31,5 @@ resource "azurerm_container_registry" "acr" {
 }
 
 locals {
-  acr_id = var.create_and_own_container_registry ? azurerm_container_registry.acr.id : data.azurerm_container_registry.acr_data.id
+  acr_id = var.create_and_own_container_registry ? azurerm_container_registry.acr[0].id : data.azurerm_container_registry.acr_data[0].id
 }
