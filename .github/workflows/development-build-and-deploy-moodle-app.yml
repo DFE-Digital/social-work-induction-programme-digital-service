@@ -21,6 +21,7 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ github.event.inputs.instance == 'None' && '' || 'Dev' }}
+      environment-instance: ${{ github.event.inputs.instance }}
       docker-image-name-moodle: wa-moodle
       docker-image-name-install: wa-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"

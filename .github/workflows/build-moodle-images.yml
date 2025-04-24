@@ -6,6 +6,9 @@ on:
       environment:
         type: string
         required: true
+      environment-instance:
+        type: string
+        required: true
       docker-image-name-moodle:
         type: string
         required: true
@@ -76,7 +79,7 @@ jobs:
       - name: Load Terraform variables
         uses: ./.github/actions/pre-process-terraform-variables
         with:
-          environment: ${{ env.ENVIRONMENT }}
+          environment: ${{ inputs.environment-instance }}
           add_as_env_vars: true
 
       - name: Azure Container Registry login
