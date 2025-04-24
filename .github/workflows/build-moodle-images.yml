@@ -104,7 +104,7 @@ jobs:
           build-secrets: "AZURE_KUDU_SSH_PASSWORD"
           build-target: install-app
           resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
-          web-app-name: ${{ inputs.web-app-name-install }}
+          web-app-name: wa-${{ inputs.web-app-name-install }}
           web-app-settings: '[{"name": "POSTGRES_DB", "value": "${{ env.RESOURCE_NAME_PREFIX }}-db-${{ inputs.web-app-name-moodle }}", "slotSetting": false}]'
 
       - name: Build, push and optionally deploy Moodle app
@@ -118,4 +118,4 @@ jobs:
           build-secrets: "AZURE_KUDU_SSH_PASSWORD"
           build-target: moodle-app
           resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
-          web-app-name: ${{ inputs.web-app-name-moodle }}
+          web-app-name: wa-${{ inputs.web-app-name-moodle }}

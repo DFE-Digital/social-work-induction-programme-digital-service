@@ -25,6 +25,6 @@ jobs:
       docker-image-name-moodle: wa-moodle
       docker-image-name-install: wa-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      web-app-name-moodle: ${{ github.event.inputs.instance == 'None' && '' || 'wa-moodle-primary' }}
-      web-app-name-install: ${{ github.event.inputs.instance == 'None' && '' || 'wa-moodle-install' }}
+      web-app-name-moodle: ${{ github.event.inputs.instance == 'None' && '' || 'moodle-primary' }}
+      web-app-name-install: ${{ github.event.inputs.instance == 'None' && '' || 'moodle-install' }}
       moodle-instance: primary
