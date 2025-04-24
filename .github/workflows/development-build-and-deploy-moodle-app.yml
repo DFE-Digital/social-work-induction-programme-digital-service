@@ -1,8 +1,17 @@
-name: Build Moodle apps (optionally deploy to dev)
+name: Build Moodle apps (optionally deploy to non-prod)
 
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: "Azure deployment environment"
+        required: true
+        default: Dev
+        type: choice
+        options:
+          - Dev
+          - Dev02
+
       deploy_instance:
         description: "Dev environment deployment instance"
         required: true
@@ -19,6 +28,7 @@ jobs:
     uses: ./.github/workflows/build-moodle-images.yml
     secrets: inherit
     with:
+      environment: ${{ github.event.inputs.environment }}
       docker-image-name-moodle: wa-moodle
       docker-image-name-install: wa-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"

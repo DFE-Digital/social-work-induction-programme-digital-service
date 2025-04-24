@@ -3,6 +3,9 @@ name: Build Image and Publish to ACR - Optionally Deploy to Dev
 on:
   workflow_call:
     inputs:
+      environment:
+        type: string
+        required: true
       docker-image-name-moodle:
         type: string
         required: true
@@ -29,7 +32,7 @@ concurrency:
 jobs:
   build-image:
     runs-on: ubuntu-24.04
-    environment: Dev
+    environment: ${{ inputs.environment }}
     name: Build & Publish Image
     # Permissions for OIDC authentication
     permissions:
@@ -40,7 +43,7 @@ jobs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     env:
-      ENVIRONMENT: Dev
+      ENVIRONMENT: ${{ inputs.environment }}
       # This will make the secret available to Docker Build
       # Any other secrets that need to be added to Docker Build should also be added here
       AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
