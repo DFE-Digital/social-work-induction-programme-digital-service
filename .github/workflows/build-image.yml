@@ -30,11 +30,9 @@ on:
       app-secret-names:
         description: |
           New-line-separated list of Key Vault secret names
-          (must line up 1-for-1 with secret-values)
       app-secret-values:
         description: |
-          New-line-separated list of secret values,
-          **use GitHub Secrets here** (same order as secret-names)
+          New-line-separated list of secret values (same order as secret-names)
       web-app-name:
         type: string
         default: ''

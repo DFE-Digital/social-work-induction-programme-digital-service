@@ -110,7 +110,7 @@ resource "azurerm_private_dns_a_record" "dns_a_postgres" {
 }
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name            = "postgresql--admin--password"
+  name            = "Database-AdminPassword"
   value           = azurerm_postgresql_flexible_server.swipdb.administrator_password
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "password"

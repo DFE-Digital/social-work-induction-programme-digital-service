@@ -5,8 +5,9 @@ COPY src/Dfe.Sww.Ecf.Cli/bin/Release/net8.0/publish/ Apps/EcfCli/
 COPY src/Dfe.Sww.Ecf.AuthorizeAccess/bin/Release/net8.0/publish/ Apps/AuthorizeAccess/
 RUN rm Apps/AuthorizeAccess/appsettings.*
 COPY src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Production.json Apps/AuthorizeAccess/appsettings.json
-
 WORKDIR /Apps
+COPY entry-point.sh ./entry-point.sh
+RUN chmod +x entry-point.sh
 
 # Install culture prerequisities
 RUN apk add --no-cache \
@@ -43,6 +44,7 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
 ENV PATH="${PATH}:/Apps/EcfCli"
 ENV ASPNETCORE_HTTP_PORTS=80
 
-ENTRYPOINT ["dotnet","/Apps/AuthorizeAccess/Dfe.Sww.Ecf.AuthorizeAccess.dll"]
+ENTRYPOINT ["/Apps/entry-point.sh"]
+CMD ["dotnet","/Apps/AuthorizeAccess/Dfe.Sww.Ecf.AuthorizeAccess.dll"]
 
 EXPOSE 80
