@@ -162,3 +162,9 @@ variable "one_login_client_id" {
   description = "One Login client ID"
   type        = string
 }
+
+variable "create_and_own_container_registry" {
+  description = "Whether the environment should create an own the container registry"
+  type        = bool
+  default     = false
+}

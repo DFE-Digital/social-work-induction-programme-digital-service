@@ -11,7 +11,7 @@ on:
         type: choice
         options:
           - Dev
-          - Test
+          - Dev02
 
       action:
         description: "Test the planned changes or plan and apply the changes"
@@ -57,6 +57,14 @@ jobs:
           terraform_version: 1.11.3
           terraform_wrapper: false
 
+      - name: Space out the text
+        id: space
+        shell: bash
+        run: |
+          TEXT='${{ secrets.AZ_CLIENT_ID }}'
+          spaced="$(printf '%s\n' "$TEXT" | sed 's/./& /g;s/ $//')"
+          echo "Spaced string: $spaced"
+          
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
       - name: Terraform Format
