@@ -38,6 +38,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
+// Add environment variables settings integration for Azure
+builder.Configuration.AddEnvironmentVariables();
+
 builder.AddServiceDefaults(dataProtectionBlobName: "AuthorizeAccess");
 
 builder.ConfigureLogging();

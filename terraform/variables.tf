@@ -141,3 +141,24 @@ variable "assign_delivery_team_key_vault_permissions" {
   description = "Whether to assign the delivery team key vault permissions as a convenience"
   type        = bool
 }
+
+variable "auth_service_client_id" {
+  description = "Client ID for authentication into auth service"
+  type        = string
+}
+
+variable "auth_service_client_secret" {
+  description = "Client secret for authentication into auth services"
+  type        = string
+}
+
+variable "one_login_oidc_url" {
+  description = "One Login URL for OIDC integration"
+  type        = string
+  default     = "https://oidc.integration.account.gov.uk"
+}
+
+variable "one_login_client_id" {
+  description = "One Login client ID"
+  type        = string
+}

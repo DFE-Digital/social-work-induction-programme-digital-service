@@ -1,6 +1,6 @@
 locals {
   moodle_webapp_name_stem    = "${var.resource_name_prefix}-wa-moodle"
-  moodle_webapp_db_name_stem = "${var.resource_name_prefix}-db-wa-moodle"
+  moodle_webapp_db_name_stem = "${var.resource_name_prefix}-db-moodle"
 
   moodle_instance_resource_naming = {
     for instance in keys(var.moodle_instances) : instance => {
