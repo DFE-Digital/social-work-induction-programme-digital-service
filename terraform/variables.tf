@@ -68,9 +68,20 @@ variable "days_to_expire" {
   type        = string
 }
 
+variable "create_and_own_container_registry" {
+  description = "Whether the environment should create an own the container registry"
+  type        = bool
+  default     = false
+}
 variable "acr_name" {
   description = "Azure Container Registry name"
   type        = string
+}
+
+variable "acr_resource_group" {
+  description = "Azure Container Registry resource group"
+  type        = string
+  default     = ""
 }
 
 variable "acr_sku" {
@@ -161,10 +172,4 @@ variable "one_login_oidc_url" {
 variable "one_login_client_id" {
   description = "One Login client ID"
   type        = string
-}
-
-variable "create_and_own_container_registry" {
-  description = "Whether the environment should create an own the container registry"
-  type        = bool
-  default     = false
 }

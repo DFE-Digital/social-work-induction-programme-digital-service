@@ -4,7 +4,7 @@
 data "azurerm_container_registry" "acr_data" {
   count               = var.create_and_own_container_registry ? 0 : 1
   name                = var.acr_name
-  resource_group_name = module.stack.resource_group_name
+  resource_group_name = var.acr_resource_group
 }
 
 resource "azurerm_container_registry" "acr" {
