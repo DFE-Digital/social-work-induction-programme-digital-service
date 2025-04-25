@@ -4,9 +4,11 @@
 environment_tag = "Dev"
 azure_region = "westeurope"
 environment = "development"
-resource_name_prefix = "${project_code}d01"
-primary_resource_group = "${project_code}d01-swip-rg"
+resource_name_prefix = "${project_code}d02"
+primary_resource_group = "${project_code}d02-swip-rg"
 acr_name = "${project_code}d01acr"
+# The container registry is shared from the d01 instance
+acr_resource_group = "${project_code}d01-swip-rg"
 acr_sku = "Basic"
 admin_enabled = false
 asp_sku_moodle = "B2"
