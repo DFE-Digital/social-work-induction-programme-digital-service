@@ -3,6 +3,15 @@ name: Build auth service (optionally deploy to dev)
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: "Azure deployment environment"
+        required: true
+        default: Dev
+        type: choice
+        options:
+          - Dev
+          - Dev02
+
       deploy:
         description: Deploy to dev environment?
         required: true
@@ -17,12 +26,12 @@ defaults:
     working-directory: ./apps/auth-service
 
 env:
-  ENVIRONMENT: Dev
+  ENVIRONMENT: ${{ inputs.environment }}
 
 jobs:
   build-image:
     runs-on: ubuntu-24.04
-    environment: Dev
+    environment: ${{ inputs.environment }}
     name: Build & Publish Image
     # Permissions for OIDC authentication
     permissions:
@@ -33,7 +42,7 @@ jobs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     env:
-      ENVIRONMENT: Dev
+      ENVIRONMENT: ${{ inputs.environment }}
       # This will make the secret available to Docker Build
       # Any other secrets that need to be added to Docker Build should also be added here
       AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}

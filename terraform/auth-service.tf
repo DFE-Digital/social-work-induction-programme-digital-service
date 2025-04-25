@@ -59,7 +59,7 @@ module "auth_service" {
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_services_id
-  acr_id                    = azurerm_container_registry.acr.id
+  acr_id                    = local.acr_id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
   service_plan_id           = module.stack.services_service_plan_id
