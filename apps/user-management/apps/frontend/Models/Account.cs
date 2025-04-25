@@ -60,6 +60,8 @@ public record Account
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; init; }
 
+    public int? ExternalUserId { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
@@ -75,5 +77,6 @@ public record Account
         Status = account.Status;
         Types = account.Types;
         SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+        ExternalUserId = account.ExternalUserId;
     }
 }

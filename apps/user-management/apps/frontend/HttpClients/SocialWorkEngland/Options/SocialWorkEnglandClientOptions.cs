@@ -2,7 +2,7 @@
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Options;
 
-public class SocialWorkEnglandClientOptions : HttpClientOptions
+public class SocialWorkEnglandClientOptions : OAuthHttpClientOptions
 {
     public required SweApiRoutes Routes { get; init; }
 

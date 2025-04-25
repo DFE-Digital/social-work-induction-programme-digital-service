@@ -30,6 +30,8 @@ public class AccountDetails
 
     public string? SocialWorkEnglandNumber { get; init; }
 
+    public int? ExternalUserId { get; set; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
@@ -37,7 +39,8 @@ public class AccountDetails
             FirstName = account.FirstName,
             LastName = account.LastName,
             Email = account.Email,
-            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber
+            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
+            ExternalUserId = account.ExternalUserId
         };
     }
 }

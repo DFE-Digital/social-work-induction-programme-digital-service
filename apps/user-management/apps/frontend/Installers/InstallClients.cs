@@ -7,6 +7,9 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
@@ -64,6 +67,9 @@ public static class InstallClients
         services
             .AddHttpClient<AuthClientOptions, IAuthServiceClient, AuthServiceClient>()
             .AddHttpMessageHandler<OidcAuthenticationDelegatingHandler>();
+
+        // Moodle Service Client
+        services.AddHttpClient<MoodleClientOptions, IMoodleServiceClient, MoodleServiceClient>();
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(

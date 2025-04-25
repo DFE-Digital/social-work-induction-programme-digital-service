@@ -2,4 +2,4 @@
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 
-public class AuthClientOptions : HttpClientOptions { }
+public class AuthClientOptions : OAuthHttpClientOptions { }

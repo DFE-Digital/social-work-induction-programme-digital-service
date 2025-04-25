@@ -61,7 +61,8 @@ public class AccountService(
                 SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
                 Roles = account.Types ?? [],
                 Status = account.Status,
-                OrganisationId = new Guid(organisationId)
+                OrganisationId = new Guid(organisationId),
+                ExternalUserId = account.ExternalUserId
             }
         );
 
