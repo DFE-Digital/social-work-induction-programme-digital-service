@@ -1,16 +1,17 @@
-name: Build Moodle apps (optionally deploy to dev)
+name: Build Moodle apps (optionally deploy to non-prod)
 
 on:
   workflow_dispatch:
     inputs:
-      deploy_instance:
-        description: "Dev environment deployment instance"
+      instance:
+        description: "Environment instance"
         required: true
-        default: none - no deploy
+        default: None
         type: choice
         options:
-          - none - no deploy
-          - primary
+          - None
+          - d01
+          - d02
 
 jobs:
 
@@ -19,9 +20,11 @@ jobs:
     uses: ./.github/workflows/build-moodle-images.yml
     secrets: inherit
     with:
+      environment: ${{ github.event.inputs.instance == 'None' && '' || 'Dev' }}
+      environment-instance: ${{ github.event.inputs.instance }}
       docker-image-name-moodle: wa-moodle
       docker-image-name-install: wa-install
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      web-app-name-moodle: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || format('wa-moodle-{0}', github.event.inputs.deploy_instance) }}
-      web-app-name-install: ${{ github.event.inputs.deploy_instance == 'none - no deploy' && '' || 'wa-moodle-install' }}
-      moodle-instance: ${{ github.event.inputs.deploy_instance }}
+      web-app-name-moodle: ${{ github.event.inputs.instance == 'None' && '' || 'moodle-primary' }}
+      web-app-name-install: ${{ github.event.inputs.instance == 'None' && '' || 'moodle-install' }}
+      moodle-instance: primary

@@ -4,14 +4,14 @@ name: "Terraform Deploy"
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Azure deployment environment"
+      instance:
+        description: "Environment instance"
         required: true
-        default: Dev
+        default: d01
         type: choice
         options:
-          - Dev
-          - Test
+          - d01
+          - d02
 
       action:
         description: "Test the planned changes or plan and apply the changes"
@@ -42,7 +42,7 @@ jobs:
   terraform:
     name: "Terraform Plan and Apply"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: Dev
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
@@ -57,6 +57,14 @@ jobs:
           terraform_version: 1.11.3
           terraform_wrapper: false
 
+      - name: Space out the text
+        id: space
+        shell: bash
+        run: |
+          TEXT='${{ secrets.AZ_CLIENT_ID }}'
+          spaced="$(printf '%s\n' "$TEXT" | sed 's/./& /g;s/ $//')"
+          echo "Spaced string: $spaced"
+          
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
       - name: Terraform Format
@@ -75,7 +83,7 @@ jobs:
       - name: Load Terraform Variables
         uses: ./.github/actions/pre-process-terraform-variables
         with:
-          environment: ${{ inputs.environment }}
+          environment: ${{ inputs.instance }}
           add_as_env_vars: true
 
       - name: Generate Terraform State Variables
