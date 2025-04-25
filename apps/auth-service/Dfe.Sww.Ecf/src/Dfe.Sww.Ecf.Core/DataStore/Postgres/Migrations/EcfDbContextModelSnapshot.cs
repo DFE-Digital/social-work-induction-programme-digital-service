@@ -281,6 +281,10 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("email_address")
                         .UseCollation("case_insensitive");
 
+                    b.Property<int?>("ExternalUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("external_user_id");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -300,10 +304,6 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("middle_name")
                         .UseCollation("case_insensitive");
-
-                    b.Property<int?>("MoodleUserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("moodle_user_id");
 
                     b.Property<string>("NationalInsuranceNumber")
                         .HasMaxLength(9)

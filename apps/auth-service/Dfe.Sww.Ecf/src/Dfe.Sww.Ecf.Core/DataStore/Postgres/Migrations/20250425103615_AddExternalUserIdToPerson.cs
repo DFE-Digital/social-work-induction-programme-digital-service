@@ -5,13 +5,13 @@
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMoodleUserIdToPerson : Migration
+    public partial class AddExternalUserIdToPerson : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "moodle_user_id",
+                name: "external_user_id",
                 table: "persons",
                 type: "integer",
                 nullable: true);
@@ -21,7 +21,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "moodle_user_id",
+                name: "external_user_id",
                 table: "persons");
         }
     }

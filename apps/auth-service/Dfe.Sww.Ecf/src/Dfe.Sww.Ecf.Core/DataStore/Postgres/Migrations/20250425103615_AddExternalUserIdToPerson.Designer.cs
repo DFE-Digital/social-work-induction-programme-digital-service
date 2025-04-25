@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
-    [Migration("20250425093657_AddMoodleUserIdToPerson")]
-    partial class AddMoodleUserIdToPerson
+    [Migration("20250425103615_AddExternalUserIdToPerson")]
+    partial class AddExternalUserIdToPerson
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -284,6 +284,10 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("email_address")
                         .UseCollation("case_insensitive");
 
+                    b.Property<int?>("ExternalUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("external_user_id");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -303,10 +307,6 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("middle_name")
                         .UseCollation("case_insensitive");
-
-                    b.Property<int?>("MoodleUserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("moodle_user_id");
 
                     b.Property<string>("NationalInsuranceNumber")
                         .HasMaxLength(9)

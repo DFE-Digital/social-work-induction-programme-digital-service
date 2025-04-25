@@ -29,7 +29,7 @@ public partial class TestData
                 CreatedOn = Clock.UtcNow,
                 Status = createPersonResult.Status,
                 PersonOrganisations = createPersonResult.PersonOrganisations,
-                MoodleUserId = createPersonResult.MoodleUserId
+                ExternalUserId = createPersonResult.ExternalUserId
             };
 
             if (addToDb is not true)
@@ -69,7 +69,7 @@ public partial class TestData
         private string? _nationalInsuranceNumber;
         private PersonStatus? _status;
         private Guid _organisationId;
-        private int _moodleUserId;
+        private int _externalUserId;
 
         public Guid PersonId { get; } = Guid.NewGuid();
 
@@ -233,14 +233,14 @@ public partial class TestData
             return this;
         }
 
-        public CreatePersonBuilder WithMoodleUserId(int moodleUserId)
+        public CreatePersonBuilder WithExternalUserId(int externalUserId)
         {
-            if (_moodleUserId != moodleUserId)
+            if (_externalUserId != externalUserId)
             {
-                throw new InvalidOperationException("WithMoodleUserId cannot be changed after it's set.");
+                throw new InvalidOperationException("WithExternalUserId cannot be changed after it's set.");
             }
 
-            _moodleUserId = moodleUserId;
+            _externalUserId = externalUserId;
             return this;
         }
 
@@ -308,7 +308,7 @@ public partial class TestData
         public PersonStatus Status { get; init; }
         public List<PersonOrganisation> PersonOrganisations { get; init; } = [];
 
-        public int? MoodleUserId { get; set; }
+        public int? ExternalUserId { get; set; }
 
         public Person ToPerson() =>
             new Person
@@ -324,7 +324,7 @@ public partial class TestData
                 CreatedOn = CreatedOn,
                 UpdatedOn = UpdatedOn,
                 Status = Status,
-                MoodleUserId = MoodleUserId
+                ExternalUserId = ExternalUserId
             };
 
         public PersonDto ToPersonDto() => ToPerson().ToDto();
