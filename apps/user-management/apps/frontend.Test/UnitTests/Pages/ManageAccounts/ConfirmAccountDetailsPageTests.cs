@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -18,6 +19,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut = new ConfirmAccountDetails(
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
+            MockMoodleServiceClient.Object,
             new FakeLinkGenerator()
         )
         {
@@ -99,14 +101,38 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync());
 
+        var createUserRequest = new CreateMoodleUserRequest
+        {
+            Username = updatedAccountDetails.Email,
+            Email = updatedAccountDetails.Email,
+            FirstName = updatedAccountDetails.FirstName,
+            LastName = updatedAccountDetails.LastName
+        };
+        MockMoodleServiceClient
+            .Setup(x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)))
+            .ReturnsAsync(
+                new CreateMoodleUserResponse
+                {
+                    Id = 1,
+                    Username = "test",
+                    Successful = true
+                }
+            );
+
         // Act
         var result = await Sut.OnPostAsync();
 
         // Assert
-        result.Url.Should().Be("/manage-accounts");
+        var response = result as RedirectResult;
+        response.Should().NotBeNull();
+        response!.Url.Should().Be("/manage-accounts");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockMoodleServiceClient.Verify(
+            x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
+            Times.Once
+        );
         VerifyAllNoOtherCalls();
     }
 

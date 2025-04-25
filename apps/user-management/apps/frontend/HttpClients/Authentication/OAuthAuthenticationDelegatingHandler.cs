@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 
 public class OAuthAuthenticationDelegatingHandler<TOptions> : DelegatingHandler
-    where TOptions : HttpClientOptions
+    where TOptions : OAuthHttpClientOptions
 {
     private const string TokenEndpoint = "connect/token";
 

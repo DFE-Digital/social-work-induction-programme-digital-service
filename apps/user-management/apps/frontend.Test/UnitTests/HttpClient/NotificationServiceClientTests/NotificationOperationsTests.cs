@@ -89,13 +89,7 @@ public class NotificationOperationsTests
                 new NotificationClientOptions
                 {
                     BaseUrl = "http://localhost",
-                    Routes = new() { Notification = new() { SendEmail = route } },
-                    ClientCredentials = new ClientCredentials
-                    {
-                        ClientId = string.Empty,
-                        ClientSecret = string.Empty,
-                        AccessTokenUrl = string.Empty
-                    }
+                    Routes = new() { Notification = new() { SendEmail = route } }
                 }
             );
 

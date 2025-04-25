@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -12,6 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
+    IMoodleServiceClient moodleServiceClient,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
@@ -90,12 +93,32 @@ public class ConfirmAccountDetails(
     /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
-    public async Task<RedirectResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
+        if (accountDetails is null)
+        {
+            return BadRequest();
+        }
+
+        var moodleRequest = new CreateMoodleUserRequest
+        {
+            Username = accountDetails.Email,
+            Email = accountDetails.Email,
+            FirstName = accountDetails.FirstName,
+            LastName = accountDetails.LastName
+        };
+        var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
+        if (response.Successful == false)
+        {
+            return BadRequest();
+        }
+
+        createAccountJourneyService.SetExternalUserId(response.Id);
+
         await createAccountJourneyService.CompleteJourneyAsync();
 
-        TempData["NotifyEmail"] = accountDetails?.Email;
+        TempData["NotifyEmail"] = accountDetails.Email;
         TempData["NotificationBannerSubject"] = "Account was successfully added";
 
         return Redirect(linkGenerator.ManageAccounts());

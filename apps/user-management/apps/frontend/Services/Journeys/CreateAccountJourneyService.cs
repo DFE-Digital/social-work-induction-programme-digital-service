@@ -2,6 +2,7 @@
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
@@ -19,6 +20,7 @@ public class CreateAccountJourneyService(
     IOptions<EmailTemplateOptions> emailTemplateOptions,
     IAuthServiceClient authServiceClient,
     IAccountService accountService,
+    IMoodleServiceClient moodleServiceClient,
     EcfLinkGenerator linkGenerator
 ) : ICreateAccountJourneyService
 {
@@ -74,6 +76,13 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsStaff = isStaff;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public void SetExternalUserId(int? externalUserId)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.ExternalUserId = externalUserId;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 

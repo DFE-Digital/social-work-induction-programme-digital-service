@@ -13,6 +13,8 @@ public class CreateAccountJourneyModel
 
     public SocialWorker? SocialWorkerDetails { get; set; }
 
+    public int? ExternalUserId { get; set; }
+
     public Account ToAccount()
     {
         return new Account
@@ -27,7 +29,8 @@ public class CreateAccountJourneyModel
             FirstName = AccountDetails?.FirstName,
             LastName = AccountDetails?.LastName,
             Types = AccountTypes,
-            SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber
+            SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
+            ExternalUserId = ExternalUserId
         };
     }
 }

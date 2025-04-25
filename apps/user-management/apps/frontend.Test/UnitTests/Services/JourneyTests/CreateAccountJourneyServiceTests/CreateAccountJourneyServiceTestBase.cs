@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -23,6 +24,8 @@ public abstract class CreateAccountJourneyServiceTestBase
     private protected MockEmailTemplateOptions MockEmailTemplateOptions { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }
 
+    private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; }
+
     private protected CreateAccountJourneyService Sut;
 
     protected CreateAccountJourneyServiceTestBase()
@@ -43,6 +46,7 @@ public abstract class CreateAccountJourneyServiceTestBase
         MockNotificationServiceClient = new MockNotificationServiceClient();
         MockEmailTemplateOptions = new MockEmailTemplateOptions();
         MockAuthServiceClient = new MockAuthServiceClient();
+        MockMoodleServiceClient = new Mock<IMoodleServiceClient>();
 
         Sut = new CreateAccountJourneyService(
             httpContextAccessor,
@@ -50,6 +54,7 @@ public abstract class CreateAccountJourneyServiceTestBase
             MockEmailTemplateOptions.Object,
             MockAuthServiceClient.Object,
             MockAccountService.Object,
+            MockMoodleServiceClient.Object,
             new FakeLinkGenerator()
         );
     }
@@ -60,5 +65,6 @@ public abstract class CreateAccountJourneyServiceTestBase
         MockEmailTemplateOptions.VerifyNoOtherCalls();
         MockAuthServiceClient.VerifyNoOtherCalls();
         MockAccountService.VerifyNoOtherCalls();
+        MockMoodleServiceClient.VerifyNoOtherCalls();
     }
 }
