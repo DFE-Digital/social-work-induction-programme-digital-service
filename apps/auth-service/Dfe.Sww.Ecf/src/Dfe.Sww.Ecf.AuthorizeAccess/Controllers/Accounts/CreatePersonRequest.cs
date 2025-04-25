@@ -14,6 +14,7 @@ public record CreatePersonRequest
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
     public Guid OrganisationId { get; init; }
+    public int? MoodleUserId { get; set; }
 }
 
 public static class CreatePersonRequestExtensions
@@ -32,7 +33,7 @@ public static class CreatePersonRequestExtensions
             PersonOrganisations = new List<PersonOrganisation>
             {
                 new() { OrganisationId = request.OrganisationId }
-            }
-
+            },
+            MoodleUserId = request.MoodleUserId
         };
 }
