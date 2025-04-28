@@ -1,0 +1,125 @@
+name: Build Moodle apps (optionally deploy to non-prod)
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish-moodle-image:
+    name: Build and Publish Moodle Image
+    runs-on: ubuntu-24.04
+    # Permissions for OIDC Azure authentication (az login)
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    environment: Dev
+    env:
+      # This will make the secret available to Docker Build
+      # Any other secrets that need to be added to Docker Build should also be added here
+      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+    outputs:
+      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
+      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Build and publish Moodle image
+        id: build-publish
+        uses: ./.github/actions/build-and-publish-image
+        with:
+          environment: Dev
+          environment-instance: ${{ github.event.inputs.instance == 'None' && 'd01' || github.event.inputs.instance }}
+          pre-build-script: ./apps/moodle-apps-azure/pre-docker-build.sh
+          docker-build-folder: ./apps/moodle-apps-azure
+          docker-image-name: wa-moodle
+          base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
+          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }}"
+          build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+          build-target: moodle-app
+
+      - name: Return outputs
+        id: return
+        shell: bash
+        env:
+          STANDARD_IMAGE_TAG: ${{ steps.build-publish.outputs.docker-image-tag }}
+        run: |
+          echo "docker-image-tag=$STANDARD_IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Returned as a convenience if the caller wants to subsequently deploy to dev
+          echo "dev-resource-name-prefix=${{ env.RESOURCE_NAME_PREFIX }}" >> $GITHUB_OUTPUT
+
+  optional-deploy-moodle-app:
+    needs: build-and-publish-moodle-image
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Moodle App (optional)
+    runs-on: ubuntu-24.04
+    # Permissions for OIDC Azure authentication (az login)
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    environment: Dev
+    env:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Deploy moodle app
+        uses: ./.github/actions/deploy-app-service
+        with:
+          web-app-name: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-primary
+          image-tag: ${{ needs.build-and-publish-moodle-image.outputs.docker-image-tag }}
+
+  optional-deploy-moodle-cron-app:
+    needs: build-and-publish-moodle-image
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Moodle Cron App (optional)
+    runs-on: ubuntu-24.04
+    # Permissions for OIDC Azure authentication (az login)
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    environment: Dev
+    env:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Deploy moodle cron app
+        uses: ./.github/actions/deploy-app-service
+        with:
+          web-app-name: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-cron
+          image-tag: ${{ needs.build-and-publish-moodle-image.outputs.docker-image-tag }}

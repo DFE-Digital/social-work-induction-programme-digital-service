@@ -1,8 +1,12 @@
 name: Checkov
 on:
-  push:
+  # Only run the terraform linting on PR to main - otherwise wastes build resources
+  # as it also runs as part of terraform deploy on any branch
+  pull_request:
+    branches:
+      - main
     paths:
-      - "terraform/**"
+      - 'terraform/**'
 
 jobs:
   build:

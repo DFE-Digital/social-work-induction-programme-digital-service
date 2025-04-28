@@ -44,6 +44,9 @@ $CFG->directorypermissions = 02777;
 
 $CFG->theme = 'govuk';
 
+// The Moodle instances should NOT run their own cron jobs
+$CFG->cronclionly = true;
+
 require_once(__DIR__ . '/lib/setup.php');
 
 // There is no php closing tag in this file,

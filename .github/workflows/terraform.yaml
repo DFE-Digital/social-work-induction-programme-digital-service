@@ -56,14 +56,6 @@ jobs:
           # Terraform is pinned to the version below - this should be reviewed regularly
           terraform_version: 1.11.3
           terraform_wrapper: false
-
-      - name: Space out the text
-        id: space
-        shell: bash
-        run: |
-          TEXT='${{ secrets.AZ_CLIENT_ID }}'
-          spaced="$(printf '%s\n' "$TEXT" | sed 's/./& /g;s/ $//')"
-          echo "Spaced string: $spaced"
           
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not

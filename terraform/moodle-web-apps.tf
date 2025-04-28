@@ -40,6 +40,7 @@ module "web_app_moodle" {
   app_settings = {
     "ENVIRONMENT"                         = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "IS_CRON_JOB_ONLY"                    = "false"
     "POSTGRES_DB"                         = each.value.db_name
     "POSTGRES_USER"                       = module.stack.postgres_username
     "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
@@ -50,7 +51,7 @@ module "web_app_moodle" {
     "MOODLE_DOCKER_SSL_TERMINATION"       = "true"
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
-    "MOODLE_ADMIN_USER"                   = "${var.moodle_admin_user}"
+    "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
@@ -61,16 +62,16 @@ module "web_app_moodle" {
   ]
 }
 
-# One install webapp handles multiple moodle instances in the same logical environment
-module "web_app_moodle_install" {
+# The cron app service works just for the primary Moodle instance
+module "web_app_moodle_cron" {
   source                    = "./modules/web-app"
   tenant_id                 = data.azurerm_client_config.az_config.tenant_id
   environment               = var.environment
   location                  = var.azure_region
   resource_group            = module.stack.resource_group_name
   resource_name_prefix      = var.resource_name_prefix
-  web_app_name              = "${local.moodle_webapp_name_stem}-install"
-  web_app_short_name        = "wa-moodle-install"
+  web_app_name              = "${local.moodle_webapp_name_stem}-cron"
+  web_app_short_name        = "wa-moodle-cron"
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_maintenance_id
@@ -86,6 +87,7 @@ module "web_app_moodle_install" {
 
   app_settings = {
     "ENVIRONMENT"                         = var.environment
+    "IS_CRON_JOB_ONLY"                    = "true"
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "POSTGRES_DB"                         = "${local.moodle_webapp_db_name_stem}-primary"
     "POSTGRES_USER"                       = module.stack.postgres_username
@@ -93,11 +95,11 @@ module "web_app_moodle_install" {
     "MOODLE_DB_TYPE"                      = var.moodle_db_type
     "MOODLE_DB_HOST"                      = module.stack.postgres_db_host
     "MOODLE_DB_PREFIX"                    = var.moodle_db_prefix
-    "MOODLE_DOCKER_WEB_HOST"              = "${local.moodle_webapp_name_stem}-install.azurewebsites.net"
+    "MOODLE_DOCKER_WEB_HOST"              = "${local.moodle_webapp_name_stem}-primary.azurewebsites.net"
     "MOODLE_DOCKER_SSL_TERMINATION"       = "true"
     "MOODLE_SITE_FULLNAME"                = var.moodle_site_fullname
     "MOODLE_SITE_SHORTNAME"               = var.moodle_site_shortname
-    "MOODLE_ADMIN_USER"                   = "${var.moodle_admin_user}"
+    "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
