@@ -1,4 +1,4 @@
-name: Build auth service (optionally deploy to dev) 
+name: Build auth service (optionally deploy to non-prod) 
 
 on:
   workflow_dispatch:
@@ -21,6 +21,10 @@ on:
           - No
           - Yes
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: ./apps/auth-service
@@ -38,9 +42,6 @@ jobs:
       id-token: write
       contents: write
       issues: write
-    outputs:
-      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
-      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     env:
       ENVIRONMENT: ${{ inputs.environment }}
       # This will make the secret available to Docker Build

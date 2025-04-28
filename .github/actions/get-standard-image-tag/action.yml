@@ -1,0 +1,48 @@
+name: Get standard image tag
+description: Get a standard formatted string suitable for tagging an image
+
+inputs:
+  acr-name:
+    type: string
+    required: true
+    description: Name of Azure Container Registry, e.g. s205d01acr
+  org-name:
+    type: string
+    default: dfe-digital
+  project-name:
+    type: string
+    default: swip-digital-service
+  base-image-version: 
+    description: Prefix string to be used as part of tag
+    default: ''
+  docker-image-name:
+    type: string
+    required: true
+    description: Name of docker image to be included in tag
+
+outputs:
+  standard-image-tag:
+    description: 
+    value: ${{ steps.get-standard-image-tag.outputs.standard-image-tag }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Get standard image tag
+      id: get-standard-image-tag
+      shell: bash
+      run: |
+        COMMIT_HASH=${{ github.sha }}
+        COMMIT_HASH_SHORT="${COMMIT_HASH:0:7}"
+        BUILD_DATE=$(date +%Y%m%d)
+        if [[ -n "${{ inputs.base-image-version }}" ]]; then
+          BASE_VERSION="${{ inputs.base-image-version }}-"
+        fi
+        echo COMMIT_HASH_SHORT="$COMMIT_HASH_SHORT" >> $GITHUB_ENV
+        STANDARD_IMAGE_TAG="${{ inputs.acr-name }}.azurecr.io/${{ inputs.org-name }}-${{inputs.project-name}}/${{ inputs.docker-image-name }}:$BASE_VERSION$BUILD_DATE.$COMMIT_HASH_SHORT"
+        if [[ "${{ github.ref_name }}" != "main" ]]; then
+          STANDARD_IMAGE_TAG="$STANDARD_IMAGE_TAG.dev"
+        fi
+        echo "standard-image-tag=$STANDARD_IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "Standard image tag for: ${{ inputs.docker-image-name }} - $STANDARD_IMAGE_TAG"

@@ -42,9 +42,6 @@ RUN echo "Starting Moodle CLI installation..." \
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
-# Install tools needed for cloning, downloading, and unzipping.
-USER root
-
 # The theme script below runs the Moodle upgrade script from public/...
 WORKDIR /var/www/html
 
@@ -65,76 +62,15 @@ RUN chmod +x install-theme \
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS moodle-app
 
-WORKDIR /var/www/html/public
-
-USER www-data
-
-# Copy the pruned Moodle source / downloaded theme / data
-COPY --from=full-moodle-builder --chown=www-data:www-data /var/www/ /var/www
-
-# Copy custom config.php into the correct location
-COPY config.php ./config.php
-# Re-enable if DB connectivity tracing is required
-#COPY dmllib.trace.php ./lib/dmllib.php
-
-# Needs to run as root for various standard mount point permissions in Azure
-# Apache is configured to run as www-data
-USER root
-
-COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
-
-RUN mkdir -p /app
-COPY entry-point-moodle.sh /app/entry-point.sh
-RUN chmod +x /app/entry-point.sh
-
-CMD ["/app/entry-point.sh"]
-
-EXPOSE 80
-
-#######################################################################################
-# Stage 1.5: Moodle installer app for Azure. Derived from fully installed base Moodle #
-#            app. Will install additional themes and plugins. We need to do this      #
-#            because those themes and plug-ins may also update the database and we    #
-#            need to keep the Azure db in sync.                                       #
-#######################################################################################
-
-FROM moodlehq/moodle-php-apache:8.3-bookworm AS install-app
-
 ARG AZURE_KUDU_SSH_USER
-
-USER root
+ARG FULL_TAG
 
 WORKDIR /var/www/html/public
 
-# Copy the pruned / installed Moodle source
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodle/ .
-
-# Copy the moodledata directory created during the install
-COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodledata/ /var/www/moodledata/
-
-# Copy the custom GOVUK theme - but don't install - this will be done at install time
-# when the Azure DB is accessible
-COPY install-theme install-theme
-RUN chmod +x install-theme \
-    && ./install-theme default --copy-only \
-    && chown -R www-data:www-data /var/www/html/public/theme \
-    && rm install-theme
-
-USER www-data
-
-# Copy custom config.php into the correct location
-COPY config.php ./config.php
-# Re-enable if DB connectivity tracing is required
-#COPY dmllib.trace.php ./lib/dmllib.php
-
-COPY index.html /var/www/html/public/index.html
-
-USER root
-
-# Mandatory tools for installation + remote SSH
+# Mandatory tools for remote SSH
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-client \
     openssh-server \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -147,21 +83,40 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
     && chmod 0755 /var/run/sshd \
     && cd /etc/ssh/ \
     && ssh-keygen -A
-        
-# Helpful tools for remote debug via SSH
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    iputils-ping \
-    dnsutils \
-    net-tools \
-    traceroute \
-    && rm -rf /var/lib/apt/lists/*
 
-# Custom installation entry point - will run the entire install process
-COPY entry-point-install.sh /app/entry-point.sh
-RUN chmod +x /app/entry-point.sh
-    
-# Need to be root to update the apache config file and for Azure
-COPY apache-config-install.conf /etc/apache2/sites-available/000-default.conf
+# Copy the pruned Moodle source / downloaded theme / data
+COPY --from=full-moodle-builder --chown=www-data:www-data /var/www/ /var/www
+
+# Copy custom config.php into the correct location
+COPY config.php ./config.php
+
+# Convenient way of checking / ensuring tag version
+RUN echo "$FULL_TAG" > version.txt
+
+# Re-enable if DB connectivity tracing is required
+#COPY dmllib.trace.php ./lib/dmllib.php
+
+# Needs to run as root for various standard mount point permissions in Azure
+# Apache is configured to run as www-data
+USER root
+
+# The maintain moodle script allows us to upgrade the moodle database at deployment time
+RUN mkdir -p /app
+COPY entry-point.sh /app/entry-point.sh
+COPY maintain-moodle.sh /app/maintain-moodle.sh
+RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh
+
+# Default config is full-blown moodle instance - if not the case, the entry point script
+# will override this with the cron config
+COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
+COPY apache-config-cron.conf /app/apache-config-cron.conf
+COPY moodle-cron /app/moodle-cron
+
+# Give the cron job some html to serve - the cron job service is still an app service
+# and needs to serve something
+RUN mkdir -p /var/www/html/cron
+COPY index.html /var/www/html/cron/index.html
+RUN chown -R www-data:www-data /var/www/html/cron
 
 CMD ["/app/entry-point.sh"]
 

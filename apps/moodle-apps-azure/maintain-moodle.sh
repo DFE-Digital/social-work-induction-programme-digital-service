@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# Get env vars in the Dockerfile to show up in the SSH session
-eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
-
-# Support SSH for troubleshooting
-echo "Starting SSH ..."
-/usr/sbin/sshd
-
-# Start Apache in the background - we start it early so the container can pass http health checks
-echo "Starting Apache ..."
-apache2-foreground &
-APACHE_PID=$!
-
 # PGPASSWORD is used by psql for authentication.
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 PG_CONN="psql -h ${MOODLE_DB_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"

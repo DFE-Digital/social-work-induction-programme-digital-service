@@ -1,0 +1,91 @@
+name: Create App Service Tunnel
+description: Uses the app service to tunnel into an accessible host such as the db server
+
+inputs:
+  app-service-name:
+    required: true
+    description: Name of web app service to tunnel through (requires kudu compatible ssh)
+  resource-group:
+    required: true
+    description: Name of resource group that app service belongs to
+  host-name: 
+    required: true
+    description: Name of the host to tunnel to
+  port:
+    required: true
+    description: Port of the host to tunnel to
+  requires-azure-login:
+    default: false
+
+runs:
+  using: composite
+  env:
+    SSH_PORT=2222
+  steps:
+      - name: Log in to Azure CLI
+        if: ${{ inputs.requires-azure-login == true }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+        # Background a TCP‐over‐WebSocket “remote connection” on port 2222
+      - name: Open SSH tunnel to Web App container
+        id: ssh-tunnel
+        run: |
+          set -euo pipefail
+          az webapp create-remote-connection \
+            --resource-group "${{ inputs.resource-group }}" \
+            --name "${{ inputs.app-service-name }}" \
+            --port $SSH_PORT & 
+          echo $! > az.pid
+
+      - name: Wait for tunnel port to be ready
+        run: |
+          set -euo pipefail
+          echo "Waiting for local SSH tunnel on $SSH_PORT"
+          for i in {1..20}; do
+            if nc -z 127.0.0.1 $SSH_PORT; then
+              echo "Tunnel is up!"
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
+
+      - name: Forward Postgres port through SSH
+        run: |
+          set -euo pipefail
+
+          # open the tunnel (-f) *after* it succeeds (--exit-on-forward-failure)
+          sshpass -p "${{ secrets.AZURE_KUDU_SSH_PASSWORD }}" ssh \
+            -vvv -N \
+            -o ExitOnForwardFailure=yes \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -L ${{ inputs.port }}:${{ inputs.host-name }}:${{ inputs.port }} \
+            -p $SSH_PORT "${{ vars.AZURE_KUDU_SSH_USER }}@127.0.0.1" &
+          echo $! > ssh.pid
+
+          # SSH exits non-zero if the forward failed
+          echo "SSH tunnel established, pid=$(pgrep -f 'ssh .*${{ inputs.port }}')"
+
+          # now actively wait for the local port to be open
+          for i in {1..10}; do
+            if nc -z 127.0.0.1 ${{ inputs.port }}; then
+              echo "Port ${{ inputs.port }} is now listening"
+              break
+            fi
+            sleep 1
+            echo "Waiting for port ${{ inputs.port }}… ($i/10)"
+          done
+
+          # final check
+          nc -z 127.0.0.1 ${{ inputs.port }} \
+            || { echo "ERROR: can't open SSH tunnel to port ${{ inputs.port }}" >&2; exit 1; }
+
+          echo "✅ Tunnel ready: 127.0.0.1:${{ inputs.port }} → remote host ${{ inputs.host-name }}"
