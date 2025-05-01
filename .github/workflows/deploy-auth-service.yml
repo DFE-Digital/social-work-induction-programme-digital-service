@@ -1,0 +1,34 @@
+name: Deploy Auth Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-auth-service:
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Auth Service
+    uses: ./.github/workflows/deploy-app-service.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/auth-service/Dfe.Sww.Ecf
+      # These are app settings which are required to run the db update
+      fetch-web-app-settings: ""
+      app-service-resource-group: s205d01-swip-rg
+      web-app-name: s205d01-wa-auth-service
+      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/auth-service:405-20250429.a6f148f.dev

@@ -11,7 +11,7 @@ locals {
 
 resource "azurerm_postgresql_flexible_server_database" "auth_db" {
   server_id = module.stack.db_server_id
-  name      = "${var.resource_name_prefix}-db-auth-service"
+  name      = "${var.resource_name_prefix}_db_auth_service"
 }
 
 resource "azurerm_key_vault_secret" "auth_service_client_secret" {

@@ -17,82 +17,28 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: ./apps/proxy-app-azure
-
 jobs:
   build-and-publish-proxy-image:
-    runs-on: ubuntu-24.04
-    # Permissions for OIDC Azure authentication (az login)
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-    environment: Dev
-    env:
-      # This will make the secret available to Docker Build
-      # Any other secrets that need to be added to Docker Build should also be added here
-      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-    outputs:
-      docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
-      dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Build and publish proxy image
-        id: build-publish
-        uses: ./.github/actions/build-and-publish-image
-        with:
-          environment: Dev
-          environment-instance: ${{ github.event.inputs.instance == 'None' && 'd01' || github.event.inputs.instance }}
-          docker-build-folder: ./apps/proxy-app-azure
-          docker-image-name: proxy-service
-          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }}"
-          build-secrets: "AZURE_KUDU_SSH_PASSWORD"
-          build-target: proxy-service
-
-      - name: Return outputs
-        id: return
-        shell: bash
-        env:
-          STANDARD_IMAGE_TAG: ${{ steps.build-publish.outputs.docker-image-tag }}
-        run: |
-          echo "docker-image-tag=$STANDARD_IMAGE_TAG" >> $GITHUB_OUTPUT
-          # Returned as a convenience if the caller wants to subsequently deploy to dev
-          echo "dev-resource-name-prefix=${{ env.RESOURCE_NAME_PREFIX }}" >> $GITHUB_OUTPUT
+    name: Build and Publish Proxy Image
+    uses: ./.github/workflows/build-and-publish-image.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/proxy-app-azure
+      docker-image-name: proxy-service
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+      build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+      build-target: proxy-service
 
   optional-deploy-proxy-service:
     needs: build-and-publish-proxy-image
     if: ${{ github.event.inputs.instance != 'None' }}
     name: Deploy Proxy Service (optional)
-    runs-on: ubuntu-24.04
-    # Permissions for OIDC Azure authentication (az login)
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-    environment: Dev
-    env:
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Deploy proxy service
-        uses: ./.github/actions/deploy-app-service
-        with:
-          web-app-name: ${{ needs.build-and-publish-proxy-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
-          image-tag: ${{ needs.build-and-publish-proxy-image.outputs.docker-image-tag }}
+    uses: ./.github/workflows/deploy-app-service.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      web-app-name: ${{ needs.build-and-publish-proxy-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
+      image-tag: ${{ needs.build-and-publish-proxy-image.outputs.docker-image-tag }}

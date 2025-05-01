@@ -1,0 +1,179 @@
+set shell := ["bash", "-e", "-o", "pipefail", "-c"]
+
+default:
+  @just --list
+
+install-tools:
+  # Run temporary postgres DB in the background for the build process
+  # Moodle requires this for upgrading, so we provide it for the install as well
+  @docker run --rm -d \
+      --name temp-postgres \
+      --network=host \
+      -e POSTGRES_USER=postgres \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_DB=moodle \
+      -p 5432:5432 \
+      postgres:17.4
+
+restore:
+  #!/bin/bash
+  # The Moodle image build process requires these additional files to be sourced from the repo
+  PHP_CONFIG_FILE="../moodle-docker/config.php"
+  MOODLE_SCRIPTS_DIR="../moodle-ddev/.ddev/commands/web"
+  DESTINATION_DIR="./"
+
+  errors=0
+
+  if [ ! -f "$PHP_CONFIG_FILE" ]; then
+    echo "Error: required file '$PHP_CONFIG_FILE' not found." >&2
+    errors=1
+  fi
+
+  if [ ! -d "$MOODLE_SCRIPTS_DIR" ]; then
+    echo "Error: directory '$MOODLE_SCRIPTS_DIR' not found." >&2
+    errors=1
+  elif [ -z "$(ls -A "$MOODLE_SCRIPTS_DIR")" ]; then
+      echo "Error: no files to copy in '$MOODLE_SCRIPTS_DIR'." >&2
+      errors=1
+  fi
+
+  # If any check failed, abort now
+  if [ "$errors" -ne 0 ]; then
+    echo "One or more required items are missing. Aborting..." >&2
+    exit 1
+  fi
+
+  echo "Copying additional files for Docker Moodle image build..."
+  cp "$PHP_CONFIG_FILE" "$DESTINATION_DIR"
+  cp "$MOODLE_SCRIPTS_DIR"/* "$DESTINATION_DIR"
+
+build:
+  # No specific build steps
+  @true
+
+package-component:
+  # No specific package steps
+  @true
+
+database-updates resource-group web-app-name full-image-tag:
+  #!/bin/bash
+  set -xeuo pipefail
+
+  cleanup() {
+    if [[ -s az.pid ]]; then
+      PID=$(< az.pid)
+      echo "Shutting down Azure tunnel (pid $PID)…"
+      kill $PID || echo "Process $PID already exited"
+      rm az.pid
+    else
+      echo "az.pid not found or empty; nothing to clean up"
+    fi
+  }
+
+  trap cleanup EXIT
+
+  #################################################################################
+  # Step 1: Wait until the app service is serving, i.e. settled down after deploy #
+  #################################################################################
+
+  URL=https://$MOODLE_DOCKER_WEB_HOST/version.txt
+  TIMEOUT_PER_REQUEST=2      # seconds
+  TOTAL_TIMEOUT=600          # 10 minutes
+  SLEEP_INTERVAL=2           # seconds between retries
+
+  start_time=$(date +%s)
+  RESPONSE=""
+
+  while true; do
+    now=$(date +%s)
+    elapsed=$(( now - start_time ))
+
+    if (( elapsed >= TOTAL_TIMEOUT )); then
+      echo "❌ Timed out after ${TOTAL_TIMEOUT}s waiting for $URL" >&2
+      exit 1
+    fi
+
+    # Run the request, but don’t abort the script on timeout/failure
+    EXPECTED_RESPONSE={{ full-image-tag }}
+    if body=$(curl --silent --show-error --max-time $TIMEOUT_PER_REQUEST "$URL"); then
+      if [ -n "$body" ]; then
+        if [ "$body" == "{{ full-image-tag }}" ]; then
+          RESPONSE="$body"
+          echo "✅ Got correct version response '$EXPECTED_RESPONSE' after ${elapsed}s:"
+          echo "$RESPONSE"
+          break
+        else
+          echo "⏳ Got incorrect version response '$body', expected '$EXPECTED_RESPONSE' after ${elapsed}s:"
+        fi
+      fi
+    else
+      echo "⏳ Attempt at ${elapsed}s failed or timed out (allowed ${TIMEOUT_PER_REQUEST}s)."
+    fi
+
+    sleep $SLEEP_INTERVAL
+  done
+
+  ###################################################
+  # Step 2: Establish SSH connection to app service #
+  ###################################################
+
+  SSH_PORT=2222
+  az webapp create-remote-connection \
+    --resource-group "{{ resource-group }}" \
+    --name "{{ web-app-name }}" \
+    --port $SSH_PORT & 
+  echo $! > az.pid
+
+  CONNECTED=0
+  echo "Waiting for local SSH tunnel on $SSH_PORT"
+  for i in {1..300}; do
+    if nc -z 127.0.0.1 $SSH_PORT; then
+      echo "✅ SSH connection ready: {{ web-app-name }}"
+      CONNECTED=1
+      break
+    fi
+    sleep 1
+  done
+
+  if [[ $CONNECTED == "0" ]]; then
+    echo "❌ SSH connection to port $SSH_PORT failed after 20 attempts." >&2
+    exit 1
+  fi
+
+  #########################################################
+  # Step 3: Carry out Moodle DB install / update over SSH #
+  #########################################################
+
+  sudo apt-get update && sudo apt-get install -y sshpass
+
+  # The SSH sesion doesn't inherit all of the variables from the app service / startup script
+  # so we have to pass them all manually / recreate them
+  sshpass -p "$AZURE_KUDU_SSH_PASSWORD" ssh \
+  -T \
+  -o TCPKeepAlive=no \
+  -o ServerAliveInterval=15 \
+  -o ServerAliveCountMax=3 \
+  -o Ciphers=aes128-ctr \
+  -o Compression=no \
+  -o ExitOnForwardFailure=yes \
+  -o StrictHostKeyChecking=no \
+  -o UserKnownHostsFile=/dev/null \
+  -p $SSH_PORT \
+  $AZURE_KUDU_SSH_USER@127.0.0.1 <<EOF
+  export MOODLE_ADMIN_PASSWORD="$MOODLE_ADMIN_PASSWORD"
+  export POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
+  set -euo pipefail
+
+  echo "Starting Moodle database install / update"
+
+  cd /app
+  # load all the variables into THIS shell
+  source ./restore-env.sh /app/env.txt
+
+  # run the maintenance script (it must terminate)
+  ./maintain-moodle.sh
+
+  echo "✅ Moodle database install / update completed"
+
+  exit
+  EOF

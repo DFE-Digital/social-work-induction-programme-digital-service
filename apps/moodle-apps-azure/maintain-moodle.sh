@@ -1,20 +1,23 @@
 #!/bin/bash
+set -euo pipefail
 
 # PGPASSWORD is used by psql for authentication.
 export PGPASSWORD="${POSTGRES_PASSWORD}"
-PG_CONN="psql -h ${MOODLE_DB_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+PG_CONN="psql -h ${MOODLE_DB_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p 5432"
 
 echo "Checking if custom Moodle schema/table 'moodle_migration.moodle_migration' exists..."
 MIGRATION_TABLE_EXISTS=$($PG_CONN -tAc "SELECT to_regclass('moodle_migration.moodle_migration');" | xargs)
 
 echo "Retrieving last successful install entry..."
 
-if [[ -z "$TABLE_EXISTS" || "$TABLE_EXISTS" == "NULL" ]]; then
+if [[ -z "$MIGRATION_TABLE_EXISTS" || "$MIGRATION_TABLE_EXISTS" == "NULL" ]]; then
     LAST_SUCCESS=''
 else
     # Retrieve the latest successful install entry as a formatted string, or return an empty string.
     LAST_SUCCESS=$($PG_CONN -tAc "SELECT to_char(migrated_at, 'YYYY-MM-DD HH24:MI:SS') || ' version ' || version FROM moodle_migration.moodle_migration WHERE success = true ORDER BY migrated_at DESC LIMIT 1;" | xargs)
 fi
+
+cd /var/www/html/public
 
 # Moodle maintains its latest version in /version.php
 VERSION=$(awk -F"'" '/\$release[[:space:]]*=/ {print $2}' version.php)
@@ -23,6 +26,7 @@ if [[ -z "$LAST_SUCCESS" ]]; then
     echo "No successful install found; creating Moodle database from version $VERSION..."
     su -s /bin/sh www-data -c 'php admin/cli/install_database.php \
         --lang=en \
+        --adminuser=$MOODLE_ADMIN_USER \
         --adminemail=$MOODLE_ADMIN_EMAIL \
         --adminpass=$MOODLE_ADMIN_PASSWORD \
         --shortname="$MOODLE_SITE_SHORTNAME" \
@@ -35,7 +39,7 @@ if [[ -z "$LAST_SUCCESS" ]]; then
     fi
     if [ $? -eq 0 ]; then
         
-        if [[ -z "$TABLE_EXISTS" || "$TABLE_EXISTS" == "NULL" ]]; then
+        if [[ -z "$MIGRATION_TABLE_EXISTS" || "$MIGRATION_TABLE_EXISTS" == "NULL" ]]; then
             echo "Schema/table does not exist; creating schema 'moodle_migration' and table 'moodle_migration'."
             $PG_CONN <<EOF
         CREATE SCHEMA IF NOT EXISTS moodle_migration;
@@ -62,7 +66,7 @@ else
     echo "Last successful install entry: $LAST_SUCCESS"
     echo "Now upgrading to version $VERSION..."
 
-    su -s /bin/sh www-data -c 'bin/php admin/cli/upgrade.php --non-interactive'
+    su -s /bin/sh www-data -c 'pwd && ls -al && php admin/cli/upgrade.php --non-interactive'
 
     if [ $? -eq 0 ]; then
 
@@ -79,5 +83,3 @@ VALUES ('$VERSION', 'Upgrade failed', false);
 EOF
     fi
 fi
-
-wait $APACHE_PID

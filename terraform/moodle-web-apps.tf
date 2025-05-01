@@ -1,12 +1,12 @@
 locals {
   moodle_webapp_name_stem    = "${var.resource_name_prefix}-wa-moodle"
-  moodle_webapp_db_name_stem = "${var.resource_name_prefix}-db-moodle"
+  moodle_webapp_db_name_stem = "${var.resource_name_prefix}_db_moodle"
 
   moodle_instance_resource_naming = {
     for instance in keys(var.moodle_instances) : instance => {
       webapp_name        = "${local.moodle_webapp_name_stem}-${instance}"
       web_app_short_name = "wa-moodle-${instance}"
-      db_name            = "${local.moodle_webapp_db_name_stem}-${instance}"
+      db_name            = "${local.moodle_webapp_db_name_stem}_${instance}"
     }
   }
 }
@@ -89,7 +89,7 @@ module "web_app_moodle_cron" {
     "ENVIRONMENT"                         = var.environment
     "IS_CRON_JOB_ONLY"                    = "true"
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "POSTGRES_DB"                         = "${local.moodle_webapp_db_name_stem}-primary"
+    "POSTGRES_DB"                         = "${local.moodle_webapp_db_name_stem}_primary"
     "POSTGRES_USER"                       = module.stack.postgres_username
     "POSTGRES_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
     "MOODLE_DB_TYPE"                      = var.moodle_db_type

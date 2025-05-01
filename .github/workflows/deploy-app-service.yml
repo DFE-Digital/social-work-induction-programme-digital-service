@@ -1,47 +1,169 @@
 name: Deploy App Service
 description: Deploys an image to an Azure app service
 
-inputs:
-  app-service-folder:
-    description: Location of main code folder for app service
-    type: string
-    required: true
-  web-app-settings:
-    description: Optional app settings JSON to apply to web app before deployment
-    required: false
-  web-app-name:
-    description: Name of web app to deploy to, leave empty for no deploy
-    type: string
-    default: ''
-  image-tag:
-    description: Tag of image to deploy to app service
-    type: string
-    required: true
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      environment-instance:
+        type: string
+        required: true
+      working-dir:
+        description: Working directory for just command runner
+        type: string
+      fetch-web-app-settings:
+        description: Web app settings to fetch to drive deployment
+        type: string
+      tunnel-app-service:
+        description: Name of remote app service providing tunnel
+        type: string
+      tunnel-remote-server-name:
+        description: Name of remote server to tunnel to, if tunnelling connection required
+        type: string
+      tunnel-remote-server-port:
+        description: Port of remote server to tunnel to, if tunnelling connection required
+        type: string
+      execute-migrations-after-deploy:
+        description: Whether to execute database migrations after the app service deploy
+        type: string
+        default: 'false'
+      app-service-resource-group:
+        description: Name of resource group which hosts the app services
+        type: string
+      web-app-settings:
+        description: Optional app settings JSON to apply to web app before deployment
+        type: string
+        required: false
+      web-app-name:
+        description: Name of web app to deploy to, leave empty for no deploy
+        type: string
+        default: ''
+      image-tag:
+        description: Tag of image to deploy to app service
+        type: string
+        required: true
 
-runs:
-  using: composite
+jobs:
+  deploy-app-service:
+    name: Deploy App Service
+    runs-on: ubuntu-24.04
+    # Permissions for OIDC Azure authentication (az login)
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    environment: ${{ inputs.environment }}
+    env:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      REMOTE_TUNNEL_HOST: ${{ inputs.tunnel-remote-server-name }}
+      # This will make the credentials available for remote tunnelling
+      AZURE_KUDU_SSH_USER: ${{ vars.AZURE_KUDU_SSH_USER }}
+      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
 
-  steps:
-    - name: Log in to Azure CLI
-      uses: azure/login@v2
-      with:
-        client-id: ${{ env.AZ_CLIENT_ID }}
-        tenant-id: ${{ env.AZ_TENANT_ID }}
-        subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
-    - name: Install just
-      uses: extractions/setup-just@v3
+      - name: Log in to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZ_CLIENT_ID }}
+          tenant-id: ${{ env.AZ_TENANT_ID }}
+          subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
-    - name: Optional set web app settings (Dev)
-      if: inputs.web-app-settings != ''
-      uses: Azure/appservice-settings@v1
-      with:
-       app-name: ${{ env.RESOURCE_NAME_PREFIX }}-${{ inputs.web-app-name }}
-       app-settings-json: '${{ inputs.web-app-settings }}'
+      - name: Install just
+        uses: extractions/setup-just@v3
 
-    - name: Optional deploy web app (Dev)
-      if: inputs.web-app-name != ''
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ inputs.web-app-name }}
-        images: "${{ inputs.image-tag }}"
+      # This is mainly provided to fetch app settings that will drive the database update
+      # process. E.g. MOODLE_DB_HOST;POSTGRES_DB;POSTGRES_USER;POSTGRES_PASSWORD
+      - name: Fetch web app settings (optional)
+        if: inputs.fetch-web-app-settings != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=';' read -r -a KEYS <<< "${{ inputs.fetch-web-app-settings }}"
+
+          # Build a JMESPath filter like "name=='A' || name=='B' || name=='C'"
+          FILTER="name=='${KEYS[0]}'"
+          for K in "${KEYS[@]:1}"; do
+            FILTER+=" || name=='$K'"
+          done
+
+          # Outputs "NAME<TAB>VALUE" per line
+          az webapp config appsettings list \
+            --resource-group "${{ inputs.app-service-resource-group }}" \
+            --name         "${{ inputs.web-app-name }}" \
+            --query        "[?${FILTER}].[name,value]" \
+            -o tsv \
+          | while IFS=$'\t' read -r KEY VAL; do
+
+              if [[ "$VAL" =~ ^@Microsoft\.KeyVault\(SecretUri=(https:\/\/[^\)]+).*$ ]]; then
+                SECRET_URI="${BASH_REMATCH[1]}"
+                echo "Resolving Key Vault secret for $KEY..."
+                VAL="$(az keyvault secret show \
+                          --id "$SECRET_URI" \
+                          --query value \
+                          -o tsv)"
+                # Make sure we obfuscate this in the run logs
+                echo "::add-mask::$VAL"
+              elif [[ "${KEY,,}" == *password* ]]; then
+                echo "::add-mask::$VAL"
+              fi
+
+              echo "$KEY=$VAL" >> "$GITHUB_ENV"
+              if [[ "$KEY" == "${{ inputs.tunnel-remote-server-name }}" ]]; then
+                # If the remote server was specified as a variable name, save its value
+                # for the remote tunnel step below
+                echo "REMOTE_TUNNEL_HOST=$VAL" >> "$GITHUB_ENV"
+              fi
+            done
+
+      - name: Establish remote tunnel (optional)
+        if: inputs.tunnel-app-service != '' && inputs.app-service-resource-group != '' && inputs.tunnel-remote-server-name != '' && inputs.tunnel-remote-server-port != ''
+        uses: ./.github/actions/create-app-service-tunnel
+        with:
+          app-service-name: ${{ inputs.tunnel-app-service }}
+          resource-group: ${{ inputs.app-service-resource-group }}
+          host-name: ${{ env.REMOTE_TUNNEL_HOST }}
+          port: ${{ inputs.tunnel-remote-server-port }}
+
+      # # Need to retrieve ACR_NAME in particular for next steps
+      # - name: Load Terraform variables (optional)
+      #   if: inputs.working-dir != ''
+      #   uses: ./.github/actions/pre-process-terraform-variables
+      #   with:
+      #     terraform-folder: ${{ github.workspace }}/terraform
+      #     environment: ${{ inputs.environment-instance }}
+      #     add-as-env-vars: true
+
+      - name: Execute database updates BEFORE deploy (optional)
+        if: inputs.working-dir != '' && inputs.execute-migrations-after-deploy == 'false'
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just database-updates ${{ inputs.app-service-resource-group }} ${{ inputs.web-app-name }} ${{ inputs.image-tag }}
+
+      - name: Update web app settings (optional)
+        if: inputs.web-app-settings != ''
+        uses: Azure/appservice-settings@v1
+        with:
+          app-name: ${{ inputs.web-app-name }}
+          app-settings-json: '${{ inputs.web-app-settings }}'
+
+      - name: Deploy app service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ inputs.web-app-name }}
+          images: "${{ inputs.image-tag }}"
+
+      - name: Execute database updates AFTER deploy (optional)
+        if: inputs.working-dir != '' && inputs.execute-migrations-after-deploy == 'true'
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just database-updates ${{ inputs.app-service-resource-group }} ${{ inputs.web-app-name }} ${{ inputs.image-tag }}
+

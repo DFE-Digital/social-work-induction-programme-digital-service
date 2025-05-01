@@ -1,0 +1,23 @@
+set shell := ["bash", "-e", "-o", "pipefail", "-c"]
+
+default:
+  @just --list
+
+install-tools:
+  # No specific install tools
+  @true
+
+restore:
+  # No specific restore
+  @true
+
+build:
+  # No specific build steps
+  @true
+
+package-component:
+  # No specific package steps
+  @true
+
+database-updates:
+  @true

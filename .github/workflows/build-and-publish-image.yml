@@ -26,6 +26,7 @@ on:
         description: Semicolon separated list of build arguments (key1=value1;key2=value2)
         default: ''
       build-secrets:
+        type: string
         description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
         default: ''
       build-target:
@@ -36,14 +37,10 @@ on:
     outputs:
       docker-image-tag:
         description: "The tag of the image pushed to the ACR"
-        value: ${{ steps.return.outputs.docker-image-tag }}
+        value: ${{ jobs.build-and-publish-image.outputs.docker-image-tag }}
       dev-resource-name-prefix:
         description: "The resource name prefix for the Dev environment"
-        value: ${{ steps.return.outputs.dev-resource-name-prefix }}
-
-defaults:
-  run:
-    working-directory: ${{ inputs.working-dir }}
+        value: ${{ jobs.build-and-publish-image.outputs.dev-resource-name-prefix }}
 
 jobs:
   build-and-publish-image:
@@ -54,7 +51,7 @@ jobs:
       id-token: write
       contents: write
       issues: write
-    environment: Dev
+    environment: ${{ inputs.environment }}
     env:
       # This will make the secret available to Docker Build
       # Any other secrets that need to be added to Docker Build should also be added here
@@ -65,6 +62,7 @@ jobs:
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -83,7 +81,7 @@ jobs:
         uses: ./.github/actions/pre-process-terraform-variables
         with:
           environment: ${{ inputs.environment-instance }}
-          add_as_env_vars: true
+          add-as-env-vars: true
 
       - name: Extract the supplied docker build arguments
         id: extract-docker-build-args
@@ -105,18 +103,22 @@ jobs:
 
       - name: Restore tools
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: just install-tools
 
       - name: Restore packages / files
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: just restore
 
       - name: Build component
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: just build
 
       - name: Package component
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: just package-component
 
       - name: Azure Container Registry login
@@ -127,6 +129,7 @@ jobs:
 
       - name: Docker build
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         env:
           DOCKER_BUILDKIT: 1
           BUILD_ARGS: ${{ steps.extract-docker-build-args.outputs.build-arg-string }}
@@ -147,10 +150,12 @@ jobs:
 
       - name: Docker image stats
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: docker image inspect ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
 
       - name: Docker push
         shell: bash
+        working-directory: ${{ inputs.working-dir }}
         run: docker push "${{ steps.get-docker-image-tag.outputs.standard-image-tag }}"
 
       - name: Return outputs
