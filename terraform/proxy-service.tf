@@ -16,12 +16,10 @@ module "proxy_service" {
   service_plan_id           = module.stack.maintenance_service_plan_id
   tags                      = local.common_tags
 
-  # The settings name syntax below (e.g. OIDC__ISSUER) is how .NET imports environment 
-  # variables to override the properties in its multi-level appsettings.json file
   app_settings = {
     "ENVIRONMENT"                          = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"  = "false"
-    "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Database=${azurerm_postgresql_flexible_server_database.auth_db.name};Username=${module.stack.postgres_username};Password=$[DB_REPLACE_PASSWORD];Ssl Mode=Require;Trust Server Certificate=false"
+    "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Database=$[DB_REPLACE_DB_NAME];Username=${module.stack.postgres_username};Password=$[DB_REPLACE_PASSWORD];Ssl Mode=Require;Trust Server Certificate=false"
     "DB_PASSWORD"                          = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
     DOCKER_ENABLE_CI                       = "false" # Github will control CI, not Azure
   }

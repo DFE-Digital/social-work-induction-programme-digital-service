@@ -70,6 +70,7 @@ WORKDIR /var/www/html/public
 # Mandatory tools for remote SSH
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server \
+    postgresql-client \
     cron \
     && rm -rf /var/lib/apt/lists/*
 
@@ -104,7 +105,9 @@ USER root
 RUN mkdir -p /app
 COPY entry-point.sh /app/entry-point.sh
 COPY maintain-moodle.sh /app/maintain-moodle.sh
-RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh
+COPY save-env.sh /app/save-env.sh
+COPY restore-env.sh /app/restore-env.sh
+RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh /app/save-env.sh /app/restore-env.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
 # will override this with the cron config

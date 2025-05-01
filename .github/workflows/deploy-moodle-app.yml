@@ -1,0 +1,36 @@
+name: Deploy Moodle App
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  optional-deploy-moodle-app:
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Moodle App
+    uses: ./.github/workflows/deploy-app-service.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/moodle-apps-azure
+      # These are app settings which are required to run the Moodle db update
+      fetch-web-app-settings: "MOODLE_DOCKER_WEB_HOST;MOODLE_ADMIN_PASSWORD;POSTGRES_PASSWORD"
+      # The app service is used to deploy db migrations after the publish
+      execute-migrations-after-deploy: 'true'
+      app-service-resource-group: s205d01-swip-rg
+      web-app-name: s205d01-wa-moodle-primary
+      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/wa-moodle:405-20250429.a6f148f.dev

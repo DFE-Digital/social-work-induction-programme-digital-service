@@ -5,13 +5,13 @@ inputs:
   environment: 
     required: true
     description: Environment to process
-  terraform_folder:
+  terraform-folder:
     default: ./terraform
     description: Path to terraform folder
-  output_file:
+  output-file:
     default: /tmp/merged.tfvars
     description: Path to output file
-  add_as_env_vars:
+  add-as-env-vars:
     default: false
     description: Whether to export as environment variables
 
@@ -23,8 +23,8 @@ runs:
       id: pre-process-tf-vars
       shell: bash
       run: |
-        if [ -d "${{ inputs.terraform_folder }}" ]; then
-          cd "${{ inputs.terraform_folder }}"
+        if [ -d "${{ inputs.terraform-folder }}" ]; then
+          cd "${{ inputs.terraform-folder }}"
         fi
         REPLACEMENTS=$(awk -F '=' '/^[^#]/ && NF>=2 {
           gsub(/^[ \t]+|[ \t]+$/, "", $1);
@@ -34,9 +34,9 @@ runs:
           print "s#\\${" $1 "}#" $2 "#g"
         }' envs/global.tfvars)
         sed "$REPLACEMENTS" envs/${{ inputs.environment }}/env.tfvars > /tmp/env_subbed.tfvars
-        cat envs/global.tfvars /tmp/env_subbed.tfvars > ${{ inputs.output_file }}
-        cat ${{ inputs.output_file }}
-        if ${{ inputs.add_as_env_vars }}; then
+        cat envs/global.tfvars /tmp/env_subbed.tfvars > ${{ inputs.output-file }}
+        cat ${{ inputs.output-file }}
+        if ${{ inputs.add-as-env-vars }}; then
           # Optionally export only plain (var = value) variables, not maps etc
           grep -E '^[^#].*=\s*".*"' /tmp/merged.tfvars | \
           awk -F '=' '{
