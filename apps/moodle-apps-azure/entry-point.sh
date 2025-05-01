@@ -5,7 +5,7 @@ echo "Starting SSH..."
 /usr/sbin/sshd
 
 # Save non-sensitive environment variables to file (will be used by SSH install / update session)
-/app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOOLE_ADMIN_PASSWORD
+/app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD
 
 # The Moodle container will operate in one of 2 modes. Either full-blown Moodle instance, or 
 # a cut-down version which just runs the cron jobs
