@@ -50,7 +50,10 @@ resource "azurerm_linux_web_app" "webapp" {
     }
   }
 
-  app_settings = var.app_settings
+  # Provide standard setting which gives full app service domain name
+  app_settings = merge({
+    "FULL_EXTERNAL_WEB_DOMAIN_NAME" = "${var.web_app_name}.azurewebsites.net"
+  }, var.app_settings)
 
   lifecycle {
     ignore_changes = [

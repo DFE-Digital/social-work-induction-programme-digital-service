@@ -77,6 +77,10 @@ publish:
 publish-project project:
   @dotnet publish {{solution-root}}/src/{{project}} -c Release --no-restore
 
+package-component:
+  @dotnet publish {{solution-root}}/src/Dfe.Sww.Ecf.AuthorizeAccess -c Release --no-restore
+  @dotnet publish {{solution-root}}/src/Dfe.Sww.Ecf.Cli -c Release --no-restore
+
 # Build the Docker image
 docker-build *ARGS: install-tools restore
   @cd {{solution-root}} && dotnet publish -c Release --no-restore
@@ -107,3 +111,33 @@ make *ARGS:
 # Removes the cached DB schema version file for tests
 remove-tests-schema-cache:
   @scripts/Remove-TestsSchemaCache.ps1
+
+database-updates resource-group web-app-name full-image-tag:
+  #!/bin/bash
+  set -xeuo pipefail
+
+  # At this point, the github actions workflow has already established an SSH tunnel
+  # to the remote database server
+  IMAGE_TAG={{ full-image-tag }}
+  # All of these environment variables have been fetched from the app service by the
+  # github workflow
+  DB_CONNECTION_STRING="Host=127.0.0.1;Database=$DB_DATABASE_NAME;Username=$DB_USER_NAME;Password=$DB_PASSWORD;Ssl Mode=Require;Trust Server Certificate=false"
+  echo "🐳 Pulling migrations image $IMAGE_TAG"
+  docker pull "$IMAGE_TAG"
+
+  # CONNECTIONSTRINGS__DEFAULTCONNECTION and DB_PASSWORD satisfy the startup 
+  # requirement of the image DB_CONNECTION_STRING is used by the CLI
+  echo "🔄 Executing database migrations..."
+  docker run --rm \
+    --name migrate-db \
+    --network host \
+    -e DB_CONNECTION_STRING="$DB_CONNECTION_STRING" \
+    -e CONNECTIONSTRINGS__DEFAULTCONNECTION="$DB_CONNECTION_STRING" \
+    -e DB_PASSWORD="$DB_PASSWORD" \
+    "$IMAGE_TAG" \
+    sh -c '
+      cd /Apps/EcfCli
+      dotnet ecfcli.dll migrate-db --connection-string "$DB_CONNECTION_STRING"
+    '
+
+  echo "✅ Migrations completed."

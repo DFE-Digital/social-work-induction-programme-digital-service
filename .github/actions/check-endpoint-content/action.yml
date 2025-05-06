@@ -1,0 +1,60 @@
+name: Check Endpoint Content
+description: Poll an http/s url waiting for expected content
+
+inputs:
+  endpoint:
+    description: Endpoint to poll
+    type: string
+    required: true
+  expected-content:
+    description: Expected content to wait for
+    type: string
+    required: true
+  timeout:
+    description: Timeout in seconds
+    type: number
+    default: 300
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for content
+      shell: bash
+      env:
+        ENDPOINT: ${{ inputs.endpoint }}
+        EXPECTED_RESPONSE: ${{ inputs.expected-content }}
+        TOTAL_TIMEOUT: ${{ inputs.timeout }}
+      run: |
+        TIMEOUT_PER_REQUEST=2      # seconds
+        SLEEP_INTERVAL=2           # seconds between retries
+
+        start_time=$(date +%s)
+        RESPONSE=""
+
+        while true; do
+          now=$(date +%s)
+          elapsed=$(( now - start_time ))
+
+          if (( elapsed >= TOTAL_TIMEOUT )); then
+            echo "❌ Timed out after ${TOTAL_TIMEOUT}s waiting for $ENDPOINT" >&2
+            exit 1
+          fi
+
+          # Run the request, but don’t abort the script on timeout/failure
+          if body=$(curl --silent --show-error --max-time $TIMEOUT_PER_REQUEST "$ENDPOINT"); then
+            if [ -n "$body" ]; then
+              if [ "$body" == "$EXPECTED_RESPONSE" ]; then
+                RESPONSE="$body"
+                echo "✅ Got correct version response '$EXPECTED_RESPONSE' after ${elapsed}s:"
+                echo "$RESPONSE"
+                break
+              else
+                echo "⏳ Got incorrect version response '$body', expected '$EXPECTED_RESPONSE' after ${elapsed}s:"
+              fi
+            fi
+          else
+            echo "⏳ Attempt at ${elapsed}s failed or timed out (allowed ${TIMEOUT_PER_REQUEST}s)."
+          fi
+
+          sleep $SLEEP_INTERVAL
+        done

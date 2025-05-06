@@ -1,4 +1,6 @@
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Configuration;
 using Serilog;
+
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Logging;
 
@@ -6,7 +8,11 @@ public static class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder)
     {
-        if (builder.Environment.IsProduction())
+        var featureFlags = builder.Services
+            .BuildServiceProvider()
+            .GetRequiredService<FeatureFlags>();
+
+        if (featureFlags.EnableSentry)
         {
             builder.WebHost.UseSentry(dsn: builder.Configuration.GetRequiredValue("Sentry:Dsn"));
         }

@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  optional-deploy-moodle-app:
+  deploy-moodle-app:
     if: ${{ github.event.inputs.instance != 'None' }}
     name: Deploy Moodle App
     uses: ./.github/workflows/deploy-app-service.yml
@@ -33,4 +33,5 @@ jobs:
       execute-migrations-after-deploy: 'true'
       app-service-resource-group: s205d01-swip-rg
       web-app-name: s205d01-wa-moodle-primary
-      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/wa-moodle:405-20250429.a6f148f.dev
+      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/wa-moodle:405-20250501.741a6d1.dev
+      version-endpoint-path: /version.txt

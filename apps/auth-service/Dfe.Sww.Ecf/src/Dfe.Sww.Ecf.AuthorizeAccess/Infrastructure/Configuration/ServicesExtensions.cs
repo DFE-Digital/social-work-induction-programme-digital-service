@@ -1,54 +1,53 @@
-using Hangfire;
-using Microsoft.AspNetCore.Builder;
+using Azure.Identity;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 
-namespace Dfe.Sww.Ecf.ServiceDefaults;
+namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Configuration;
 
-public static class Extensions
+public static class ServicesExtensions
 {
     public static IHostApplicationBuilder AddServiceDefaults(
-        this IHostApplicationBuilder builder,
-        string dataProtectionBlobName)
+        this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks();
-
         builder.AddDatabase();
-        builder.AddHangfire();
-        builder.AddBackgroundWorkScheduler();
 
         builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetPostgresConnectionString());
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        if (builder.Environment.IsProduction())
-        {
-            builder.Configuration
-                .AddJsonEnvironmentVariable("AppConfig")
-                .AddJsonEnvironmentVariable("SharedConfig");
+        var featureFlags = builder.Services
+            .BuildServiceProvider()
+            .GetRequiredService<FeatureFlags>();
 
+        if (featureFlags.EnableMigrationsEndpoint) {
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        }
+
+        if (featureFlags.EnableForwardedHeaders) {
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.All;
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             });
+        }
 
+        if (featureFlags.EnableHttpStrictTransportSecurity) {
             builder.Services.AddHsts(options =>
             {
                 options.Preload = true;
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(365);
             });
+        }
 
+        if (featureFlags.EnableMsDotNetDataProtectionServices) {
             builder.Services.AddDataProtection()
                 .PersistKeysToAzureBlobStorage(
-                    builder.Configuration.GetRequiredValue("StorageConnectionString"),
-                    builder.Configuration.GetRequiredValue("DataProtectionKeysContainerName"),
-                    dataProtectionBlobName);
+                    // This will use managed identity for auth so the 
+                    // connection string will just be a URL to the blob container
+                    new Uri(builder.Configuration.GetRequiredValue("StorageConnectionString")),
+                    new DefaultAzureCredential()
+                );
         }
 
         return builder;
@@ -56,9 +55,15 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        if (app.Environment.IsProduction())
+        var featureFlags = app.Services
+            .GetRequiredService<FeatureFlags>();
+
+        if (featureFlags.EnableForwardedHeaders)
         {
             app.UseForwardedHeaders();
+        }
+        if (featureFlags.EnableHttpStrictTransportSecurity)
+        {
             app.UseHsts();
         }
 

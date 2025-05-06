@@ -10,7 +10,7 @@ set -eu
 : "${CONNECTIONSTRINGS__DEFAULTCONNECTION:?CONNECTIONSTRINGS__DEFAULTCONNECTION is not set}"
 : "${DB_PASSWORD:?DB_PASSWORD is not set}"
 
-# Construct the full dotnet / db connection string - the passwor was sourced separately from the key vault
+# Construct the full dotnet / db connection string - the password was sourced separately from the key vault
 export CONNECTIONSTRINGS__DEFAULTCONNECTION="$(
   printf '%s' "$CONNECTIONSTRINGS__DEFAULTCONNECTION" |
   sed "s|\$\[DB_REPLACE_PASSWORD\]|${DB_PASSWORD}|g"

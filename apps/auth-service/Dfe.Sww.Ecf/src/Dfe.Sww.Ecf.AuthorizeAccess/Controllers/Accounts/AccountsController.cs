@@ -13,7 +13,8 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 [Route("api/[controller]")]
 public class AccountsController(
     IAccountsService accountsService,
-    IOneLoginAccountLinkingService oneLoginAccountLinkingService
+    IOneLoginAccountLinkingService oneLoginAccountLinkingService,
+    AppInfo appInfo
 ) : Controller
 {
     [HttpGet]
@@ -93,6 +94,15 @@ public class AccountsController(
         var result = new LinkingTokenResult { LinkingToken = linkingToken };
 
         return Ok(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("version")]
+    [ActionName(nameof(GetVersion))]
+    [Produces(MediaTypeNames.Text.Plain)]
+    public IActionResult GetVersion()
+    {
+        return Ok(appInfo.Version);
     }
 
     [PublicAPI]

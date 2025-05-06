@@ -132,6 +132,7 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         env:
           DOCKER_BUILDKIT: 1
+          DOCKERFILE: ${{ inputs.docker-build-file }}
           BUILD_ARGS: ${{ steps.extract-docker-build-args.outputs.build-arg-string }}
           BUILD_SECRETS: ${{ steps.extract-docker-build-args.outputs.secret-arg-string }}
           STANDARD_IMAGE_TAG: ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
@@ -139,11 +140,18 @@ jobs:
           echo "Docker build: specified args - ${{ inputs.build-args }}, ${{ inputs.build-secrets }}"
           echo "Docker build: Using extracted build args - $BUILD_ARGS, secrets - $BUILD_SECRETS"
 
+          DOCKERFILE_DIR="$(dirname "$DOCKERFILE")"
+          DOCKERFILE_NAME="$(basename "$DOCKERFILE")"
+          if [[ "$DOCKERFILE_DIR" != "." ]]; then
+            echo "🔀 Switching into $DOCKERFILE_DIR for build"
+            cd "$DOCKERFILE_DIR"
+          fi
+
           docker build \
             $BUILD_ARGS \
             $BUILD_SECRETS \
             --build-arg FULL_TAG=$STANDARD_IMAGE_TAG \
-            -f "./${{ inputs.docker-build-file }}" \
+            -f "./$DOCKERFILE_NAME" \
             --network=host \
             --target ${{ inputs.build-target }} \
             -t "$STANDARD_IMAGE_TAG" .

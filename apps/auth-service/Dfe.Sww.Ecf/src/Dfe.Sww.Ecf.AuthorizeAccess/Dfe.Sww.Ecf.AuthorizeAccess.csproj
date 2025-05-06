@@ -9,6 +9,10 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" />
+    <PackageReference Include="Azure.Security.KeyVault.Certificates" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" />
     <PackageReference Include="Dfe.Analytics" />
     <PackageReference Include="GovUk.Frontend.AspNetCore" />
     <PackageReference Include="GovUk.OneLogin.AspNetCore" />
@@ -16,6 +20,7 @@
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />    
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
     <PackageReference Include="OpenIddict" />
     <PackageReference Include="OpenIddict.AspNetCore" />
@@ -28,7 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj" />
     <ProjectReference Include="..\Dfe.Sww.Ecf.UiCommon\Dfe.Sww.Ecf.UiCommon.csproj" />
-    <ProjectReference Include="..\Dfe.Sww.Ecf.ServiceDefaults\Dfe.Sww.Ecf.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

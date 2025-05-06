@@ -1,13 +1,20 @@
 # syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18 AS auth-service
 ARG AZURE_KUDU_SSH_USER
+ARG FULL_TAG
+ENV VERSION=${FULL_TAG}
+
 COPY src/Dfe.Sww.Ecf.Cli/bin/Release/net8.0/publish/ Apps/EcfCli/
 COPY src/Dfe.Sww.Ecf.AuthorizeAccess/bin/Release/net8.0/publish/ Apps/AuthorizeAccess/
 RUN rm Apps/AuthorizeAccess/appsettings.*
-COPY src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Production.json Apps/AuthorizeAccess/appsettings.json
+COPY src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Azure.json Apps/AuthorizeAccess/appsettings.json
 WORKDIR /Apps
 COPY entry-point.sh ./entry-point.sh
 RUN chmod +x entry-point.sh
+
+RUN sed -i \
+    -e "s|\"Version\": *\"[^\"]*\"|\"Version\": \"${VERSION}\"|" \
+    AuthorizeAccess/appsettings.json
 
 # Install culture prerequisities
 RUN apk add --no-cache \
@@ -44,6 +51,7 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
 ENV PATH="${PATH}:/Apps/EcfCli"
 ENV ASPNETCORE_HTTP_PORTS=80
 
+WORKDIR /Apps/AuthorizeAccess
 ENTRYPOINT ["/Apps/entry-point.sh"]
 CMD ["dotnet","/Apps/AuthorizeAccess/Dfe.Sww.Ecf.AuthorizeAccess.dll"]
 

@@ -18,6 +18,11 @@ resource "azurerm_key_vault_access_policy" "kv_policy" {
     "Get",
     "List",
   ]
+
+  certificate_permissions = [
+    "Get",
+    "List",
+  ]
 }
 
 resource "azurerm_role_assignment" "acr_role" {

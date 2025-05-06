@@ -1,10 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
 using Dfe.Analytics;
 using Dfe.Analytics.AspNetCore;
 using Dfe.Sww.Ecf;
 using Dfe.Sww.Ecf.AuthorizeAccess;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Filters;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Logging;
@@ -13,7 +17,6 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.TagHelpers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
-using Dfe.Sww.Ecf.ServiceDefaults;
 using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Filters;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
@@ -27,6 +30,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -36,12 +40,21 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<AppInfo>(
+  builder.Configuration.GetRequiredSection("AppInfo")
+);
+
+var featureFlags = builder.Configuration
+    .GetSection("FeatureFlags")
+    .Get<FeatureFlags>()
+    ?? throw new InvalidOperationException("Missing FeatureFlags section");
+builder.Services.AddSingleton(featureFlags);
+
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
 // Add environment variables settings integration for Azure
 builder.Configuration.AddEnvironmentVariables();
-
-builder.AddServiceDefaults(dataProtectionBlobName: "AuthorizeAccess");
+builder.AddServiceDefaults();
 
 builder.ConfigureLogging();
 var oidcConfigurationSection = builder.Configuration.GetRequiredSection(
@@ -134,9 +147,8 @@ builder
             }
         };
 
-        options.MetadataAddress =
-            "https://oidc.integration.account.gov.uk/.well-known/openid-configuration";
-        options.ClientAssertionJwtAudience = "https://oidc.integration.account.gov.uk/token";
+        options.MetadataAddress = builder.Configuration.GetRequiredValue("OneLogin:MetadataAddress");
+        options.ClientAssertionJwtAudience = builder.Configuration.GetRequiredValue("OneLogin:ClientAssertionJwtAudience");
 
         using (var rsa = RSA.Create())
         {
@@ -212,35 +224,6 @@ builder
 
         options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
 
-        if (builder.Environment.IsProduction())
-        {
-            var encryptionKeysConfig =
-                builder.Configuration.GetSection("EncryptionKeys").Get<string[]>() ?? [];
-            var signingKeysConfig =
-                builder.Configuration.GetSection("SigningKeys").Get<string[]>() ?? [];
-
-            foreach (var value in encryptionKeysConfig)
-            {
-                options.AddEncryptionKey(LoadKey(value));
-            }
-
-            foreach (var value in signingKeysConfig)
-            {
-                options.AddSigningKey(LoadKey(value));
-            }
-
-            static SecurityKey LoadKey(string configurationValue)
-            {
-                using var rsa = RSA.Create();
-                rsa.FromXmlString(configurationValue);
-                return new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true));
-            }
-        }
-        else
-        {
-            options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
-        }
-
         options
             .UseAspNetCore()
             .EnableAuthorizationEndpointPassthrough()
@@ -248,6 +231,28 @@ builder
             .EnableTokenEndpointPassthrough()
             .EnableUserinfoEndpointPassthrough()
             .EnableStatusCodePagesIntegration();
+
+        if (featureFlags.EnableOpenIdCertificates)
+        {
+            var vaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
+            var certClient = new CertificateClient(vaultUri, new DefaultAzureCredential());
+
+            var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
+            var signingCert = certClient
+                .GetX509CertificateAsync(certName)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+            options.AddSigningCertificate(signingCert);
+
+            certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
+            var encryptionCert = certClient
+                .GetX509CertificateAsync(certName)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+            options.AddEncryptionCertificate(encryptionCert);
+        }
     })
     .AddValidation(options =>
     {
@@ -352,7 +357,7 @@ builder
         options.Filters.Add(new AssignViewDataFromFormFlowJourneyResultFilterFactory());
     });
 
-if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
+if (featureFlags.RequiresDbConnection)
 {
     builder.Services.AddDbContext<IdDbContext>(options =>
         options
@@ -361,8 +366,8 @@ if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests()
     );
 }
 
-builder
-    .Services.AddEcfBaseServices()
+builder.Services
+    .AddEcfBaseServices()
     .AddTransient<AuthorizeAccessLinkGenerator, RoutingAuthorizeAccessLinkGenerator>()
     .AddTransient<FormFlowJourneySignInHandler>()
     .AddTransient<MatchToEcfAccountAuthenticationHandler>()
@@ -377,7 +382,8 @@ builder
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()
-    .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>();
+    .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
+    .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value);
 
 builder
     .Services.AddOptions<AuthorizeAccessOptions>()
@@ -395,12 +401,15 @@ app.UseWhen(
     context => !context.Request.Path.StartsWithSegments("/oauth2"),
     a =>
     {
-        if (app.Environment.IsDevelopment())
+        if (featureFlags.EnableDeveloperExceptionPage)
         {
             a.UseDeveloperExceptionPage();
+        }
+        if (featureFlags.EnableMigrationsEndpoint)
+        {
             a.UseMigrationsEndPoint();
         }
-        else if (!app.Environment.IsUnitTests())
+        if (featureFlags.EnableErrorExceptionHandler)
         {
             a.UseExceptionHandler("/error");
             a.UseStatusCodePagesWithReExecute("/error", "?code={0}");
@@ -424,7 +433,7 @@ app.UseCsp(csp =>
 
     // Ensure ASP.NET Core's auto refresh works
     // See https://github.com/dotnet/aspnetcore/issues/33068
-    if (builder.Environment.IsDevelopment())
+    if (featureFlags.EnableContentSecurityPolicyWorkaround)
     {
         csp.AllowConnections.ToAnywhere();
     }
@@ -434,12 +443,12 @@ app.UseMiddleware<AppendSecurityResponseHeadersMiddleware>();
 
 app.UseStaticFiles();
 
-if (builder.Environment.IsProduction())
+if (featureFlags.EnableDfeAnalytics)
 {
     app.UseDfeAnalytics();
 }
 
-if (builder.Environment.IsDevelopment())
+if (featureFlags.EnableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();

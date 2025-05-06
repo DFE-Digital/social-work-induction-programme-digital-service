@@ -25,6 +25,9 @@ on:
       tunnel-remote-server-port:
         description: Port of remote server to tunnel to, if tunnelling connection required
         type: string
+      requires-container-registry-login:
+        type: boolean
+        default: false
       execute-migrations-after-deploy:
         description: Whether to execute database migrations after the app service deploy
         type: string
@@ -40,6 +43,9 @@ on:
         description: Name of web app to deploy to, leave empty for no deploy
         type: string
         default: ''
+      version-endpoint-path:
+        description: Path to version endpoint
+        type: string
       image-tag:
         description: Tag of image to deploy to app service
         type: string
@@ -82,12 +88,19 @@ jobs:
 
       # This is mainly provided to fetch app settings that will drive the database update
       # process. E.g. MOODLE_DB_HOST;POSTGRES_DB;POSTGRES_USER;POSTGRES_PASSWORD
+      # Also provides the app service domain name to drive the post deploy version check
       - name: Fetch web app settings (optional)
-        if: inputs.fetch-web-app-settings != ''
+        if: inputs.fetch-web-app-settings != '' || inputs.version-endpoint-path != ''
         shell: bash
+        env:
+          APP_SETTINGS: ${{ inputs.fetch-web-app-settings }}
         run: |
           set -euo pipefail
-          IFS=';' read -r -a KEYS <<< "${{ inputs.fetch-web-app-settings }}"
+
+          # For convenience, the Terraform always defines FULL_EXTERNAL_WEB_DOMAIN_NAME
+          # for each app service, so always retrieve it
+          APP_SETTINGS="${APP_SETTINGS:+$APP_SETTINGS;}FULL_EXTERNAL_WEB_DOMAIN_NAME"
+          IFS=';' read -r -a KEYS <<< "$APP_SETTINGS"
 
           # Build a JMESPath filter like "name=='A' || name=='B' || name=='C'"
           FILTER="name=='${KEYS[0]}'"
@@ -133,14 +146,19 @@ jobs:
           host-name: ${{ env.REMOTE_TUNNEL_HOST }}
           port: ${{ inputs.tunnel-remote-server-port }}
 
-      # # Need to retrieve ACR_NAME in particular for next steps
-      # - name: Load Terraform variables (optional)
-      #   if: inputs.working-dir != ''
-      #   uses: ./.github/actions/pre-process-terraform-variables
-      #   with:
-      #     terraform-folder: ${{ github.workspace }}/terraform
-      #     environment: ${{ inputs.environment-instance }}
-      #     add-as-env-vars: true
+      # Need to retrieve ACR_NAME in particular for next steps
+      - name: Load Terraform variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment-instance }}
+          add-as-env-vars: true
+
+      - name: Azure Container Registry login
+        if: inputs.requires-container-registry-login
+        shell: bash
+        run: az acr login --name ${{ env.ACR_NAME }}
+        env:
+          ACR_NAME: ${{ env.ACR_NAME }}
 
       - name: Execute database updates BEFORE deploy (optional)
         if: inputs.working-dir != '' && inputs.execute-migrations-after-deploy == 'false'
@@ -160,6 +178,13 @@ jobs:
         with:
           app-name: ${{ inputs.web-app-name }}
           images: "${{ inputs.image-tag }}"
+
+      - name: Wait for service to serve newly deployed image version (optional)
+        if: inputs.version-endpoint-path != ''
+        uses: ./.github/actions/check-endpoint-content
+        with:
+          endpoint: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}${{ inputs.version-endpoint-path }}
+          expected-content: ${{ inputs.image-tag }}
 
       - name: Execute database updates AFTER deploy (optional)
         if: inputs.working-dir != '' && inputs.execute-migrations-after-deploy == 'true'

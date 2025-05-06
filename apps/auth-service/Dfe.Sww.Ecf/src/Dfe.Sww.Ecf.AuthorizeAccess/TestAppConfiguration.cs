@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Configuration;
 using Dfe.Sww.Ecf.UiCommon.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
@@ -19,7 +20,11 @@ public static class TestAppConfiguration
 
     public static WebApplicationBuilder AddTestApp(this WebApplicationBuilder builder)
     {
-        if (builder.Environment.IsDevelopment() || builder.Environment.IsEndToEndTests())
+        var featureFlags = builder.Services
+            .BuildServiceProvider()
+            .GetRequiredService<FeatureFlags>();
+
+        if (featureFlags.SupportEndToEndTesting)
         {
             builder
                 .Services.AddAuthentication()

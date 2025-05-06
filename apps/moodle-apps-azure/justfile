@@ -57,7 +57,7 @@ package-component:
 
 database-updates resource-group web-app-name full-image-tag:
   #!/bin/bash
-  set -xeuo pipefail
+  set -euo pipefail
 
   cleanup() {
     if [[ -s az.pid ]]; then
@@ -72,50 +72,9 @@ database-updates resource-group web-app-name full-image-tag:
 
   trap cleanup EXIT
 
-  #################################################################################
-  # Step 1: Wait until the app service is serving, i.e. settled down after deploy #
-  #################################################################################
-
-  URL=https://$MOODLE_DOCKER_WEB_HOST/version.txt
-  TIMEOUT_PER_REQUEST=2      # seconds
-  TOTAL_TIMEOUT=600          # 10 minutes
-  SLEEP_INTERVAL=2           # seconds between retries
-
-  start_time=$(date +%s)
-  RESPONSE=""
-
-  while true; do
-    now=$(date +%s)
-    elapsed=$(( now - start_time ))
-
-    if (( elapsed >= TOTAL_TIMEOUT )); then
-      echo "❌ Timed out after ${TOTAL_TIMEOUT}s waiting for $URL" >&2
-      exit 1
-    fi
-
-    # Run the request, but don’t abort the script on timeout/failure
-    EXPECTED_RESPONSE={{ full-image-tag }}
-    if body=$(curl --silent --show-error --max-time $TIMEOUT_PER_REQUEST "$URL"); then
-      if [ -n "$body" ]; then
-        if [ "$body" == "{{ full-image-tag }}" ]; then
-          RESPONSE="$body"
-          echo "✅ Got correct version response '$EXPECTED_RESPONSE' after ${elapsed}s:"
-          echo "$RESPONSE"
-          break
-        else
-          echo "⏳ Got incorrect version response '$body', expected '$EXPECTED_RESPONSE' after ${elapsed}s:"
-        fi
-      fi
-    else
-      echo "⏳ Attempt at ${elapsed}s failed or timed out (allowed ${TIMEOUT_PER_REQUEST}s)."
-    fi
-
-    sleep $SLEEP_INTERVAL
-  done
-
-  ###################################################
-  # Step 2: Establish SSH connection to app service #
-  ###################################################
+  #############################################################
+  # Step 1: Establish backgroundSSH connection to app service #
+  #############################################################
 
   SSH_PORT=2222
   az webapp create-remote-connection \
@@ -141,7 +100,7 @@ database-updates resource-group web-app-name full-image-tag:
   fi
 
   #########################################################
-  # Step 3: Carry out Moodle DB install / update over SSH #
+  # Step 2: Carry out Moodle DB install / update over SSH #
   #########################################################
 
   sudo apt-get update && sudo apt-get install -y sshpass

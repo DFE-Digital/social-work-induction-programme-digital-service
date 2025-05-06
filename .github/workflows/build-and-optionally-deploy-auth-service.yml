@@ -3,100 +3,55 @@ name: Build auth service (optionally deploy to non-prod)
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Azure deployment environment"
+      instance:
+        description: "Environment instance"
         required: true
-        default: Dev
+        default: None
         type: choice
         options:
-          - Dev
-          - Dev02
-
-      deploy:
-        description: Deploy to dev environment?
-        required: true
-        default: No
-        type: choice
-        options:
-          - No
-          - Yes
+          - None
+          - d01
+          - d02
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: ./apps/auth-service
-
-env:
-  ENVIRONMENT: ${{ inputs.environment }}
-
 jobs:
-  build-image:
-    runs-on: ubuntu-24.04
-    environment: ${{ inputs.environment }}
-    name: Build & Publish Image
-    # Permissions for OIDC authentication
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-    env:
-      ENVIRONMENT: ${{ inputs.environment }}
-      # This will make the secret available to Docker Build
-      # Any other secrets that need to be added to Docker Build should also be added here
-      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
+  build-and-publish-auth-service-image:
+    name: Build and Publish Auth Service Image
+    uses: ./.github/workflows/build-and-publish-image.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/auth-service
+      # Path is in relation to the working directory
+      docker-build-file: ./Dfe.Sww.Ecf/Dockerfile
+      docker-image-name: auth-service
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+      build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+      build-target: auth-service
 
-      - name: Install just
-        uses: extractions/setup-just@v3
-
-      - name: Restore tools
-        run: just install-tools
-
-      - name: Restore packages
-        run: just restore
-
-      - name: Build solution
-        run: just build
-
-      - name: Package auth service
-        run: just publish-project Dfe.Sww.Ecf.AuthorizeAccess
-
-      - name: Package CLI
-        run: just publish-project Dfe.Sww.Ecf.Cli
-
-      - name: Log in to Azure CLI
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZ_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZ_TENANT_ID }}
-          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-
-      - name: Load Terraform environment variables
-        uses: ./.github/actions/pre-process-terraform-variables
-        with:
-          environment: ${{ env.ENVIRONMENT }}
-          add_as_env_vars: true
-
-      - name: Azure Container Registry login
-        run: az acr login --name ${{ env.ACR_NAME }}
-        env:
-          ACR_NAME: ${{ env.ACR_NAME }}
-
-      - name: Build, push and optionally deploy auth service
-        uses: ./.github/actions/image-build-push-deploy
-        with:
-          docker-build-folder: ./apps/auth-service/Dfe.Sww.Ecf
-          acr-name: ${{ env.ACR_NAME }}
-          docker-image-name: auth-service
-          build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
-          build-secrets: "AZURE_KUDU_SSH_PASSWORD"
-          build-target: auth-service
-          resource-name-prefix: ${{ env.RESOURCE_NAME_PREFIX }}
-          web-app-name: ${{ github.event.inputs.deploy == 'No' && '' || 'wa-auth-service' }}
+  optional-deploy-auth-service:
+    needs: build-and-publish-auth-service-image
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Auth Service (optional)
+    uses: ./.github/workflows/deploy-app-service.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/auth-service
+      # These are app settings which are required to run the db update
+      fetch-web-app-settings: "DB_SERVER_NAME;DB_DATABASE_NAME;DB_USER_NAME;DB_PASSWORD"
+      app-service-resource-group: ${{ needs.build-and-publish-auth-service-image.outputs.dev-resource-name-prefix }}-swip-rg
+      tunnel-app-service: ${{ needs.build-and-publish-auth-service-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
+      # Get database server name from the app setting
+      tunnel-remote-server-name: "DB_SERVER_NAME"
+      tunnel-remote-server-port: 5432
+      # DB updates will be performed through the auth service container
+      requires-container-registry-login: true
+      web-app-name: ${{ needs.build-and-publish-auth-service-image.outputs.dev-resource-name-prefix }}-wa-auth-service
+      image-tag: ${{ needs.build-and-publish-auth-service-image.outputs.docker-image-tag }}
+      version-endpoint-path: /api/accounts/version
