@@ -77,3 +77,13 @@ output "services_service_plan_id" {
   description = "ID of the service apps service plan"
   value       = azurerm_service_plan.asp_service_apps.id
 }
+
+output "storage_account_id" {
+  description = "ID of the shared storage account"
+  value       = azurerm_storage_account.sa.id
+}
+
+output "storage_account_name" {
+  description = "Name of the shared storage account"
+  value       = azurerm_storage_account.sa.name
+}

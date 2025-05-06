@@ -1,7 +1,4 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
-using Dfe.Sww.Ecf.Core.Jobs.Scheduling;
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,28 +11,6 @@ namespace Dfe.Sww.Ecf.Core;
 
 public static class Extensions
 {
-    public static IHostApplicationBuilder AddBackgroundWorkScheduler(
-        this IHostApplicationBuilder builder
-    )
-    {
-        if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
-        {
-            builder.Services.AddSingleton<
-                IBackgroundJobScheduler,
-                HangfireBackgroundJobScheduler
-            >();
-        }
-        else
-        {
-            builder.Services.AddSingleton<
-                IBackgroundJobScheduler,
-                ExecuteImmediatelyJobScheduler
-            >();
-        }
-
-        return builder;
-    }
-
     public static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
         var pgConnectionString = GetPostgresConnectionString(builder.Configuration);
@@ -49,24 +24,6 @@ public static class Extensions
         builder.Services.AddDbContextFactory<EcfDbContext>(options =>
             EcfDbContext.ConfigureOptions(options, pgConnectionString)
         );
-
-        return builder;
-    }
-
-    public static IHostApplicationBuilder AddHangfire(this IHostApplicationBuilder builder)
-    {
-        if (!builder.Environment.IsUnitTests() && !builder.Environment.IsEndToEndTests())
-        {
-            var pgConnectionString = GetPostgresConnectionString(builder.Configuration);
-
-            builder.Services.AddHangfire(configuration =>
-                configuration
-                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                    .UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings()
-                    .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(pgConnectionString))
-            );
-        }
 
         return builder;
     }

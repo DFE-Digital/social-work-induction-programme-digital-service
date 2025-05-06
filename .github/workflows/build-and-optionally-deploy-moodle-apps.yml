@@ -49,6 +49,7 @@ jobs:
       app-service-resource-group: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-swip-rg
       web-app-name: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-primary
       image-tag: ${{ needs.build-and-publish-moodle-image.outputs.docker-image-tag }}
+      version-endpoint-path: /version.txt
 
   optional-deploy-moodle-cron-app:
     needs: build-and-publish-moodle-image
@@ -59,5 +60,7 @@ jobs:
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      app-service-resource-group: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-swip-rg
       web-app-name: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-wa-moodle-cron
       image-tag: ${{ needs.build-and-publish-moodle-image.outputs.docker-image-tag }}
+      version-endpoint-path: /version.txt

@@ -40,5 +40,7 @@ jobs:
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      app-service-resource-group: ${{ needs.build-and-publish-proxy-image.outputs.dev-resource-name-prefix }}-swip-rg
       web-app-name: ${{ needs.build-and-publish-proxy-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
       image-tag: ${{ needs.build-and-publish-proxy-image.outputs.docker-image-tag }}
+      version-endpoint-path: /version.txt

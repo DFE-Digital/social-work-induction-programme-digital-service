@@ -29,3 +29,4 @@ jobs:
       app-service-resource-group: s205d01-swip-rg
       web-app-name: s205d01-wa-proxy-service
       image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/proxy-service:405-20250429.a6f148f.dev
+      version-endpoint-path: /version.txt

@@ -173,3 +173,8 @@ variable "one_login_client_id" {
   description = "One Login client ID"
   type        = string
 }
+
+variable "auth_service_feature_flag_overrides" {
+  description = "Auth service feature flag overrides"
+  type        = map(string)
+}

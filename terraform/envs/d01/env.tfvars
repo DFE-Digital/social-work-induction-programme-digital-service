@@ -20,3 +20,8 @@ moodle_instances = {
   # They will each have their own dedicated DB
   primary = {}
 }
+# Enable dev friendly auth services features in dev environment
+auth_service_feature_flag_overrides = {
+  "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
+  "FEATUREFLAGS__ENABLESWAGGER"                = "true"
+}

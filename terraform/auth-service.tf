@@ -47,6 +47,18 @@ resource "azurerm_key_vault_secret" "one_login_public_key_pem" {
   #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
+module "signing_certificate" {
+  source       = "./modules/certificate"
+  key_vault_id = module.stack.kv_id
+  cert_name    = "OpenIddictSigningCert"
+}
+
+module "encryption_certificate" {
+  source       = "./modules/certificate"
+  key_vault_id = module.stack.kv_id
+  cert_name    = "OpenIddictEncryptionCert"
+}
+
 module "auth_service" {
   source                    = "./modules/web-app"
   tenant_id                 = data.azurerm_client_config.az_config.tenant_id
@@ -67,12 +79,19 @@ module "auth_service" {
 
   # The settings name syntax below (e.g. OIDC__ISSUER) is how .NET imports environment 
   # variables to override the properties in its multi-level appsettings.json file
-  app_settings = {
+  app_settings = merge({
     "ENVIRONMENT"                                      = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"              = "false"
     "CONNECTIONSTRINGS__DEFAULTCONNECTION"             = "Host=${module.stack.postgres_db_host};Database=${azurerm_postgresql_flexible_server_database.auth_db.name};Username=${module.stack.postgres_username};Password=$[DB_REPLACE_PASSWORD];Ssl Mode=Require;Trust Server Certificate=false"
+    "STORAGECONNECTIONSTRING"                          = "https://${module.stack.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.dpkeys.name}/dpkeys"
+    "DB_SERVER_NAME"                                   = module.stack.postgres_db_host
+    "DB_DATABASE_NAME"                                 = azurerm_postgresql_flexible_server_database.auth_db.name
+    "DB_USER_NAME"                                     = module.stack.postgres_username
     "DB_PASSWORD"                                      = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
+    "KEYVAULTURI"                                      = module.stack.kv_vault_uri
     "OIDC__ISSUER"                                     = "https://${local.auth_service_web_app_name}.azurewebsites.net"
+    "OIDC__SIGNINGCERTIFICATENAME"                     = module.signing_certificate.cert_name
+    "OIDC__ENCRYPTIONCERTIFICATENAME"                  = module.encryption_certificate.cert_name
     "OIDC__APPLICATIONS__0__CLIENTID"                  = var.auth_service_client_id
     "OIDC__APPLICATIONS__0__CLIENTSECRET"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.auth_service_client_secret.name})"
     "OIDC__APPLICATIONS__0__REDIRECTURIS__0"           = local.moodle_web_app_oidc_url
@@ -81,9 +100,24 @@ module "auth_service" {
     "ONELOGIN__PRIVATEKEYPEM"                          = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.one_login_private_key_pem.name})"
     "ONELOGIN__URL"                                    = var.one_login_oidc_url
     DOCKER_ENABLE_CI                                   = "false" # Github will control CI, not Azure
-  }
+  }, var.auth_service_feature_flag_overrides)
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.auth_db
   ]
+}
+
+resource "azurerm_storage_container" "dpkeys" {
+  name               = "${var.resource_name_prefix}-sc-auth-service-dpkeys"
+  storage_account_id = module.stack.storage_account_id
+
+  # Prevent any anonymous or public blob reads
+  container_access_type = "private"
+}
+
+resource "azurerm_role_assignment" "dpkeys" {
+  scope                = azurerm_storage_container.dpkeys.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_type       = "ServicePrincipal"
+  principal_id         = module.auth_service.web_app_id
 }
