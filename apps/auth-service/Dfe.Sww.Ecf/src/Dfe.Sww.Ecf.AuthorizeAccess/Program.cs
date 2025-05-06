@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
@@ -147,8 +146,9 @@ builder
             }
         };
 
-        options.MetadataAddress = builder.Configuration.GetRequiredValue("OneLogin:MetadataAddress");
-        options.ClientAssertionJwtAudience = builder.Configuration.GetRequiredValue("OneLogin:ClientAssertionJwtAudience");
+        var oneLoginUrl = builder.Configuration.GetRequiredValue("OneLogin:Url");
+        options.MetadataAddress = oneLoginUrl + "/.well-known/openid-configuration";
+        options.ClientAssertionJwtAudience = oneLoginUrl + "/token";
 
         using (var rsa = RSA.Create())
         {
