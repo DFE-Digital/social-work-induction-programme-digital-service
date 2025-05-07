@@ -10,7 +10,8 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
     {
         var accounts = dbContext.Persons
             .Include(p => p.PersonOrganisations)
-            .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisationId))
+            .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisationId)
+                        && p.DeletedAt.HasValue == false)
             .Select(p => p);
 
         var totalItems = await accounts.CountAsync();
@@ -37,7 +38,8 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         var account = await dbContext
             .Persons.Include(p => p.PersonRoles)
             .ThenInclude(pr => pr.Role)
-            .FirstOrDefaultAsync(x => x.PersonId == id);
+            .FirstOrDefaultAsync(p => p.PersonId == id
+                                      && p.DeletedAt.HasValue == false);
         return account?.ToDto();
     }
 
@@ -83,6 +85,32 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
             account.PersonRoles.Add(role);
         }
 
+        await dbContext.SaveChangesAsync();
+
+        // Ensure roles are loaded
+        await dbContext
+            .Entry(account)
+            .Collection(x => x.PersonRoles)
+            .Query()
+            .Include(pr => pr.Role)
+            .LoadAsync();
+
+        return account.ToDto();
+    }
+
+    public async Task<PersonDto?> DeleteAsync(Guid id)
+    {
+        var account = await dbContext
+            .Persons.Include(p => p.PersonRoles)
+            .ThenInclude(pr => pr.Role)
+            .FirstOrDefaultAsync(x => x.PersonId == id);
+
+        if (account is null)
+        {
+            return null;
+        }
+
+        account.DeletedAt = clock.UtcNow;
         await dbContext.SaveChangesAsync();
 
         // Ensure roles are loaded

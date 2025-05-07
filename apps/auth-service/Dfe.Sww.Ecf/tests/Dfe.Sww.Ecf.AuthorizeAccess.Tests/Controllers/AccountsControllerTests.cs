@@ -82,7 +82,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             var result = await controller.GetAllAsync(request, organisationId);
 
             // Assert
-            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should().Be("Invalid Organisation ID format. Must be a valid GUID.");
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should()
+                .Be("Invalid Organisation ID format. Must be a valid GUID.");
         });
     }
 
@@ -297,6 +298,60 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             var updatedResult = result.Should().BeOfType<OkObjectResult>().Subject;
             updatedResult.Value.Should().BeOfType<PersonDto>();
             updatedResult.Value.Should().BeEquivalentTo(expectedUser);
+        });
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsNoContent_WhenUserIsDeleted()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var existingUser = (
+                await TestData.CreatePerson(p => p.WithStatus(PersonStatus.Active))
+            ).ToPersonDto();
+            existingUser.Roles = new List<RoleType>
+            {
+                Faker.Enum.Random<RoleType>(),
+            }.ToImmutableList();
+
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+
+            // Act
+            var result = await controller.DeleteAsync(existingUser.PersonId);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+        });
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsBadRequest_WhenUserIsNotFound()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+
+            // Act
+            var result = await controller.DeleteAsync(Guid.NewGuid());
+
+            // Assert
+            result.Should().BeOfType<BadRequestObjectResult>();
+            var response = result as BadRequestObjectResult;
+            response!.Value.Should().Be("Account not found.");
         });
     }
 }

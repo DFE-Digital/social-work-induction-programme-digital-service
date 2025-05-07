@@ -80,6 +80,23 @@ public class AccountsController(
         return Ok(updatedAccount);
     }
 
+
+    [HttpDelete("{id:guid}")]
+    [ActionName(nameof(DeleteAsync))]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
+    {
+        var deletedAccount = await accountsService.DeleteAsync(id);
+
+        if (deletedAccount is null)
+        {
+            return BadRequest("Account not found.");
+        }
+
+        return NoContent();
+    }
+
     [HttpGet("{id:guid}/linking-token")]
     [ActionName(nameof(GetLinkingTokenByIdAsync))]
     [Produces(MediaTypeNames.Application.Json)]
