@@ -12,6 +12,8 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
 public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFixture)
 {
+    private readonly AppInfo _appInfo = new();
+
     [Fact]
     public async Task GetAllAsync_ReturnsOkResult_WhenAccountsExist()
     {
@@ -42,9 +44,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetAllAsync(request, organisation.OrganisationId.ToString());
@@ -74,9 +75,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetAllAsync(request, organisationId);
@@ -99,9 +99,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetByIdAsync(createdPerson.PersonId);
@@ -125,9 +124,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetByIdAsync(Guid.NewGuid());
@@ -149,9 +147,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetLinkingTokenByIdAsync(createdPerson.PersonId);
@@ -173,9 +170,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.GetLinkingTokenByIdAsync(Guid.NewGuid());
@@ -210,9 +206,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.CreateAsync(
@@ -275,9 +270,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 accountsService,
                 new MemoryCache(new MemoryCacheOptions())
             );
-            var appInfo = new AppInfo();
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, appInfo);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.UpdateAsync(
@@ -321,7 +315,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 new MemoryCache(new MemoryCacheOptions())
             );
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.DeleteAsync(existingUser.PersonId);
@@ -343,7 +337,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 new MemoryCache(new MemoryCacheOptions())
             );
 
-            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
             // Act
             var result = await controller.DeleteAsync(Guid.NewGuid());

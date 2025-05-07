@@ -11,7 +11,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         var accounts = dbContext.Persons
             .Include(p => p.PersonOrganisations)
             .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisationId)
-                        && p.DeletedAt.HasValue == false)
+                        && p.DeletedOn.HasValue == false)
             .Select(p => p);
 
         var totalItems = await accounts.CountAsync();
@@ -39,7 +39,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
             .Persons.Include(p => p.PersonRoles)
             .ThenInclude(pr => pr.Role)
             .FirstOrDefaultAsync(p => p.PersonId == id
-                                      && p.DeletedAt.HasValue == false);
+                                      && p.DeletedOn.HasValue == false);
         return account?.ToDto();
     }
 
@@ -110,7 +110,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
             return null;
         }
 
-        account.DeletedAt = clock.UtcNow;
+        account.DeletedOn = clock.UtcNow;
         await dbContext.SaveChangesAsync();
 
         // Ensure roles are loaded
