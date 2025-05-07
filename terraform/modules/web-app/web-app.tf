@@ -16,16 +16,12 @@ resource "azurerm_linux_web_app" "webapp" {
     ftps_state             = "Disabled"
     minimum_tls_version    = "1.3"
 
-    # TODO: Re-enable front-door only integration when Moodle is completely working under the 
-    #       default .azurewebsites.net domain, so no routing intereference.
+    ip_restriction_default_action = "Deny"
 
-    #ip_restriction_default_action = "Deny"
-    ip_restriction_default_action = "Allow"
-
-    # ip_restriction {
-    #   name        = "Access from Front Door"
-    #   service_tag = "AzureFrontDoor.Backend"
-    # }
+    ip_restriction {
+      name        = "Access from Front Door"
+      service_tag = "AzureFrontDoor.Backend"
+    }
 
     container_registry_use_managed_identity = true
     application_stack {

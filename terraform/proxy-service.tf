@@ -6,7 +6,7 @@ module "proxy_service" {
   resource_group            = module.stack.resource_group_name
   resource_name_prefix      = var.resource_name_prefix
   web_app_name              = "${var.resource_name_prefix}-wa-proxy-service"
-  web_app_short_name        = "proxy-service"
+  web_app_short_name        = "wa-proxy-service"
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   subnet_webapps_id         = module.stack.subnet_services_id

@@ -1,12 +1,6 @@
-resource "tls_private_key" "keypair" {
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
-
 locals {
   auth_service_web_app_name = "${var.resource_name_prefix}-wa-auth-service"
   moodle_web_app_oidc_url   = "${module.web_app_moodle["primary"].web_app_url}/auth/oidc/"
-  private_key_single_line   = replace(tls_private_key.keypair.private_key_pem, "\n", "")
 }
 
 resource "azurerm_postgresql_flexible_server_database" "auth_db" {
@@ -23,40 +17,28 @@ resource "azurerm_key_vault_secret" "auth_service_client_secret" {
   #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
-resource "azurerm_key_vault_secret" "one_login_private_key_pem" {
-  name         = "AuthService-OneLoginPrivateKeyPem"
-  key_vault_id = module.stack.kv_id
-  value        = local.private_key_single_line
-  content_type = "application/x-pem-file"
-
-  #checkov:skip=CKV_AZURE_41:No expiry date
-}
-
 # The OneLogin public key is entered manually into the admin site 
 # (https://admin.sign-in.service.gov.uk/) for non-prod environments. The admin site will 
 # generate a client ID in return. For prod the public key must be given to the central 
 # OneLogin team for configuration. They will send you the client ID after the prod 
 # instance has been configured.
 
-resource "azurerm_key_vault_secret" "one_login_public_key_pem" {
-  name         = "AuthService-OneLoginPublicKeyPem"
+module "one_login_certificate" {
+  source       = "./modules/certificate"
   key_vault_id = module.stack.kv_id
-  value        = tls_private_key.keypair.public_key_pem
-  content_type = "application/x-pem-file"
-
-  #checkov:skip=CKV_AZURE_41:No expiry date
+  cert_name    = "AuthService-OneLoginKeyPair"
 }
 
 module "signing_certificate" {
   source       = "./modules/certificate"
   key_vault_id = module.stack.kv_id
-  cert_name    = "OpenIddictSigningCert"
+  cert_name    = "AuthService-OpenIddictSigningCert"
 }
 
 module "encryption_certificate" {
   source       = "./modules/certificate"
   key_vault_id = module.stack.kv_id
-  cert_name    = "OpenIddictEncryptionCert"
+  cert_name    = "AuthService-OpenIddictEncryptionCert"
 }
 
 module "auth_service" {
@@ -97,7 +79,7 @@ module "auth_service" {
     "OIDC__APPLICATIONS__0__REDIRECTURIS__0"           = local.moodle_web_app_oidc_url
     "OIDC__APPLICATIONS__0__POSTLOGOUTREDIRECTURIS__0" = "${local.moodle_web_app_oidc_url}logout.php"
     "ONELOGIN__CLIENTID"                               = var.one_login_client_id
-    "ONELOGIN__PRIVATEKEYPEM"                          = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.one_login_private_key_pem.name})"
+    "ONELOGIN__CERTIFICATENAME"                        = module.one_login_certificate.cert_name
     "ONELOGIN__URL"                                    = var.one_login_oidc_url
     DOCKER_ENABLE_CI                                   = "false" # Github will control CI, not Azure
   }, var.auth_service_feature_flag_overrides)

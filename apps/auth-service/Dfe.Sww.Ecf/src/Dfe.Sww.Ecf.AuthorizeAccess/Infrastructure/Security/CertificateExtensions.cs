@@ -21,7 +21,7 @@ public static class KeyVaultCertificateExtensions
             certClient.VaultUri,
             credential ?? new DefaultAzureCredential());
 
-        string secretName    = certWithPolicy.Name!;
+        string secretName = certWithPolicy.Name!;
         string secretVersion = certWithPolicy.Properties.Version!;
 
         KeyVaultSecret secret = 
@@ -31,8 +31,8 @@ public static class KeyVaultCertificateExtensions
         byte[] pfxBytes = Convert.FromBase64String(secret.Value);
         
         return new X509Certificate2(
-            pfxBytes,                      // PFX data
-            (string?)null,                 // no password
+            pfxBytes,                      
+            (string?)null,
             X509KeyStorageFlags.EphemeralKeySet
         );
     }

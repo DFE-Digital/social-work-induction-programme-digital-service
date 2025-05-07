@@ -4,9 +4,11 @@ public sealed class OneLoginConfiguration
 {
     public const string ConfigurationKey = "OneLogin";
 
-    public string? Url { get; init; }
+    public string Url { get; init; } = "";
 
     public string? ClientId { get; init; }
 
     public string? PrivateKeyPem { get; init; }
+
+    public string? CertificateName { get; init; }
 }
