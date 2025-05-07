@@ -146,8 +146,4 @@ just format
 
 ## Project background
 
-**In Q4 of 2024, the Early Career Framework (ECF team) was renamed to Social Work Induction Programme (SWIP). The framework is referred to as ‘Post Qualifying Standards’.**
-
-The SWIP Digital project team operates within the Social Work Workforce programme, which also includes the Support for Social Workers. We are part of the digital Children and Families portfolio of the Customer Experience and Digital directorate in DfE.
-
-Our portfolio collaborates with policy teams from the Families and Early Years groups, while other portfolios engage with Schools or Further Education groups. Our primary liaison is with the Children’s Social Care policy team, specifically in the Workforce division.
+In Q4 of 2024, the Early Career Framework (ECF team) was renamed to Social Work Induction Programme (SWIP). The framework is referred to as ‘Post Qualifying Standards’.
