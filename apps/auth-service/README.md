@@ -143,3 +143,7 @@ To format the entire codebase run
 ```shell
 just format
 ```
+
+## Project background
+
+In Q4 of 2024, the Early Career Framework (ECF team) was renamed to Social Work Induction Programme (SWIP). The framework is referred to as ‘Post Qualifying Standards’.
