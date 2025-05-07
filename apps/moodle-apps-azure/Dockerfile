@@ -56,6 +56,17 @@ COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme
 
+COPY install-moosh install-moosh
+RUN chmod +x install-moosh \
+    && ./install-moosh
+
+COPY install-oidc-plugin install-oidc-plugin
+RUN chmod +x install-oidc-plugin \
+    && cd public \
+    && ../install-oidc-plugin
+
+RUN rm install-*
+
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
 ###############################################################

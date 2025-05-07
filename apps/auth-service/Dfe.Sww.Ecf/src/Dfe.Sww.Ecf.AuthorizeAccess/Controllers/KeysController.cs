@@ -68,7 +68,7 @@ public class KeysController(
             jwks.Keys.Add(jwk);
         }        
 
-        cache.Set("OneLoginJWKS", jwks, TimeSpan.FromMinutes(60));
+        cache.Set("OneLoginJWKS", jwks, TimeSpan.FromMinutes(1));
 
         return Ok(jwks);
     }
