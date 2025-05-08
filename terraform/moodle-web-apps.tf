@@ -54,6 +54,7 @@ module "web_app_moodle" {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    "AUTH_SERVICE"                        = module.auth_service.front_door_app_url
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
   }
 

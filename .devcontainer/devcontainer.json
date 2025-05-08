@@ -1,0 +1,58 @@
+{
+	"name": ".NET Development Container",
+
+	"workspaceMount": "source=${localWorkspaceFolder},target=/swip,type=bind",
+	"workspaceFolder": "/swip",
+	"build": { "dockerfile": "Dockerfile" },
+	
+	"runArgs": [
+		"--network=host"
+	],  
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	  // Set *default* container specific settings.json values on container create.
+	//"features": { "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {} },
+	"customizations": {
+		"vscode": {
+			"settings": { 
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash"
+					}
+				}
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"codeium.codeium",
+				"donjayamanne.githistory",
+				"eamodio.gitlens",
+				"vscode-icons-team.vscode-icons",
+				"lextudio.restructuredtext-pack",
+				"trond-snekvik.simple-rst",
+				"mechatroner.rainbow-csv",
+				"ms-dotnettools.csdevkit",
+				"chrmarti.regex",
+				"ms-dotnettools.csharp", 
+				"ms-python.python", 
+				"ms-python.vscode-pylance", 
+				"formulahendry.dotnet-test-explorer", 
+				"yzhang.markdown-all-in-one"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Uncomment the next line to run commands after the container is created - for example installing curl.
+	"postCreateCommand": "dotnet nuget add source /swip/LocalPackages;bash -i -c 'nvm install --lts'",
+
+	// Add mounts to docker container
+	"mounts": [ 
+		// Example data mount from local machine, must use target directory in Config.json
+		// "source=C:/Users/XXXXXXXXXXXX/Lean/Data,target=/Data,type=bind,consistency=cached"
+		//"source=/media/paul/NVME_DATA/Projects/ForBackup/AutomatedTrading/AutoTradeCs/quant-connect-strategies/data,target=/Lean/.injected/data,type=bind",
+	]
+}
