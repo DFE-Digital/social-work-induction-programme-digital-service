@@ -12,6 +12,10 @@ on:
           - None
           - d01
           - d02
+      version-tag:
+        description: Version tag to deploy, e.g. 20250506.118df8a.dev
+        type: string
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
@@ -29,13 +33,13 @@ jobs:
       working-dir: ./apps/auth-service
       # These are app settings which are required to run the db update
       fetch-web-app-settings: "DB_SERVER_NAME;DB_DATABASE_NAME;DB_USER_NAME;DB_PASSWORD"
-      app-service-resource-group: s205d01-swip-rg
-      tunnel-app-service: s205d01-wa-proxy-service
+      app-service-resource-group: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-swip-rg
+      tunnel-app-service: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-wa-proxy-service
       # Get database server name from the app setting
       tunnel-remote-server-name: "DB_SERVER_NAME"
       tunnel-remote-server-port: 5432
       # DB updates will be performed through the auth service container
       requires-container-registry-login: true
-      web-app-name: s205d01-wa-auth-service
-      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/auth-service:20250506.118df8a.dev
+      web-app-name: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-wa-auth-service
+      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/auth-service:${{ github.event.inputs.version-tag }}
       version-endpoint-path: /api/accounts/version

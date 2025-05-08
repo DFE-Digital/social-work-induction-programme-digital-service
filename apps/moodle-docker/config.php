@@ -17,7 +17,8 @@ $CFG->dboptions = [
   'dbsocket' => '',
 ];
 
-$host = $_SERVER['HTTP_HOST'] ?? getenv('MOODLE_DOCKER_WEB_HOST') ?? 'localhost';
+# Get host name from Front Door forward header first, then fallback
+$host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? getenv('MOODLE_DOCKER_WEB_HOST') ?? 'localhost';
 if (empty($_SERVER['HTTP_HOST'])) {
   $_SERVER['HTTP_HOST'] = $host;
 }

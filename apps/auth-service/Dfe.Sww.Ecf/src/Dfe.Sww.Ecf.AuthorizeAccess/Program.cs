@@ -1,8 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
+using Azure.Security.KeyVault.Secrets;
 using Dfe.Analytics;
 using Dfe.Analytics.AspNetCore;
 using Dfe.Sww.Ecf;
@@ -43,11 +45,22 @@ builder.Services.Configure<AppInfo>(
   builder.Configuration.GetRequiredSection("AppInfo")
 );
 
-var featureFlags = builder.Configuration
-    .GetSection("FeatureFlags")
-    .Get<FeatureFlags>()
-    ?? throw new InvalidOperationException("Missing FeatureFlags section");
-builder.Services.AddSingleton(featureFlags);
+var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
+FeatureFlags featureFlags = builder.Configuration
+    .GetRequiredSection("FeatureFlags")
+    .Get<FeatureFlags>()!;
+
+var oneLoginSection = builder.Configuration.GetRequiredSection("OneLogin");
+builder.Services.Configure<OneLoginConfiguration>(oneLoginSection);
+OneLoginConfiguration oneLoginConfig = oneLoginSection.Get<OneLoginConfiguration>()!;
+
+var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
+var certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
+builder.Services
+    .AddSingleton(oneLoginConfig)
+    .AddSingleton(featureFlags)
+    .AddSingleton(_ => secretClient)
+    .AddSingleton(_ => certificateClient);
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
@@ -146,23 +159,40 @@ builder
             }
         };
 
-        var oneLoginUrl = builder.Configuration.GetRequiredValue("OneLogin:Url");
-        options.MetadataAddress = oneLoginUrl + "/.well-known/openid-configuration";
-        options.ClientAssertionJwtAudience = oneLoginUrl + "/token";
+        options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
+        options.ClientAssertionJwtAudience = oneLoginConfig.Url + "/token";
 
-        using (var rsa = RSA.Create())
+        if (featureFlags.EnableOneLoginCertificateRotation)
         {
-            var privateKeyPem = builder.Configuration["OneLogin:PrivateKeyPem"];
-            rsa.ImportFromPem(privateKeyPem);
-
+            KeyVaultSecret pfxSecret = secretClient
+                .GetSecret(oneLoginConfig.CertificateName);
+            byte[] pfxBytes = Convert.FromBase64String(pfxSecret.Value);
+            var certificate = new X509Certificate2(
+                pfxBytes,
+                (string?)null,
+                X509KeyStorageFlags.EphemeralKeySet
+            );            
+            var rsaPrivateKey = certificate.GetRSAPrivateKey();
             options.ClientAuthenticationCredentials = new SigningCredentials(
-                new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
+                new RsaSecurityKey(rsaPrivateKey!),
                 SecurityAlgorithms.RsaSha256
-            );
+            );            
+        }
+        else
+        {
+            using (var rsa = RSA.Create())
+            {
+                rsa.ImportFromPem(oneLoginConfig.PrivateKeyPem);
+
+                options.ClientAuthenticationCredentials = new SigningCredentials(
+                    new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
+                    SecurityAlgorithms.RsaSha256
+                );
+            }
         }
 
         options.ClientId =
-            builder.Configuration["OneLogin:ClientId"]
+            oneLoginConfig.ClientId
             ?? throw new InvalidOperationException("Missing OneLogin:ClientId");
         options.CallbackPath = "/_onelogin/callback";
         options.SignedOutCallbackPath = "/_onelogin/logout-callback";
@@ -234,11 +264,8 @@ builder
 
         if (featureFlags.EnableOpenIdCertificates)
         {
-            var vaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
-            var certClient = new CertificateClient(vaultUri, new DefaultAzureCredential());
-
             var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
-            var signingCert = certClient
+            var signingCert = certificateClient
                 .GetX509CertificateAsync(certName)
                 .ConfigureAwait(false)
                 .GetAwaiter()
@@ -246,7 +273,7 @@ builder
             options.AddSigningCertificate(signingCert);
 
             certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
-            var encryptionCert = certClient
+            var encryptionCert = certificateClient
                 .GetX509CertificateAsync(certName)
                 .ConfigureAwait(false)
                 .GetAwaiter()
@@ -383,7 +410,8 @@ builder.Services
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
-    .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value);
+    .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value)
+    .AddSingleton(sp => sp.GetRequiredService<IOptions<OneLoginConfiguration>>().Value);
 
 builder
     .Services.AddOptions<AuthorizeAccessOptions>()

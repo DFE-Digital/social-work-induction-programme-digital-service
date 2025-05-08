@@ -45,11 +45,11 @@ runs:
             if [ -n "$body" ]; then
               if [ "$body" == "$EXPECTED_RESPONSE" ]; then
                 RESPONSE="$body"
-                echo "✅ Got correct version response '$EXPECTED_RESPONSE' after ${elapsed}s:"
+                echo "✅ Got correct endpoint response '$EXPECTED_RESPONSE' after ${elapsed}s:"
                 echo "$RESPONSE"
                 break
               else
-                echo "⏳ Got incorrect version response '$body', expected '$EXPECTED_RESPONSE' after ${elapsed}s:"
+                echo "⏳ Got incorrect endpoint response '$body', expected '$EXPECTED_RESPONSE' after ${elapsed}s:"
               fi
             fi
           else

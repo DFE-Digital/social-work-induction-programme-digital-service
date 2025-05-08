@@ -170,7 +170,7 @@ variable "one_login_oidc_url" {
 }
 
 variable "one_login_client_id" {
-  description = "One Login client ID"
+  description = "The client ID for one login (non-secret)"
   type        = string
 }
 

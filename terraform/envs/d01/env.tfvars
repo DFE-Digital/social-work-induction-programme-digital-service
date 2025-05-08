@@ -25,3 +25,4 @@ auth_service_feature_flag_overrides = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
+one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
