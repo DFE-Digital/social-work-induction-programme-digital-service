@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMLDB PATH="mod/assign/submission/customtextbox/db"
+       VERSION="2025050800"
+       COMMENT="Schema for the custom textbox submission plugin">
+  <TABLES>
+    <TABLE NAME="assignsubmission_customtextbox"
+           COMMENT="Stores each student’s custom textbox response">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"    LENGTH="10"
+               NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assignment"   TYPE="int"    LENGTH="10"
+               NOTNULL="true"/>
+        <FIELD NAME="submission"   TYPE="int"    LENGTH="10"
+               NOTNULL="true"/>
+        <FIELD NAME="textcontent"  TYPE="text"
+               NOTNULL="false"/>
+        <FIELD NAME="textformat" TYPE="int" 
+               LENGTH="4" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="assignment_fk" TYPE="foreign"
+             FIELDS="assignment" REFTABLE="assign" REFFIELDS="id"/>
+        <KEY NAME="submission_fk" TYPE="foreign"
+             FIELDS="submission" REFTABLE="assign_submission" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
