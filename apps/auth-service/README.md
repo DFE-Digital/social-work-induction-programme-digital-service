@@ -151,6 +151,22 @@ just set-tests-secret OneLogin:ClientId "exampleClientId"
 just set-tests-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
 ```
 
+### Certificates
+
+By default, the auth service is configured in the `appsettings.Development.json` to use an `aspnet-dev-cert.pfx` certificate file when running locally with HTTPS in order to support communication between apps running on the local machine and in docker as the default devcerts only allow communication on `localhost`. You will need to create this certificate locally with the correct values to ensure the auth-service can communicate with other apps running on the host machine.
+
+To do this, in the `/Dfe.Sww.Ecf` directory, run the following:
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout aspnet-dev-cert.key \
+    -out aspnet-dev-cert.crt \
+    -subj "/CN=localhost" \
+    -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"
+
+openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:password123
+```
+
+
 ## Formatting
 
 Before committing you can format any changed files by running:
