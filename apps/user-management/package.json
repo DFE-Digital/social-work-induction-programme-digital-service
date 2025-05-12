@@ -4,15 +4,11 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "prepare": "nx g @nx-dotnet/core:restore"
+    "prepare": "dotnet restore"
   },
   "private": true,
   "devDependencies": {
     "@faker-js/faker": "^9.0.1",
-    "@nx-dotnet/core": "^2.4.2",
-    "@nx/js": "18.2.4",
-    "@nx/playwright": "18.2.4",
-    "@nx/workspace": "18.2.4",
     "@playwright/test": "^1.45.3",
     "@serenity-js/assertions": "^3.28.0",
     "@serenity-js/console-reporter": "^3.25.3",
@@ -26,7 +22,6 @@
     "dotenv": "^16.4.5",
     "eslint": "~8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "nx": "18.2.4",
     "prettier": "^3.3.3"
   },
   "dependencies": {
