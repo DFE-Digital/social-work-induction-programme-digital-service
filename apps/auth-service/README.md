@@ -11,21 +11,42 @@ The API is an ASP.NET Core 8 web application. To develop locally you will need t
 - Visual Studio 2022 (or the .NET 8 SDK and an alternative IDE/editor);
 - a local Postgres 13+ instance.
 - [SASS](https://sass-lang.com/install).
+- [just](https://just.systems/)
+- [Powershell Core](https://microsoft.com/PowerShell)
+- [NodeJS](https://nodejs.org/en)
 
 A `justfile` defines various recipes for development. Ensure [just](https://just.systems/) is installed and available on your `$PATH` as well as [PowerShell](https://microsoft.com/PowerShell).
 Note: 'Windows Powershell' and 'Powershell' are two different things! Powershell is the cross-platform version that works on any OS.
 Please ensure you have 'Powershell' installed.
+
 To setup PowerShell on a MacOS machine, use you can follow [this guide](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-macos?view=powershell-7.4). For Windows, you can follow [this guide](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4).
+
+#### asdf
+
+If using [asdf](https://asdf-vm.com/), a `.tool-versions` file has been created to simplify the installation of these dependencies. Simply run the following:
+```
+asdf plugin add just
+asdf plugin add powershell-core
+asdf plugin add nodejs
+asdf install
+```
 
 ### Setup
 
 - `just install-tools`
+  - Note: If using `asdf`, you may need to run `asdf reshim` after you have run `install-tools` in order to make `sass` available to the cli
 - `just restore`
 - `just build`
+
+
 
 ### Database
 
 The auth service utilises a PostgreSQL database to store it's data. An existing PostgreSQL instance can be used by the service when running locally or a new instance can be created and run in a docker container for development use.
+
+#### PostreSQL with docker compose
+
+A `compose.yml` file has been created in `/tools/auth-db` to simplify the creation of a local database for development. Simply run `docker compose up` in this directory to start the database. See the `compose.yml` file for values such as username/password you will need to configure in the application.
 
 #### PostgreSQL in a docker container using Podman
 
