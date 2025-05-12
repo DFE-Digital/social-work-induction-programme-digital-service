@@ -29,28 +29,9 @@ asdf install
 ### Setup
 
 - Install dependencies: `pnpm i`
-- *Optionally*:
-  - Install `nx` globally: `pnpm i -g nx`
-  - **Or:** wherever the documentation refers to `nx ...`, just use `pnpx nx ...` instead.
 - Install playwright dependencies: `pnpx playwright install`
 
 ### Tasks
-
-#### Running tasks
-
-Tasks can either be run workspace-wide with `nx run-many -t <taskName>`, or project specific with `nx run <project>:<taskName>`.
-e.g.
-- `nx run-many -t serve`
-- `nx run frontend:build`
-
-#### Task List
-
-| Task Name | Description                               |
-| --------- | ----------------------------------------- |
-| `build`   | Builds the project(s)                     |
-| `serve`   | Builds and runs a live development server |
-| `test`    | Runs unit tests                           |
-| `e2e`     | Runs E2E tests                            |
 
 ###### Running Tests
 
