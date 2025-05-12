@@ -7,7 +7,7 @@
   <Target Name="CompileSass" BeforeTargets="Build">
     <Exec
       Command='
-      export PATH="/home/linuxbrew/.linuxbrew/bin:$HOME/.asdf/shims:$PATH" &amp;&amp;
+      export PATH="/opt/homebrew/bin/asdf:/home/linuxbrew/.linuxbrew/bin:$HOME/.asdf/shims:$PATH" &amp;&amp;
       (
         command -v sass &gt;/dev/null 2&gt;&amp;1 &amp;&amp; \
         sass -q wwwroot/Styles/site.scss wwwroot/Styles/site.css
