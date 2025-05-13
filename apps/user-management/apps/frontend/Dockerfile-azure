@@ -1,0 +1,54 @@
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18 AS user-management
+
+ARG AZURE_KUDU_SSH_USER
+ARG FULL_TAG
+ENV VERSION=${FULL_TAG}
+
+WORKDIR /App
+
+COPY bin/Release/net8.0/publish/ .
+RUN rm appsettings.* \
+    && echo "$VERSION" > wwwroot/version.txt
+COPY appsettings.Azure.json appsettings.json
+
+# The Microsoft‐published Alpine images do not come with the full International Components 
+# for Unicode data or the time-zone database pre-installed. They ship in “invariant globalization mode” 
+# by default on Alpine, which means:
+#
+#   You get the minimal .NET runtime binaries (compiled against musl)
+#   You don't get the icu-libs package baked in (so the runtime will crash 
+#       when looking for libicu*.so)    
+#   You don’t get the full ICU data (icu-data-full) nor the IANA zoneinfo files (tzdata).
+
+# tzdata gives you /usr/share/zoneinfo/... for real time-zone support
+# icu-data-full drops in all of the locale tables (collation, calendars, 
+# number/currency formats, etc.)
+
+RUN apk add --no-cache \
+    tzdata \
+    icu-data-full \
+    icu-libs
+
+# Flips .NET back on to use ICU rather than the invariant fallback
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Install SSH Server for Kudu
+RUN apk --no-cache add openssh \
+    shadow
+
+# Support kudu tools SSH for remote debug
+COPY sshd_config /etc/ssh/sshd_config
+RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
+    export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
+    && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
+    && > /etc/motd \
+    && mkdir -p /var/run/sshd \
+    && chmod 0755 /var/run/sshd \
+    && ssh-keygen -A
+        
+ENV ASPNETCORE_HTTP_PORTS=80
+
+ENTRYPOINT ["dotnet", "Dfe.Sww.Ecf.Frontend.dll"]
+
+EXPOSE 80
