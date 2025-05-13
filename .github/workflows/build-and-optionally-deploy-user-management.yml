@@ -1,0 +1,49 @@
+name: Build user management (optionally deploy to non-prod) 
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+      
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish-user-management-image:
+    name: Build and Publish User Management Image
+    uses: ./.github/workflows/build-and-publish-image.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/user-management/apps/frontend
+      # Path is in relation to the working directory
+      docker-build-file: Dockerfile-azure
+      docker-image-name: user-management
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+      build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+      build-target: user-management
+
+  optional-deploy-user-anageent:
+    needs: build-and-publish-user-management-image
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy User Management (optional)
+    uses: ./.github/workflows/deploy-app-service.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/user-management/apps/frontend
+      app-service-resource-group: ${{ needs.build-and-publish-user-management-image.outputs.dev-resource-name-prefix }}-swip-rg
+      web-app-name: ${{ needs.build-and-publish-user-management-image.outputs.dev-resource-name-prefix }}-wa-user-management
+      image-tag: ${{ needs.build-and-publish-user-management-image.outputs.docker-image-tag }}
+      version-endpoint-path: /version.txt
