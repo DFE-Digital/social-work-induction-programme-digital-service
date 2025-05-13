@@ -42,6 +42,8 @@ RUN echo "Starting Moodle CLI installation..." \
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
+ARG MOODLE_GOV_UK_THEME_VERSION
+
 # The theme script below runs the Moodle upgrade script from public/...
 WORKDIR /var/www/html
 
@@ -54,7 +56,7 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodl
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
-    && ./install-theme
+    && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION}
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #

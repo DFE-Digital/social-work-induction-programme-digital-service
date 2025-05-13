@@ -13,6 +13,8 @@ set -e
 # Default release if no argument is provided.
 if [[ "$1" == "" || "$1" == "default" ]]; then
   RELEASE=2024200800
+else
+  RELEASE=$1
 fi
 
 THEME_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/${RELEASE}/govuk-moodle-theme.zip"

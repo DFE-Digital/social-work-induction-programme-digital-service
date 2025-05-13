@@ -28,7 +28,7 @@ jobs:
       working-dir: ./apps/moodle-apps-azure
       docker-image-name: wa-moodle
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }}"
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }};MOODLE_GOV_UK_THEME_VERSION=${{ vars.MOODLE_GOV_UK_THEME_VERSION }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: moodle-app
 
