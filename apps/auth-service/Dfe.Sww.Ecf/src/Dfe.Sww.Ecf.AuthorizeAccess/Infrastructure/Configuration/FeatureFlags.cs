@@ -16,4 +16,5 @@ public class FeatureFlags
     public bool EnableMsDotNetDataProtectionServices { get; set; }
     public bool EnableOpenIdCertificates { get; set; }
     public bool EnableOneLoginCertificateRotation { get; set; }
+    public bool EnableDevelopmentOpenIdCertificates { get; set; }
 }

@@ -45,22 +45,29 @@ builder.Services.Configure<AppInfo>(
   builder.Configuration.GetRequiredSection("AppInfo")
 );
 
-var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
-FeatureFlags featureFlags = builder.Configuration
+var featureFlags = builder.Configuration
     .GetRequiredSection("FeatureFlags")
     .Get<FeatureFlags>()!;
 
 var oneLoginSection = builder.Configuration.GetRequiredSection("OneLogin");
 builder.Services.Configure<OneLoginConfiguration>(oneLoginSection);
-OneLoginConfiguration oneLoginConfig = oneLoginSection.Get<OneLoginConfiguration>()!;
+var oneLoginConfig = oneLoginSection.Get<OneLoginConfiguration>()!;
 
-var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
-var certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
 builder.Services
     .AddSingleton(oneLoginConfig)
-    .AddSingleton(featureFlags)
-    .AddSingleton(_ => secretClient)
-    .AddSingleton(_ => certificateClient);
+    .AddSingleton(featureFlags);
+
+SecretClient? secretClient = null;
+CertificateClient? certificateClient = null;
+if (featureFlags.EnableOneLoginCertificateRotation || featureFlags.EnableOpenIdCertificates)
+{
+    var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
+    secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
+    certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
+    builder.Services
+        .AddSingleton(_ => secretClient)
+        .AddSingleton(_ => certificateClient);
+}
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
@@ -162,33 +169,31 @@ builder
         options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
         options.ClientAssertionJwtAudience = oneLoginConfig.Url + "/token";
 
-        if (featureFlags.EnableOneLoginCertificateRotation)
+        if (featureFlags.EnableOneLoginCertificateRotation && secretClient is not null)
         {
             KeyVaultSecret pfxSecret = secretClient
                 .GetSecret(oneLoginConfig.CertificateName);
-            byte[] pfxBytes = Convert.FromBase64String(pfxSecret.Value);
+            var pfxBytes = Convert.FromBase64String(pfxSecret.Value);
             var certificate = new X509Certificate2(
                 pfxBytes,
                 (string?)null,
                 X509KeyStorageFlags.EphemeralKeySet
-            );            
+            );
             var rsaPrivateKey = certificate.GetRSAPrivateKey();
             options.ClientAuthenticationCredentials = new SigningCredentials(
                 new RsaSecurityKey(rsaPrivateKey!),
                 SecurityAlgorithms.RsaSha256
-            );            
+            );
         }
         else
         {
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportFromPem(oneLoginConfig.PrivateKeyPem);
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(oneLoginConfig.PrivateKeyPem);
 
-                options.ClientAuthenticationCredentials = new SigningCredentials(
-                    new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
-                    SecurityAlgorithms.RsaSha256
-                );
-            }
+            options.ClientAuthenticationCredentials = new SigningCredentials(
+                new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
+                SecurityAlgorithms.RsaSha256
+            );
         }
 
         options.ClientId =
@@ -218,7 +223,7 @@ builder
                 return true;
             }
 
-            journeyInstanceId = default;
+            journeyInstanceId = null;
             return false;
         }
     });
@@ -262,7 +267,7 @@ builder
             .EnableUserinfoEndpointPassthrough()
             .EnableStatusCodePagesIntegration();
 
-        if (featureFlags.EnableOpenIdCertificates)
+        if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
             var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
             var signingCert = certificateClient
@@ -279,6 +284,11 @@ builder
                 .GetAwaiter()
                 .GetResult();
             options.AddEncryptionCertificate(encryptionCert);
+        }
+
+        if (featureFlags.EnableDevelopmentOpenIdCertificates)
+        {
+            options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
         }
     })
     .AddValidation(options =>
