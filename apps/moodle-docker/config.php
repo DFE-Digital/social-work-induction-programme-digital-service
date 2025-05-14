@@ -19,11 +19,10 @@ $CFG->dboptions = [
 
 # Get host name from Front Door forward header first, then fallback
 $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? getenv('MOODLE_DOCKER_WEB_HOST') ?? 'localhost';
-if (empty($_SERVER['HTTP_HOST'])) {
-  $_SERVER['HTTP_HOST'] = $host;
-}
+$_SERVER['HTTP_HOST'] = $host;
 $httpOrS = '';
 if (getenv('MOODLE_DOCKER_SSL_TERMINATION') === 'true') {
+  $CFG->sslproxy = true;
   $CFG->sslproxy = true;
   $httpOrS = 's';
 }
@@ -43,7 +42,9 @@ $CFG->admin = getenv('MOODLE_ADMIN_USER');
 
 $CFG->directorypermissions = 02777;
 
-$CFG->theme = 'govuk';
+if (getenv('MOODLE_SWITCH_OFF_GOVUK_THEMING') !== 'true') {
+  $CFG->theme = 'govuk'; 
+}
 
 // The Moodle instances should NOT run their own cron jobs
 $CFG->cronclionly = true;

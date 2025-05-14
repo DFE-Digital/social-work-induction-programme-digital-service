@@ -37,7 +37,7 @@ module "web_app_moodle" {
   service_plan_id           = module.stack.moodle_service_plan_id
   tags                      = local.common_tags
 
-  app_settings = {
+  app_settings = merge({
     "ENVIRONMENT"                         = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     "IS_CRON_JOB_ONLY"                    = "false"
@@ -55,7 +55,7 @@ module "web_app_moodle" {
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
-  }
+  }, var.moodle_app_settings)
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
@@ -85,7 +85,7 @@ module "web_app_moodle_cron" {
   # This is because one installation webapp can service multiple moodle
   # instances, the only difference being the database name.
 
-  app_settings = {
+  app_settings = merge({
     "ENVIRONMENT"                         = var.environment
     "IS_CRON_JOB_ONLY"                    = "true"
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
@@ -103,7 +103,7 @@ module "web_app_moodle_cron" {
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
-  }
+  }, var.moodle_app_settings)
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
