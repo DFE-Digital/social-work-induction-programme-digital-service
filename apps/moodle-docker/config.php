@@ -23,7 +23,6 @@ $_SERVER['HTTP_HOST'] = $host;
 $httpOrS = '';
 if (getenv('MOODLE_DOCKER_SSL_TERMINATION') === 'true') {
   $CFG->sslproxy = true;
-  $CFG->sslproxy = true;
   $httpOrS = 's';
 }
 $CFG->wwwroot = "http{$httpOrS}://{$host}";
