@@ -128,6 +128,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         response!.Url.Should().Be("/manage-accounts");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
         MockMoodleServiceClient.Verify(
             x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
