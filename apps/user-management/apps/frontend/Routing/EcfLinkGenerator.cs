@@ -73,6 +73,8 @@ public abstract class EcfLinkGenerator(
 
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
 
+    public string EligibilityInformation() => GetRequiredPathByPage("/ManageAccounts/EligibilityInformation");
+
     protected abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,
