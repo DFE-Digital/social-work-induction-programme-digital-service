@@ -49,6 +49,6 @@ public class SelectAccountType(
             return Redirect(linkGenerator.SelectUseCase());
         }
         createAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
-        return Redirect(linkGenerator.AddAccountDetails());
+        return Redirect(linkGenerator.EligibilityInformation());
     }
 }
