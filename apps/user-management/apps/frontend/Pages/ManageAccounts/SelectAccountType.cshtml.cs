@@ -16,7 +16,7 @@ public class SelectAccountType(
 ) : BasePageModel
 {
     [BindProperty]
-    [Required(ErrorMessage = "Select who you want to add")]
+    [Required(ErrorMessage = "Select the type of user you want to add")]
     public bool? IsStaff { get; set; }
 
     public Guid? EditAccountId { get; set; }
