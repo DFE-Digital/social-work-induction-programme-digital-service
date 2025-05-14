@@ -26,3 +26,6 @@ auth_service_feature_flag_overrides = {
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
 one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
+moodle_app_settings = {
+  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
+}

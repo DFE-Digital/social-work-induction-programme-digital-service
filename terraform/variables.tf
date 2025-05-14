@@ -175,6 +175,12 @@ variable "one_login_client_id" {
 }
 
 variable "auth_service_feature_flag_overrides" {
-  description = "Auth service feature flag overrides"
+  description = "Environment specific auth service feature flag overrides"
   type        = map(string)
+}
+
+variable "moodle_app_settings" {
+  description = "Environment specific Moodle app settings"
+  type        = map(string)
+  default     = {}
 }

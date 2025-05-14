@@ -27,4 +27,7 @@ auth_service_feature_flag_overrides = {
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
 # Needs wiring up
-#one_login_client_id = ""
+one_login_client_id = ""
+moodle_app_settings = {
+  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
+}
