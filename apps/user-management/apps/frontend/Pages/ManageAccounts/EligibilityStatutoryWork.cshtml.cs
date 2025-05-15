@@ -33,7 +33,7 @@ public class EligibilityStatutoryWork(
         if (IsStatutoryWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EligibilityInformation();
+            BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
             return Page();
         }
 
