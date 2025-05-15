@@ -86,6 +86,12 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsRegisteredWithSocialWorkEngland()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsRegisteredWithSocialWorkEngland;
+    }
+
     public void SetIsRegisteredWithSocialWorkEngland(bool? isRegisteredWithSocialWorkEngland)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
