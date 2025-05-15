@@ -30,9 +30,30 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
 
         // Assert
         result.Should().BeOfType<PageResult>();
-
+        Sut.IsStatutoryWorker.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
 
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void OnGet_WhenCalledWithIsStatutoryWorkerSet_LoadsTheViewWithPreselectedOption(bool isStatutoryWorker)
+    {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStatutoryWorker())
+            .Returns(isStatutoryWorker);
+
+        // Act
+        var result = Sut.OnGet();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.IsStatutoryWorker.Should().Be(isStatutoryWorker);
+
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

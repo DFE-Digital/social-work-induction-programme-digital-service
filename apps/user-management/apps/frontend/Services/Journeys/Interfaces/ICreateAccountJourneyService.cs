@@ -23,6 +23,8 @@ public interface ICreateAccountJourneyService
 
     void SetIsRegisteredWithSocialWorkEngland(bool? isRegisteredWithSocialWorkEngland);
 
+    bool? GetIsStatutoryWorker();
+
     void SetIsStatutoryWorker(bool? isStatutoryWorker);
 
     Task<Account> CompleteJourneyAsync();

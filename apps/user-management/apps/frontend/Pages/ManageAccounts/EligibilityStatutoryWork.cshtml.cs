@@ -24,6 +24,7 @@ public class EligibilityStatutoryWork(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
+        IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
         return Page();
     }
 
