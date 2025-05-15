@@ -10,38 +10,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 /// <summary>
-/// Eligibility Social Work England View Model
+/// Eligibility Statutory Work View Model
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
-public class EligibilitySocialWorkEngland(
+public class EligibilityStatutoryWork(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
-    IValidator<EligibilitySocialWorkEngland> validator)
+    IValidator<EligibilityStatutoryWork> validator)
     : BasePageModel
 {
-    [BindProperty] public bool? IsRegisteredWithSocialWorkEngland { get; set; }
+    [BindProperty] public bool? IsStatutoryWorker { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityInformation();
-        IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
+        BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (IsRegisteredWithSocialWorkEngland is null || !validationResult.IsValid)
+        if (IsStatutoryWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
             BackLinkPath = linkGenerator.EligibilityInformation();
             return Page();
         }
 
-        createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
+        createAccountJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
 
-        return Redirect(IsRegisteredWithSocialWorkEngland is false
-            ? linkGenerator.EligibilitySocialWorkEnglandDropout()
-            : linkGenerator.EligibilityStatutoryWork());
+        return Redirect(IsStatutoryWorker is false
+            ? linkGenerator.EligibilitySocialWorkEnglandDropout() // TODO: Redirect to statutory work dropout page in SWIP-592
+            : linkGenerator.AddAccountDetails()); // TODO: Redirect to agency work page in SWIP-580
     }
 }
