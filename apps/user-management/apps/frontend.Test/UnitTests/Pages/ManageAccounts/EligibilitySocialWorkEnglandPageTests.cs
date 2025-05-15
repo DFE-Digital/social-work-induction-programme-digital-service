@@ -99,9 +99,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        // TODO: Update this redirect assertion in SWIP-590
-        // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-dropout");
-        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-social-work-england-dropout");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(false), Times.Once);
 
