@@ -1,6 +1,10 @@
 locals {
-  auth_service_web_app_name = "${var.resource_name_prefix}-wa-auth-service"
-  moodle_web_app_oidc_url   = "${module.web_app_moodle["primary"].web_app_url}/auth/oidc/"
+  auth_service_web_app_name    = "${var.resource_name_prefix}-wa-auth-service"
+  auth_service_client_id       = var.auth_service_client_id
+  auth_service_client_secret   = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.auth_service_client_secret.name})"
+  auth_service_end_point       = "${module.auth_service.front_door_app_url}/oauth2/authorize"
+  auth_service_token_end_point = "${module.auth_service.front_door_app_url}/oauth2/token"
+  auth_service_logout_uri      = "${module.auth_service.front_door_app_url}/oauth2/logout"
 }
 
 resource "azurerm_postgresql_flexible_server_database" "auth_db" {
@@ -74,8 +78,8 @@ module "auth_service" {
     "OIDC__ISSUER"                                     = "https://${local.auth_service_web_app_name}.azurewebsites.net"
     "OIDC__SIGNINGCERTIFICATENAME"                     = module.signing_certificate.cert_name
     "OIDC__ENCRYPTIONCERTIFICATENAME"                  = module.encryption_certificate.cert_name
-    "OIDC__APPLICATIONS__0__CLIENTID"                  = var.auth_service_client_id
-    "OIDC__APPLICATIONS__0__CLIENTSECRET"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.auth_service_client_secret.name})"
+    "OIDC__APPLICATIONS__0__CLIENTID"                  = local.auth_service_client_id
+    "OIDC__APPLICATIONS__0__CLIENTSECRET"              = local.auth_service_client_secret
     "OIDC__APPLICATIONS__0__REDIRECTURIS__0"           = local.moodle_web_app_oidc_url
     "OIDC__APPLICATIONS__0__POSTLOGOUTREDIRECTURIS__0" = "${local.moodle_web_app_oidc_url}logout.php"
     "ONELOGIN__CLIENTID"                               = var.one_login_client_id

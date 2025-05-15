@@ -28,7 +28,7 @@ jobs:
       working-dir: ./apps/moodle-apps-azure
       docker-image-name: wa-moodle
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }};MOODLE_GOV_UK_THEME_VERSION=${{ vars.MOODLE_GOV_UK_THEME_VERSION }}"
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }};MOODLE_GOV_UK_THEME_VERSION=${{ vars.MOODLE_GOV_UK_THEME_VERSION }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: moodle-app
 
@@ -43,7 +43,7 @@ jobs:
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
       working-dir: ./apps/moodle-apps-azure
       # These are app settings which are required to run the Moodle db update
-      fetch-web-app-settings: "MOODLE_DOCKER_WEB_HOST;MOODLE_ADMIN_PASSWORD;POSTGRES_PASSWORD"
+      fetch-web-app-settings: "MOODLE_DOCKER_WEB_HOST;MOODLE_ADMIN_PASSWORD;POSTGRES_PASSWORD;MOODLE_WEB_SERVICE_USER_PASSWORD;AUTH_SERVICE_CLIENT_SECRET"
       # The app service is used to deploy db migrations after the publish
       execute-migrations-after-deploy: 'true'
       app-service-resource-group: ${{ needs.build-and-publish-moodle-image.outputs.dev-resource-name-prefix }}-swip-rg

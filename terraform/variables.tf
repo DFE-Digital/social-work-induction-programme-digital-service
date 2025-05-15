@@ -184,3 +184,18 @@ variable "moodle_app_settings" {
   type        = map(string)
   default     = {}
 }
+
+variable "moodle_web_service_name" {
+  description = "Name of Moodle web service"
+  type        = string
+}
+
+variable "moodle_web_service_user" {
+  description = "Name of Moodle web service user"
+  type        = string
+}
+
+variable "moodle_web_service_user_email" {
+  description = "Email of Moodle web service user"
+  type        = string
+}
