@@ -43,6 +43,8 @@ RUN echo "Starting Moodle CLI installation..." \
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS full-moodle-builder
 
 ARG MOODLE_GOV_UK_THEME_VERSION
+ARG MOODLE_OIDC_PLUGIN_RELEASE_URL
+ARG PHP_COMPOSER_VERSION=2.6.5
 
 # The theme script below runs the Moodle upgrade script from public/...
 WORKDIR /var/www/html
@@ -58,22 +60,57 @@ COPY install-theme install-theme
 RUN chmod +x install-theme \
     && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION}
 
+# PHP composer is a prerequisite for installing Moosh
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --version=${PHP_COMPOSER_VERSION} --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php \
+    && composer --version    
+
+# Moosh is required to run the install-oidc-plugin script
+COPY install-moosh install-moosh
+RUN chmod +x install-moosh \
+    && ./install-moosh \
+    && rm install-moosh
+
+# Required to run the install-oidc-plugin script
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        wget \
+        unzip
+
+RUN mkdir -p /app
+COPY install-oidc-plugin /app/install-oidc-plugin
+COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
+RUN chmod +x /app/install-oidc-plugin \
+    && cd public \
+    && /app/install-oidc-plugin check,copy,upgrade \
+        ${MOODLE_OIDC_PLUGIN_RELEASE_URL}
+
+RUN rm install-*
+
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
 ###############################################################
+
+# Why 3 stages? We're only interested in the outputs of all of this configuration / install
+# work. It keeps a clean boundary between the requirements of the final image and the
+# actual and potential requirements of the intermediate stages. Even if we do have to 
+# repeat some installation work for PHP composer / Moosh.
 
 FROM moodlehq/moodle-php-apache:8.3-bookworm AS moodle-app
 
 ARG AZURE_KUDU_SSH_USER
 ARG FULL_TAG
+ARG PHP_COMPOSER_VERSION=2.6.5
 
 WORKDIR /var/www/html/public
 
 # Mandatory tools for remote SSH
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openssh-server \
-    postgresql-client \
-    cron \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        openssh-server \
+        postgresql-client \
+        cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -103,9 +140,21 @@ RUN echo "$FULL_TAG" > version.txt
 # Apache is configured to run as www-data
 USER root
 
-# The maintain moodle script allows us to upgrade the moodle database at deployment time
-RUN mkdir -p /app
+# PHP composer is a prerequisite for installing Moosh
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --version=${PHP_COMPOSER_VERSION} --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php \
+    && composer --version    
+
+# Moosh is required to run the install-oidc-plugin script at deployment time
+COPY install-moosh install-moosh
+RUN chmod +x install-moosh \
+    && ./install-moosh \
+    && rm install-moosh
+
+COPY --from=full-moodle-builder /app/ /app
 COPY entry-point.sh /app/entry-point.sh
+# The maintain moodle script allows us to upgrade the moodle database at deployment time
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh

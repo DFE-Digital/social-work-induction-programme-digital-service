@@ -1,6 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+WEB_SERVICE_SETUP_FILE="/var/www/html/public/setup_moodle_webservice.php"
+
+cleanup() {
+    if [ -f "$WEB_SERVICE_SETUP_FILE" ]; then
+        rm "$WEB_SERVICE_SETUP_FILE"
+    fi
+}
+
+trap cleanup EXIT
+
 # PGPASSWORD is used by psql for authentication.
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 PG_CONN="psql -h ${MOODLE_DB_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p 5432"
@@ -34,10 +44,6 @@ if [[ -z "$LAST_SUCCESS" ]]; then
         --agree-license'
 
     if [ $? -eq 0 ]; then
-        # Required to make sure plug-ins / themes are OK
-        su -s /bin/sh www-data -c 'php admin/cli/upgrade.php --non-interactive'
-    fi
-    if [ $? -eq 0 ]; then
         
         if [[ -z "$MIGRATION_TABLE_EXISTS" || "$MIGRATION_TABLE_EXISTS" == "NULL" ]]; then
             echo "Schema/table does not exist; creating schema 'moodle_migration' and table 'moodle_migration'."
@@ -62,24 +68,34 @@ EOF
     else
         echo "Install script failed"
     fi
-else
-    echo "Last successful install entry: $LAST_SUCCESS"
-    echo "Now upgrading to version $VERSION..."
+fi
 
-    su -s /bin/sh www-data -c 'pwd && ls -al && php admin/cli/upgrade.php --non-interactive'
+if [ $? -eq 0 ]; then
+    echo "Now running install process for OIDC plugin..."
+    su -s /bin/sh www-data -c '/app/install-oidc-plugin config \
+        skip-download \
+        $AUTH_SERVICE_CLIENT_ID \
+        $AUTH_SERVICE_CLIENT_SECRET \
+        $AUTH_SERVICE_END_POINT \
+        $AUTH_SERVICE_TOKEN_END_POINT \
+        $AUTH_SERVICE_LOGOUT_URI'
+fi
 
-    if [ $? -eq 0 ]; then
+if [ $? -eq 0 ]; then
+    echo "Now running Moodle upgrade process..."
+    su -s /bin/sh www-data -c 'php admin/cli/upgrade.php --non-interactive'
+fi
 
-        echo "Upgrade script completed successfully. Recording success in the migration table..."
-        $PG_CONN <<EOF
+if [ $? -eq 0 ]; then
+    echo "Upgrade script completed successfully. Recording success in the migration table..."
+    $PG_CONN <<EOF
 INSERT INTO moodle_migration.moodle_migration (version, install_status, success)
 VALUES ('$VERSION', 'Upgrade successful', true);
 EOF
-    else
-        echo "Upgrade script failed. Recording failure in the migration table and exiting..."
-        $PG_CONN <<EOF
+else
+    echo "Upgrade script failed. Recording failure in the migration table and exiting..."
+    $PG_CONN <<EOF
 INSERT INTO moodle_migration.moodle_migration (version, install_status, success)
 VALUES ('$VERSION', 'Upgrade failed', false);
 EOF
-    fi
 fi

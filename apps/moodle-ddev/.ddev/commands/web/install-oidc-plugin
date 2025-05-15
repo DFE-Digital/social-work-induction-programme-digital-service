@@ -8,31 +8,50 @@
 
 set -e
 
-OIDC_PLUGIN_RELEASE_URL=${1:-https://moodle.org/plugins/download.php/35133/auth_oidc_moodle45_2024100710.zip}
+INSTALL_ACTIONS=${1:-"all"}
+OIDC_PLUGIN_RELEASE_URL=${2:-https://moodle.org/plugins/download.php/35133/auth_oidc_moodle45_2024100710.zip}
+AUTH_CLIENT_ID=${3:-dfe-sww-ecf-frontend-dev}
+AUTH_CLIENT_SECRET=${4:Devel0pm3ntSecr4t}
+AUTH_END_POINT=${5:-"https://localhost:7236/oauth2/authorize"}
+AUTH_TOKEN_END_POINT=${6:-"https://host.docker.internal:7236/oauth2/token"}
+AUTH_LOGOUT_URI=${7:-"https://localhost:7236/oauth2/logout"}
+
 MOODLE_ROOT="/var/www/html/"
 MOODLE_PUBLIC="${MOODLE_ROOT}public/"
 
+if [ "$INSTALL_ACTIONS" = "all" ]; then
+    INSTALL_ACTIONS="check,copy,upgrade,config"
+fi
+
 cd "${MOODLE_PUBLIC}auth" || { echo "Moodle auth directory not found."; exit 1; }
 
-if [ -d "oidc" ]; then
-    echo "OIDC plugin is already installed."
-else
+if [[ "$INSTALL_ACTIONS" == *"check"* ]]; then
+    echo "Checking if OIDC plugin is installed..."
+    if [ -d "oidc" ]; then
+        echo "OIDC plugin is already installed."
+        exit 0
+    fi
     echo "Checking if moosh is installed..."
     if ! command -v moosh > /dev/null 2>&1; then
         echo "Moosh is not installed. Please install and try again as moosh is used to set the config settings. Exiting."
         exit 1
     fi
-    
+fi
+
+if [[ "$INSTALL_ACTIONS" == *"copy"* ]]; then
     echo "Downloading and unzipping OpenID Connect plugin files..."
     wget -O auth_oidc.zip $OIDC_PLUGIN_RELEASE_URL
     unzip auth_oidc.zip
     rm auth_oidc.zip
+fi 
 
+if [[ "$INSTALL_ACTIONS" == *"upgrade"* ]]; then
     cd "$MOODLE_PUBLIC"
     echo "Running Moodle upgrade..."
     php admin/cli/upgrade.php --non-interactive
+fi
 
-
+if [[ "$INSTALL_ACTIONS" == *"config"* ]]; then
     echo "Enabling oidc authentication method in Moodle config..."
     moosh auth-manage enable oidc
     echo "Disabling email-based self-registration..."
@@ -45,13 +64,13 @@ else
     echo "Identity provider type:"
     moosh config-set idptype 3 auth_oidc
     echo "Client ID:"
-    moosh config-set clientid dfe-sww-ecf-frontend-dev auth_oidc
+    moosh config-set clientid $AUTH_CLIENT_ID auth_oidc
     echo "Client secret:"
-    moosh config-set clientsecret Devel0pm3ntSecr4t auth_oidc
+    moosh config-set clientsecret $AUTH_CLIENT_SECRET auth_oidc
     echo "Authorize endpoint:"
-    moosh config-set authendpoint https://localhost:7236/oauth2/authorize auth_oidc
+    moosh config-set authendpoint $AUTH_END_POINT auth_oidc
     echo "Token endpoint:"
-    moosh config-set tokenendpoint https://host.docker.internal:7236/oauth2/token auth_oidc
+    moosh config-set tokenendpoint $AUTH_TOKEN_END_POINT auth_oidc
     echo "Scopes:"
     moosh config-set oidcscope "openid profile roles email social_worker_record organisation" auth_oidc
     echo "Identity provider name:"
@@ -65,7 +84,7 @@ else
     echo "Single sign out:"
     moosh config-set single_sign_off 1 auth_oidc
     echo "Logout URI:"
-    moosh config-set logouturi https://localhost:7236/oauth2/logout auth_oidc
+    moosh config-set logouturi $AUTH_LOGOUT_URI auth_oidc
     echo "Binding username claim:"
     moosh config-set bindingusernameclaim email auth_oidc
     echo "OIDC resource:"

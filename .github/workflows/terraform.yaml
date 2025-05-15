@@ -131,6 +131,9 @@ jobs:
             -var='moodle_admin_user=${{ vars.MOODLE_ADMIN_USER }}' \
             -var='auth_service_client_id=${{ vars.AUTH_SERVICE_CLIENT_ID }}' \
             -var='auth_service_client_secret=${{ secrets.AUTH_SERVICE_CLIENT_SECRET }}' \
+            -var='moodle_web_service_name=${{ vars.MOODLE_WEB_SERVICE_NAME }}' \
+            -var='moodle_web_service_user=${{ vars.MOODLE_WEB_SERVICE_USER }}' \
+            -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
             || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
