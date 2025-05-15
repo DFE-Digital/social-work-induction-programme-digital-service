@@ -31,7 +31,7 @@ public class EligibilitySocialWorkEngland(ICreateAccountJourneyService createAcc
         if (IsRegisteredWithSocialWorkEngland is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccounts();
+            BackLinkPath = linkGenerator.EligibilityInformation();
             return Page();
         }
 
