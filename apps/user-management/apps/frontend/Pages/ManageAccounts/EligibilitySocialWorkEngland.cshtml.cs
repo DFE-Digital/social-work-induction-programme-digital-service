@@ -39,7 +39,7 @@ public class EligibilitySocialWorkEngland(ICreateAccountJourneyService createAcc
 
         if (IsRegisteredWithSocialWorkEngland is false)
         {
-            return Page(); // TODO: Redirect to drop out page in SWIP-590
+            return Redirect(linkGenerator.AddAccountDetails()); // TODO: Redirect to drop out page in SWIP-590
         }
 
         return Redirect(linkGenerator.AddAccountDetails()); // TODO: Redirect to statutory work page in SWIP-579
