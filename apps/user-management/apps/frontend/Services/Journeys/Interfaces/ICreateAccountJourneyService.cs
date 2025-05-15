@@ -16,7 +16,10 @@ public interface ICreateAccountJourneyService
     void SetAccountTypes(IList<AccountType> accountTypes);
 
     void SetIsStaff(bool? isStaff);
+
     void SetExternalUserId(int? externalUserId);
+
+    void SetIsRegisteredWithSocialWorkEngland(bool? isRegisteredWithSocialWorkEngland);
 
     Task<Account> CompleteJourneyAsync();
 

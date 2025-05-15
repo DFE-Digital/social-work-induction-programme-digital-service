@@ -15,6 +15,8 @@ public class CreateAccountJourneyModel
 
     public int? ExternalUserId { get; set; }
 
+    public bool? IsRegisteredWithSocialWorkEngland { get; set; }
+
     public Account ToAccount()
     {
         return new Account
