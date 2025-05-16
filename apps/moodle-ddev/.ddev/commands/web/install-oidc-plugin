@@ -63,6 +63,9 @@ if [[ "$INSTALL_ACTIONS" == *"config"* ]]; then
     echo "Configuring OIDC settings ..."
     echo "Identity provider type:"
     moosh config-set idptype 3 auth_oidc
+    echo "Client auth method:"
+    # Without this, you get: "Please configure OpenID Connect client credentials and endpoints."
+    moosh config-set clientauthmethod 1 auth_oidc
     echo "Client ID:"
     moosh config-set clientid $AUTH_CLIENT_ID auth_oidc
     echo "Client secret:"

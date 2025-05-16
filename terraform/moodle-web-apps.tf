@@ -27,7 +27,8 @@ locals {
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
   }
-  moodle_web_app_oidc_url = "${module.web_app_moodle["primary"].front_door_app_url}/auth/oidc/"
+  moodle_auth_redirect_uri             = "${module.web_app_moodle["primary"].front_door_app_url}/auth/oidc/"
+  moodle_auth_post_logout_redirect_uri = "${local.moodle_auth_redirect_uri}logout.php"
 }
 
 resource "random_password" "web_service_user_password" {

@@ -30,4 +30,5 @@ auth_service_feature_flag_overrides = {
 one_login_client_id = ""
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
+  "MOODLE_SWITCH_OFF_OAUTH"         = "true"
 }
