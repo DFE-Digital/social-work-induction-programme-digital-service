@@ -32,7 +32,27 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void OnGet_WhenCalledWithIsRegisteredWithSocialWorkEnglandPopulated_LoadsTheViewWithPrepopulatedValue(bool? isRegisteredWithSocialWorkEngland)
+    {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsRegisteredWithSocialWorkEngland())
+            .Returns(isRegisteredWithSocialWorkEngland);
+
+        // Act
+        var result = Sut.OnGet();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.IsRegisteredWithSocialWorkEngland.Should().Be(isRegisteredWithSocialWorkEngland);
+
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -99,9 +119,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        // TODO: Update this redirect assertion in SWIP-590
-        // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-dropout");
-        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-social-work-england-dropout");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(false), Times.Once);
 

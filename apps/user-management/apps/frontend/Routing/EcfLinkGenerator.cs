@@ -77,6 +77,8 @@ public abstract class EcfLinkGenerator(
 
     public string EligibilitySocialWorkEngland() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland");
 
+    public string EligibilitySocialWorkEnglandDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout");
+
     protected abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,

@@ -19,6 +19,8 @@ public interface ICreateAccountJourneyService
 
     void SetExternalUserId(int? externalUserId);
 
+    bool? GetIsRegisteredWithSocialWorkEngland();
+
     void SetIsRegisteredWithSocialWorkEngland(bool? isRegisteredWithSocialWorkEngland);
 
     Task<Account> CompleteJourneyAsync();

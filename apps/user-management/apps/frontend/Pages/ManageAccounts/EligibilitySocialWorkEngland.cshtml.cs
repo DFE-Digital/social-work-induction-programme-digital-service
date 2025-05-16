@@ -13,15 +13,18 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 /// Eligibility Social Work England View Model
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
-public class EligibilitySocialWorkEngland(ICreateAccountJourneyService createAccountJourneyService, EcfLinkGenerator linkGenerator, IValidator<EligibilitySocialWorkEngland> validator)
+public class EligibilitySocialWorkEngland(
+    ICreateAccountJourneyService createAccountJourneyService,
+    EcfLinkGenerator linkGenerator,
+    IValidator<EligibilitySocialWorkEngland> validator)
     : BasePageModel
 {
-    [BindProperty]
-    public bool? IsRegisteredWithSocialWorkEngland { get; set; }
+    [BindProperty] public bool? IsRegisteredWithSocialWorkEngland { get; set; }
 
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityInformation();
+        IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         return Page();
     }
 
@@ -37,11 +40,8 @@ public class EligibilitySocialWorkEngland(ICreateAccountJourneyService createAcc
 
         createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
 
-        if (IsRegisteredWithSocialWorkEngland is false)
-        {
-            return Redirect(linkGenerator.AddAccountDetails()); // TODO: Redirect to drop out page in SWIP-590
-        }
-
-        return Redirect(linkGenerator.AddAccountDetails()); // TODO: Redirect to statutory work page in SWIP-579
+        return Redirect(IsRegisteredWithSocialWorkEngland is false
+            ? linkGenerator.EligibilitySocialWorkEnglandDropout()
+            : linkGenerator.AddAccountDetails()); // TODO: Redirect to statutory work page in SWIP-579
     }
 }
