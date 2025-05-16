@@ -99,6 +99,19 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsStatutoryWorker()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsStatutoryWorker;
+    }
+
+    public void SetIsStatutoryWorker(bool? isStatutoryWorker)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.IsStatutoryWorker = isStatutoryWorker;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
     public void ResetCreateAccountJourneyModel()
     {
         Session.Remove(CreateAccountSessionKey);

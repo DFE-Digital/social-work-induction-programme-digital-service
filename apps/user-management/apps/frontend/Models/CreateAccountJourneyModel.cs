@@ -17,6 +17,8 @@ public class CreateAccountJourneyModel
 
     public bool? IsRegisteredWithSocialWorkEngland { get; set; }
 
+    public bool? IsStatutoryWorker { get; set; }
+
     public Account ToAccount()
     {
         return new Account
