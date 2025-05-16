@@ -7,6 +7,9 @@ ENV VERSION=${FULL_TAG}
 
 WORKDIR /App
 
+COPY entry-point.sh ./entry-point.sh
+RUN chmod +x entry-point.sh
+
 COPY bin/Release/net8.0/publish/ .
 RUN rm appsettings.* \
     && echo "$VERSION" > wwwroot/version.txt
@@ -49,6 +52,7 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
         
 ENV ASPNETCORE_HTTP_PORTS=80
 
-ENTRYPOINT ["dotnet", "Dfe.Sww.Ecf.Frontend.dll"]
+ENTRYPOINT ["/App/entry-point.sh"]
+CMD ["dotnet","Dfe.Sww.Ecf.Frontend.dll"]
 
 EXPOSE 80

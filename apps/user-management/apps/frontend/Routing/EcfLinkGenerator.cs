@@ -8,8 +8,7 @@ public abstract class EcfLinkGenerator(
     IOptions<OidcConfiguration> oidcConfiguration
 )
 {
-    private bool IsBackdoorEnabled =>
-        environment.IsDevelopment() && oidcConfiguration.Value.EnableDevelopmentBackdoor;
+    private bool IsBackdoorEnabled => oidcConfiguration.Value.EnableDevelopmentBackdoor;
 
     public string SignIn() =>
         IsBackdoorEnabled

@@ -71,6 +71,18 @@ EOF
 fi
 
 if [ $? -eq 0 ]; then
+    echo "Last successful install entry: $LAST_SUCCESS"
+    echo "Now running web service setup..."
+
+    cp /app/setup_moodle_webservice.php $WEB_SERVICE_SETUP_FILE
+    su -s /bin/sh www-data -c 'php setup_moodle_webservice.php \
+        --username="$MOODLE_WEB_SERVICE_USER" \
+        --password="$MOODLE_WEB_SERVICE_USER_PASSWORD" \
+        --email="$MOODLE_WEB_SERVICE_USER_EMAIL" \
+        --servicename="$MOODLE_WEB_SERVICE_NAME"'
+fi
+
+if [ $? -eq 0 ]; then
     echo "Now running install process for OIDC plugin..."
     su -s /bin/sh www-data -c '/app/install-oidc-plugin config \
         skip-download \

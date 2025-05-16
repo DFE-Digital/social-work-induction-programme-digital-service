@@ -23,6 +23,22 @@ else
     echo "This will be a full Moodle instance..."
 fi
 
+cd /var/www/html/public
+if [[ "$MOODLE_SWITCH_OFF_OAUTH" == 'true' ]]; then
+    echo "Switching off OAuth..."
+    echo "Disabling oidc authentication method in Moodle config..."
+    su -s /bin/sh www-data -c 'moosh auth-manage disable oidc'
+    echo "Enabling email-based self-registration..."
+    su -s /bin/sh www-data -c 'moosh auth-manage enable email'
+else
+    echo "Switching on OAuth..."
+    echo "Enabling oidc authentication method in Moodle config..."
+    su -s /bin/sh www-data -c 'moosh auth-manage enable oidc'
+    echo "Disabling email-based self-registration..."
+    su -s /bin/sh www-data -c 'moosh auth-manage disable email'
+fi
+su -s /bin/sh www-data -c 'php admin/cli/purge_caches.php'
+
 # exec so Apache gets PID 1 and handles signals cleanly
 echo "Starting Apache..."
 exec apache2-foreground

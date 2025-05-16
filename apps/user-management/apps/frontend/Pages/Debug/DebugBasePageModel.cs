@@ -10,7 +10,7 @@ public class DebugBasePageModel(IWebHostEnvironment environment, IOptions<OidcCo
 {
     public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
-        if (environment.IsDevelopment() && oidcConfiguration.Value.EnableDevelopmentBackdoor)
+        if (oidcConfiguration.Value.EnableDevelopmentBackdoor)
         {
             return;
         }

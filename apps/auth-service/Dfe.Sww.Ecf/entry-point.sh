@@ -16,5 +16,9 @@ export CONNECTIONSTRINGS__DEFAULTCONNECTION="$(
   sed "s|\$\[DB_REPLACE_PASSWORD\]|${DB_PASSWORD}|g"
 )"
 
+# Support SSH for troubleshooting
+echo "Starting SSH..."
+/usr/sbin/sshd
+
 # Exec the main process passed to us (whatever is specified in CMD)
 exec "$@"

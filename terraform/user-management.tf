@@ -1,3 +1,8 @@
+locals {
+  user_management_auth_redirect_uri             = "${module.user_management.front_door_app_url}/oidc/callback"
+  user_management_auth_post_logout_redirect_uri = "${module.user_management.front_door_app_url}/oidc/logout-callback"
+}
+
 module "user_management" {
   source                    = "./modules/web-app"
   tenant_id                 = data.azurerm_client_config.az_config.tenant_id
@@ -18,7 +23,7 @@ module "user_management" {
 
   # The settings name syntax below (e.g. OIDC__AUTHORITYURL) is how .NET imports environment 
   # variables to override the properties in its multi-level appsettings.json file
-  # 
+  #
   app_settings = {
     "ENVIRONMENT"                             = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"     = "false"
