@@ -79,9 +79,54 @@ database-updates resource-group web-app-name full-image-tag:
 
   trap cleanup EXIT
 
-  #############################################################
-  # Step 1: Establish backgroundSSH connection to app service #
-  #############################################################
+  # Install sshpass for remote SSH
+  sudo apt-get update && sudo apt-get install -y sshpass
+
+  ########################################################
+  # Step 1: Retrieve / generate Moodle web service token #
+  ########################################################
+
+  # KEY_VAULT_NAME is provided by the Github Actions script, specifically calculated when
+  # pulling back any app settings that refer to key vault secrets
+
+  SECRET_NAME="Moodle-WebServiceToken"
+  AZ_OUTPUT=$(az keyvault secret show \
+    --vault-name "$KEY_VAULT_NAME" \
+    --name "$SECRET_NAME" \
+    --query value -o tsv 2>&1) \
+    && { 
+      MOODLE_WEB_SERVICE_TOKEN="$AZ_OUTPUT"
+      echo "Retrieved Moodle web service token from key vault: $KEY_VAULT_NAME, $SECRET_NAME" >&2
+    } || {
+      AZ_RC=$?
+
+      if echo "$AZ_OUTPUT" | grep -qiE 'SecretNotFound|404'; then
+        MOODLE_WEB_SERVICE_TOKEN=$(printf '%s' "$(date +%s%N)$RANDOM" \
+          | md5sum \
+          | cut -d' ' -f1)
+
+        echo "Saving generated Moodle web service token in key vault: $KEY_VAULT_NAME, $SECRET_NAME" >&2
+        az keyvault secret set \
+          --vault-name       $KEY_VAULT_NAME \
+          --name             $SECRET_NAME \
+          --content-type     "client secret" \
+          --value            "$MOODLE_WEB_SERVICE_TOKEN" \
+          -o                 none \
+          --only-show-errors
+
+      else
+        # Otherwise re-emit the error and exit
+        echo "❌ Failed fetching secret: $AZ_OUTPUT" >&2
+        exit $AZ_RC
+      fi
+    }
+  # Make sure we don't echo the token to the logs
+  echo "::add-mask::$MOODLE_WEB_SERVICE_TOKEN"
+
+  ##############################################################
+  # Step 2: Establish background SSH connection to app service #
+  # Do this as close as possible to the ssh session below.     #
+  ##############################################################
 
   SSH_PORT=2222
   az webapp create-remote-connection \
@@ -107,14 +152,13 @@ database-updates resource-group web-app-name full-image-tag:
   fi
 
   #########################################################
-  # Step 2: Carry out Moodle DB install / update over SSH #
+  # Step 3: Carry out Moodle DB install / update over SSH #
   #########################################################
-
-  sudo apt-get update && sudo apt-get install -y sshpass
 
   # The SSH sesion doesn't inherit all of the variables from the app service / startup 
   # We pass any sensitive variables explicitly - these will have been fetched from the
-  # web app settings.
+  # web app settings earlier in the Github Actions run.
+
   sshpass -p "$AZURE_KUDU_SSH_PASSWORD" ssh \
   -T \
   -o TCPKeepAlive=no \
@@ -131,6 +175,7 @@ database-updates resource-group web-app-name full-image-tag:
   export POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
   export MOODLE_WEB_SERVICE_USER_PASSWORD="$MOODLE_WEB_SERVICE_USER_PASSWORD"
   export AUTH_SERVICE_CLIENT_SECRET="$AUTH_SERVICE_CLIENT_SECRET"
+  export MOODLE_WEB_SERVICE_TOKEN="$MOODLE_WEB_SERVICE_TOKEN"
   set -euo pipefail
 
   echo "Starting Moodle database install / update"
