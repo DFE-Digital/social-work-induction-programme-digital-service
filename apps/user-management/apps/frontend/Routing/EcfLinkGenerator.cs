@@ -80,6 +80,8 @@ public abstract class EcfLinkGenerator(
 
     public string EligibilityStatutoryWork() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWork");
 
+    public string EligibilityStatutoryWorkDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout");
+
     protected abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,
