@@ -41,7 +41,7 @@ public class EligibilityStatutoryWork(
         createAccountJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
 
         return Redirect(IsStatutoryWorker is false
-            ? linkGenerator.EligibilitySocialWorkEnglandDropout() // TODO: Redirect to statutory work dropout page in SWIP-592
+            ? linkGenerator.EligibilityStatutoryWorkDropout()
             : linkGenerator.AddAccountDetails()); // TODO: Redirect to agency work page in SWIP-580
     }
 }

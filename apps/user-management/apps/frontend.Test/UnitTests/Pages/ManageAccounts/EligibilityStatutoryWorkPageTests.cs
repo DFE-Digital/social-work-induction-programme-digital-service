@@ -122,7 +122,28 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         redirectResult.Should().NotBeNull();
         // TODO: redirect to eligibility statutory work dropout page in SWIP-592
         // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout");
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-social-work-england-dropout");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout");
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task
+        OnPostAsync_WhenCalledWithIsRegisteredWithSocialWorkEnglandFalse_RedirectsToEligibilityDropoutPage()
+    {
+        // Arrange
+        Sut.IsStatutoryWorker = false;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
 
