@@ -117,17 +117,14 @@ jobs:
             FILTER+=" || name=='$K'"
           done
 
-          # Outputs "NAME<TAB>VALUE" per line
-          az webapp config appsettings list \
-            --resource-group "$RESOURCE_GROUP" \
-            --name         "$WEB_APP_NAME" \
-            --query        "[?${FILTER}].[name,value]" \
-            -o tsv \
-          | while IFS=$'\t' read -r KEY VAL; do
+          KEY_VAULT_SECRET_URI=''
+
+          while IFS=$'\t' read -r KEY VAL; do
 
               if [[ "$VAL" =~ ^@Microsoft\.KeyVault\(SecretUri=(https:\/\/[^\)]+).*$ ]]; then
                 SECRET_URI="${BASH_REMATCH[1]}"
-                echo "Resolving Key Vault secret for $KEY..."
+                KEY_VAULT_SECRET_URI="$VAL"
+                echo "Resolving Key Vault secret for $SECRET_URI..."
                 VAL="$(az keyvault secret show \
                           --id "$SECRET_URI" \
                           --query value \
@@ -144,7 +141,12 @@ jobs:
                 # for the remote tunnel step below
                 echo "REMOTE_TUNNEL_HOST=$VAL" >> "$GITHUB_ENV"
               fi
-            done
+            done < <(az webapp config appsettings list \
+              --resource-group "$RESOURCE_GROUP" \
+              --name         "$WEB_APP_NAME" \
+              --query        "[?${FILTER}].[name,value]" \
+              -o tsv)
+
             # Retrieve front door host name for web app
             FRONT_DOOR_HOST_NAME=$(az afd endpoint list \
               --resource-group $RESOURCE_GROUP \
@@ -154,6 +156,11 @@ jobs:
             if [[ ! -z "$FRONT_DOOR_HOST_NAME" ]]; then
               echo "Retrieved front door host name: $FRONT_DOOR_HOST_NAME for web app: $WEB_APP_NAME"
               echo "FULL_EXTERNAL_WEB_DOMAIN_NAME=$FRONT_DOOR_HOST_NAME" >> "$GITHUB_ENV"
+            fi        
+            if [[ ! -z "$KEY_VAULT_SECRET_URI" ]]; then
+              KEY_VAULT_NAME=$(echo "$KEY_VAULT_SECRET_URI" | sed -E 's@.*https?://([^\.]+)\.vault\.azure\.net.*@\1@')
+              echo "Saved key vault name for convenience: $KEY_VAULT_NAME"
+              echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" >> "$GITHUB_ENV"
             fi            
 
       - name: Establish remote tunnel (optional)

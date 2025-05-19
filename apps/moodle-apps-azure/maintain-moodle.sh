@@ -79,7 +79,8 @@ if [ $? -eq 0 ]; then
         --username="$MOODLE_WEB_SERVICE_USER" \
         --password="$MOODLE_WEB_SERVICE_USER_PASSWORD" \
         --email="$MOODLE_WEB_SERVICE_USER_EMAIL" \
-        --servicename="$MOODLE_WEB_SERVICE_NAME"'
+        --servicename="$MOODLE_WEB_SERVICE_NAME" \
+        --token="$MOODLE_WEB_SERVICE_TOKEN"'
 fi
 
 if [ $? -eq 0 ]; then

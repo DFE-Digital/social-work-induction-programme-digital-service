@@ -13,6 +13,7 @@ require_once($CFG->dirroot . '/webservice/lib.php');
     'password' => null,
     'email' => null,
     'servicename' => null,
+    'token' => null,
     'rolename' => 'Web Service Role',
     'roleshortname' => 'webservice_role',
     'capabilities' => null,
@@ -21,7 +22,7 @@ require_once($CFG->dirroot . '/webservice/lib.php');
 ]);
 
 if ($options['help']) {
-    echo "Usage: php setup_webservice.php --username=USER --password=PASS --email=EMAIL --servicename=NAME [--rolename=NAME] [--capabilities=cap1,cap2,...]\n";
+    echo "Usage: php setup_webservice.php --username=USER --password=PASS --email=EMAIL --servicename=NAME [--token=TOKEN] [--rolename=NAME] [--capabilities=cap1,cap2,...]\n";
     exit(0);
 }
 
@@ -35,6 +36,7 @@ $username = $options['username'];
 $password = $options['password'];
 $email = $options['email'];
 $servicename = $options['servicename'];
+$tokenParam = $options['token'];
 $rolename = $options['rolename'];
 $roleshortname = $options['roleshortname'];
 $capabilities = !empty($options['capabilities']) ? explode(',', $options['capabilities']) : [
@@ -165,7 +167,8 @@ $token = $DB->get_record('external_tokens', [
 
 if (!$token) {
     $token = new stdClass();
-    $token->token = md5(uniqid(rand(), 1));
+    # Support provided token from command line or generated token 
+    $token->token = $tokenParam ?? md5(uniqid(rand(), 1));
     $token->userid = $user->id;
     $token->externalserviceid = $serviceid;
     $token->contextid = $context->id;
