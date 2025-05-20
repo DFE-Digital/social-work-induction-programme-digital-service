@@ -99,7 +99,7 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         redirectResult.Should().NotBeNull();
         // TODO: redirect to eligibility agency work page in SWIP-580
         // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-work");
-        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-worker");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(true), Times.Once);
 

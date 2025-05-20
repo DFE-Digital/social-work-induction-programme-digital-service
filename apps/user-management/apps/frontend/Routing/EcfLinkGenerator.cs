@@ -82,6 +82,9 @@ public abstract class EcfLinkGenerator(
 
     public string EligibilityStatutoryWorkDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout");
 
+    public string EligibilityAgencyWorker() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorker");
+    public string EligibilityAgencyWorkerDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorkerDropout");
+
     protected abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,

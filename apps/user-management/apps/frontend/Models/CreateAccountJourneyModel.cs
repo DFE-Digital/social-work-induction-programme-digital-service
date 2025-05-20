@@ -19,6 +19,8 @@ public class CreateAccountJourneyModel
 
     public bool? IsStatutoryWorker { get; set; }
 
+    public bool? IsAgencyWorker { get; set; }
+
     public Account ToAccount()
     {
         return new Account
