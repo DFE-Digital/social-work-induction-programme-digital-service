@@ -105,12 +105,13 @@ ARG PHP_COMPOSER_VERSION=2.6.5
 
 WORKDIR /var/www/html/public
 
-# Mandatory tools for remote SSH
+# Mandatory tools for remote SSH + general mgmt
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
         postgresql-client \
         cron \
+        apache2-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -144,7 +145,7 @@ USER root
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --version=${PHP_COMPOSER_VERSION} --install-dir=/usr/local/bin --filename=composer \
     && rm composer-setup.php \
-    && composer --version    
+    && composer --version
 
 # Moosh is required to run the install-oidc-plugin script at deployment time
 COPY install-moosh install-moosh
@@ -158,6 +159,7 @@ COPY entry-point.sh /app/entry-point.sh
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
+COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
 RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh /app/save-env.sh /app/restore-env.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script

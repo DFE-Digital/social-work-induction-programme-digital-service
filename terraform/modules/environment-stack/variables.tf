@@ -84,3 +84,9 @@ variable "assign_delivery_team_key_vault_permissions" {
   description = "Whether to assign the delivery team key vault permissions as a convenience"
   type        = bool
 }
+
+variable "basic_auth_password" {
+  description = "Password for basic auth protected sites"
+  type        = string
+  sensitive   = true
+}

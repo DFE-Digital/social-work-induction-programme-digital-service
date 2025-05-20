@@ -10,5 +10,6 @@ module "stack" {
   admin_enabled                              = var.admin_enabled
   webapp_storage_account_name                = var.webapp_storage_account_name
   assign_delivery_team_key_vault_permissions = var.assign_delivery_team_key_vault_permissions
+  basic_auth_password                        = var.basic_auth_password
   tags                                       = local.common_tags
 }

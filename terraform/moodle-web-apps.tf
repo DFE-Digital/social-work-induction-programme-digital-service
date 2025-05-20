@@ -92,6 +92,8 @@ module "web_app_moodle" {
     "AUTH_SERVICE_END_POINT"           = local.auth_service_end_point
     "AUTH_SERVICE_TOKEN_END_POINT"     = local.auth_service_token_end_point
     "AUTH_SERVICE_LOGOUT_URI"          = local.auth_service_logout_uri
+    "BASIC_AUTH_USER"                  = var.basic_auth_user
+    "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
   depends_on = [
