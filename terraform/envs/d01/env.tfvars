@@ -29,4 +29,5 @@ one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
+  "BASIC_AUTH_ENABLED"              = "true"
 }

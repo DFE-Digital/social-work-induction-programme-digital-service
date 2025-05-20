@@ -119,6 +119,7 @@ variable "moodle_site_shortname" {
 variable "moodle_admin_user" {
   description = "The username for the admin account on Moodle"
   type        = string
+  sensitive   = true
 }
 
 variable "moodle_admin_password" {
@@ -130,6 +131,7 @@ variable "moodle_admin_password" {
 variable "moodle_admin_email" {
   description = "The email address to use for the admin user on Moodle"
   type        = string
+  sensitive   = true
 }
 
 variable "moodle_db_type" {
@@ -156,11 +158,13 @@ variable "assign_delivery_team_key_vault_permissions" {
 variable "auth_service_client_id" {
   description = "Client ID for authentication into auth service"
   type        = string
+  sensitive   = true
 }
 
 variable "auth_service_client_secret" {
   description = "Client secret for authentication into auth services"
   type        = string
+  sensitive   = true
 }
 
 variable "one_login_oidc_url" {
@@ -172,6 +176,7 @@ variable "one_login_oidc_url" {
 variable "one_login_client_id" {
   description = "The client ID for one login (non-secret)"
   type        = string
+  sensitive   = true
 }
 
 variable "auth_service_feature_flag_overrides" {
@@ -193,9 +198,23 @@ variable "moodle_web_service_name" {
 variable "moodle_web_service_user" {
   description = "Name of Moodle web service user"
   type        = string
+  sensitive   = true
 }
 
 variable "moodle_web_service_user_email" {
   description = "Email of Moodle web service user"
   type        = string
+  sensitive   = true
+}
+
+variable "basic_auth_user" {
+  description = "User ID for basic auth protected sites"
+  type        = string
+  sensitive   = true
+}
+
+variable "basic_auth_password" {
+  description = "Password for basic auth protected sites"
+  type        = string
+  sensitive   = true
 }

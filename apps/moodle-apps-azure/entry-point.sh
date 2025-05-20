@@ -19,8 +19,13 @@ if [[ "$IS_CRON_JOB_ONLY" == 'true' ]]; then
     mv /var/www/html/public/version.txt /var/www/html/cron/version.txt
     echo "Starting cron daemon..."
     /usr/sbin/cron
-else
+else 
     echo "This will be a full Moodle instance..."
+    if [[ "$BASIC_AUTH_ENABLED" == 'true' ]]; then
+        # Configure basic auth to restrict access / prevent Moodle from being indexed
+        htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD"
+        cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
+    fi
 fi
 
 cd /var/www/html/public
