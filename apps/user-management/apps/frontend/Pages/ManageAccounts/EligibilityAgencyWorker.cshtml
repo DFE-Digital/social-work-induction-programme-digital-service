@@ -1,0 +1,25 @@
+@page
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.EligibilityAgencyWorker
+
+@{
+    Model.Title = "Are they an agency worker?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            <govuk-radios asp-for="IsAgencyWorker">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                        Are they an agency worker?
+                    </govuk-radios-fieldset-legend>
+
+                    <govuk-radios-item value="@true">Yes</govuk-radios-item>
+                    <govuk-radios-item value="@false">No</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-button type="submit">Continue</govuk-button>
+        </form>
+    </div>
+</div>

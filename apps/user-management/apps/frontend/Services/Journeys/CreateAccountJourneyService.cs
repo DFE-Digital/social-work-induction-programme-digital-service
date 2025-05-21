@@ -112,6 +112,19 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsAgencyWorker()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsAgencyWorker;
+    }
+
+    public void SetIsAgencyWorker(bool? isAgencyWorker)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.IsAgencyWorker = isAgencyWorker;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
     public void ResetCreateAccountJourneyModel()
     {
         Session.Remove(CreateAccountSessionKey);

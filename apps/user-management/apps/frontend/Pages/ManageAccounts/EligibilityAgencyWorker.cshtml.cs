@@ -10,38 +10,38 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 /// <summary>
-/// Eligibility Statutory Work View Model
+/// Eligibility Agency Worker View Model
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
-public class EligibilityStatutoryWork(
+public class EligibilityAgencyWorker(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
-    IValidator<EligibilityStatutoryWork> validator)
+    IValidator<EligibilityAgencyWorker> validator)
     : BasePageModel
 {
-    [BindProperty] public bool? IsStatutoryWorker { get; set; }
+    [BindProperty] public bool? IsAgencyWorker { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
-        IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
+        BackLinkPath = linkGenerator.EligibilityStatutoryWork();
+        IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (IsStatutoryWorker is null || !validationResult.IsValid)
+        if (IsAgencyWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
+            BackLinkPath = linkGenerator.EligibilityStatutoryWork();
             return Page();
         }
 
-        createAccountJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
+        createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
 
-        return Redirect(IsStatutoryWorker is false
-            ? linkGenerator.EligibilityStatutoryWorkDropout()
-            : linkGenerator.EligibilityAgencyWorker());
+        return Redirect(IsAgencyWorker is false
+            ? linkGenerator.EligibilityStatutoryWorkDropout() // TODO: Update in SWIP-581 to eligibility qualification
+            : linkGenerator.EligibilityAgencyWorkerDropout());
     }
 }

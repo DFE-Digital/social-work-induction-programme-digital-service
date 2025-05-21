@@ -27,6 +27,10 @@ public interface ICreateAccountJourneyService
 
     void SetIsStatutoryWorker(bool? isStatutoryWorker);
 
+    bool? GetIsAgencyWorker();
+
+    void SetIsAgencyWorker(bool? isAgencyWorker);
+
     Task<Account> CompleteJourneyAsync();
 
     void ResetCreateAccountJourneyModel();
