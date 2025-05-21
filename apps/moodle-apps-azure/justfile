@@ -96,33 +96,16 @@ database-updates resource-group web-app-name full-image-tag:
     --query value -o tsv 2>&1) \
     && { 
       MOODLE_WEB_SERVICE_TOKEN="$AZ_OUTPUT"
+      # Make sure we don't echo the token to the logs
+      echo "::add-mask::$MOODLE_WEB_SERVICE_TOKEN"
       echo "Retrieved Moodle web service token from key vault: $KEY_VAULT_NAME, $SECRET_NAME" >&2
     } || {
       AZ_RC=$?
 
-      if echo "$AZ_OUTPUT" | grep -qiE 'SecretNotFound|404'; then
-        MOODLE_WEB_SERVICE_TOKEN=$(printf '%s' "$(date +%s%N)$RANDOM" \
-          | md5sum \
-          | cut -d' ' -f1)
-
-        echo "Saving generated Moodle web service token in key vault: $KEY_VAULT_NAME, $SECRET_NAME" >&2
-        az keyvault secret set \
-          --vault-name       $KEY_VAULT_NAME \
-          --name             $SECRET_NAME \
-          --content-type     "client secret" \
-          --value            "$MOODLE_WEB_SERVICE_TOKEN" \
-          -o                 none \
-          --only-show-errors
-
-      else
-        # Otherwise re-emit the error and exit
-        echo "❌ Failed fetching secret: $AZ_OUTPUT" >&2
-        exit $AZ_RC
-      fi
+      echo "❌ Failed fetching secret: $AZ_OUTPUT" >&2
+      exit $AZ_RC
     }
-  # Make sure we don't echo the token to the logs
-  echo "::add-mask::$MOODLE_WEB_SERVICE_TOKEN"
-
+    
   ##############################################################
   # Step 2: Establish background SSH connection to app service #
   # Do this as close as possible to the ssh session below.     #

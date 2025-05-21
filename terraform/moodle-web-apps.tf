@@ -55,6 +55,28 @@ resource "azurerm_key_vault_secret" "web_service_user_password" {
   #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
 
+resource "random_id" "web_service_token" {
+  byte_length = 16
+}
+
+resource "azurerm_key_vault_secret" "web_service_token" {
+  name         = "Moodle-WebServiceToken"
+  value        = random_id.web_service_token.hex
+  key_vault_id = module.stack.kv_id
+  content_type = "access token"
+
+  // TODO: Managed expiry of passwords
+  //expiration_date = local.expiration_date
+
+  lifecycle {
+    ignore_changes = [value, expiration_date]
+  }
+
+  depends_on = [module.stack]
+
+  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
+}
+
 resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
   for_each  = local.moodle_instance_resource_naming
   server_id = module.stack.db_server_id

@@ -12,12 +12,21 @@ resource "azurerm_postgresql_flexible_server_database" "auth_db" {
   name      = "${var.resource_name_prefix}_db_auth_service"
 }
 
+resource "random_password" "auth_service_client_secret" {
+  length           = 50
+  special          = true
+  override_special = "!#$%&*-_=+<>:?"
+}
+
 resource "azurerm_key_vault_secret" "auth_service_client_secret" {
   name         = "AuthService-ClientSecret"
-  value        = var.auth_service_client_secret
+  value        = random_password.auth_service_client_secret.result
   key_vault_id = module.stack.kv_id
   content_type = "client secret"
 
+  lifecycle {
+    ignore_changes = [value, expiration_date]
+  }
   #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
@@ -88,7 +97,7 @@ module "auth_service" {
     "ONELOGIN__CERTIFICATENAME"                        = module.one_login_certificate.cert_name
     "ONELOGIN__URL"                                    = var.one_login_oidc_url
     DOCKER_ENABLE_CI                                   = "false" # Github will control CI, not Azure
-  }, var.auth_service_feature_flag_overrides)
+  }, var.auth_service_app_settings)
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.auth_db

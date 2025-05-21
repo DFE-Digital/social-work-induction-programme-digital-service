@@ -21,7 +21,7 @@ moodle_instances = {
   primary = {}
 }
 # Enable dev friendly auth services features in dev environment
-auth_service_feature_flag_overrides = {
+auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
@@ -30,4 +30,7 @@ moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
   "BASIC_AUTH_ENABLED"              = "true"
+}
+user_management_app_settings = {
+  "BASIC_AUTH_ENABLED" = "true"
 }

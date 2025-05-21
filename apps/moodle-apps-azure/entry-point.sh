@@ -23,7 +23,8 @@ else
     echo "This will be a full Moodle instance..."
     if [[ "$BASIC_AUTH_ENABLED" == 'true' ]]; then
         # Configure basic auth to restrict access / prevent Moodle from being indexed
-        htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD"
+        echo "Configuring basic auth..."
+        htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
         cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
     fi
 fi
