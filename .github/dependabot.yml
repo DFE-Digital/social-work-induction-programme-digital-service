@@ -1,0 +1,123 @@
+# Example of a package instance that won't trigger PR's on major semver updates
+# We can selectively use these, if PR's become too burdensome.
+
+  # - package-ecosystem: nuget
+  #   directory: "/apps/user-management"
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #     time: "04:00"
+  #   ignore:                                 <-----
+  #     - dependency-name: "*"                <-----
+  #       update-types:                       <-----
+  #         - "version-update:semver-major"   <-----
+  #   groups:
+  #     user-management-all-dotnet:
+  #       patterns:
+  #         - "."
+  #       group-name: "User Management .NET dependencies"
+  #   labels:
+  #     - "dependencies"
+  #     - "User Management .NET"
+  #   reviewers:
+  #     - "DFE-Digital/csc-social-work-swip-dev"
+  #   commit-message:
+  #     prefix: "chore(deps)"
+
+version: 2
+updates:
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "01:00"
+    groups:
+        patterns:
+          - "."
+        group-name: "Github Actions dependencies"
+    labels:
+      - "dependencies"
+      - "Github Actions"
+    reviewers:
+      - "DFE-Digital/csc-social-work-swip-dev"
+    commit-message:
+      prefix: "chore(deps)"
+          
+  - package-ecosystem: terraform
+    directory: "/terraform"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "02:00"
+    groups:
+      terraform-all:
+        patterns:
+          - "^provider_"
+          - "^module\\."
+        group-name: "terraform dependencies"
+    labels:
+      - "dependencies"
+      - "terraform"
+    reviewers:
+      - "DFE-Digital/csc-social-work-swip-dev"
+    commit-message:
+      prefix: "chore(deps)"
+    
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+    groups:
+      docker-all:
+        patterns:
+          - "."
+        group-name: "Docker dependencies"
+    labels:
+      - "dependencies"
+      - "Docker"
+    reviewers:
+      - "DFE-Digital/csc-social-work-swip-dev"
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+    groups:
+      dotnet-all:
+        patterns:
+          - "."
+        group-name: ".NET dependencies"
+    labels:
+      - "dependencies"
+      - ".NET"
+    reviewers:
+      - "DFE-Digital/csc-social-work-swip-dev"
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+    groups:
+      npm-all:
+        patterns:
+          - "."
+        group-name: "NPM dependencies"
+    labels:
+      - "dependencies"
+      - "NPM"
+    reviewers:
+      - "DFE-Digital/csc-social-work-swip-dev"
+    commit-message:
+      prefix: "chore(deps)"
