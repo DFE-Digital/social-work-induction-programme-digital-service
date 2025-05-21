@@ -161,12 +161,6 @@ variable "auth_service_client_id" {
   sensitive   = true
 }
 
-variable "auth_service_client_secret" {
-  description = "Client secret for authentication into auth services"
-  type        = string
-  sensitive   = true
-}
-
 variable "one_login_oidc_url" {
   description = "One Login URL for OIDC integration"
   type        = string
@@ -179,13 +173,19 @@ variable "one_login_client_id" {
   sensitive   = true
 }
 
-variable "auth_service_feature_flag_overrides" {
+variable "auth_service_app_settings" {
   description = "Environment specific auth service feature flag overrides"
   type        = map(string)
 }
 
 variable "moodle_app_settings" {
   description = "Environment specific Moodle app settings"
+  type        = map(string)
+  default     = {}
+}
+
+variable "user_management_app_settings" {
+  description = "Environment specific user management app settings"
   type        = map(string)
   default     = {}
 }

@@ -181,7 +181,14 @@ if (!$token) {
     $DB->insert_record('external_tokens', $token);
     echo "Created token: {$token->token}\n";
 } else {
-    echo "Token already exists: {$token->token}\n";
+    if ($tokenParam && $tokenParam !== $token->token) {
+        $token->token = $tokenParam;
+        $token->timecreated = time();
+        $DB->update_record('external_tokens', $token);
+        echo "Updated token to: {$token->token}\n";
+    } else {
+        echo "Token already exists: {$token->token}\n";
+    }
 }
 
 // List of Moodle web service functions you want to allow

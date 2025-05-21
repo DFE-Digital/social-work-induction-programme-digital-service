@@ -31,7 +31,8 @@ COPY appsettings.Azure.json appsettings.json
 RUN apk add --no-cache \
     tzdata \
     icu-data-full \
-    icu-libs
+    icu-libs \
+    curl
 
 # Flips .NET back on to use ICU rather than the invariant fallback
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
@@ -49,10 +50,21 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
     && mkdir -p /var/run/sshd \
     && chmod 0755 /var/run/sshd \
     && ssh-keygen -A
-        
-ENV ASPNETCORE_HTTP_PORTS=80
+
+# Serve on port 5000 behind lighttpd
+ENV ASPNETCORE_HTTP_PORTS=5000
+ENV ASPNETCORE_URLS=http://+:5000
+
+# Install Lighttpd, proxy+auth modules and htpasswd tool for basic auth
+RUN apk update && \
+    apk add --no-cache \
+    nginx \
+    apache2-utils
+
+COPY nginx.conf /etc/nginx/http.d/default.conf
+COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
 
 ENTRYPOINT ["/App/entry-point.sh"]
-CMD ["dotnet","Dfe.Sww.Ecf.Frontend.dll"]
+CMD ["nginx","-g", "daemon off;"]
 
 EXPOSE 80

@@ -24,7 +24,7 @@ module "user_management" {
   # The settings name syntax below (e.g. OIDC__AUTHORITYURL) is how .NET imports environment 
   # variables to override the properties in its multi-level appsettings.json file
   #
-  app_settings = {
+  app_settings = merge({
     "ENVIRONMENT"                             = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"     = "false"
     "OIDC__AUTHORITYURL"                      = module.auth_service.front_door_app_url
@@ -33,6 +33,8 @@ module "user_management" {
     "SOCIALWORKENGLANDCLIENTOPTIONS__BASEURL" = "TBD" # TODO: SWE API usage deprioritised
     "AUTHCLIENTOPTIONS__BASEURL"              = module.auth_service.front_door_app_url
     "MOODLECLIENTOPTIONS__BASEURL"            = "${module.web_app_moodle["primary"].front_door_app_url}/webservice/rest/server.php"
+    "BASIC_AUTH_USER"                         = var.basic_auth_user
+    "BASIC_AUTH_PASSWORD"                     = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
     DOCKER_ENABLE_CI                          = "false" # Github will control CI, not Azure
-  }
+  }, var.user_management_app_settings)
 }
