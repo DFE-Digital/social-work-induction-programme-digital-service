@@ -56,5 +56,5 @@ while true; do
     sleep $SLEEP_INTERVAL
 done
 
-# Exec the main process passed to us (whatever is specified in CMD - usually lighttpd)
+# Exec the main process passed to us (whatever is specified in CMD - usually nginx)
 exec "$@"
