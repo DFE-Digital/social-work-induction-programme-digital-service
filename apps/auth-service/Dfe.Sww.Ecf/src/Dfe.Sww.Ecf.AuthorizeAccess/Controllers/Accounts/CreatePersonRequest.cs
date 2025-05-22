@@ -15,6 +15,7 @@ public record CreatePersonRequest
     public ImmutableList<RoleType> Roles { get; init; } = [];
     public Guid OrganisationId { get; init; }
     public int? ExternalUserId { get; set; }
+    public bool IsFunded { get; set; }
 }
 
 public static class CreatePersonRequestExtensions
@@ -34,6 +35,7 @@ public static class CreatePersonRequestExtensions
             {
                 new() { OrganisationId = request.OrganisationId }
             },
-            ExternalUserId = request.ExternalUserId
+            ExternalUserId = request.ExternalUserId,
+            IsFunded = request.IsFunded
         };
 }
