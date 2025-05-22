@@ -250,7 +250,7 @@ public partial class TestData
         {
             if (_isFunded != isFunded)
             {
-                throw new InvalidOperationException("WithExternalUserId cannot be changed after it's set.");
+                throw new InvalidOperationException("WithIsFunded cannot be changed after it's set.");
             }
 
             _isFunded = isFunded;
