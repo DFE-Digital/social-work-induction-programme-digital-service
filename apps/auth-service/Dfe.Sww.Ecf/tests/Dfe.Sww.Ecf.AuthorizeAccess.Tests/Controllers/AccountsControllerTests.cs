@@ -219,7 +219,8 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
                     Roles = expectedNewUser.Roles,
                     Status = expectedNewUser.Status,
-                    OrganisationId = organisation.OrganisationId
+                    OrganisationId = organisation.OrganisationId,
+                    IsFunded = expectedNewUser.IsFunded
                 }
             );
 
@@ -263,6 +264,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     RoleType.EarlyCareerSocialWorker,
                 }.ToImmutableList(),
                 Status = PersonStatus.Paused,
+                IsFunded = existingUser.IsFunded
             };
 
             var accountsService = new AccountsService(dbContext, Clock);

@@ -17,6 +17,7 @@ public class PersonDto
     public ImmutableList<RoleType> Roles { get; set; } = [];
     public PersonStatus? Status { get; set; }
     public int? ExternalUserId { get; set; }
+    public bool IsFunded { get; set; }
 }
 
 public static class PersonDtoExtensions
@@ -33,6 +34,7 @@ public static class PersonDtoExtensions
             EmailAddress = person.EmailAddress,
             Roles = person.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList() ?? [],
             Status = person.Status,
-            ExternalUserId = person.ExternalUserId
+            ExternalUserId = person.ExternalUserId,
+            IsFunded = person.IsFunded
         };
 }

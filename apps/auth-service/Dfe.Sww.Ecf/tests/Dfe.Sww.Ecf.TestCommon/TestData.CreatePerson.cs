@@ -29,7 +29,8 @@ public partial class TestData
                 CreatedOn = Clock.UtcNow,
                 Status = createPersonResult.Status,
                 PersonOrganisations = createPersonResult.PersonOrganisations,
-                ExternalUserId = createPersonResult.ExternalUserId
+                ExternalUserId = createPersonResult.ExternalUserId,
+                IsFunded = createPersonResult.IsFunded
             };
 
             if (addToDb is not true)
@@ -70,6 +71,7 @@ public partial class TestData
         private PersonStatus? _status;
         private Guid _organisationId;
         private int _externalUserId;
+        private bool _isFunded;
 
         public Guid PersonId { get; } = Guid.NewGuid();
 
@@ -244,6 +246,17 @@ public partial class TestData
             return this;
         }
 
+        public CreatePersonBuilder WithIsFunded(bool isFunded)
+        {
+            if (_isFunded != isFunded)
+            {
+                throw new InvalidOperationException("WithIsFunded cannot be changed after it's set.");
+            }
+
+            _isFunded = isFunded;
+            return this;
+        }
+
         internal async Task<CreatePersonResult> Execute(TestData testData)
         {
             var hasTrn = _hasTrn ?? true;
@@ -274,7 +287,7 @@ public partial class TestData
                     }
                 ]
                 : new List<PersonOrganisation>();
-            ;
+            var isFunded = true;
 
             return new CreatePersonResult()
             {
@@ -288,7 +301,8 @@ public partial class TestData
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
                 Status = status,
-                PersonOrganisations = personOrganisations
+                PersonOrganisations = personOrganisations,
+                IsFunded = isFunded
             };
         }
     }
@@ -310,6 +324,8 @@ public partial class TestData
 
         public int? ExternalUserId { get; set; }
 
+        public bool IsFunded { get; set; }
+
         public Person ToPerson() =>
             new Person
             {
@@ -324,7 +340,8 @@ public partial class TestData
                 CreatedOn = CreatedOn,
                 UpdatedOn = UpdatedOn,
                 Status = Status,
-                ExternalUserId = ExternalUserId
+                ExternalUserId = ExternalUserId,
+                IsFunded = IsFunded
             };
 
         public PersonDto ToPersonDto() => ToPerson().ToDto();
