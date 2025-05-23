@@ -62,7 +62,8 @@ public class AccountService(
                 Roles = account.Types ?? [],
                 Status = account.Status,
                 OrganisationId = new Guid(organisationId),
-                ExternalUserId = account.ExternalUserId
+                ExternalUserId = account.ExternalUserId,
+                IsFunded = account.IsFunded
             }
         );
 

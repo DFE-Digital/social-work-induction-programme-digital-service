@@ -84,7 +84,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
 
     [Fact]
     public async Task
-        OnPostAsync_WhenCalledWithIsAgencyWorkerTrue_RedirectsToEligibilityAgencyWorkerDropout()
+        OnPostAsync_WhenCalledWithIsAgencyWorkerTrue_RedirectsToEligibilityFundingNotAvailable()
     {
         // Arrange
         Sut.IsAgencyWorker = true;
@@ -96,7 +96,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-worker-dropout");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-funding-not-available");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
 
@@ -104,8 +104,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
     }
 
     [Fact]
-    public async Task
-        OnPostAsync_WhenCalledWithIsAgencyWorkerFalse_RedirectsToEligibilityQualification()
+    public async Task OnPostAsync_WhenCalledWithIsAgencyWorkerFalse_RedirectsToEligibilityQualification()
     {
         // Arrange
         Sut.IsAgencyWorker = false;
@@ -117,7 +116,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout"); // TODO: Update in SWIP-581 to eligibility qualification
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-qualification");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(false), Times.Once);
 

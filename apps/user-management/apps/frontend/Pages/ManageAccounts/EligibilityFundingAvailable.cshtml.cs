@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 /// <summary>
-/// Eligibility Agency Worker Dropout View Model
+/// Eligibility Funding Available View Model
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
-public class EligibilityAgencyWorkerDropout(EcfLinkGenerator linkGenerator) : BasePageModel
+public class EligibilityFundingAvailable(EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityAgencyWorker();
+        BackLinkPath = linkGenerator.EligibilityQualification();
         return Page();
     }
 }

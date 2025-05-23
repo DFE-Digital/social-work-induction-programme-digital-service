@@ -125,6 +125,19 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsQualifiedWithin3Years()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsQualifiedWithin3Years;
+    }
+
+    public void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.IsQualifiedWithin3Years = isQualifiedWithin3Years;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
     public void ResetCreateAccountJourneyModel()
     {
         Session.Remove(CreateAccountSessionKey);

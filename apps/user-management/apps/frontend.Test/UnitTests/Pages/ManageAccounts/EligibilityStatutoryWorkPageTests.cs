@@ -97,8 +97,6 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        // TODO: redirect to eligibility agency work page in SWIP-580
-        // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-work");
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-worker");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(true), Times.Once);
@@ -120,8 +118,6 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        // TODO: redirect to eligibility statutory work dropout page in SWIP-592
-        // redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout");
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work-dropout");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);

@@ -83,7 +83,9 @@ public abstract class EcfLinkGenerator(
     public string EligibilityStatutoryWorkDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout");
 
     public string EligibilityAgencyWorker() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorker");
-    public string EligibilityAgencyWorkerDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorkerDropout");
+    public string EligibilityQualification() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification");
+    public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
+    public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
 
     protected abstract string GetRequiredPathByPage(
         string page,

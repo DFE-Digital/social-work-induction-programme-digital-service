@@ -15,4 +15,5 @@ public record CreatePersonRequest
     public ImmutableList<AccountType> Roles { get; init; } = [];
     public Guid OrganisationId { get; init; }
     public int? ExternalUserId { get; set; }
+    public bool IsFunded { get; set; }
 }

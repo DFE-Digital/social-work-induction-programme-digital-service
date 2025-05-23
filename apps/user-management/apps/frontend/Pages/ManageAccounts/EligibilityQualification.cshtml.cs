@@ -10,38 +10,38 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 /// <summary>
-/// Eligibility Agency Worker View Model
+/// Eligibility Qualification View Model
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
-public class EligibilityAgencyWorker(
+public class EligibilityQualification(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
-    IValidator<EligibilityAgencyWorker> validator)
+    IValidator<EligibilityQualification> validator)
     : BasePageModel
 {
-    [BindProperty] public bool? IsAgencyWorker { get; set; }
+    [BindProperty] public bool? IsQualifiedWithin3Years { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityStatutoryWork();
-        IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
+        BackLinkPath = linkGenerator.EligibilityAgencyWorker();
+        IsQualifiedWithin3Years = createAccountJourneyService.GetIsQualifiedWithin3Years();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (IsAgencyWorker is null || !validationResult.IsValid)
+        if (IsQualifiedWithin3Years is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EligibilityStatutoryWork();
+            BackLinkPath = linkGenerator.EligibilityAgencyWorker();
             return Page();
         }
 
-        createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
+        createAccountJourneyService.SetIsQualifiedWithin3Years(IsQualifiedWithin3Years);
 
-        return Redirect(IsAgencyWorker is false
-            ? linkGenerator.EligibilityQualification()
-            : linkGenerator.EligibilityFundingNotAvailable());
+        return Redirect(IsQualifiedWithin3Years is false
+            ? linkGenerator.EligibilityFundingNotAvailable()
+            : linkGenerator.EligibilityFundingAvailable());
     }
 }
