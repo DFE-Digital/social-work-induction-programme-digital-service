@@ -21,4 +21,4 @@ echo "Starting SSH..."
 /usr/sbin/sshd
 
 # Exec the main process passed to us (whatever is specified in CMD)
-exec "$@"
+exec su-exec app "$@"

@@ -13,10 +13,11 @@ if [ "$BASIC_AUTH_ENABLED" = 'true' ]; then
     echo "Configuring basic auth..."
     htpasswd -b -c /etc/nginx/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
     cp /App/nginx-basic-auth.conf /etc/nginx/http.d/default.conf
+    chown root:root /etc/nginx/http.d/default.conf
 fi
 
-# Launch user management
-dotnet Dfe.Sww.Ecf.Frontend.dll &
+# Launch user management with app user privileges
+su-exec app dotnet Dfe.Sww.Ecf.Frontend.dll &
 
 echo "Waiting for user management to be ready..."
 ENDPOINT=http://localhost:5000/version.txt
@@ -57,4 +58,5 @@ while true; do
 done
 
 # Exec the main process passed to us (whatever is specified in CMD - usually nginx)
+# Nginx runs as the user nginx
 exec "$@"
