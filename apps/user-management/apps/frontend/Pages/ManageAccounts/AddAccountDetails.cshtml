@@ -29,20 +29,8 @@
                 @if (!Model.IsStaff)
                 {
                     <govuk-input asp-for="SocialWorkEnglandNumber" spellcheck="false" type="number" input-class="govuk-!-width-one-third">
-                        <govuk-input-label class="govuk-label">Social Work England registration number (optional)</govuk-input-label>
-                        <govuk-input-hint class="govuk-hint">
-                            <p>
-                                You need to provide a Social Work England registration number in order to receive payments from the Department for
-                                Education for this account. You can
-                                <a href="https://www.socialworkengland.org.uk/" target="_blank">look up the registration number</a>
-                                on the Social Work England website (opens in a new window).
-                            </p>
-                            <p class="govuk-!-margin-bottom-0">
-                                If you don't know the registration number yet, you can add it later. Your
-                                organisation will not receive any Post qualifying pathway (PQP) funding for this account until the registration number
-                                is provided.
-                            </p>
-                        </govuk-input-hint>
+                        <govuk-input-label class="govuk-label">Social Work England registration number</govuk-input-label>
+                        <govuk-input-hint class="govuk-hint">For example, SW1234</govuk-input-hint>
                         <govuk-input-error-message/>
                     </govuk-input>
                 }

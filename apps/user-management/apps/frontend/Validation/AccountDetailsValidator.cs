@@ -13,24 +13,12 @@ public class AccountDetailsValidator : AbstractValidator<AccountDetails>
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
-        When(
-            x => string.IsNullOrWhiteSpace(x.LastName),
-            () =>
-            {
-                RuleFor(y => y.FirstName).FirstNameValidation();
-            }
-        );
-
-        When(
-            x => string.IsNullOrWhiteSpace(x.FirstName),
-            () =>
-            {
-                RuleFor(y => y.LastName).LastNameValidation();
-            }
-        );
-
+        RuleFor(y => y.FirstName).FirstNameValidation();
+        RuleFor(y => y.LastName).LastNameValidation();
         RuleFor(y => y.Email).EmailValidation();
-
-        RuleFor(x => x.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation();
+        When(
+            x => x.IsStaff == false,
+            () => { RuleFor(y => y.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation(); }
+        );
     }
 }
