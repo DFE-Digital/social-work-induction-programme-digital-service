@@ -32,6 +32,8 @@ public class AccountDetails
 
     public int? ExternalUserId { get; set; }
 
+    public bool IsStaff { get; set; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
@@ -40,7 +42,8 @@ public class AccountDetails
             LastName = account.LastName,
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
-            ExternalUserId = account.ExternalUserId
+            ExternalUserId = account.ExternalUserId,
+            IsStaff = account.IsStaff
         };
     }
 }

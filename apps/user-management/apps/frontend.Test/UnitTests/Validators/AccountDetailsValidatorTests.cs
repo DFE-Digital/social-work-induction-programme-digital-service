@@ -26,29 +26,49 @@ public class AccountDetailsValidatorTests()
     }
 
     [Theory]
-    [InlineData("John", null)]
-    [InlineData(null, "Doe")]
-    public void WhenAtLeastOneNameIsSupplied_PassesValidation(string? firstName, string? lastName)
+    [InlineData("")]
+    [InlineData(null)]
+    [InlineData("     ")]
+    public void WhenAnyInputNotSupplied_WhenIsNotStaff_HasValidationErrors(string? value)
     {
         // Arrange
-        var newAccount = Faker.GenerateWithCustomName(firstName, lastName);
+        var account = new AccountDetails
+        {
+            IsStaff = false,
+            FirstName = value,
+            LastName = value,
+            Email = value,
+            SocialWorkEnglandNumber = value
+        };
 
-        //Act
-        var result = Sut.TestValidate(newAccount);
+        // Act
+        var result = Sut.TestValidate(account);
 
         // Assert
-        result.ShouldNotHaveAnyValidationErrors();
+        result
+            .ShouldHaveValidationErrorFor(person => person.FirstName)
+            .WithErrorMessage("Enter a first name");
+        result
+            .ShouldHaveValidationErrorFor(person => person.LastName)
+            .WithErrorMessage("Enter a last name");
+        result
+            .ShouldHaveValidationErrorFor(person => person.Email)
+            .WithErrorMessage("Enter an email address");
+        result
+            .ShouldHaveValidationErrorFor(person => person.SocialWorkEnglandNumber)
+            .WithErrorMessage("Enter a Social Work England registration number");
     }
 
     [Theory]
     [InlineData("")]
     [InlineData(null)]
     [InlineData("     ")]
-    public void WhenEmailAndFirstNameAndLastNameAreNotSupplied_HasValidationErrors(string? value)
+    public void WhenAnyInputNotSupplied_WhenIsStaff_HasValidationErrors(string? value)
     {
         // Arrange
         var account = new AccountDetails
         {
+            IsStaff = true,
             FirstName = value,
             LastName = value,
             Email = value
@@ -60,13 +80,13 @@ public class AccountDetailsValidatorTests()
         // Assert
         result
             .ShouldHaveValidationErrorFor(person => person.FirstName)
-            .WithErrorMessage("Enter a first or last name");
+            .WithErrorMessage("Enter a first name");
         result
             .ShouldHaveValidationErrorFor(person => person.LastName)
-            .WithErrorMessage("Enter a first or last name");
+            .WithErrorMessage("Enter a last name");
         result
             .ShouldHaveValidationErrorFor(person => person.Email)
-            .WithErrorMessage("Enter an email");
+            .WithErrorMessage("Enter an email address");
     }
 
     [Theory]

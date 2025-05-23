@@ -16,7 +16,8 @@ public class EditAccountJourneyModel(Account account)
             FirstName = account.FirstName,
             LastName = account.LastName,
             Email = account.Email,
-            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber
+            SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
+            IsStaff = account.IsStaff
         };
 
     public bool? IsStaff { get; set; } = account.IsStaff;

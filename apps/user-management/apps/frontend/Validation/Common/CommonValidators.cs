@@ -8,19 +8,19 @@ public static class CommonValidators
 {
     public static void FirstNameValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
-        ruleBuilder.NotEmpty().WithMessage("Enter a first or last name");
+        ruleBuilder.NotEmpty().WithMessage("Enter a first name");
     }
 
     public static void LastNameValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
-        ruleBuilder.NotEmpty().WithMessage("Enter a first or last name");
+        ruleBuilder.NotEmpty().WithMessage("Enter a last name");
     }
 
     public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
         ruleBuilder
             .NotEmpty()
-            .WithMessage("Enter an email")
+            .WithMessage("Enter an email address")
             .EmailAddress()
             .WithMessage("Enter an email address in the correct format, like name@example.com");
     }
@@ -34,6 +34,7 @@ public static class CommonValidators
             {
                 if (string.IsNullOrWhiteSpace(sweId))
                 {
+                    context.AddFailure(new ValidationFailure("SocialWorkEnglandNumber", "Enter a Social Work England registration number", sweId));
                     return;
                 }
 

@@ -124,13 +124,14 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    public async Task Post_WhenCalledWithInvalidDataAndIsNotStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
     {
         // Arrange
-        var accountDetails = new AccountDetailsFaker().Generate();
-        Sut.FirstName = accountDetails.FirstName;
-        Sut.LastName = accountDetails.LastName;
+        Sut.IsStaff = false;
+        Sut.FirstName = string.Empty;
+        Sut.LastName = string.Empty;
         Sut.Email = string.Empty;
+        Sut.SocialWorkEnglandNumber = string.Empty;
 
         MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
 
@@ -142,10 +143,59 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
-        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Count.Should().Be(4);
+        modelStateKeys.Should().Contain("FirstName");
+        modelState["FirstName"]!.Errors.Count.Should().Be(1);
+        modelState["FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
+
+        modelStateKeys.Should().Contain("LastName");
+        modelState["LastName"]!.Errors.Count.Should().Be(1);
+        modelState["LastName"]!.Errors[0].ErrorMessage.Should().Be("Enter a last name");
+
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
-        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
+
+        modelStateKeys.Should().Contain("SocialWorkEnglandNumber");
+        modelState["SocialWorkEnglandNumber"]!.Errors.Count.Should().Be(1);
+        modelState["SocialWorkEnglandNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a Social Work England registration number");
+
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenCalledWithInvalidDataAndIsStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    {
+        // Arrange
+        Sut.IsStaff = true;
+        Sut.FirstName = string.Empty;
+        Sut.LastName = string.Empty;
+        Sut.Email = string.Empty;
+        Sut.SocialWorkEnglandNumber = string.Empty;
+
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(3);
+        modelStateKeys.Should().Contain("FirstName");
+        modelState["FirstName"]!.Errors.Count.Should().Be(1);
+        modelState["FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
+
+        modelStateKeys.Should().Contain("LastName");
+        modelState["LastName"]!.Errors.Count.Should().Be(1);
+        modelState["LastName"]!.Errors[0].ErrorMessage.Should().Be("Enter a last name");
+
+        modelStateKeys.Should().Contain("Email");
+        modelState["Email"]!.Errors.Count.Should().Be(1);
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         VerifyAllNoOtherCalls();

@@ -87,6 +87,13 @@ public class AccountBuilder
         return this;
     }
 
+    public AccountBuilder WithIsStaff(bool isStaff)
+    {
+        _faker.RuleFor(a => a.IsStaff, _ => isStaff);
+
+        return this;
+    }
+
     public Account Build()
     {
         return _faker.Generate();

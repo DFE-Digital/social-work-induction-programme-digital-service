@@ -82,7 +82,8 @@ public class EditAccountDetails(
             FirstName = FirstName,
             LastName = LastName,
             Email = Email,
-            SocialWorkEnglandNumber = SocialWorkEnglandNumber
+            SocialWorkEnglandNumber = SocialWorkEnglandNumber,
+            IsStaff = IsStaff
         };
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)

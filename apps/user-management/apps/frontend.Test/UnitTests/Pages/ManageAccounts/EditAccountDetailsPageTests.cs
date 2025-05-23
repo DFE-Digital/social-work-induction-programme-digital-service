@@ -150,6 +150,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName = account.LastName;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+        Sut.IsStaff = account.IsStaff;
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -184,6 +185,8 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.FirstName = account.FirstName;
         Sut.LastName = account.LastName;
         Sut.Email = string.Empty;
+        Sut.IsStaff = false;
+        Sut.SocialWorkEnglandNumber = "123";
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
@@ -200,7 +203,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         modelStateKeys.Count.Should().Be(1);
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
-        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email");
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
@@ -236,6 +239,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName = account.LastName;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+        Sut.IsStaff = account.IsStaff;
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
