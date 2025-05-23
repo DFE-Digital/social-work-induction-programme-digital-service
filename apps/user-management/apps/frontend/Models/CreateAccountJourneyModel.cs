@@ -21,6 +21,8 @@ public class CreateAccountJourneyModel
 
     public bool? IsAgencyWorker { get; set; }
 
+    public bool? IsQualifiedWithin3Years { get; set; }
+
     public Account ToAccount()
     {
         return new Account
@@ -36,7 +38,17 @@ public class CreateAccountJourneyModel
             LastName = AccountDetails?.LastName,
             Types = AccountTypes,
             SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
-            ExternalUserId = ExternalUserId
+            ExternalUserId = ExternalUserId,
+            IsFunded = IsEligibleForFunding()
         };
+    }
+
+    private bool IsEligibleForFunding()
+    {
+        return AccountTypes?.Contains(AccountType.EarlyCareerSocialWorker) == true
+               && IsRegisteredWithSocialWorkEngland == true
+               && IsStatutoryWorker == true
+               && IsAgencyWorker == false
+               && IsQualifiedWithin3Years == true;
     }
 }

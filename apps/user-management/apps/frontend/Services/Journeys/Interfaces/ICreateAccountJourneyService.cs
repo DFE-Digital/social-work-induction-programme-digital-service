@@ -31,6 +31,10 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
+    bool? GetIsQualifiedWithin3Years();
+
+    void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years);
+
     Task<Account> CompleteJourneyAsync();
 
     void ResetCreateAccountJourneyModel();

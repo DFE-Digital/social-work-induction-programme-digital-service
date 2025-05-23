@@ -21,8 +21,6 @@ public class SelectUseCase(
     [BindProperty]
     public IList<AccountType>? SelectedAccountTypes { get; set; }
 
-    public Guid? EditAccountId { get; set; }
-
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.SelectAccountType();

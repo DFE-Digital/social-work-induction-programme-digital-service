@@ -15,4 +15,5 @@ public class Person
     public string? EmailAddress { get; set; }
     public AccountStatus? Status { get; set; }
     public ImmutableList<AccountType> Roles { get; set; } = [];
+    public bool IsFunded { get; set; }
 }

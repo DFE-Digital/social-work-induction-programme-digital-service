@@ -62,6 +62,8 @@ public record Account
 
     public int? ExternalUserId { get; set; }
 
+    public bool IsFunded { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
@@ -78,5 +80,6 @@ public record Account
         Types = account.Types;
         SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
         ExternalUserId = account.ExternalUserId;
+        IsFunded = account.IsFunded;
     }
 }

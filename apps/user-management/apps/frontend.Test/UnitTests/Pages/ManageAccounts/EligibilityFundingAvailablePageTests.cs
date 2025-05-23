@@ -1,21 +1,19 @@
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class EligibilityAgencyWorkerDropoutPageTests : ManageAccountsPageTestBase<EligibilityAgencyWorkerDropout>
+public class EligibilityFundingAvailablePageTests : ManageAccountsPageTestBase<EligibilityFundingAvailable>
 {
-    private EligibilityAgencyWorkerDropout Sut { get; }
+    private EligibilityFundingAvailable Sut { get; }
 
-    public EligibilityAgencyWorkerDropoutPageTests()
+    public EligibilityFundingAvailablePageTests()
     {
-        Sut = new EligibilityAgencyWorkerDropout(
+        Sut = new EligibilityFundingAvailable(
             new FakeLinkGenerator()
         );
     }
@@ -28,7 +26,7 @@ public class EligibilityAgencyWorkerDropoutPageTests : ManageAccountsPageTestBas
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-qualification");
 
         VerifyAllNoOtherCalls();
     }
