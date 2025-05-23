@@ -28,7 +28,8 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 # Install Postgres client / SSH Server for Kudu
 RUN apk --no-cache add postgresql15-client \
     openssh \
-    shadow
+    shadow \
+    su-exec
 
 # Support kudu tools SSH for remote debug
 COPY sshd_config /etc/ssh/sshd_config
@@ -47,6 +48,8 @@ RUN apk --no-cache add libc6-compat
 RUN apk --no-cache add msttcorefonts-installer fontconfig && \
     update-ms-fonts && \
     fc-cache -f
+
+RUN chown -R app:app /Apps
 
 ENV PATH="${PATH}:/Apps/EcfCli"
 ENV ASPNETCORE_HTTP_PORTS=80

@@ -39,7 +39,8 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Install SSH Server for Kudu
 RUN apk --no-cache add openssh \
-    shadow
+    shadow \
+    su-exec
 
 # Support kudu tools SSH for remote debug
 COPY sshd_config /etc/ssh/sshd_config
@@ -63,6 +64,8 @@ RUN apk update && \
 
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
+
+RUN chown -R app:app /App
 
 ENTRYPOINT ["/App/entry-point.sh"]
 CMD ["nginx","-g", "daemon off;"]
