@@ -82,8 +82,22 @@ public sealed class SocialWorkEnglandRecord
             sweId = sweId.Remove(0, 2);
         }
 
+        var startWithZero = sweId.FirstOrDefault() == '0';
+        if (startWithZero)
+        {
+            socialWorkEnglandNumber = null;
+            return false;
+        }
+
         var isNumber = int.TryParse(sweId, out var sweNumber);
         if (!isNumber || sweNumber <= 0)
+        {
+            socialWorkEnglandNumber = null;
+            return false;
+        }
+
+        var isCorrectLength = sweId.Length <= 6;
+        if (isCorrectLength == false)
         {
             socialWorkEnglandNumber = null;
             return false;
