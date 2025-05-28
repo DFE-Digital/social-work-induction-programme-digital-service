@@ -1,6 +1,8 @@
 name: Zap Security Scan
 
 on:
+  push:
+    branches: [ SWIP-202-security-scanning-zap ]
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -80,14 +82,14 @@ jobs:
           echo "BASIC_AUTH_HEADER_VALUE=$BASIC_AUTH_HEADER_VALUE" >> "$GITHUB_ENV"
 
       - name: ZAP scan (without basic auth)
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
         with:
           target: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}
           allow_issue_writing: false
           artifact_name: full_scan_no_basic_auth_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
 
       - name: ZAP Scan (with basic auth)
-        uses: zaproxy/action-full-scan@v0.12.0
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
         env:
           ZAP_AUTH_HEADER_VALUE: ${{ env.BASIC_AUTH_HEADER_VALUE }}
         with:
