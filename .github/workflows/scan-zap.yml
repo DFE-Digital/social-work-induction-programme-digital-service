@@ -1,0 +1,96 @@
+name: Zap Security Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: d01
+        type: choice
+        options:
+          - d01
+          - d02
+jobs:
+  zap-scan:
+    name: Scan web app 
+    environment: Dev
+    runs-on: ubuntu-latest
+    # Permissions for OIDC Azure authentication (az login)
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+    strategy:
+      fail-fast: false
+      matrix:
+        web-app-name: [ 'wa-user-management', 'wa-moodle-primary' ]
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Load Terraform variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
+          add-as-env-vars: true
+
+      - name: Log in to Azure CLI
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Get web app URL
+        shell: bash
+        env:
+          WEB_APP_NAME: ${{ matrix.web-app-name }}
+        run: |
+          set -euo pipefail
+
+          # Retrieve front door host name for web app
+          FRONT_DOOR_HOST_NAME=$(az afd endpoint list \
+            --resource-group $PRIMARY_RESOURCE_GROUP \
+            --profile-name $RESOURCE_NAME_PREFIX-fd-profile-web \
+            --query "[?name=='$RESOURCE_NAME_PREFIX-fd-endpoint-web-$WEB_APP_NAME'].hostName | [0]" \
+            --output tsv)
+          if [[ -z "$FRONT_DOOR_HOST_NAME" ]]; then
+            echo "Unable to retrieve front door host name for web app: $WEB_APP_NAME"
+            exit 1
+          else
+            echo "Retrieved front door host name: $FRONT_DOOR_HOST_NAME for web app: $WEB_APP_NAME"
+            echo "FULL_EXTERNAL_WEB_DOMAIN_NAME=$FRONT_DOOR_HOST_NAME" >> "$GITHUB_ENV"
+          fi
+
+      - name: Get authentication header
+        shell: bash
+        env:
+          BASIC_AUTH_USER: ${{ vars.BASIC_AUTH_USER }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+        run: |
+          set -euo pipefail
+          BASIC_AUTH_HEADER_VALUE=$(echo -n "$BASIC_AUTH_USER:$BASIC_AUTH_PASSWORD" | base64)
+          echo "::add-mask::$BASIC_AUTH_HEADER_VALUE"
+          echo "BASIC_AUTH_HEADER_VALUE=$BASIC_AUTH_HEADER_VALUE" >> "$GITHUB_ENV"
+
+      - name: ZAP scan (without basic auth)
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
+        with:
+          target: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}
+          allow_issue_writing: false
+          artifact_name: full_scan_no_basic_auth_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
+
+      - name: ZAP Scan (with basic auth)
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
+        env:
+          ZAP_AUTH_HEADER_VALUE: ${{ env.BASIC_AUTH_HEADER_VALUE }}
+        with:
+          target: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}
+          allow_issue_writing: false
+          artifact_name: full_scan_basic_auth_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
