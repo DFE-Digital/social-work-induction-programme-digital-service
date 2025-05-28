@@ -1,3 +1,5 @@
+name: Zap Security Scan
+
 on:
   schedule:
     - cron: '0 0 * * *'
