@@ -164,9 +164,11 @@ RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh /app/save-env.sh /app/r
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
 # will override this with the cron config
+COPY apache-security.conf /etc/apache2/conf-enabled/security.conf
 COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
 COPY apache-config-cron.conf /app/apache-config-cron.conf
 COPY moodle-cron /app/moodle-cron
+RUN a2enmod headers
 
 # Give the cron job some html to serve - the cron job service is still an app service
 # and needs to serve something
