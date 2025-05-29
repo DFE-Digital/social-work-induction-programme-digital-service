@@ -121,7 +121,7 @@ public class ConfirmAccountDetails(
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = "New user added";
-        TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}.";
+        TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
         return Redirect(linkGenerator.ManageAccounts());
     }
