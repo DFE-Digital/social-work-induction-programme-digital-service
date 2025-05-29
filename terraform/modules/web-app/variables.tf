@@ -77,3 +77,20 @@ variable "docker_image_name" {
   description = "The Docker image name to use for the web app"
   type = string
 }
+
+variable "health_check_path" {
+  description = "The path to use for the health check endpoint. Leave unset to disable"
+  type        = string
+  default     = ""
+}
+
+variable "health_check_eviction_time_in_min" {
+  description = "Time in minutes to wait before evicting a failed instance app instance"
+  type        = number
+  default     = 2
+}
+
+variable "support_action_group_id" {
+  description = "ID of the support action group"
+  type        = string
+}

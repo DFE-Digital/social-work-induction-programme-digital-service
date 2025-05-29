@@ -101,6 +101,8 @@ module "web_app_moodle" {
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
   service_plan_id           = module.stack.moodle_service_plan_id
+  health_check_path         = "/version.txt"
+  support_action_group_id   = module.stack.support_action_group_id
   tags                      = local.common_tags
 
   app_settings = merge({
@@ -140,6 +142,8 @@ module "web_app_moodle_cron" {
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id
   service_plan_id           = module.stack.maintenance_service_plan_id
+  health_check_path         = "/version.txt"
+  support_action_group_id   = module.stack.support_action_group_id
   tags                      = local.common_tags
 
   # POSTGRES_DB should be changed when deploying the installation webapp.

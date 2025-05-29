@@ -87,3 +87,8 @@ output "storage_account_name" {
   description = "Name of the shared storage account"
   value       = azurerm_storage_account.sa.name
 }
+
+output "support_action_group_id" {
+  description = "ID of the support action group"
+  value       = azurerm_monitor_action_group.stack_action_group.id
+}

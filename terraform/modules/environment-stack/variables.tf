@@ -90,3 +90,10 @@ variable "basic_auth_password" {
   type        = string
   sensitive   = true
 }
+
+variable "email_support_address" {
+  description = "Email address for support / alerting"
+  type        = string
+  sensitive   = true
+}
+
