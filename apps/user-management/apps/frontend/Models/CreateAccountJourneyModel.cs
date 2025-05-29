@@ -30,7 +30,6 @@ public class CreateAccountJourneyModel
             Status =
                 AccountTypes != null
                 && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                && AccountDetails?.SocialWorkEnglandNumber is null
                     ? AccountStatus.PendingRegistration
                     : AccountStatus.Active,
             Email = AccountDetails?.Email,

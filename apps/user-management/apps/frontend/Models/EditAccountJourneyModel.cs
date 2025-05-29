@@ -31,15 +31,7 @@ public class EditAccountJourneyModel(Account account)
             LastName = AccountDetails.LastName,
             SocialWorkEnglandNumber = AccountDetails.SocialWorkEnglandNumber,
             Types = AccountTypes,
-            Status = AccountStatus switch
-            {
-                _
-                    => AccountTypes != null
-                    && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                    && AccountDetails.SocialWorkEnglandNumber is null
-                        ? PendingRegistration
-                        : Active
-            }
+            Status = AccountStatus
         };
     }
 }
