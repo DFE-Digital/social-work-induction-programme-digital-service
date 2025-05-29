@@ -5,6 +5,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -118,8 +119,9 @@ public class ConfirmAccountDetails(
 
         await createAccountJourneyService.CompleteJourneyAsync();
 
-        TempData["NotifyEmail"] = accountDetails.Email;
-        TempData["NotificationBannerSubject"] = "Account was successfully added";
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = "New user added";
+        TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}.";
 
         return Redirect(linkGenerator.ManageAccounts());
     }
