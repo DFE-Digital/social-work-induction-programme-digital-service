@@ -28,10 +28,11 @@
             </govuk-notification-banner>
         }
 
+        <h1 class="govuk-heading-l">Manage accounts</h1>
+
+        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new user</govuk-button-link>
+
         <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--l">
-                Manage accounts
-            </caption>
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">
@@ -110,7 +111,5 @@
                 <govuk-pagination-next href="@LinkGenerator.ManageAccounts(next.Offset, next.PageSize)"/>
             }
         </govuk-pagination>
-
-        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add someone</govuk-button-link>
     </div>
 </div >
