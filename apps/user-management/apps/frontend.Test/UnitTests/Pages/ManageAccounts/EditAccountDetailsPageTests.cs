@@ -147,6 +147,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         );
 
         Sut.FirstName = account.FirstName;
+        Sut.MiddlesNames = account.MiddleNames;
         Sut.LastName = account.LastName;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
@@ -237,6 +238,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
         Sut.FirstName = account.FirstName;
         Sut.LastName = account.LastName;
+        Sut.MiddlesNames = account.MiddleNames;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
         Sut.IsStaff = account.IsStaff;

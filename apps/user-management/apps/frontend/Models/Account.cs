@@ -25,6 +25,12 @@ public record Account
     public string? FirstName { get; init; }
 
     /// <summary>
+    /// Middle Names
+    /// </summary>
+    [Display(Name = "Middle names")]
+    public string? MiddleNames { get; init; }
+
+    /// <summary>
     /// Last Name
     /// </summary>
     [Display(Name = "Last name")]
@@ -74,6 +80,7 @@ public record Account
         Id = account.Id;
         CreatedAt = account.CreatedAt;
         FirstName = account.FirstName;
+        MiddleNames = account.MiddleNames;
         LastName = account.LastName;
         Email = account.Email;
         Status = account.Status;
