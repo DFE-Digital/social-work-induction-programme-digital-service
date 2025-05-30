@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
+using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
@@ -126,6 +127,15 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var response = result as RedirectResult;
         response.Should().NotBeNull();
         response!.Url.Should().Be("/manage-accounts");
+
+        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
+        notificationType.Should().Be(NotificationBannerType.Success);
+
+        var notificationHeader = TempData["NotificationHeader"]?.ToString();
+        notificationHeader.Should().Be("New user added");
+
+        var notificationMessage = TempData["NotificationMessage"]?.ToString();
+        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}.");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);

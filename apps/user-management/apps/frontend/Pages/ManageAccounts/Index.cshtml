@@ -1,14 +1,18 @@
 @page
 @using Dfe.Sww.Ecf.Frontend.Extensions
 @using Dfe.Sww.Ecf.Frontend.Models
+@using Dfe.Sww.Ecf.Frontend.TagHelpers
+@using GovUk.Frontend.AspNetCore
+@using GovUk.Frontend.AspNetCore.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.Index
+@model Index
 
 @{
     Model.Title = "Manage accounts";
 
-    var notifiedEmail = TempData["NotifyEmail"]?.ToString();
-    var notificationBannerSubject = TempData["NotificationBannerSubject"]?.ToString();
+    var notificationType = (NotificationBannerType)(TempData["NotificationType"] ?? NotificationBannerType.Default);
+    var notificationHeader = TempData["NotificationHeader"]?.ToString();
+    var notificationMessage = TempData["NotificationMessage"]?.ToString();
 
     var paging = Model.Pagination;
 }
@@ -16,15 +20,13 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-        @if (!string.IsNullOrWhiteSpace(notifiedEmail) && !string.IsNullOrWhiteSpace(notificationBannerSubject))
+        @if (!string.IsNullOrWhiteSpace(notificationHeader) || !string.IsNullOrWhiteSpace(notificationMessage))
         {
-            <govuk-notification-banner>
-                <govuk-notification-banner-title heading-level="2" id="banner-title">
-                    @notificationBannerSubject
-                </govuk-notification-banner-title>
+            <govuk-notification-banner type="@notificationType">
                 <p class="govuk-notification-banner__heading">
-                    An email notification was sent to @notifiedEmail
+                    @notificationHeader
                 </p>
+                <p class="govuk-body">@notificationMessage</p>
             </govuk-notification-banner>
         }
 
