@@ -16,7 +16,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "front_door_origin_group_web" {
     interval_in_seconds = 60
     protocol            = "Https"
     request_type        = "GET"
-    path                = "/health"
+    path                = var.health_check_path
   }
 
   load_balancing {

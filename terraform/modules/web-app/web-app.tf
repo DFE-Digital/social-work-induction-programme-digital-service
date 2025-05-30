@@ -10,11 +10,13 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   site_config {
-    always_on              = true
-    http2_enabled          = true
-    vnet_route_all_enabled = true
-    ftps_state             = "Disabled"
-    minimum_tls_version    = "1.3"
+    always_on                         = true
+    http2_enabled                     = true
+    vnet_route_all_enabled            = true
+    ftps_state                        = "Disabled"
+    minimum_tls_version               = "1.3"
+    health_check_path                 = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
 
     ip_restriction_default_action = "Deny"
 

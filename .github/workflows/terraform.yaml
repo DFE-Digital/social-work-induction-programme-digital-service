@@ -76,7 +76,7 @@ jobs:
         uses: ./.github/actions/pre-process-terraform-variables
         with:
           environment: ${{ inputs.instance }}
-          add_as_env_vars: true
+          add-as-env-vars: true
 
       - name: Generate Terraform State Variables
         shell: bash
@@ -135,6 +135,7 @@ jobs:
             -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
             -var='basic_auth_user=${{ vars.BASIC_AUTH_USER }}' \
             -var='basic_auth_password=${{ secrets.BASIC_AUTH_PASSWORD }}' \
+            -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
             || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
