@@ -10,9 +10,6 @@ public enum AccountStatus
     [Display(Name = "Active")]
     Active,
 
-    [Display(
-        Name = "Pending registration",
-        Description = "You have not provided a Social Work England registration number for this account"
-    )]
+    [Display(Name = "Pending")]
     PendingRegistration
 }
