@@ -24,6 +24,10 @@ public class EditAccountDetails(
     public string? FirstName { get; set; }
 
     [BindProperty]
+    [Display(Name = "Middle names (optional)")]
+    public string? MiddlesNames { get; set; }
+
+    [BindProperty]
     [Display(Name = "Last name")]
     public string? LastName { get; set; }
 
@@ -49,6 +53,7 @@ public class EditAccountDetails(
         Id = id;
 
         FirstName = accountDetails.FirstName;
+        MiddlesNames = accountDetails.MiddleNames;
         LastName = accountDetails.LastName;
         Email = accountDetails.Email;
 
@@ -81,6 +86,7 @@ public class EditAccountDetails(
         {
             FirstName = FirstName,
             LastName = LastName,
+            MiddleNames = MiddlesNames,
             Email = Email,
             SocialWorkEnglandNumber = SocialWorkEnglandNumber,
             IsStaff = IsStaff

@@ -34,6 +34,7 @@ public class CreateAccountJourneyModel
                     : AccountStatus.Active,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
+            MiddleNames = AccountDetails?.MiddleNames,
             LastName = AccountDetails?.LastName,
             Types = AccountTypes,
             SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,

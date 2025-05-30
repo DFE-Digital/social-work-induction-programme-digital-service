@@ -46,6 +46,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         // Assert
         Sut.FirstName.Should().Be(account.FirstName);
+        Sut.MiddleNames.Should().Be(account.MiddleNames);
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
@@ -96,6 +97,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         var accountDetails = AccountDetails.FromAccount(account);
 
         Sut.FirstName = accountDetails.FirstName;
+        Sut.MiddleNames = accountDetails.MiddleNames;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;
         Sut.SocialWorkEnglandNumber = sweId;
