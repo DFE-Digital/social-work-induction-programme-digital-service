@@ -1,0 +1,14 @@
+name: Validate Dependabot config
+on:
+  push:
+    branches:
+      - 'SWIP-202-dependency-security-scanning'
+
+jobs:
+  validate:
+    name: Validate Dependabot config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Validate dependabot.yml
+        uses: marocchino/validate-dependabot@v1

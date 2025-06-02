@@ -72,19 +72,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
         with:
           ref: ${{ github.ref }}
 
       - name: Log in to Azure CLI
-        uses: azure/login@v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
         with:
           client-id: ${{ env.AZ_CLIENT_ID }}
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
       - name: Install just
-        uses: extractions/setup-just@v3
+        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
 
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
@@ -193,7 +193,7 @@ jobs:
           app-settings-json: '${{ inputs.web-app-settings }}'
 
       - name: Deploy app service
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee  # v3
         with:
           app-name: ${{ inputs.web-app-name }}
           images: "${{ inputs.image-tag }}"
