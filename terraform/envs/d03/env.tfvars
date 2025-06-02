@@ -4,8 +4,8 @@
 environment_tag = "Dev"
 azure_region = "westeurope"
 environment = "development"
-resource_name_prefix = "${project_code}d02"
-primary_resource_group = "${project_code}d02-swip-rg"
+resource_name_prefix = "${project_code}d03"
+primary_resource_group = "${project_code}d03-swip-rg"
 acr_name = "${project_code}d01acr"
 # The container registry is shared from the d01 instance
 acr_resource_group = "${project_code}d01-swip-rg"
@@ -27,7 +27,7 @@ auth_service_app_settings = {
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
 # Needs wiring up
-one_login_client_id = "xCtiHWNyTayG6HcaeYMxBNP4t8U"
+one_login_client_id = "vZkWR2x4iDjtxvp22UolB4psq_Y"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
   "MOODLE_SWITCH_OFF_OAUTH"         = "true"

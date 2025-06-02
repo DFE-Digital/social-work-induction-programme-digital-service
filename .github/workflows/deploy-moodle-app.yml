@@ -12,6 +12,7 @@ on:
           - None
           - d01
           - d02
+          - d03
       version-tag:
         description: Version tag to deploy, e.g. 405-20250507.57da7f9.dev
         type: string
