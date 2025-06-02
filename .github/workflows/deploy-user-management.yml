@@ -1,4 +1,4 @@
-name: Deploy Proxy Service
+name: Deploy User Management
 
 on:
   workflow_dispatch:
@@ -17,21 +17,23 @@ on:
         description: Version tag to deploy, e.g. 20250506.118df8a.dev
         type: string
         required: true
-
+      
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
   cancel-in-progress: true
 
 jobs:
-  deploy-proxy-service:
+  deploy-user-anageent:
+    needs: build-and-publish-user-management-image
     if: ${{ github.event.inputs.instance != 'None' }}
-    name: Deploy Proxy Service
+    name: Deploy User Management
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
     with:
       environment: Dev
-      environment-instance: ${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/user-management/apps/frontend
       app-service-resource-group: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-swip-rg
-      web-app-name: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-wa-proxy-service
-      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/proxy-service:${{ github.event.inputs.version-tag }}
+      web-app-name: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-wa-user-management
+      image-tag: s205d01acr.azurecr.io/dfe-digital-swip-digital-service/user-management:${{ github.event.inputs.version-tag }}
       version-endpoint-path: /version.txt

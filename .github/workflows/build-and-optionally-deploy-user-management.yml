@@ -12,6 +12,7 @@ on:
           - None
           - d01
           - d02
+          - d03
       
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
