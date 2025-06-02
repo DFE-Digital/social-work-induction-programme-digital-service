@@ -12,6 +12,7 @@ on:
         options:
           - d01
           - d02
+          - d03
 
       action:
         description: "Test the planned changes or plan and apply the changes"
