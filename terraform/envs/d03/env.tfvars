@@ -27,7 +27,7 @@ auth_service_app_settings = {
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
 # Needs wiring up
-one_login_client_id = ""
+one_login_client_id = "vZkWR2x4iDjtxvp22UolB4psq_Y"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
   "MOODLE_SWITCH_OFF_OAUTH"         = "true"
