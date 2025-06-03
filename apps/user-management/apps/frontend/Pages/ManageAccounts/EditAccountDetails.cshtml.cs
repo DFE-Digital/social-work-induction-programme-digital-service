@@ -24,7 +24,7 @@ public class EditAccountDetails(
     public string? FirstName { get; set; }
 
     [BindProperty]
-    [Display(Name = "Middle names (optional)")]
+    [Display(Name = "Middle names")]
     public string? MiddlesNames { get; set; }
 
     [BindProperty]
