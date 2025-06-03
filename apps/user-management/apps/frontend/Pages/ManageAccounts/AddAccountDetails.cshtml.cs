@@ -32,7 +32,7 @@ public class AddAccountDetails(
     /// Middle Names
     /// </summary>
     [BindProperty]
-    [Display(Name = "Middle names (optional)")]
+    [Display(Name = "Middle names")]
     public string? MiddleNames { get; set; }
 
     /// <summary>
