@@ -31,3 +31,4 @@ If a new action is introduced, update the list below so the latest versions can 
 - azure/webapps-deploy - https://github.com/Azure/webapps-deploy/tags
 - hashicorp/setup-terraform - https://github.com/hashicorp/setup-terraform/tags
 - Azure/appservice-settings - https://github.com/Azure/appservice-settings/tags
+- marocchino/validate-dependabot - https://github.com/marocchino/validate-dependabot/tags

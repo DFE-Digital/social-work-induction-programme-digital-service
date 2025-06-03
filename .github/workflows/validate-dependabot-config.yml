@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
       - name: Validate dependabot.yml
-        uses: marocchino/validate-dependabot@v1
+        uses: marocchino/validate-dependabot@3850c9b9e1144268a169f68b5135f395ce102b43 # v1
