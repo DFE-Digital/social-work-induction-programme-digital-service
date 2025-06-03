@@ -60,19 +60,19 @@
                     </td>
                     <td class="govuk-table__cell">
                         @{
-                        var tagClass = account.Status switch
-                        {
-                        AccountStatus.Active => "govuk-tag--green",
-                        AccountStatus.PendingRegistration => "govuk-tag--orange",
-                        _ => "govuk-tag--yellow"
-                        };
+                            var tagClass = account.Status switch
+                            {
+                                AccountStatus.Active => "govuk-tag--green",
+                                AccountStatus.PendingRegistration => "govuk-tag--orange",
+                                _ => "govuk-tag--yellow"
+                            };
                         }
                         @if (account.Status is not null)
                         {
-                        <strong class="govuk-tag @tagClass" data-test-class="account-status">
-                            @account.Status.GetDisplayName()
-                        </strong>
-                        <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                            <strong class="govuk-tag @tagClass" data-test-class="account-status">
+                                @account.Status.GetDisplayName()
+                            </strong>
+                            <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
                                 @account.Status.GetDescription()
                             </span>
                         }
