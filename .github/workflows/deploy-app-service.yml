@@ -31,7 +31,7 @@ on:
       execute-migrations-after-deploy:
         description: Whether to execute database migrations after the app service deploy
         type: string
-        default: 'false'
+        default: "false"
       app-service-resource-group:
         description: Name of resource group which hosts the app services
         type: string
@@ -42,7 +42,7 @@ on:
       web-app-name:
         description: Name of web app to deploy to, leave empty for no deploy
         type: string
-        default: ''
+        default: ""
       version-endpoint-path:
         description: Path to version endpoint
         type: string
@@ -72,19 +72,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: ${{ github.ref }}
 
       - name: Log in to Azure CLI
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
           client-id: ${{ env.AZ_CLIENT_ID }}
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
       - name: Install just
-        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
+        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff # v3
 
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
@@ -161,7 +161,7 @@ jobs:
               KEY_VAULT_NAME=$(echo "$KEY_VAULT_SECRET_URI" | sed -E 's@.*https?://([^\.]+)\.vault\.azure\.net.*@\1@')
               echo "Saved key vault name for convenience: $KEY_VAULT_NAME"
               echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" >> "$GITHUB_ENV"
-            fi            
+            fi
 
       - name: Establish remote tunnel (optional)
         if: inputs.tunnel-app-service != '' && inputs.app-service-resource-group != '' && inputs.tunnel-remote-server-name != '' && inputs.tunnel-remote-server-port != ''
@@ -187,13 +187,13 @@ jobs:
 
       - name: Update web app settings (optional)
         if: inputs.web-app-settings != ''
-        uses: Azure/appservice-settings@v1
+        uses: Azure/appservice-settings@1808c4fbba4b8723107948a295d396a5c0e33dcd # v1
         with:
           app-name: ${{ inputs.web-app-name }}
-          app-settings-json: '${{ inputs.web-app-settings }}'
+          app-settings-json: "${{ inputs.web-app-settings }}"
 
       - name: Deploy app service
-        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee  # v3
+        uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee # v3
         with:
           app-name: ${{ inputs.web-app-name }}
           images: "${{ inputs.image-tag }}"
@@ -210,4 +210,3 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: just database-updates ${{ inputs.app-service-resource-group }} ${{ inputs.web-app-name }} ${{ inputs.image-tag }}
-

@@ -29,3 +29,5 @@ If a new action is introduced, update the list below so the latest versions can 
 - actions/setup-python - https://github.com/actions/setup-python/tags
 - bridgecrewio/checkov-action - https://github.com/bridgecrewio/checkov-action/tags
 - azure/webapps-deploy - https://github.com/Azure/webapps-deploy/tags
+- hashicorp/setup-terraform - https://github.com/hashicorp/setup-terraform/tags
+- Azure/appservice-settings - https://github.com/Azure/appservice-settings/tags
