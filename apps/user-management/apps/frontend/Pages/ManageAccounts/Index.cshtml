@@ -41,13 +41,10 @@
                     <label asp-for="@Model.Accounts[0].FullName"></label>
                 </th>
                 <th scope="col" class="govuk-table__header">
-                    <label asp-for="@Model.Accounts[0].Status"></label>
-                </th>
-                <th scope="col" class="govuk-table__header">
                     <label asp-for="@Model.Accounts[0].Types"></label>
                 </th>
                 <th scope="col" class="govuk-table__header">
-                    <span class="govuk-visually-hidden">Action</span>
+                    <label asp-for="@Model.Accounts[0].Status"></label>
                 </th>
             </tr>
             </thead>
@@ -55,33 +52,30 @@
             @foreach (var account in Model.Accounts)
             {
                 <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header" data-test-class="account-name">
-                        @Html.DisplayFor(model => account.FullName)
-                    </th>
-                    <td class="govuk-table__cell">
-                        @{
-                            var tagClass = account.Status switch
-                            {
-                                AccountStatus.Active => "govuk-tag--green",
-                                AccountStatus.PendingRegistration => "govuk-tag--orange",
-                                _ => "govuk-tag--yellow"
-                            };
-                        }
-                        @if (account.Status is not null)
-                        {
-                            <strong class="govuk-tag @tagClass" data-test-class="account-status">
-                                @account.Status.GetDisplayName()
-                            </strong>
-                            <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
-                                @account.Status.GetDescription()
-                            </span>
-                        }
+                    <td scope="row" class="govuk-table__cell" data-test-class="account-name">
+                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
                     </td>
                     <td class="govuk-table__cell">
                         <account-types types="account.Types"/>
                     </td>
                     <td class="govuk-table__cell">
-                        <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">View</a>
+                        @{
+                        var tagClass = account.Status switch
+                        {
+                        AccountStatus.Active => "govuk-tag--green",
+                        AccountStatus.PendingRegistration => "govuk-tag--orange",
+                        _ => "govuk-tag--yellow"
+                        };
+                        }
+                        @if (account.Status is not null)
+                        {
+                        <strong class="govuk-tag @tagClass" data-test-class="account-status">
+                            @account.Status.GetDisplayName()
+                        </strong>
+                        <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                                @account.Status.GetDescription()
+                            </span>
+                        }
                     </td>
                 </tr>
             }
