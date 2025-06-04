@@ -86,24 +86,25 @@ resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
 module "web_app_moodle" {
   for_each = local.moodle_instance_resource_naming
 
-  source                    = "./modules/web-app"
-  tenant_id                 = data.azurerm_client_config.az_config.tenant_id
-  environment               = var.environment
-  location                  = var.azure_region
-  resource_group            = module.stack.resource_group_name
-  resource_name_prefix      = var.resource_name_prefix
-  web_app_name              = each.value.webapp_name
-  web_app_short_name        = each.value.web_app_short_name
-  docker_image_name         = "dfe-digital/nothing:latest"
-  front_door_profile_web_id = module.stack.front_door_profile_web_id
-  subnet_webapps_id         = module.stack.subnet_moodle_id
-  acr_id                    = local.acr_id
-  acr_name                  = var.acr_name
-  key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.moodle_service_plan_id
-  health_check_path         = "/version.txt"
-  support_action_group_id   = module.stack.support_action_group_id
-  tags                      = local.common_tags
+  source                        = "./modules/web-app"
+  tenant_id                     = data.azurerm_client_config.az_config.tenant_id
+  environment                   = var.environment
+  location                      = var.azure_region
+  resource_group                = module.stack.resource_group_name
+  resource_name_prefix          = var.resource_name_prefix
+  web_app_name                  = each.value.webapp_name
+  web_app_short_name            = each.value.web_app_short_name
+  docker_image_name             = "dfe-digital/nothing:latest"
+  front_door_profile_web_id     = module.stack.front_door_profile_web_id
+  subnet_webapps_id             = module.stack.subnet_moodle_id
+  acr_id                        = local.acr_id
+  acr_name                      = var.acr_name
+  key_vault_id                  = module.stack.kv_id
+  service_plan_id               = module.stack.moodle_service_plan_id
+  health_check_path             = "/version.txt"
+  support_action_group_id       = module.stack.support_action_group_id
+  appinsights_connection_string = module.stack.appinsights_connection_string
+  tags                          = local.common_tags
 
   app_settings = merge({
     "IS_CRON_JOB_ONLY"                 = "false"
@@ -127,24 +128,25 @@ module "web_app_moodle" {
 
 # The cron app service works just for the primary Moodle instance
 module "web_app_moodle_cron" {
-  source                    = "./modules/web-app"
-  tenant_id                 = data.azurerm_client_config.az_config.tenant_id
-  environment               = var.environment
-  location                  = var.azure_region
-  resource_group            = module.stack.resource_group_name
-  resource_name_prefix      = var.resource_name_prefix
-  web_app_name              = "${local.moodle_webapp_name_stem}-cron"
-  web_app_short_name        = "wa-moodle-cron"
-  docker_image_name         = "dfe-digital/nothing:latest"
-  front_door_profile_web_id = module.stack.front_door_profile_web_id
-  subnet_webapps_id         = module.stack.subnet_maintenance_id
-  acr_id                    = local.acr_id
-  acr_name                  = var.acr_name
-  key_vault_id              = module.stack.kv_id
-  service_plan_id           = module.stack.maintenance_service_plan_id
-  health_check_path         = "/version.txt"
-  support_action_group_id   = module.stack.support_action_group_id
-  tags                      = local.common_tags
+  source                        = "./modules/web-app"
+  tenant_id                     = data.azurerm_client_config.az_config.tenant_id
+  environment                   = var.environment
+  location                      = var.azure_region
+  resource_group                = module.stack.resource_group_name
+  resource_name_prefix          = var.resource_name_prefix
+  web_app_name                  = "${local.moodle_webapp_name_stem}-cron"
+  web_app_short_name            = "wa-moodle-cron"
+  docker_image_name             = "dfe-digital/nothing:latest"
+  front_door_profile_web_id     = module.stack.front_door_profile_web_id
+  subnet_webapps_id             = module.stack.subnet_maintenance_id
+  acr_id                        = local.acr_id
+  acr_name                      = var.acr_name
+  key_vault_id                  = module.stack.kv_id
+  service_plan_id               = module.stack.maintenance_service_plan_id
+  health_check_path             = "/version.txt"
+  support_action_group_id       = module.stack.support_action_group_id
+  appinsights_connection_string = module.stack.appinsights_connection_string
+  tags                          = local.common_tags
 
   # POSTGRES_DB should be changed when deploying the installation webapp.
   # This is because one installation webapp can service multiple moodle

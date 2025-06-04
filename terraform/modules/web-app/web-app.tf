@@ -4,7 +4,7 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name = var.resource_group
   service_plan_id     = var.service_plan_id
   https_only          = true
-  
+
   identity {
     type = "SystemAssigned"
   }
@@ -50,7 +50,8 @@ resource "azurerm_linux_web_app" "webapp" {
 
   # Provide standard setting which gives full app service domain name
   app_settings = merge({
-    "FULL_EXTERNAL_WEB_DOMAIN_NAME" = "${var.web_app_name}.azurewebsites.net"
+    "FULL_EXTERNAL_WEB_DOMAIN_NAME"         = "${var.web_app_name}.azurewebsites.net"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
   }, var.app_settings)
 
   lifecycle {
@@ -65,7 +66,7 @@ resource "azurerm_linux_web_app" "webapp" {
       # it back to null, removing the vnet / dbs integration. Then re-create it. 
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
-      virtual_network_subnet_id, 
+      virtual_network_subnet_id,
       logs
     ]
   }
