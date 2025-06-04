@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
-public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<SocialWorkerProgrammeDates>
+public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<SocialWorkerProgrammeDates>
 {
     private SocialWorkerProgrammeDates Sut { get; }
 
@@ -32,7 +33,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -51,7 +52,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
+        redirectResult!.Url.Should().Be("/manage-users/confirm-account-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -96,7 +97,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         modelState["ProgrammeEndDate"]!.Errors[0].ErrorMessage.Should()
             .Be("Enter an expected programme end date");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -124,7 +125,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         modelState["ProgrammeEndDate"]!.Errors[0].ErrorMessage.Should()
             .Be("Expected programme end date must be in the future");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
 
         VerifyAllNoOtherCalls();
     }

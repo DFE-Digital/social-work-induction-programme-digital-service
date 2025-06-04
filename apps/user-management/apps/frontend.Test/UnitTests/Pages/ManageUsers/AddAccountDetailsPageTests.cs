@@ -113,7 +113,7 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-users/confirm-account-details");
+        redirectResult!.Url.Should().Be("/manage-users/social-worker-programme-dates");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(

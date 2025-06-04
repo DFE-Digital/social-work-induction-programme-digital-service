@@ -1,4 +1,4 @@
-using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 using FluentValidation;
 using NodaTime;
 

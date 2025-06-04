@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NodaTime;
 
-namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 
 /// <summary>
 /// Social Worker Programme Dates View Model
