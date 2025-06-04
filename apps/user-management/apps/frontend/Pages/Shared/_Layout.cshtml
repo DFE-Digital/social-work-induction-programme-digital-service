@@ -113,8 +113,8 @@
 
     <script type="module" src="~/js/moj-frontend.min.js"></script>
 
-    <script type="module">
-        import * as MOJFrontend from "~/js/moj-frontend.min";
+    <script type="module" nonce="@NonceService.GetNonce()">
+        import * as MOJFrontend from '/js/moj-frontend.min.js'
         MOJFrontend.initAll()
     </script>
 
