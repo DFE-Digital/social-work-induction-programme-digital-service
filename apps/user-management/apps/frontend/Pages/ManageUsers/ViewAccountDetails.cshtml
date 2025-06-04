@@ -1,0 +1,35 @@
+@page "{id:Guid}"
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageUsers.ViewAccountDetails
+
+@{
+    Model.Title = "View account details ";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-l">
+            Change details
+        </h1>
+
+        <govuk-summary-list>
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Account.Types)</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>
+                    <account-types types="Model.Account.Types" />
+                </govuk-summary-list-row-value>
+            </govuk-summary-list-row>
+
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>Account details</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>
+                    <account-details account="Model.Account"></account-details>
+                </govuk-summary-list-row-value>
+                <govuk-summary-list-row-actions>
+                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)" visually-hidden-text="account details">Change</govuk-summary-list-row-action>
+                </govuk-summary-list-row-actions>
+            </govuk-summary-list-row>
+        </govuk-summary-list>
+    </div>
+</div>

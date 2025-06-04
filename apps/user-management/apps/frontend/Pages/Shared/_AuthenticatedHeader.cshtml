@@ -127,7 +127,7 @@
                             @{
                                 if (Context.User.Identity?.IsAuthenticated == true)
                                 {
-                                    <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage Accounts" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
+                                    <header-link is-active-class="@Html.IsActive("/ManageUsers")" href="@LinkGenerator.ManageUsers()" text="Manage users" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
                                     <header-link is-active-class="@Html.IsActive("/ManageLearnerRecord")" href="#" text="Manage learner records"></header-link>
                                 }
                             }

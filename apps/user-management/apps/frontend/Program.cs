@@ -38,7 +38,7 @@ builder
         options.Conventions.Add(
             new PageRouteTransformerConvention(new SlugifyRouteParameterTransformer())
         );
-        options.Conventions.AuthorizeFolder("/ManageAccounts");
+        options.Conventions.AuthorizeFolder("/ManageUsers");
     });
 
 // Dependencies

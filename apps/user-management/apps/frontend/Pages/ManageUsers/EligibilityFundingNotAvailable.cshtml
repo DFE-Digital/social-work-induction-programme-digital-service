@@ -1,0 +1,26 @@
+@page
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageUsers.EligibilityFundingNotAvailable
+
+@{
+    Model.Title = "The social worker is not eligible for grant funding";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">The social worker is not eligible for grant funding</h1>
+        <div class="govuk-body">
+            <p>Employers only receive grant funding for social workers who:</p>
+
+            <ul class="govuk-list govuk-list--bullet">
+                <li>completed their social work qualification within the last 3 years</li>
+                <li>are not agency workers</li>
+            </ul>
+
+            <p>Your organisation will not receive grant funding for this social worker if they take part in the programme.</p>
+
+            <p>You can still register the social worker on this service. They will be able to access the learning, development and assessment materials.</p>
+
+            <govuk-button-link href="@LinkGenerator.AddAccountDetails()">Continue</govuk-button-link>
+        </div>
+    </div>
+</div>

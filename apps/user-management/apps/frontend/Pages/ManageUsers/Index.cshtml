@@ -1,0 +1,123 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models
+@using Dfe.Sww.Ecf.Frontend.TagHelpers
+@using GovUk.Frontend.AspNetCore
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Index
+
+@{
+    Model.Title = "Manage users";
+
+    var notificationType = (NotificationBannerType)(TempData["NotificationType"] ?? NotificationBannerType.Default);
+    var notificationHeader = TempData["NotificationHeader"]?.ToString();
+    var notificationMessage = TempData["NotificationMessage"]?.ToString();
+
+    var paging = Model.Pagination;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        @if (!string.IsNullOrWhiteSpace(notificationHeader) || !string.IsNullOrWhiteSpace(notificationMessage))
+        {
+            <govuk-notification-banner type="@notificationType">
+                <p class="govuk-notification-banner__heading">
+                    @notificationHeader
+                </p>
+                <p class="govuk-body">@notificationMessage</p>
+            </govuk-notification-banner>
+        }
+
+        <h1 class="govuk-heading-l">Manage users</h1>
+
+        @if (Model.Accounts.Any() == false)
+        {
+            <div class="govuk-body">
+                <p>On this page, you can add and manage users for the staff members in your organisation.</p>
+                <p>You have not added any users yet.</p>
+            </div>
+        }
+
+        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new user</govuk-button-link>
+
+        @if (Model.Accounts.Any())
+        {
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header">
+                        <label asp-for="@Model.Accounts[0].FullName"></label>
+                    </th>
+                    <th scope="col" class="govuk-table__header">
+                        <label asp-for="@Model.Accounts[0].Types"></label>
+                    </th>
+                    <th scope="col" class="govuk-table__header">
+                        <label asp-for="@Model.Accounts[0].Status"></label>
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                @foreach (var account in Model.Accounts)
+                {
+                    <tr class="govuk-table__row">
+                        <td scope="row" class="govuk-table__cell" data-test-class="account-name">
+                            <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
+                        </td>
+                        <td class="govuk-table__cell">
+                            <account-types types="account.Types"/>
+                        </td>
+                        <td class="govuk-table__cell">
+                            @{
+                                var tagClass = account.Status switch
+                                {
+                                    AccountStatus.Active => "govuk-tag--green",
+                                    AccountStatus.PendingRegistration => "govuk-tag--orange",
+                                    _ => "govuk-tag--yellow"
+                                };
+                            }
+                            @if (account.Status is not null)
+                            {
+                                <strong class="govuk-tag @tagClass" data-test-class="account-status">
+                                    @account.Status.GetDisplayName()
+                                </strong>
+                                <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
+                                    @account.Status.GetDescription()
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <govuk-pagination>
+                @if (paging?.Links?["previous"] != null)
+                {
+                    var prev = paging.Links["previous"];
+                    <govuk-pagination-previous href="@LinkGenerator.ManageUsers(prev.Offset, prev.PageSize)"/>
+                }
+
+                @for (var i = 1; i < paging?.PageCount + 1; i++)
+                {
+                    var pageNo = i;
+                    var currentPage = paging?.Page ?? 0;
+
+                    <govuk-pagination-item
+                        is-current=@(currentPage == pageNo)
+                        href=@LinkGenerator.ManageUsers((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                        @pageNo
+                    </govuk-pagination-item>
+                }
+
+                @if (paging?.Links?["next"] != null)
+                {
+                    var next = paging.Links["next"];
+                    <govuk-pagination-next href="@LinkGenerator.ManageUsers(next.Offset, next.PageSize)"/>
+                }
+            </govuk-pagination>
+        }
+
+    </div>
+</div >
