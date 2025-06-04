@@ -24,7 +24,6 @@ concurrency:
 
 jobs:
   deploy-user-anageent:
-    needs: build-and-publish-user-management-image
     if: ${{ github.event.inputs.instance != 'None' }}
     name: Deploy User Management
     uses: ./.github/workflows/deploy-app-service.yml
