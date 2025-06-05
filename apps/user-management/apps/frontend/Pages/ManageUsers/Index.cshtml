@@ -93,7 +93,7 @@
             </table>
 
             <govuk-pagination>
-                @if (paging?.Links?["previous"] != null)
+                @if (paging?.Links?["previous"] != null && paging.Page != 1)
                 {
                     var prev = paging.Links["previous"];
                     <govuk-pagination-previous href="@LinkGenerator.ManageUsers(prev.Offset, prev.PageSize)"/>
@@ -111,7 +111,7 @@
                     </govuk-pagination-item>
                 }
 
-                @if (paging?.Links?["next"] != null)
+                @if (paging?.Links?["next"] != null && paging.PageCount != paging.Page)
                 {
                     var next = paging.Links["next"];
                     <govuk-pagination-next href="@LinkGenerator.ManageUsers(next.Offset, next.PageSize)"/>
