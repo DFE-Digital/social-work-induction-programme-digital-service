@@ -135,7 +135,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         notificationHeader.Should().Be("New user added");
 
         var notificationMessage = TempData["NotificationMessage"]?.ToString();
-        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}.");
+        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
