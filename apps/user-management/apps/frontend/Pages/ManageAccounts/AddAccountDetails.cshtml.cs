@@ -29,6 +29,13 @@ public class AddAccountDetails(
     public string? FirstName { get; set; }
 
     /// <summary>
+    /// Middle Names
+    /// </summary>
+    [BindProperty]
+    [Display(Name = "Middle names")]
+    public string? MiddleNames { get; set; }
+
+    /// <summary>
     /// Last Name
     /// </summary>
     [BindProperty]
@@ -67,6 +74,7 @@ public class AddAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
 
         FirstName = accountDetails?.FirstName;
+        MiddleNames = accountDetails?.MiddleNames;
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
@@ -86,6 +94,7 @@ public class AddAccountDetails(
         {
             FirstName = FirstName,
             LastName = LastName,
+            MiddleNames = MiddleNames,
             Email = Email,
             SocialWorkEnglandNumber = SocialWorkEnglandNumber,
             IsStaff = IsStaff

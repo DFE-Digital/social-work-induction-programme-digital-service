@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Repositories;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -11,6 +12,12 @@ public class AccountDetails
     public string? FirstName { get; init; }
 
     /// <summary>
+    /// Middle Names
+    /// </summary>
+    [Display(Name = "Middle names")]
+    public string? MiddleNames { get; init; }
+
+    /// <summary>
     /// Last Name
     /// </summary>
     [Display(Name = "Last name")]
@@ -20,7 +27,14 @@ public class AccountDetails
     /// FullName
     /// </summary>
     [Display(Name = "Full name")]
-    public string FullName => $"{FirstName} {LastName}".Trim();
+    public string FullName => string.Join(" ",
+        new[]
+            {
+                FirstName,
+                MiddleNames,
+                LastName
+            }
+            .Where(s => !string.IsNullOrWhiteSpace(s)));
 
     /// <summary>
     /// Email
@@ -39,6 +53,7 @@ public class AccountDetails
         return new AccountDetails
         {
             FirstName = account.FirstName,
+            MiddleNames = account.MiddleNames,
             LastName = account.LastName,
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
