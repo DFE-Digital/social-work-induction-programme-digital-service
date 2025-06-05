@@ -16,7 +16,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
     public EligibilityQualificationPageTests()
     {
         Sut = new EligibilityQualification(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator(),
             new EligibilityQualificationValidator()
         );
@@ -32,7 +32,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-users/eligibility-agency-worker");
-        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -42,7 +42,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
     public void OnGet_WhenCalledWithIsQualifiedWithin3Years_LoadsTheViewWithPrepopulatedValue(bool? isQualifiedWithin3Years)
     {
         // Arrange
-        MockCreateAccountJourneyService.Setup(x => x.GetIsQualifiedWithin3Years())
+        MockCreateUserJourneyService.Setup(x => x.GetIsQualifiedWithin3Years())
             .Returns(isQualifiedWithin3Years);
 
         // Act
@@ -52,7 +52,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
         result.Should().BeOfType<PageResult>();
         Sut.IsQualifiedWithin3Years.Should().Be(isQualifiedWithin3Years);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -98,7 +98,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-funding-available");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(true), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -118,7 +118,7 @@ public class EligibilityQualificationPageTests : ManageUsersPageTestBase<Eligibi
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-funding-not-available");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

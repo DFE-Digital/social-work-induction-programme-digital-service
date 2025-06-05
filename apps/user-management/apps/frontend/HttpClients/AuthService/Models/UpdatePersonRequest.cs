@@ -12,6 +12,6 @@ public record UpdatePersonRequest
     public required string LastName { get; init; }
     public required string EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
-    public AccountStatus? Status { get; init; }
-    public ImmutableList<AccountType> Roles { get; init; } = [];
+    public UserStatus? Status { get; init; }
+    public ImmutableList<UserType> Roles { get; init; } = [];
 }

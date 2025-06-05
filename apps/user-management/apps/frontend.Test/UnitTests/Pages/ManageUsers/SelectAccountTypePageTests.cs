@@ -10,16 +10,16 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 
-public class SelectUserTypePageTests : ManageUsersPageTestBase<SelectAccountType>
+public class SelectUserTypePageTests : ManageUsersPageTestBase<SelectUserType>
 {
-    private SelectAccountType Sut { get; }
+    private SelectUserType Sut { get; }
 
     public SelectUserTypePageTests()
     {
-        Sut = new SelectAccountType(
-            MockCreateAccountJourneyService.Object,
+        Sut = new SelectUserType(
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator(),
-            new SelectAccountTypeValidator()
+            new SelectUserTypeValidator()
         );
     }
 
@@ -33,29 +33,29 @@ public class SelectUserTypePageTests : ManageUsersPageTestBase<SelectAccountType
         result.Should().BeOfType<PageResult>();
 
         Sut.IsStaff.Should().BeNull();
-        Sut.EditAccountId.Should().BeNull();
+        Sut.EditUserId.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-users");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public void OnGetNew_WhenCalled_ResetsModelAndRedirectsToSelectAccountType()
+    public void OnGetNew_WhenCalled_ResetsModelAndRedirectsToSelectUserType()
     {
         // Act
         var result = Sut.OnGetNew();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
-        result.Url.Should().Be("/manage-users/select-account-type");
+        result.Url.Should().Be("/manage-users/select-user-type");
 
-        MockCreateAccountJourneyService.Verify(x => x.ResetCreateAccountJourneyModel(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.ResetCreateUserJourneyModel(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalledWithNullIsStaff_ReturnsErrorsAndRedirectsToSelectAccountType()
+    public async Task OnPostAsync_WhenCalledWithNullIsStaff_ReturnsErrorsAndRedirectsToSelectUserType()
     {
         // Arrange
         Sut.IsStaff = null;
@@ -93,7 +93,7 @@ public class SelectUserTypePageTests : ManageUsersPageTestBase<SelectAccountType
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/select-use-case");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(true), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsStaff(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -113,9 +113,9 @@ public class SelectUserTypePageTests : ManageUsersPageTestBase<SelectAccountType
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-information");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
-            { AccountType.EarlyCareerSocialWorker }), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetUserTypes(new List<UserType>
+            { UserType.EarlyCareerSocialWorker }), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

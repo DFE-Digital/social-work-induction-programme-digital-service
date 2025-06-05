@@ -11,12 +11,12 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityFundingNotAvailable(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public PageResult OnGet()
     {
-        BackLinkPath = createAccountJourneyService.GetIsAgencyWorker() == true
+        BackLinkPath = createUserJourneyService.GetIsAgencyWorker() == true
             ? linkGenerator.EligibilityAgencyWorker()
             : linkGenerator.EligibilityQualification();
         return Page();

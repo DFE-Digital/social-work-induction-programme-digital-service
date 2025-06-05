@@ -17,7 +17,7 @@ public static class InstallJourneys
     /// <param name="services"></param>
     public static void AddJourneys(this IServiceCollection services)
     {
-        services.AddTransient<ICreateAccountJourneyService, CreateAccountJourneyService>();
-        services.AddTransient<IEditAccountJourneyService, EditAccountJourneyService>();
+        services.AddTransient<ICreateUserJourneyService, CreateUserJourneyService>();
+        services.AddTransient<IEditUserJourneyService, EditUserJourneyService>();
     }
 }

@@ -16,7 +16,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
     public EligibilitySocialWorkEnglandPageTests()
     {
         Sut = new EligibilitySocialWorkEngland(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator(),
             new EligibilitySocialWorkEnglandValidator()
         );
@@ -32,7 +32,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-users/eligibility-information");
-        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -42,7 +42,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
     public void OnGet_WhenCalledWithIsRegisteredWithSocialWorkEnglandPopulated_LoadsTheViewWithPrepopulatedValue(bool? isRegisteredWithSocialWorkEngland)
     {
         // Arrange
-        MockCreateAccountJourneyService.Setup(x => x.GetIsRegisteredWithSocialWorkEngland())
+        MockCreateUserJourneyService.Setup(x => x.GetIsRegisteredWithSocialWorkEngland())
             .Returns(isRegisteredWithSocialWorkEngland);
 
         // Act
@@ -52,7 +52,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
         result.Should().BeOfType<PageResult>();
         Sut.IsRegisteredWithSocialWorkEngland.Should().Be(isRegisteredWithSocialWorkEngland);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -98,7 +98,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-statutory-work");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -119,7 +119,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageUsersPageTestBase<Eli
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-social-work-england-dropout");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

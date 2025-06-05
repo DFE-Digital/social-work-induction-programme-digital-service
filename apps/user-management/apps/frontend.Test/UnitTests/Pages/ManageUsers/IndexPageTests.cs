@@ -15,19 +15,19 @@ public class IndexPageTests : ManageUsersPageTestBase<ManageUsersIndex>
 
     public IndexPageTests()
     {
-        Sut = new ManageUsersIndex(MockAccountService.Object);
+        Sut = new ManageUsersIndex(MockUserService.Object);
     }
 
     [Fact]
-    public async Task Get_WhenCalled_LoadsTheViewWithAccountsSortedByCreatedAt()
+    public async Task Get_WhenCalled_LoadsTheViewWithUsersSortedByCreatedAt()
     {
         // Arrange
-        var expectedAccounts = AccountBuilder.BuildMany(10);
+        var expectedUsers = UserBuilder.BuildMany(10);
 
         var paginationRequest = new PaginationRequest(0, 10);
-        var paginationResponse = new PaginationResult<Account>
+        var paginationResponse = new PaginationResult<User>
         {
-            Records = expectedAccounts,
+            Records = expectedUsers,
             MetaData = new PaginationMetaData
             {
                 Page = 1,
@@ -38,7 +38,7 @@ public class IndexPageTests : ManageUsersPageTestBase<ManageUsersIndex>
             }
         };
 
-        MockAccountService
+        MockUserService
             .Setup(x => x.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)))
             .ReturnsAsync(paginationResponse);
 
@@ -47,8 +47,8 @@ public class IndexPageTests : ManageUsersPageTestBase<ManageUsersIndex>
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.Accounts.Should().NotBeEmpty();
-        Sut.Accounts.Should().BeEquivalentTo(expectedAccounts);
-        Sut.Accounts.Should().BeInAscendingOrder(x => x.CreatedAt);
+        Sut.Users.Should().NotBeEmpty();
+        Sut.Users.Should().BeEquivalentTo(expectedUsers);
+        Sut.Users.Should().BeInAscendingOrder(x => x.CreatedAt);
     }
 }

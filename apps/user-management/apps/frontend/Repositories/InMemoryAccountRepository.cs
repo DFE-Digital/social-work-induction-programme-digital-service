@@ -12,21 +12,21 @@ namespace Dfe.Sww.Ecf.Frontend.Repositories;
 /// </remarks>
 public class InMemoryAccountRepository : IAccountRepository
 {
-    private readonly ConcurrentDictionary<Guid, Account> _accounts = new();
+    private readonly ConcurrentDictionary<Guid, User> _accounts = new();
 
     /// <inheritdoc />
-    public void Add(Account account)
+    public void Add(User user)
     {
-        ArgumentNullException.ThrowIfNull(account);
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (!_accounts.TryAdd(account.Id, account))
+        if (!_accounts.TryAdd(user.Id, user))
         {
             throw new InvalidOperationException("Account with the same ID already exists.");
         }
     }
 
     /// <inheritdoc />
-    public void AddRange(IReadOnlyCollection<Account> accountsToAdd)
+    public void AddRange(IReadOnlyCollection<User> accountsToAdd)
     {
         ArgumentNullException.ThrowIfNull(accountsToAdd);
         if (accountsToAdd.Count == 0)
@@ -60,21 +60,21 @@ public class InMemoryAccountRepository : IAccountRepository
     }
 
     /// <inheritdoc />
-    public Account? GetById(Guid id)
+    public User? GetById(Guid id)
     {
         _accounts.TryGetValue(id, out var account);
         return account;
     }
 
     /// <inheritdoc />
-    public IEnumerable<Account> GetAll() => _accounts.Values.ToList();
+    public IEnumerable<User> GetAll() => _accounts.Values.ToList();
 
     /// <inheritdoc />
-    public void Update(Account account)
+    public void Update(User user)
     {
-        ArgumentNullException.ThrowIfNull(account);
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (!_accounts.TryUpdate(account.Id, account, _accounts[account.Id]))
+        if (!_accounts.TryUpdate(user.Id, user, _accounts[user.Id]))
         {
             throw new KeyNotFoundException("Account not found.");
         }

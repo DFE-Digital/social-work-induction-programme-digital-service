@@ -19,18 +19,18 @@ public sealed class SocialWorkerFaker : Faker<SocialWorker>
 
 public static class SocialWorkerFakerExtensions
 {
-    public static SocialWorker GenerateWithId(this SocialWorkerFaker accountFaker, int id)
+    public static SocialWorker GenerateWithId(this SocialWorkerFaker socialWorkerFaker, int id)
     {
-        return accountFaker.RuleFor(a => a.Id, _ => id.ToString()).Generate();
+        return socialWorkerFaker.RuleFor(a => a.Id, _ => id.ToString()).Generate();
     }
 
     public static SocialWorker GenerateWithName(
-        this SocialWorkerFaker accountFaker,
+        this SocialWorkerFaker socialWorkerFaker,
         string firstName,
         string lastName
     )
     {
-        return accountFaker
+        return socialWorkerFaker
             .RuleFor(a => a.RegisteredName, _ => $"{firstName} {lastName}")
             .Generate();
     }

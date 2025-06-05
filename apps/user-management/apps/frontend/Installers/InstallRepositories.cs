@@ -22,61 +22,61 @@ public static class InstallRepositories
         // TODO: Remove this once the DAL is in place
         accountsRepository.AddRange(
             [
-                new Account
+                new User
                 {
                     FirstName = "Ellen",
                     LastName = "Ripley",
                     Email = "ellen@rbcouncil.org.uk",
                     SocialWorkEnglandNumber = "SW798",
-                    Status = AccountStatus.Active,
-                    Types = [AccountType.EarlyCareerSocialWorker],
+                    Status = UserStatus.Active,
+                    Types = [UserType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
-                new Account
+                new User
                 {
                     FirstName = "Joe",
                     LastName = "Bloggs",
                     Email = "joe@rbcouncil.org.uk",
-                    Status = AccountStatus.Active,
-                    Types = [AccountType.Coordinator],
+                    Status = UserStatus.Active,
+                    Types = [UserType.Coordinator],
                     Id = Guid.NewGuid()
                 },
-                new Account
+                new User
                 {
                     FirstName = "Laura",
                     LastName = "Barn",
                     Email = "laura@rbcouncil.org.uk",
-                    Status = AccountStatus.PendingRegistration,
-                    Types = [AccountType.EarlyCareerSocialWorker],
+                    Status = UserStatus.PendingRegistration,
+                    Types = [UserType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
-                new Account
+                new User
                 {
                     FirstName = "Ricardo",
                     LastName = "Athanasopoulos",
                     Email = "ricardo@rbcouncil.org.uk",
-                    Status = AccountStatus.Active,
-                    Types = [AccountType.Assessor, AccountType.Coordinator],
+                    Status = UserStatus.Active,
+                    Types = [UserType.Assessor, UserType.Coordinator],
                     Id = Guid.NewGuid()
                 },
-                new Account
+                new User
                 {
                     FirstName = "Sheena",
                     LastName = "Newman",
                     Email = "sheena@rbcouncil.org.uk",
                     SocialWorkEnglandNumber = "SW2478",
-                    Status = AccountStatus.Active,
-                    Types = [AccountType.EarlyCareerSocialWorker],
+                    Status = UserStatus.Active,
+                    Types = [UserType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 },
-                new Account
+                new User
                 {
                     FirstName = "Yavuz",
                     LastName = "Karci",
                     Email = "Yavuz@rbcouncil.org.uk",
                     SocialWorkEnglandNumber = "SW142",
-                    Status = AccountStatus.Active,
-                    Types = [AccountType.EarlyCareerSocialWorker],
+                    Status = UserStatus.Active,
+                    Types = [UserType.EarlyCareerSocialWorker],
                     Id = Guid.NewGuid()
                 }
             ]

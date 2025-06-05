@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilitySocialWorkEngland(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilitySocialWorkEngland> validator)
     : BasePageModel
@@ -24,7 +24,7 @@ public class EligibilitySocialWorkEngland(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityInformation();
-        IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
+        IsRegisteredWithSocialWorkEngland = createUserJourneyService.GetIsRegisteredWithSocialWorkEngland();
         return Page();
     }
 
@@ -38,7 +38,7 @@ public class EligibilitySocialWorkEngland(
             return Page();
         }
 
-        createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
+        createUserJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
 
         return Redirect(IsRegisteredWithSocialWorkEngland is false
             ? linkGenerator.EligibilitySocialWorkEnglandDropout()

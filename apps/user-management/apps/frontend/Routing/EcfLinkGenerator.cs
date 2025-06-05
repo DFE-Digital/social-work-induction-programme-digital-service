@@ -35,38 +35,38 @@ public abstract class EcfLinkGenerator(
     public string ManageUsers(int? offset = 0, int? pageSize = 10) =>
         GetRequiredPathByPage("/ManageUsers/Index", routeValues: new { offset, pageSize });
 
-    public string AddAccountDetails() => GetRequiredPathByPage("/ManageUsers/AddAccountDetails");
+    public string AddUserDetails() => GetRequiredPathByPage("/ManageUsers/AddUserDetails");
 
-    public string AddAccountDetailsChange() =>
-        GetRequiredPathByPage("/ManageUsers/AddAccountDetails", handler: "Change");
+    public string AddUserDetailsChange() =>
+        GetRequiredPathByPage("/ManageUsers/AddUserDetails", handler: "Change");
 
-    public string EditAccountDetails(Guid id) =>
-        GetRequiredPathByPage("/ManageUsers/EditAccountDetails", routeValues: new { id });
+    public string EditUserDetails(Guid id) =>
+        GetRequiredPathByPage("/ManageUsers/EditUserDetails", routeValues: new { id });
 
-    public string EditAccountDetailsChange(Guid id) =>
+    public string EditUserDetailsChange(Guid id) =>
         GetRequiredPathByPage(
-            "/ManageUsers/EditAccountDetails",
+            "/ManageUsers/EditUserDetails",
             handler: "Change",
             routeValues: new { id }
         );
 
-    public string ConfirmAccountDetails() =>
-        GetRequiredPathByPage("/ManageUsers/ConfirmAccountDetails");
+    public string ConfirmUserDetails() =>
+        GetRequiredPathByPage("/ManageUsers/ConfirmUserDetails");
 
-    public string ConfirmAccountDetailsUpdate(Guid id) =>
+    public string ConfirmUserDetailsUpdate(Guid id) =>
         GetRequiredPathByPage(
-            "/ManageUsers/ConfirmAccountDetails",
+            "/ManageUsers/ConfirmUserDetails",
             handler: "Update",
             routeValues: new { id }
         );
 
-    public string ViewAccountDetails(Guid id) =>
-        GetRequiredPathByPage("/ManageUsers/ViewAccountDetails", routeValues: new { id });
+    public string ViewUserDetails(Guid id) =>
+        GetRequiredPathByPage("/ManageUsers/ViewUserDetails", routeValues: new { id });
 
-    public string SelectAccountType() => GetRequiredPathByPage("/ManageUsers/SelectAccountType");
+    public string SelectUserType() => GetRequiredPathByPage("/ManageUsers/SelectUserType");
 
     public string AddSomeoneNew() =>
-        GetRequiredPathByPage("/ManageUsers/SelectAccountType", handler: "New");
+        GetRequiredPathByPage("/ManageUsers/SelectUserType", handler: "New");
 
     public string SelectUseCase() => GetRequiredPathByPage("/ManageUsers/SelectUseCase");
 

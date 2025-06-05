@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 
-public class ViewUserDetailsPageTests : ManageUsersPageTestBase<ViewAccountDetails>
+public class ViewUserDetailsPageTests : ManageUsersPageTestBase<ViewUserDetails>
 {
-    private ViewAccountDetails Sut { get; }
+    private ViewUserDetails Sut { get; }
 
     public ViewUserDetailsPageTests()
     {
-        Sut = new ViewAccountDetails(MockAccountService.Object, new FakeLinkGenerator())
+        Sut = new ViewUserDetails(MockUserService.Object, new FakeLinkGenerator())
         {
             TempData = TempData
         };
@@ -23,18 +23,18 @@ public class ViewUserDetailsPageTests : ManageUsersPageTestBase<ViewAccountDetai
     public async Task Get_WhenCalledWithId_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var user = UserBuilder.Build();
 
-        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        MockUserService.Setup(x => x.GetByIdAsync(user.Id)).ReturnsAsync(user);
 
         // Act
-        var result = await Sut.OnGetAsync(account.Id);
+        var result = await Sut.OnGetAsync(user.Id);
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.Account.Should().BeEquivalentTo(account);
+        Sut.UserAccount.Should().BeEquivalentTo(user);
 
-        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
-        MockAccountService.VerifyNoOtherCalls();
+        MockUserService.Verify(x => x.GetByIdAsync(user.Id), Times.Once);
+        MockUserService.VerifyNoOtherCalls();
     }
 }

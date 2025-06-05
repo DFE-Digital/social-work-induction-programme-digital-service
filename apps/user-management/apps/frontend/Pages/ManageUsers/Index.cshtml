@@ -32,7 +32,7 @@
 
         <h1 class="govuk-heading-l">Manage users</h1>
 
-        @if (Model.Accounts.Any() == false)
+        @if (Model.Users.Any() == false)
         {
             <div class="govuk-body">
                 <p>On this page, you can add and manage users in your organisation.</p>
@@ -42,48 +42,48 @@
 
         <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new user</govuk-button-link>
 
-        @if (Model.Accounts.Any())
+        @if (Model.Users.Any())
         {
             <table class="govuk-table">
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     <th scope="col" class="govuk-table__header">
-                        <label asp-for="@Model.Accounts[0].FullName"></label>
+                        <label asp-for="@Model.Users[0].FullName"></label>
                     </th>
                     <th scope="col" class="govuk-table__header">
-                        <label asp-for="@Model.Accounts[0].Types"></label>
+                        <label asp-for="@Model.Users[0].Types"></label>
                     </th>
                     <th scope="col" class="govuk-table__header">
-                        <label asp-for="@Model.Accounts[0].Status"></label>
+                        <label asp-for="@Model.Users[0].Status"></label>
                     </th>
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                @foreach (var account in Model.Accounts)
+                @foreach (var user in Model.Users)
                 {
                     <tr class="govuk-table__row">
                         <td scope="row" class="govuk-table__cell" data-test-class="account-name">
-                            <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
+                            <a title="View details of @user.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewUserDetails" asp-route-id="@user.Id">@user.FullName</a>
                         </td>
                         <td class="govuk-table__cell">
-                            <account-types types="account.Types"/>
+                            <user-types types="user.Types"/>
                         </td>
                         <td class="govuk-table__cell">
                             @{
-                                var tagClass = account.Status switch
+                                var tagClass = user.Status switch
                                 {
-                                    AccountStatus.Active => "govuk-tag--green",
-                                    AccountStatus.PendingRegistration => "govuk-tag--orange",
+                                    UserStatus.Active => "govuk-tag--green",
+                                    UserStatus.PendingRegistration => "govuk-tag--orange",
                                     _ => "govuk-tag--yellow"
                                 };
                             }
-                            @if (account.Status is not null)
+                            @if (user.Status is not null)
                             {
                                 <strong class="govuk-tag @tagClass" data-test-class="account-status">
-                                    @account.Status.GetDisplayName()
+                                    @user.Status.GetDisplayName()
                                 </strong>
                                 <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
-                                    @account.Status.GetDescription()
+                                    @user.Status.GetDescription()
                                 </span>
                             }
                         </td>
@@ -105,7 +105,7 @@
                     var currentPage = paging?.Page ?? 0;
 
                     <govuk-pagination-item
-                        is-current=@(currentPage == pageNo)
+                        current=@(currentPage == pageNo)
                         href=@LinkGenerator.ManageUsers((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
                         @pageNo
                     </govuk-pagination-item>

@@ -1,0 +1,27 @@
+﻿@page "{id:Guid?}"
+@model SelectUserType
+
+@{
+    Model.Title = "Who do you want to add?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" asp-page-handler="@(Model.EditUserId is not null ? "Edit" : "")">
+            <govuk-radios for="IsStaff">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                        @(Model.EditUserId is not null ? "What is their role?" : "Who do you want to add?")
+                    </govuk-radios-fieldset-legend>
+
+                    <govuk-radios-item value="@false">An early career social worker taking part in the programme</govuk-radios-item>
+                    <govuk-radios-item value="@true">A staff member supporting the programme</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-button type="submit">Continue</govuk-button>
+        </form>
+
+    </div>
+</div>

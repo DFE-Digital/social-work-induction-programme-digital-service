@@ -18,7 +18,7 @@ public static class InstallServices
     /// <param name="services"></param>
     public static void AddServices(this IServiceCollection services)
     {
-        services.AddTransient<IAccountService, AccountService>();
+        services.AddTransient<IUserService, UserService>();
         services.AddTransient<ISocialWorkEnglandService, SocialWorkEnglandService>();
         services.AddTransient<ISocialWorkerValidatorService, SocialWorkerValidatorService>();
     }

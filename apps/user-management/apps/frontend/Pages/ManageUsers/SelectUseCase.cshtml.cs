@@ -13,33 +13,33 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SelectUseCase(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     IValidator<SelectUseCase> validator,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty]
-    public IList<AccountType>? SelectedAccountTypes { get; set; }
+    public IList<UserType>? SelectedUserTypes { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.SelectAccountType();
-        SelectedAccountTypes = createAccountJourneyService.GetAccountTypes();
+        BackLinkPath = linkGenerator.SelectUserType();
+        SelectedUserTypes = createUserJourneyService.GetUserTypes();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (SelectedAccountTypes is null || !validationResult.IsValid)
+        if (SelectedUserTypes is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SelectAccountType();
+            BackLinkPath = linkGenerator.SelectUserType();
             return Page();
         }
 
-        createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
+        createUserJourneyService.SetUserTypes(SelectedUserTypes);
 
-        return Redirect(linkGenerator.AddAccountDetails());
+        return Redirect(linkGenerator.AddUserDetails());
     }
 }

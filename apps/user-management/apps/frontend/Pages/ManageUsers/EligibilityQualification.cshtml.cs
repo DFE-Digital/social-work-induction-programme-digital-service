@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityQualification(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityQualification> validator)
     : BasePageModel
@@ -24,7 +24,7 @@ public class EligibilityQualification(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityAgencyWorker();
-        IsQualifiedWithin3Years = createAccountJourneyService.GetIsQualifiedWithin3Years();
+        IsQualifiedWithin3Years = createUserJourneyService.GetIsQualifiedWithin3Years();
         return Page();
     }
 
@@ -38,7 +38,7 @@ public class EligibilityQualification(
             return Page();
         }
 
-        createAccountJourneyService.SetIsQualifiedWithin3Years(IsQualifiedWithin3Years);
+        createUserJourneyService.SetIsQualifiedWithin3Years(IsQualifiedWithin3Years);
 
         return Redirect(IsQualifiedWithin3Years is false
             ? linkGenerator.EligibilityFundingNotAvailable()

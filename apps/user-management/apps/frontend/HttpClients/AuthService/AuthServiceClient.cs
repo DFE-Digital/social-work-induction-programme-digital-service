@@ -11,9 +11,9 @@ public class AuthServiceClient : IAuthServiceClient
     {
         HttpClient = httpClient;
         HttpContextService = new HttpContextService(httpContextAccessor);
-        Accounts = new AccountsOperations(this);
+        Users = new UsersOperations(this);
     }
     internal HttpClient HttpClient { get; init; }
     public IHttpContextService HttpContextService { get; init; }
-    public IAccountsOperations Accounts { get; init; }
+    public IUsersOperations Users { get; init; }
 }

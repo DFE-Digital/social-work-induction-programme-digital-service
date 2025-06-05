@@ -18,7 +18,7 @@
     </govuk-notification-banner>
 
     <form method="post">
-        <govuk-radios asp-for="SelectedAccountId">
+        <govuk-radios for="SelectedUserId">
             <govuk-radios-fieldset>
                 <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
                     Who do you want to log in as?
@@ -27,7 +27,7 @@
 
                 @foreach (var account in Model.Accounts)
                 {
-                    <govuk-radios-item value="@account.Id">@account.FullName | <account-types types="account.Types"/></govuk-radios-item>
+                    <govuk-radios-item value="@account.Id">@account.FullName | <user-types types="account.Types"/></govuk-radios-item>
                 }
 
 

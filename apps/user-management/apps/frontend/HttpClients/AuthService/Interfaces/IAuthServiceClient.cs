@@ -2,7 +2,7 @@
 
 public interface IAuthServiceClient
 {
-    public IAccountsOperations Accounts { get; init; }
+    public IUsersOperations Users { get; init; }
 
     public IHttpContextService HttpContextService { get; init; }
 }

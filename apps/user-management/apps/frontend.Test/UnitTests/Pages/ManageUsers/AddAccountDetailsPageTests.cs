@@ -12,15 +12,15 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 
-public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails>
+public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddUserDetails>
 {
-    private AddAccountDetails Sut { get; }
+    private AddUserDetails Sut { get; }
 
     public AddUserDetailsPageTests()
     {
-        Sut = new AddAccountDetails(
-            MockCreateAccountJourneyService.Object,
-            new AccountDetailsValidator(),
+        Sut = new AddUserDetails(
+            MockCreateUserJourneyService.Object,
+            new UserDetailsValidator(),
             new FakeLinkGenerator()
         );
     }
@@ -32,11 +32,11 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
     {
         // Arrange
         Sut.IsStaff = isStaff;
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(isStaff);
-        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateUserJourneyService.Setup(x => x.GetIsStaff()).Returns(isStaff);
+        MockCreateUserJourneyService.Setup(x => x.GetUserDetails()).Returns(userDetails);
 
         // Act
         var result = Sut.OnGet();
@@ -45,19 +45,19 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         result.Should().BeOfType<PageResult>();
 
         // Assert
-        Sut.FirstName.Should().Be(account.FirstName);
-        Sut.LastName.Should().Be(account.LastName);
-        Sut.Email.Should().Be(account.Email);
-        Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+        Sut.FirstName.Should().Be(user.FirstName);
+        Sut.LastName.Should().Be(user.LastName);
+        Sut.Email.Should().Be(user.Email);
+        Sut.SocialWorkEnglandNumber.Should().Be(user.SocialWorkEnglandNumber);
         Sut.BackLinkPath.Should()
             .Be(
                 isStaff
                     ? "/manage-users/select-use-case"
-                    : "/manage-users/select-account-type"
+                    : "/manage-users/select-user-type"
             );
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetUserDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -65,11 +65,11 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
     public void GetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
-        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateUserJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateUserJourneyService.Setup(x => x.GetUserDetails()).Returns(userDetails);
 
         // Act
         var result = Sut.OnGetChange();
@@ -77,32 +77,32 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.BackLinkPath.Should().Be("/manage-users/confirm-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/confirm-user-details");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetUserDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmAccountDetails()
+    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmUserDetails()
     {
         // Arrange
         var sweId = "1";
-        var account = AccountBuilder
+        var user = UserBuilder
             .WithSocialWorkEnglandNumber(sweId)
-            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithTypes(ImmutableList.Create(UserType.EarlyCareerSocialWorker))
             .Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var userDetails = UserDetails.FromUser(user);
 
-        Sut.FirstName = accountDetails.FirstName;
-        Sut.LastName = accountDetails.LastName;
-        Sut.Email = accountDetails.Email;
+        Sut.FirstName = userDetails.FirstName;
+        Sut.LastName = userDetails.LastName;
+        Sut.Email = userDetails.Email;
         Sut.SocialWorkEnglandNumber = sweId;
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
-        MockCreateAccountJourneyService.Setup(x =>
-            x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
+        MockCreateUserJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateUserJourneyService.Setup(x =>
+            x.SetUserDetails(MoqHelpers.ShouldBeEquivalentTo(userDetails))
         );
 
         // Act
@@ -115,16 +115,16 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/social-worker-programme-dates");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
-        MockCreateAccountJourneyService.Verify(
-            x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(
+            x => x.SetUserDetails(MoqHelpers.ShouldBeEquivalentTo(userDetails)),
             Times.Once
         );
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidDataAndIsNotStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    public async Task Post_WhenCalledWithInvalidDataAndIsNotStaff_ReturnsErrorsAndRedirectsToAddUserDetails()
     {
         // Arrange
         Sut.IsStaff = false;
@@ -133,7 +133,7 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         Sut.Email = string.Empty;
         Sut.SocialWorkEnglandNumber = string.Empty;
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateUserJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -160,12 +160,12 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         modelState["SocialWorkEnglandNumber"]!.Errors.Count.Should().Be(1);
         modelState["SocialWorkEnglandNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a Social Work England registration number");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidDataAndIsStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    public async Task Post_WhenCalledWithInvalidDataAndIsStaff_ReturnsErrorsAndRedirectsToAddUserDetails()
     {
         // Arrange
         Sut.IsStaff = true;
@@ -174,7 +174,7 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         Sut.Email = string.Empty;
         Sut.SocialWorkEnglandNumber = string.Empty;
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateUserJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -197,7 +197,7 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         modelState["Email"]!.Errors.Count.Should().Be(1);
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -217,7 +217,7 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
             .Be(
                 isStaff
                     ? "/manage-users/select-use-case"
-                    : "/manage-users/select-account-type"
+                    : "/manage-users/select-user-type"
             );
     }
 
@@ -228,6 +228,6 @@ public class AddUserDetailsPageTests : ManageUsersPageTestBase<AddAccountDetails
         _ = await Sut.OnPostChangeAsync();
 
         // Assert
-        Sut.BackLinkPath.Should().Be("/manage-users/confirm-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/confirm-user-details");
     }
 }

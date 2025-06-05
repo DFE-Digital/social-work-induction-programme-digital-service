@@ -12,41 +12,41 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 public abstract class ManageUsersPageTestBase<[MeansTestSubject] T> : PageModelTestBase<T>
     where T : PageModel
 {
-    private protected AccountBuilder AccountBuilder { get; }
-    private protected AccountDetailsFaker AccountDetailsFaker { get; }
+    private protected UserBuilder UserBuilder { get; }
+    private protected UserDetailsFaker UserDetailsFaker { get; }
 
     private protected SocialWorkerFaker SocialWorkerFaker { get; }
 
     private protected CreateMoodleUserRequestFaker CreateMoodleUserRequestFaker { get; }
 
-    private protected Mock<ICreateAccountJourneyService> MockCreateAccountJourneyService { get; }
+    private protected Mock<ICreateUserJourneyService> MockCreateUserJourneyService { get; }
 
-    private protected Mock<IEditAccountJourneyService> MockEditAccountJourneyService { get; }
+    private protected Mock<IEditUserJourneyService> MockEditUserJourneyService { get; }
 
     private protected Mock<ISocialWorkEnglandService> MockSocialWorkEnglandService { get; }
-    private protected Mock<IAccountService> MockAccountService { get; }
+    private protected Mock<IUserService> MockUserService { get; }
 
     private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; }
 
     protected ManageUsersPageTestBase()
     {
-        AccountBuilder = new();
-        AccountDetailsFaker = new AccountDetailsFaker();
+        UserBuilder = new();
+        UserDetailsFaker = new UserDetailsFaker();
         SocialWorkerFaker = new SocialWorkerFaker();
 
-        MockCreateAccountJourneyService = new();
-        MockEditAccountJourneyService = new();
+        MockCreateUserJourneyService = new();
+        MockEditUserJourneyService = new();
         MockSocialWorkEnglandService = new();
-        MockAccountService = new();
+        MockUserService = new();
         MockMoodleServiceClient = new();
     }
 
     private protected void VerifyAllNoOtherCalls()
     {
-        MockCreateAccountJourneyService.VerifyNoOtherCalls();
-        MockEditAccountJourneyService.VerifyNoOtherCalls();
+        MockCreateUserJourneyService.VerifyNoOtherCalls();
+        MockEditUserJourneyService.VerifyNoOtherCalls();
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
-        MockAccountService.VerifyNoOtherCalls();
+        MockUserService.VerifyNoOtherCalls();
         MockMoodleServiceClient.VerifyNoOtherCalls();
     }
 }

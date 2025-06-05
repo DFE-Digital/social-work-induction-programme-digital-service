@@ -10,7 +10,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 
 public class MockAuthServiceClient : Mock<IAuthServiceClient>
 {
-    public Mock<IAccountsOperations> MockAccountsOperations { get; }
+    public Mock<IUsersOperations> MockUsersOperations { get; }
 
     private Mock<IHttpContextAccessor> MockHttpContextAccessor { get; }
 
@@ -18,20 +18,20 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
 
     public MockAuthServiceClient()
     {
-        MockAccountsOperations = new Mock<IAccountsOperations>();
+        MockUsersOperations = new Mock<IUsersOperations>();
         MockHttpContextAccessor = new Mock<IHttpContextAccessor>();
         MockHttpContextService = new Mock<IHttpContextService>();
 
-        SetupMockAccountsOperations();
+        SetupMockUsersOperations();
         SetupMockHttpContextService();
     }
 
-    private void SetupMockAccountsOperations()
+    private void SetupMockUsersOperations()
     {
-        MockAccountsOperations
+        MockUsersOperations
             .Setup(operations => operations.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(new Faker().Random.String(64));
-        MockAccountsOperations
+        MockUsersOperations
             .Setup(operations => operations.CreateAsync(It.IsAny<CreatePersonRequest>()))
             .ReturnsAsync(
                 (CreatePersonRequest createPersonRequest) =>
@@ -46,7 +46,7 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
                         Roles = createPersonRequest.Roles
                     }
             );
-        MockAccountsOperations
+        MockUsersOperations
             .Setup(operations => operations.UpdateAsync(It.IsAny<UpdatePersonRequest>()))
             .ReturnsAsync(
                 (UpdatePersonRequest updatePersonRequest) =>
@@ -61,7 +61,7 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
                         Roles = updatePersonRequest.Roles
                     }
             );
-        Setup(x => x.Accounts).Returns(MockAccountsOperations.Object);
+        Setup(x => x.Users).Returns(MockUsersOperations.Object);
     }
 
     private void SetupMockHttpContextService()

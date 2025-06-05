@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityAgencyWorker(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityAgencyWorker> validator)
     : BasePageModel
@@ -24,7 +24,7 @@ public class EligibilityAgencyWorker(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityStatutoryWork();
-        IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
+        IsAgencyWorker = createUserJourneyService.GetIsAgencyWorker();
         return Page();
     }
 
@@ -38,7 +38,7 @@ public class EligibilityAgencyWorker(
             return Page();
         }
 
-        createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
+        createUserJourneyService.SetIsAgencyWorker(IsAgencyWorker);
 
         return Redirect(IsAgencyWorker is false
             ? linkGenerator.EligibilityQualification()

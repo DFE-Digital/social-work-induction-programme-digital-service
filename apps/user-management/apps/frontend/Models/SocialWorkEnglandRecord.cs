@@ -82,6 +82,8 @@ public sealed class SocialWorkEnglandRecord
             sweId = sweId.Remove(0, 2);
         }
 
+        sweId = sweId.Trim();
+
         var startWithZero = sweId.FirstOrDefault() == '0';
         if (startWithZero)
         {
@@ -123,9 +125,9 @@ public sealed class SocialWorkEnglandRecord
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj is not SocialWorkEnglandRecord account)
+        if (obj is null || obj is not SocialWorkEnglandRecord sweRecord)
             return false;
-        return _socialWorkEnglandNumber == account.GetNumber();
+        return _socialWorkEnglandNumber == sweRecord.GetNumber();
     }
 
     public override string ToString()

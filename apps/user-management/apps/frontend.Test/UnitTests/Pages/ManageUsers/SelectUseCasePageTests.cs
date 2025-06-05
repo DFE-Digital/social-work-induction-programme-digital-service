@@ -17,7 +17,7 @@ public class SelectUseCasePageTests : ManageUsersPageTestBase<SelectUseCase>
     public SelectUseCasePageTests()
     {
         Sut = new SelectUseCase(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new SelectUseCaseValidator(),
             new FakeLinkGenerator()
         );
@@ -32,18 +32,18 @@ public class SelectUseCasePageTests : ManageUsersPageTestBase<SelectUseCase>
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.SelectedAccountTypes.Should().BeNull();
-        Sut.BackLinkPath.Should().Be("/manage-users/select-account-type");
+        Sut.SelectedUserTypes.Should().BeNull();
+        Sut.BackLinkPath.Should().Be("/manage-users/select-user-type");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetUserTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalledWithNullSelectedAccountTypes_ReturnsErrorsAndRedirectsToSelectAccountType()
+    public async Task OnPostAsync_WhenCalledWithNullSelectedUserTypes_ReturnsErrorsAndRedirectsToSelectUserType()
     {
         // Arrange
-        Sut.SelectedAccountTypes = null;
+        Sut.SelectedUserTypes = null;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -54,20 +54,20 @@ public class SelectUseCasePageTests : ManageUsersPageTestBase<SelectUseCase>
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
         modelStateKeys.Count.Should().Be(1);
-        modelStateKeys.Should().Contain("SelectedAccountTypes");
-        modelState["SelectedAccountTypes"]!.Errors.Count.Should().Be(1);
-        modelState["SelectedAccountTypes"]!.Errors[0].ErrorMessage.Should().Be("Select what the user needs to do");
+        modelStateKeys.Should().Contain("SelectedUserTypes");
+        modelState["SelectedUserTypes"]!.Errors.Count.Should().Be(1);
+        modelState["SelectedUserTypes"]!.Errors[0].ErrorMessage.Should().Be("Select what the user needs to do");
 
-        Sut.BackLinkPath.Should().Be("/manage-users/select-account-type");
+        Sut.BackLinkPath.Should().Be("/manage-users/select-user-type");
 
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenSelectedAccountTypesIsPopulated_RedirectsToAddAccountDetails()
+    public async Task OnPostAsync_WhenSelectedUserTypesIsPopulated_RedirectsToAddUserDetails()
     {
         // Arrange
-        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+        Sut.SelectedUserTypes = new List<UserType> { UserType.Assessor };
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -76,9 +76,9 @@ public class SelectUseCasePageTests : ManageUsersPageTestBase<SelectUseCase>
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-users/add-account-details");
+        redirectResult!.Url.Should().Be("/manage-users/add-user-details");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(It.IsAny<List<AccountType>>()), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetUserTypes(It.IsAny<List<UserType>>()), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

@@ -1,17 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 
 public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<SocialWorkerProgrammeDates>
 {
@@ -33,7 +30,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<Socia
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-user-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -52,7 +49,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<Socia
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-users/confirm-account-details");
+        redirectResult!.Url.Should().Be("/manage-users/confirm-user-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -97,7 +94,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<Socia
         modelState["ProgrammeEndDate"]!.Errors[0].ErrorMessage.Should()
             .Be("Enter an expected programme end date");
 
-        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-user-details");
 
         VerifyAllNoOtherCalls();
     }
@@ -125,7 +122,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageUsersPageTestBase<Socia
         modelState["ProgrammeEndDate"]!.Errors[0].ErrorMessage.Should()
             .Be("Expected programme end date must be in the future");
 
-        Sut.BackLinkPath.Should().Be("/manage-users/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-users/add-user-details");
 
         VerifyAllNoOtherCalls();
     }

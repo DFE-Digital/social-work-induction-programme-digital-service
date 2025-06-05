@@ -10,9 +10,9 @@ public class MockEmailTemplateOptions : Mock<IOptions<EmailTemplateOptions>>
     public readonly EmailTemplateOptions EmailTemplateOptions =
         new()
         {
-            Roles = Enum.GetNames<AccountType>()
+            Roles = Enum.GetNames<UserType>()
                 .ToDictionary(
-                    accountType => accountType,
+                    userType => userType,
                     _ => new RoleEmailTemplateConfiguration
                     {
                         Invitation = Guid.NewGuid(),

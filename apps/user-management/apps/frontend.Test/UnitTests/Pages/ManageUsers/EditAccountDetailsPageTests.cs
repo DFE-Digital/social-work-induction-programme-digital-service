@@ -10,15 +10,15 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageUsers;
 
-public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetails>
+public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditUserDetails>
 {
-    private EditAccountDetails Sut { get; }
+    private EditUserDetails Sut { get; }
 
     public EditUserDetailsPageTests()
     {
-        Sut = new EditAccountDetails(
-            MockEditAccountJourneyService.Object,
-            new AccountDetailsValidator(),
+        Sut = new EditUserDetails(
+            MockEditUserJourneyService.Object,
+            new UserDetailsValidator(),
             new FakeLinkGenerator()
         )
         {
@@ -27,37 +27,37 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     }
 
     [Fact]
-    public async Task Get_WhenCalled_LoadsTheViewWithAccountDetails()
+    public async Task Get_WhenCalled_LoadsTheViewWithUserDetails()
     {
         // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
+        var isSwe = SocialWorkEnglandRecord.TryParse(user.SocialWorkEnglandNumber, out var swe);
         var socialWorkerId = isSwe ? swe?.GetNumber().ToString() : null;
 
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(account.Id))
-            .ReturnsAsync(accountDetails);
+        MockEditUserJourneyService
+            .Setup(x => x.GetUserDetailsAsync(user.Id))
+            .ReturnsAsync(userDetails);
 
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+        MockEditUserJourneyService.Setup(x => x.GetIsStaffAsync(user.Id)).ReturnsAsync(false);
 
         // Act
-        var result = await Sut.OnGetAsync(account.Id);
+        var result = await Sut.OnGetAsync(user.Id);
 
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.Id.Should().Be(account.Id);
-        Sut.FirstName.Should().Be(account.FirstName);
-        Sut.LastName.Should().Be(account.LastName);
-        Sut.Email.Should().Be(account.Email);
+        Sut.Id.Should().Be(user.Id);
+        Sut.FirstName.Should().Be(user.FirstName);
+        Sut.LastName.Should().Be(user.LastName);
+        Sut.Email.Should().Be(user.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(socialWorkerId);
         Sut.IsStaff.Should().Be(false);
-        Sut.BackLinkPath.Should().Be("/manage-users/view-account-details/" + account.Id);
+        Sut.BackLinkPath.Should().Be("/manage-users/view-user-details/" + user.Id);
 
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetUserDetailsAsync(user.Id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetIsStaffAsync(user.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -66,9 +66,9 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     {
         var id = Guid.NewGuid();
 
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(id))
-            .ReturnsAsync((AccountDetails?)null);
+        MockEditUserJourneyService
+            .Setup(x => x.GetUserDetailsAsync(id))
+            .ReturnsAsync((UserDetails?)null);
 
         // Act
         var result = await Sut.OnGetAsync(id);
@@ -76,7 +76,7 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetUserDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -84,32 +84,32 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     public async Task GetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(account.Id))
-            .ReturnsAsync(accountDetails);
+        MockEditUserJourneyService
+            .Setup(x => x.GetUserDetailsAsync(user.Id))
+            .ReturnsAsync(userDetails);
 
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+        MockEditUserJourneyService.Setup(x => x.GetIsStaffAsync(user.Id)).ReturnsAsync(false);
 
         // Act
-        var result = await Sut.OnGetChangeAsync(account.Id);
+        var result = await Sut.OnGetChangeAsync(user.Id);
 
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.Id.Should().Be(account.Id);
-        Sut.FirstName.Should().Be(account.FirstName);
-        Sut.LastName.Should().Be(account.LastName);
-        Sut.Email.Should().Be(account.Email);
-        Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
+        Sut.Id.Should().Be(user.Id);
+        Sut.FirstName.Should().Be(user.FirstName);
+        Sut.LastName.Should().Be(user.LastName);
+        Sut.Email.Should().Be(user.Email);
+        Sut.SocialWorkEnglandNumber.Should().Be(user.SocialWorkEnglandNumber);
         Sut.IsStaff.Should().Be(false);
         Sut.BackLinkPath.Should()
-            .Be("/manage-users/confirm-account-details/" + account.Id + "?handler=Update");
+            .Be("/manage-users/confirm-user-details/" + user.Id + "?handler=Update");
 
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetUserDetailsAsync(user.Id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetIsStaffAsync(user.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -118,9 +118,9 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     {
         var id = Guid.NewGuid();
 
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(id))
-            .ReturnsAsync((AccountDetails?)null);
+        MockEditUserJourneyService
+            .Setup(x => x.GetUserDetailsAsync(id))
+            .ReturnsAsync((UserDetails?)null);
 
         // Act
         var result = await Sut.OnGetChangeAsync(id);
@@ -128,32 +128,32 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.GetUserDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
+    public async Task Post_WhenCalled_RedirectsToConfirmUserDetails()
     {
         // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+        MockEditUserJourneyService
+            .Setup(x => x.IsUserIdValidAsync(user.Id))
             .ReturnsAsync(true);
-        MockEditAccountJourneyService.Setup(x =>
-            x.SetAccountDetailsAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails))
+        MockEditUserJourneyService.Setup(x =>
+            x.SetUserDetailsAsync(user.Id, MoqHelpers.ShouldBeEquivalentTo(userDetails))
         );
 
-        Sut.FirstName = account.FirstName;
-        Sut.LastName = account.LastName;
-        Sut.Email = account.Email;
-        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
-        Sut.IsStaff = account.IsStaff;
+        Sut.FirstName = user.FirstName;
+        Sut.LastName = user.LastName;
+        Sut.Email = user.Email;
+        Sut.SocialWorkEnglandNumber = user.SocialWorkEnglandNumber;
+        Sut.IsStaff = user.IsStaff;
 
         // Act
-        var result = await Sut.OnPostAsync(account.Id);
+        var result = await Sut.OnPostAsync(user.Id);
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
@@ -162,14 +162,14 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         redirectResult.Should().NotBeNull();
         redirectResult!
             .Url.Should()
-            .Be("/manage-users/confirm-account-details/" + account.Id + "?handler=Update");
+            .Be("/manage-users/confirm-user-details/" + user.Id + "?handler=Update");
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(
+        MockEditUserJourneyService.Verify(x => x.IsUserIdValidAsync(user.Id), Times.Once);
+        MockEditUserJourneyService.Verify(
             x =>
-                x.SetAccountDetailsAsync(
-                    account.Id,
-                    MoqHelpers.ShouldBeEquivalentTo(accountDetails)
+                x.SetUserDetailsAsync(
+                    user.Id,
+                    MoqHelpers.ShouldBeEquivalentTo(userDetails)
                 ),
             Times.Once
         );
@@ -180,20 +180,20 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndLoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var user = UserBuilder.Build();
 
-        Sut.FirstName = account.FirstName;
-        Sut.LastName = account.LastName;
+        Sut.FirstName = user.FirstName;
+        Sut.LastName = user.LastName;
         Sut.Email = string.Empty;
         Sut.IsStaff = false;
         Sut.SocialWorkEnglandNumber = "123";
 
-        MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+        MockEditUserJourneyService
+            .Setup(x => x.IsUserIdValidAsync(user.Id))
             .ReturnsAsync(true);
 
         // Act
-        var result = await Sut.OnPostAsync(account.Id);
+        var result = await Sut.OnPostAsync(user.Id);
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -204,9 +204,9 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         modelStateKeys.Should().Contain("Email");
         modelState["Email"]!.Errors.Count.Should().Be(1);
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
-        Sut.BackLinkPath.Should().Be("/manage-users/view-account-details/" + account.Id);
+        Sut.BackLinkPath.Should().Be("/manage-users/view-user-details/" + user.Id);
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.IsUserIdValidAsync(user.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -216,7 +216,7 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         // Arrange
         var id = Guid.NewGuid();
 
-        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValidAsync(id)).ReturnsAsync(false);
+        MockEditUserJourneyService.Setup(x => x.IsUserIdValidAsync(id)).ReturnsAsync(false);
 
         // Act
         var result = await Sut.OnPostAsync(id);
@@ -224,7 +224,7 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
+        MockEditUserJourneyService.Verify(x => x.IsUserIdValidAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -232,35 +232,35 @@ public class EditUserDetailsPageTests : ManageUsersPageTestBase<EditAccountDetai
     public async Task PostChange_WhenCalled_HasCorrectBackLink()
     {
         // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
+        var user = UserBuilder.Build();
+        var userDetails = UserDetails.FromUser(user);
 
-        Sut.FirstName = account.FirstName;
-        Sut.LastName = account.LastName;
-        Sut.Email = account.Email;
-        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
-        Sut.IsStaff = account.IsStaff;
+        Sut.FirstName = user.FirstName;
+        Sut.LastName = user.LastName;
+        Sut.Email = user.Email;
+        Sut.SocialWorkEnglandNumber = user.SocialWorkEnglandNumber;
+        Sut.IsStaff = user.IsStaff;
 
-        MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+        MockEditUserJourneyService
+            .Setup(x => x.IsUserIdValidAsync(user.Id))
             .ReturnsAsync(true);
-        MockEditAccountJourneyService.Setup(x =>
-            x.SetAccountDetailsAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails))
+        MockEditUserJourneyService.Setup(x =>
+            x.SetUserDetailsAsync(user.Id, MoqHelpers.ShouldBeEquivalentTo(userDetails))
         );
 
         // Act
-        _ = await Sut.OnPostChangeAsync(account.Id);
+        _ = await Sut.OnPostChangeAsync(user.Id);
 
         // Assert
         Sut.BackLinkPath.Should()
-            .Be($"/manage-users/confirm-account-details/{account.Id}?handler=Update");
+            .Be($"/manage-users/confirm-user-details/{user.Id}?handler=Update");
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(
+        MockEditUserJourneyService.Verify(x => x.IsUserIdValidAsync(user.Id), Times.Once);
+        MockEditUserJourneyService.Verify(
             x =>
-                x.SetAccountDetailsAsync(
-                    account.Id,
-                    MoqHelpers.ShouldBeEquivalentTo(accountDetails)
+                x.SetUserDetailsAsync(
+                    user.Id,
+                    MoqHelpers.ShouldBeEquivalentTo(userDetails)
                 ),
             Times.Once
         );

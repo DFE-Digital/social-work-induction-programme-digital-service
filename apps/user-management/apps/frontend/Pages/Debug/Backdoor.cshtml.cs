@@ -19,12 +19,12 @@ public class Backdoor(
     EcfLinkGenerator linkGenerator
 ) : DebugBasePageModel(environment, oidcConfiguration)
 {
-    public IList<Account> Accounts { get; set; } =
+    public IList<User> Accounts { get; set; } =
         accountRepository.GetAll().OrderBy(account => account.CreatedAt).ToList();
 
     [BindProperty]
     [Required(ErrorMessage = "Select who you want to log in as")]
-    public Guid? SelectedAccountId { get; set; }
+    public Guid? SelectedUserId { get; set; }
 
     public PageResult OnGet() => Page();
 
@@ -33,9 +33,9 @@ public class Backdoor(
         if (!ModelState.IsValid)
             return Page();
 
-        if (SelectedAccountId is null || SelectedAccountId == Guid.Empty)
+        if (SelectedUserId is null || SelectedUserId == Guid.Empty)
             return NotFound();
-        var selectedAccount = accountRepository.GetById(SelectedAccountId.Value);
+        var selectedAccount = accountRepository.GetById(SelectedUserId.Value);
         if (selectedAccount is null)
             return NotFound();
 

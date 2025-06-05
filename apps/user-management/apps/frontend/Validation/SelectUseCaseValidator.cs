@@ -7,7 +7,7 @@ public class SelectUseCaseValidator : AbstractValidator<SelectUseCase>
 {
     public SelectUseCaseValidator()
     {
-        RuleFor(model => model.SelectedAccountTypes)
+        RuleFor(model => model.SelectedUserTypes)
             .NotEmpty()
             .WithMessage("Select what the user needs to do");
     }

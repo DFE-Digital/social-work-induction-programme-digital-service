@@ -31,7 +31,7 @@ public class SocialWorkerProgrammeDates(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.AddAccountDetails();
+        BackLinkPath = linkGenerator.AddUserDetails();
         return Page();
     }
 
@@ -45,10 +45,10 @@ public class SocialWorkerProgrammeDates(
 
         if (!ModelState.IsValid || !result.IsValid)
         {
-            BackLinkPath = linkGenerator.AddAccountDetails();
+            BackLinkPath = linkGenerator.AddUserDetails();
             return Page();
         }
 
-        return Redirect(linkGenerator.ConfirmAccountDetails());
+        return Redirect(linkGenerator.ConfirmUserDetails());
     }
 }

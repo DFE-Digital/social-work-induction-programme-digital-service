@@ -17,6 +17,6 @@ public static class InstallMapper
     /// <param name="services"></param>
     public static void AddMappers(this IServiceCollection services)
     {
-        services.AddSingleton<IModelMapper<Person, Account>, AccountMapper>();
+        services.AddSingleton<IModelMapper<Person, User>, UserMapper>();
     }
 }

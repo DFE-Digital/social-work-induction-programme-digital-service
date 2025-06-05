@@ -38,10 +38,10 @@ public class SocialWorkEnglandRecordTest
     public void WhenDueDateInFuture_RegisteredCheckRequireFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today.AddDays(1));
+        var sweRecord = new SocialWorkEnglandRecord(new Random().Next(), _today.AddDays(1));
 
         // Act
-        var result = account.IsStatusCheckRequired();
+        var result = sweRecord.IsStatusCheckRequired();
 
         // Assert
         result.Should().BeFalse();
@@ -51,10 +51,10 @@ public class SocialWorkEnglandRecordTest
     public void WhenCheckIsDue_RegisteredCheckRequireTrue()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var sweRecord = new SocialWorkEnglandRecord(new Random().Next(), _today);
 
         // Act
-        var result = account.IsStatusCheckRequired();
+        var result = sweRecord.IsStatusCheckRequired();
 
         // Assert
         result.Should().BeTrue();
@@ -116,10 +116,10 @@ public class SocialWorkEnglandRecordTest
     public void WhenArgumentIsNull_EqualsReturnsFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var sweRecord = new SocialWorkEnglandRecord(new Random().Next(), _today);
 
         // Act
-        var result = account.Equals(null);
+        var result = sweRecord.Equals(null);
 
         // Assert
         result.Should().BeFalse();
@@ -129,11 +129,11 @@ public class SocialWorkEnglandRecordTest
     public void WhenObjectIsNotSocialWorkEnglandNumber_EqualsReturnsFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var sweRecord = new SocialWorkEnglandRecord(new Random().Next(), _today);
         var obj = new object();
 
         // Act
-        var result = account.Equals(obj);
+        var result = sweRecord.Equals(obj);
 
         // Assert
         result.Should().BeFalse();
@@ -143,11 +143,11 @@ public class SocialWorkEnglandRecordTest
     public void WhenObjectsHoldTheSameNumber_EqualsReturnsTrue()
     {
         // Arrange
-        var account1 = new SocialWorkEnglandRecord(1234, _today);
-        var account2 = new SocialWorkEnglandRecord(1234, _today.AddDays(1));
+        var sweRecord1 = new SocialWorkEnglandRecord(1234, _today);
+        var sweRecord2 = new SocialWorkEnglandRecord(1234, _today.AddDays(1));
 
         // Act
-        var result = account1.Equals(account2);
+        var result = sweRecord1.Equals(sweRecord2);
 
         // Assert
         result.Should().BeTrue();

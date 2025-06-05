@@ -4,19 +4,19 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Extensions;
 
-public static class CreateAccountJourneyServiceExtensions
+public static class CreateUserJourneyServiceExtensions
 {
-    public static void PopulateJourneyModelFromAccount(
-        this ICreateAccountJourneyService createAccountJourneyService,
-        Account account
+    public static void PopulateJourneyModelFromUser(
+        this ICreateUserJourneyService createUserJourneyService,
+        User user
     )
     {
-        createAccountJourneyService.ResetCreateAccountJourneyModel();
+        createUserJourneyService.ResetCreateUserJourneyModel();
 
-        createAccountJourneyService.SetAccountTypes(account.Types!);
-        createAccountJourneyService.SetAccountDetails(AccountDetails.FromAccount(account));
-        createAccountJourneyService.SetIsStaff(
-            account.Types?.Intersect([AccountType.Assessor, AccountType.Coordinator]).Any()
+        createUserJourneyService.SetUserTypes(user.Types!);
+        createUserJourneyService.SetUserDetails(UserDetails.FromUser(user));
+        createUserJourneyService.SetIsStaff(
+            user.Types?.Intersect([UserType.Assessor, UserType.Coordinator]).Any()
         );
     }
 }

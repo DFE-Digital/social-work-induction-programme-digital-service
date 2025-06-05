@@ -16,7 +16,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
     public EligibilityAgencyWorkerPageTests()
     {
         Sut = new EligibilityAgencyWorker(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator(),
             new EligibilityAgencyWorkerValidator()
         );
@@ -32,7 +32,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-users/eligibility-statutory-work");
-        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -42,7 +42,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
     public void OnGet_WhenCalledWithIsAgencyWorkerPopulated_LoadsTheViewWithPrepopulatedValue(bool? isAgencyWorker)
     {
         // Arrange
-        MockCreateAccountJourneyService.Setup(x => x.GetIsAgencyWorker())
+        MockCreateUserJourneyService.Setup(x => x.GetIsAgencyWorker())
             .Returns(isAgencyWorker);
 
         // Act
@@ -52,7 +52,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
         result.Should().BeOfType<PageResult>();
         Sut.IsAgencyWorker.Should().Be(isAgencyWorker);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -98,7 +98,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-funding-not-available");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -118,7 +118,7 @@ public class EligibilityAgencyWorkerPageTests : ManageUsersPageTestBase<Eligibil
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-qualification");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsAgencyWorker(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

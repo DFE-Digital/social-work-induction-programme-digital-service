@@ -14,7 +14,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageUsersPageTestBase<E
     public EligibilityFundingNotAvailablePageTests()
     {
         Sut = new EligibilityFundingNotAvailable(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator()
         );
     }
@@ -24,7 +24,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageUsersPageTestBase<E
     [InlineData(false, "/manage-users/eligibility-qualification")]
     public void OnGet_WhenCalled_LoadsTheView(bool isAgencyWorker, string expectedBackLink)
     {
-        MockCreateAccountJourneyService.Setup(x => x.GetIsAgencyWorker()).Returns(isAgencyWorker);
+        MockCreateUserJourneyService.Setup(x => x.GetIsAgencyWorker()).Returns(isAgencyWorker);
 
         // Act
         var result = Sut.OnGet();
@@ -33,7 +33,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageUsersPageTestBase<E
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be(expectedBackLink);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

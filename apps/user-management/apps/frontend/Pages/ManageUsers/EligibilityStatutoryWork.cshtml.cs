@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityStatutoryWork(
-    ICreateAccountJourneyService createAccountJourneyService,
+    ICreateUserJourneyService createUserJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityStatutoryWork> validator)
     : BasePageModel
@@ -24,7 +24,7 @@ public class EligibilityStatutoryWork(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
-        IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
+        IsStatutoryWorker = createUserJourneyService.GetIsStatutoryWorker();
         return Page();
     }
 
@@ -38,7 +38,7 @@ public class EligibilityStatutoryWork(
             return Page();
         }
 
-        createAccountJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
+        createUserJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
 
         return Redirect(IsStatutoryWorker is false
             ? linkGenerator.EligibilityStatutoryWorkDropout()

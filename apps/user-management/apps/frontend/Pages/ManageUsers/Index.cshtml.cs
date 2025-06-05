@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageUsers;
 
 [AuthorizeRoles(RoleType.Coordinator)]
-public class Index(IAccountService accountService) : BasePageModel
+public class Index(IUserService userService) : BasePageModel
 {
     [FromQuery]
     public int Offset { get; set; } = 0;
@@ -17,17 +17,17 @@ public class Index(IAccountService accountService) : BasePageModel
     [FromQuery]
     public int PageSize { get; set; } = 10;
 
-    public IList<Account> Accounts { get; set; } = default!;
+    public IList<User> Users { get; set; } = default!;
 
     public PaginationMetaData? Pagination { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
-        var paginatedResults = await accountService.GetAllAsync(
+        var paginatedResults = await userService.GetAllAsync(
             new PaginationRequest(Offset, PageSize)
         );
 
-        Accounts = paginatedResults.Records.OrderBy(account => account.CreatedAt).ToList();
+        Users = paginatedResults.Records.OrderBy(user => user.CreatedAt).ToList();
         Pagination = paginatedResults.MetaData;
 
         return Page();

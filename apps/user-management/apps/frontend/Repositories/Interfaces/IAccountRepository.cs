@@ -11,32 +11,32 @@ public interface IAccountRepository
     /// Adds a new account to the repository.
     /// </summary>
     /// <param name="account">The account to add.</param>
-    void Add(Account account);
+    void Add(User user);
 
     /// <summary>
     /// Adds multiple accounts to the repository.
     /// </summary>
     /// <param name="accountsToAdd">The collection of accounts to add.</param>
-    void AddRange(IReadOnlyCollection<Account> accountsToAdd);
+    void AddRange(IReadOnlyCollection<User> accountsToAdd);
 
     /// <summary>
     /// Retrieves an account by its ID.
     /// </summary>
     /// <param name="id">The ID of the account to retrieve.</param>
     /// <returns>The account with the specified ID, or null if not found.</returns>
-    Account? GetById(Guid id);
+    User? GetById(Guid id);
 
     /// <summary>
     /// Retrieves all accounts in the repository.
     /// </summary>
     /// <returns>A collection of all accounts.</returns>
-    IEnumerable<Account> GetAll();
+    IEnumerable<User> GetAll();
 
     /// <summary>
     /// Updates an existing account in the repository.
     /// </summary>
     /// <param name="account">The account to update.</param>
-    void Update(Account account);
+    void Update(User user);
 
     /// <summary>
     /// Checks if an account exists in the repository.

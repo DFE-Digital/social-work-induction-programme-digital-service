@@ -14,6 +14,6 @@ public sealed class PersonFaker : Faker<Person>
         RuleFor(a => a.EmailAddress, f => f.Internet.Email());
         RuleFor(a => a.SocialWorkEnglandNumber, f => f.Random.Number().ToString());
         RuleFor(a => a.CreatedOn, f => f.Date.Past());
-        RuleFor(a => a.Roles, f => [f.PickRandom<AccountType>()]);
+        RuleFor(a => a.Roles, f => [f.PickRandom<UserType>()]);
     }
 }

@@ -16,7 +16,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
     public EligibilityStatutoryWorkPageTests()
     {
         Sut = new EligibilityStatutoryWork(
-            MockCreateAccountJourneyService.Object,
+            MockCreateUserJourneyService.Object,
             new FakeLinkGenerator(),
             new EligibilityStatutoryWorkValidator()
         );
@@ -33,7 +33,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
         Sut.IsStatutoryWorker.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-users/eligibility-social-work-england");
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -43,7 +43,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
     public void OnGet_WhenCalledWithIsStatutoryWorkerSet_LoadsTheViewWithPreselectedOption(bool isStatutoryWorker)
     {
         // Arrange
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStatutoryWorker())
+        MockCreateUserJourneyService.Setup(x => x.GetIsStatutoryWorker())
             .Returns(isStatutoryWorker);
 
         // Act
@@ -53,7 +53,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
         result.Should().BeOfType<PageResult>();
         Sut.IsStatutoryWorker.Should().Be(isStatutoryWorker);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -99,7 +99,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-agency-worker");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(true), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsStatutoryWorker(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -120,7 +120,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-statutory-work-dropout");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -141,7 +141,7 @@ public class EligibilityStatutoryWorkPageTests : ManageUsersPageTestBase<Eligibi
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-users/eligibility-statutory-work-dropout");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
+        MockCreateUserJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

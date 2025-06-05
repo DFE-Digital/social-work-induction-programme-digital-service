@@ -26,7 +26,7 @@ public class EligibilityInformationPageTests : ManageUsersPageTestBase<Eligibili
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.BackLinkPath.Should().Be("/manage-users/select-account-type");
+        Sut.BackLinkPath.Should().Be("/manage-users/select-user-type");
 
         VerifyAllNoOtherCalls();
     }
