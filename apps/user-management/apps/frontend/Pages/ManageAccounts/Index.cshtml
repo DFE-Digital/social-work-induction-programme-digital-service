@@ -42,16 +42,17 @@
 
         @if (Model.Accounts.Any())
         {
-            <table class="govuk-table">
+            <table class="govuk-table" data-module="moj-sortable-table">
+                >
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                    <th scope="col" class="govuk-table__header">
+                    <th scope="col" class="govuk-table__header" aria-sort="ascending">
                         <label asp-for="@Model.Accounts[0].FullName"></label>
                     </th>
-                    <th scope="col" class="govuk-table__header">
+                    <th scope="col" class="govuk-table__header" aria-sort="none">
                         <label asp-for="@Model.Accounts[0].Types"></label>
                     </th>
-                    <th scope="col" class="govuk-table__header">
+                    <th scope="col" class="govuk-table__header" aria-sort="none">
                         <label asp-for="@Model.Accounts[0].Status"></label>
                     </th>
                 </tr>
@@ -60,7 +61,7 @@
                 @foreach (var account in Model.Accounts)
                 {
                     <tr class="govuk-table__row">
-                        <td scope="row" class="govuk-table__cell" data-test-class="account-name">
+                        <td class="govuk-table__cell" data-test-class="account-name">
                             <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
                         </td>
                         <td class="govuk-table__cell">
@@ -119,6 +120,5 @@
                 </govuk-pagination>
             }
         }
-
     </div>
 </div >
