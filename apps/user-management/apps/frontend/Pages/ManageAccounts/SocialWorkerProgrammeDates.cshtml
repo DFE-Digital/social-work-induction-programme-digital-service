@@ -1,0 +1,38 @@
+@page
+@model SocialWorkerProgrammeDates
+
+@{
+    Model.Title = "Social work induction programme dates";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Social work induction programme dates</h1>
+
+        <form method="post">
+            <govuk-date-input for="ProgrammeStartDate">
+                <govuk-date-input-fieldset>
+                    <govuk-date-input-fieldset-legend is-page-heading="false" class="govuk-fieldset__legend--m">
+                        What is their programme start date?
+                    </govuk-date-input-fieldset-legend>
+                    <govuk-date-input-hint>
+                        For example, 10 2025
+                    </govuk-date-input-hint>
+                </govuk-date-input-fieldset>
+            </govuk-date-input>
+
+            <govuk-date-input for="ProgrammeEndDate">
+                <govuk-date-input-fieldset>
+                    <govuk-date-input-fieldset-legend is-page-heading="false" class="govuk-fieldset__legend--m">
+                        What is their expected programme end date?
+                    </govuk-date-input-fieldset-legend>
+                    <govuk-date-input-hint>
+                        For example, 10 2027
+                    </govuk-date-input-hint>
+                </govuk-date-input-fieldset>
+            </govuk-date-input>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+    </div>
+</div>

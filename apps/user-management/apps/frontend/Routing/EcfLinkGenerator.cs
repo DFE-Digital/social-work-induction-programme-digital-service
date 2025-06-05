@@ -86,6 +86,7 @@ public abstract class EcfLinkGenerator(
     public string EligibilityQualification() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification");
     public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
     public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
+    public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
 
     protected abstract string GetRequiredPathByPage(
         string page,

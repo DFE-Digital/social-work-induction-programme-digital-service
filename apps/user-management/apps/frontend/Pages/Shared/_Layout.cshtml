@@ -25,6 +25,8 @@
 
     @Html.GovUkFrontendStyleImports()
 
+    <link rel="stylesheet" href="~/css/moj-frontend.min.css">
+
     <link rel="stylesheet" href="~/govuk/service-header.css" asp-add-nonce="true">
 
     @await RenderSectionAsync("Styles", required: false)
@@ -105,8 +107,16 @@
 @* ReSharper disable once Razor.SectionNotResolved *@
 
 @section BodyEnd {
-    @Html.GovUkFrontendScriptImports(cspNonce: NonceService.GetNonce(), appendVersion: true)
+    @Html.GovUkFrontendScriptImports(cspNonce: NonceService.GetNonce())
 
     <script src="~/js/site.js" asp-add-nonce="true" asp-append-version="true"></script>
+
+    <script type="module" src="~/js/moj-frontend.min.js"></script>
+
+    <script type="module" nonce="@NonceService.GetNonce()">
+        import * as MOJFrontend from '/js/moj-frontend.min.js'
+        MOJFrontend.initAll()
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 }

@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
@@ -22,7 +23,7 @@ public class AccountTypesTagHelperTests
         await sut.ProcessAsync(context, output);
 
         // Assert
-        output.ToHtmlString().Should().Be(sut.Types[0].GetDisplayName());
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(sut.Types[0].GetDisplayName());
     }
 
     [Fact]
@@ -38,7 +39,7 @@ public class AccountTypesTagHelperTests
 
         // Assert
         output
-            .ToHtmlString()
+            .ToHtmlString(HtmlEncoder.Default)
             .Should()
             .Be($"{sut.Types[0].GetDisplayName()}, {sut.Types[1].GetDisplayName()}");
     }
@@ -54,6 +55,6 @@ public class AccountTypesTagHelperTests
         await sut.ProcessAsync(context, output);
 
         // Assert
-        output.ToHtmlString().Should().Be(string.Empty);
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(string.Empty);
     }
 }

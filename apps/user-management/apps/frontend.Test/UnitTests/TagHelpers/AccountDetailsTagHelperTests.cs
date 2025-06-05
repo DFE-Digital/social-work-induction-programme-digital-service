@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text.Encodings.Web;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.TagHelpers;
@@ -34,7 +35,7 @@ public class AccountDetailsTagHelperTests
             + $"<p>{sut.Account.Email}</p>"
             + $"<p>SWE registration number {sut.Account.SocialWorkEnglandNumber}</p>";
 
-        output.ToHtmlString().Should().Be(expectedHtml);
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(expectedHtml);
     }
 
     [Fact]
@@ -65,7 +66,7 @@ public class AccountDetailsTagHelperTests
             + "</span>"
             + "</p>";
 
-        output.ToHtmlString().Should().Be(expectedHtml);
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(expectedHtml);
     }
 
     [Theory]
@@ -89,7 +90,7 @@ public class AccountDetailsTagHelperTests
         // Assert
         var expectedHtml = $"<p>{sut.Account.FullName}</p><p>{sut.Account.Email}</p>";
 
-        output.ToHtmlString().Should().Be(expectedHtml);
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(expectedHtml);
     }
 
     [Fact]
@@ -103,6 +104,6 @@ public class AccountDetailsTagHelperTests
         await sut.ProcessAsync(context, output);
 
         // Assert
-        output.ToHtmlString().Should().BeEmpty();
+        output.ToHtmlString(HtmlEncoder.Default).Should().BeEmpty();
     }
 }

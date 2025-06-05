@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.TagHelpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -24,7 +25,7 @@ public class ConditionTagHelperTests
 
         // Assert
         var expectedHtml = $"<element-tag>{content}</element-tag>";
-        output.ToHtmlString().Should().Be(expectedHtml);
+        output.ToHtmlString(HtmlEncoder.Default).Should().Be(expectedHtml);
     }
 
     [Fact]
@@ -41,6 +42,6 @@ public class ConditionTagHelperTests
         await sut.ProcessAsync(context, output);
 
         // Assert
-        output.ToHtmlString().Should().BeEmpty();
+        output.ToHtmlString(HtmlEncoder.Default).Should().BeEmpty();
     }
 }
