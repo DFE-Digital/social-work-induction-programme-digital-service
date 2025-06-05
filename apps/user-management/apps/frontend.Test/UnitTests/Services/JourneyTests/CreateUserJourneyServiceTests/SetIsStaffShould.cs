@@ -12,9 +12,9 @@ public class SetIsStaffShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_SetsUserDetails()
     {
         // Arrange
-        var account = UserBuilder.Build();
+        var user = UserBuilder.Build();
         var existingIsStaff = UserBuilder.Build().IsStaff;
-        var expected = !account.IsStaff;
+        var expected = !user.IsStaff;
         HttpContext.Session.Set(
             CreateUserSessionKey,
             new CreateUserJourneyModel { IsStaff = existingIsStaff }
@@ -39,8 +39,8 @@ public class SetIsStaffShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithBlankSession_SetsUserDetails()
     {
         // Arrange
-        var account = UserBuilder.Build();
-        var expected = !account.IsStaff;
+        var user = UserBuilder.Build();
+        var expected = !user.IsStaff;
 
         // Act
         Sut.SetIsStaff(expected);

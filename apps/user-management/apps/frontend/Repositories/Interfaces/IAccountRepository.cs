@@ -11,7 +11,7 @@ public interface IAccountRepository
     /// Adds a new account to the repository.
     /// </summary>
     /// <param name="account">The account to add.</param>
-    void Add(User user);
+    void Add(User account);
 
     /// <summary>
     /// Adds multiple accounts to the repository.
@@ -36,7 +36,7 @@ public interface IAccountRepository
     /// Updates an existing account in the repository.
     /// </summary>
     /// <param name="account">The account to update.</param>
-    void Update(User user);
+    void Update(User account);
 
     /// <summary>
     /// Checks if an account exists in the repository.

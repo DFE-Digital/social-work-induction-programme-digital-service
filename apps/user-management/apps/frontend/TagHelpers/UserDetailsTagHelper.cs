@@ -29,7 +29,7 @@ public class UserDetailsTagHelper : TagHelper
                 "<p>"
                     + "<govuk-tag class=\"govuk-tag govuk-tag--orange\">" + UserStatus.PendingRegistration.GetDisplayName() + "</govuk-tag>"
                     + "<span class=\"govuk-!-display-block govuk-hint govuk-!-margin-bottom-0\">"
-                    + "You have not provided a Social Work England registration number for this account"
+                    + "You have not provided a Social Work England registration number for this user"
                     + "</span>"
                     + "</p>"
             );

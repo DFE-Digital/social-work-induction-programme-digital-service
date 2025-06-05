@@ -12,8 +12,8 @@ public class GetIsStaffShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_ReturnsUserTypes()
     {
         // Arrange
-        var account = UserBuilder.Build();
-        var expected = account.IsStaff;
+        var user = UserBuilder.Build();
+        var expected = user.IsStaff;
         HttpContext.Session.Set(
             CreateUserSessionKey,
             new CreateUserJourneyModel { IsStaff = expected }

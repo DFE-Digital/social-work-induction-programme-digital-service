@@ -23,10 +23,10 @@ public class EditUserJourneyService(
     private static KeyNotFoundException UserNotFoundException(Guid id) =>
         new("User not found with ID " + id);
 
-    private async Task<EditUserJourneyModel?> GetEditUserJourneyModelAsync(Guid accountId)
+    private async Task<EditUserJourneyModel?> GetEditUserJourneyModelAsync(Guid userId)
     {
         Session.TryGet(
-            EditUserSessionKey(accountId),
+            EditUserSessionKey(userId),
             out EditUserJourneyModel? editUserJourneyModel
         );
         if (editUserJourneyModel is not null)
@@ -34,104 +34,104 @@ public class EditUserJourneyService(
             return editUserJourneyModel;
         }
 
-        var account = await _userService.GetByIdAsync(accountId);
-        if (account is null)
+        var user = await _userService.GetByIdAsync(userId);
+        if (user is null)
         {
             return null;
         }
 
-        editUserJourneyModel = new EditUserJourneyModel(account);
+        editUserJourneyModel = new EditUserJourneyModel(user);
         return editUserJourneyModel;
     }
 
-    public async Task<bool> IsUserIdValidAsync(Guid accountId)
+    public async Task<bool> IsUserIdValidAsync(Guid userId)
     {
-        return await GetEditUserJourneyModelAsync(accountId) is not null;
+        return await GetEditUserJourneyModelAsync(userId) is not null;
     }
 
-    public async Task<ImmutableList<UserType>?> GetUserTypesAsync(Guid accountId)
+    public async Task<ImmutableList<UserType>?> GetUserTypesAsync(Guid userId)
     {
-        var editUserJourneyModel = await GetEditUserJourneyModelAsync(accountId);
+        var editUserJourneyModel = await GetEditUserJourneyModelAsync(userId);
         return editUserJourneyModel?.UserTypes;
     }
 
-    public async Task<UserDetails?> GetUserDetailsAsync(Guid accountId)
+    public async Task<UserDetails?> GetUserDetailsAsync(Guid userId)
     {
-        var editUserJourneyModel = await GetEditUserJourneyModelAsync(accountId);
+        var editUserJourneyModel = await GetEditUserJourneyModelAsync(userId);
         return editUserJourneyModel?.UserDetails;
     }
 
-    public async Task<bool?> GetIsStaffAsync(Guid accountId)
+    public async Task<bool?> GetIsStaffAsync(Guid userId)
     {
-        var editUserJourneyModel = await GetEditUserJourneyModelAsync(accountId);
+        var editUserJourneyModel = await GetEditUserJourneyModelAsync(userId);
         return editUserJourneyModel?.IsStaff;
     }
 
-    public async Task SetUserDetailsAsync(Guid accountId, UserDetails userDetails)
+    public async Task SetUserDetailsAsync(Guid userId, UserDetails userDetails)
     {
         var editUserJourneyModel =
-            await GetEditUserJourneyModelAsync(accountId)
-            ?? throw UserNotFoundException(accountId);
+            await GetEditUserJourneyModelAsync(userId)
+            ?? throw UserNotFoundException(userId);
         editUserJourneyModel.UserDetails = userDetails;
-        SetEditUserJourneyModel(accountId, editUserJourneyModel);
+        SetEditUserJourneyModel(userId, editUserJourneyModel);
     }
 
-    public async Task SetUserTypesAsync(Guid accountId, IEnumerable<UserType> accountTypes)
+    public async Task SetUserTypesAsync(Guid userId, IEnumerable<UserType> userTypes)
     {
         var editUserJourneyModel =
-            await GetEditUserJourneyModelAsync(accountId)
-            ?? throw UserNotFoundException(accountId);
-        editUserJourneyModel.UserTypes = accountTypes.ToImmutableList();
-        SetEditUserJourneyModel(accountId, editUserJourneyModel);
+            await GetEditUserJourneyModelAsync(userId)
+            ?? throw UserNotFoundException(userId);
+        editUserJourneyModel.UserTypes = userTypes.ToImmutableList();
+        SetEditUserJourneyModel(userId, editUserJourneyModel);
     }
 
-    public async Task SetUserStatusAsync(Guid accountId, UserStatus userStatus)
+    public async Task SetUserStatusAsync(Guid userId, UserStatus userStatus)
     {
         var editUserJourneyModel =
-            await GetEditUserJourneyModelAsync(accountId)
-            ?? throw UserNotFoundException(accountId);
+            await GetEditUserJourneyModelAsync(userId)
+            ?? throw UserNotFoundException(userId);
         editUserJourneyModel.UserStatus = userStatus;
-        SetEditUserJourneyModel(accountId, editUserJourneyModel);
+        SetEditUserJourneyModel(userId, editUserJourneyModel);
     }
 
-    public async Task SetIsStaffAsync(Guid accountId, bool? isStaff)
+    public async Task SetIsStaffAsync(Guid userId, bool? isStaff)
     {
         var editUserJourneyModel =
-            await GetEditUserJourneyModelAsync(accountId)
-            ?? throw UserNotFoundException(accountId);
+            await GetEditUserJourneyModelAsync(userId)
+            ?? throw UserNotFoundException(userId);
         editUserJourneyModel.IsStaff = isStaff;
-        SetEditUserJourneyModel(accountId, editUserJourneyModel);
+        SetEditUserJourneyModel(userId, editUserJourneyModel);
     }
 
-    public async Task ResetEditUserJourneyModelAsync(Guid accountId)
+    public async Task ResetEditUserJourneyModelAsync(Guid userId)
     {
-        var account = await _userService.GetByIdAsync(accountId);
-        if (account is null)
+        var user = await _userService.GetByIdAsync(userId);
+        if (user is null)
         {
-            throw UserNotFoundException(accountId);
+            throw UserNotFoundException(userId);
         }
 
-        Session.Remove(EditUserSessionKey(accountId));
+        Session.Remove(EditUserSessionKey(userId));
     }
 
     private void SetEditUserJourneyModel(
-        Guid accountId,
+        Guid userId,
         EditUserJourneyModel? editUserJourneyModel
     )
     {
-        Session.Set(EditUserSessionKey(accountId), editUserJourneyModel);
+        Session.Set(EditUserSessionKey(userId), editUserJourneyModel);
     }
 
-    public async Task<User> CompleteJourneyAsync(Guid accountId)
+    public async Task<User> CompleteJourneyAsync(Guid userId)
     {
         var editUserJourneyModel =
-            await GetEditUserJourneyModelAsync(accountId)
-            ?? throw UserNotFoundException(accountId);
+            await GetEditUserJourneyModelAsync(userId)
+            ?? throw UserNotFoundException(userId);
 
         var updatedUser = editUserJourneyModel.ToUser();
         await _userService.UpdateAsync(updatedUser);
 
-        await ResetEditUserJourneyModelAsync(accountId);
+        await ResetEditUserJourneyModelAsync(userId);
         return updatedUser;
     }
 }

@@ -14,14 +14,14 @@ public class CreateUserJourneyModelTests
     [InlineData(new[] {UserType.Coordinator}, UserStatus.Active)]
     [InlineData(new[] {UserType.Assessor, UserType.Coordinator}, UserStatus.Active)]
     public void WhenMapped_AccountStatusIsCorrect(
-        UserType[] accountTypes,
+        UserType[] userTypes,
         UserStatus expectedStatus
     )
     {
         // Arrange
         var createModel = new CreateUserJourneyModel
         {
-            UserTypes = accountTypes.ToImmutableList()
+            UserTypes = userTypes.ToImmutableList()
         };
 
         // Act

@@ -39,8 +39,8 @@ public class SetUserDetailsShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithBlankSession_SetsUserDetails()
     {
         // Arrange
-        var account = UserBuilder.Build();
-        var expected = UserDetails.FromUser(account);
+        var user = UserBuilder.Build();
+        var expected = UserDetails.FromUser(user);
 
         // Act
         Sut.SetUserDetails(expected);

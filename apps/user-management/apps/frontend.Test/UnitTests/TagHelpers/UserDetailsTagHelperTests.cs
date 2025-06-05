@@ -17,7 +17,7 @@ public class UserDetailsTagHelperTests
     public async Task ProcessAsync_WithSocialWorkerUser_GeneratesExpectedOutput()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-details");
         var sut = new UserDetailsTagHelper
         {
             User = new UserBuilder()
@@ -42,7 +42,7 @@ public class UserDetailsTagHelperTests
     public async Task ProcessAsync_WithSocialWorkerWithNoSweNumberUser_DisplaysMissingSweNumberMessage()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-details");
         var sut = new UserDetailsTagHelper()
         {
             User = new UserBuilder()
@@ -62,7 +62,7 @@ public class UserDetailsTagHelperTests
             + "<p>"
             + $"<govuk-tag class=\"govuk-tag govuk-tag--orange\">{UserStatus.PendingRegistration.GetDisplayName()}</govuk-tag>"
             + "<span class=\"govuk-!-display-block govuk-hint govuk-!-margin-bottom-0\">"
-            + "You have not provided a Social Work England registration number for this account"
+            + "You have not provided a Social Work England registration number for this user"
             + "</span>"
             + "</p>";
 
@@ -74,14 +74,14 @@ public class UserDetailsTagHelperTests
     [InlineData(UserType.Assessor)]
     [InlineData(UserType.Assessor, UserType.Coordinator)]
     public async Task ProcessAsync_WithNonSocialWorkerUser_DoesNotIncludeSweNumber(
-        params UserType[] accountTypes
+        params UserType[] userTypes
     )
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-details");
         var sut = new UserDetailsTagHelper()
         {
-            User = new UserBuilder().WithTypes(ImmutableList.Create(accountTypes)).Build()
+            User = new UserBuilder().WithTypes(ImmutableList.Create(userTypes)).Build()
         };
 
         // Act
@@ -97,7 +97,7 @@ public class UserDetailsTagHelperTests
     public async Task ProcessAsync_WithNoUser_DoesNotIncludeDetails()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-details");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-details");
         var sut = new UserDetailsTagHelper();
 
         // Act

@@ -12,9 +12,9 @@ public class SetUserTypesShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithExistingSessionData_SetsUserDetails()
     {
         // Arrange
-        var account = UserBuilder.Build();
+        var user = UserBuilder.Build();
         var existingTypes = UserBuilder.Build().Types;
-        var expected = account.Types;
+        var expected = user.Types;
         HttpContext.Session.Set(
             CreateUserSessionKey,
             new CreateUserJourneyModel { UserTypes = existingTypes }
@@ -39,8 +39,8 @@ public class SetUserTypesShould : CreateUserJourneyServiceTestBase
     public void WhenCalled_WithBlankSession_SetsUserDetails()
     {
         // Arrange
-        var account = UserBuilder.Build();
-        var expected = account.Types;
+        var user = UserBuilder.Build();
+        var expected = user.Types;
 
         // Act
         Sut.SetUserTypes(expected!);

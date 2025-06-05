@@ -16,7 +16,7 @@ public class UserTypesTagHelperTests
     public async Task ProcessAsync_WithSingleType_GeneratesExpectedOutput()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-types");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-types");
         var sut = new UserTypesTagHelper { Types = [new Faker().PickRandom<UserType>()] };
 
         // Act
@@ -30,7 +30,7 @@ public class UserTypesTagHelperTests
     public async Task ProcessAsync_WithMultipleTypes_GeneratesExpectedOutput()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-types");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-types");
         var sut = new UserTypesTagHelper
         {
             Types = [new Faker().PickRandom<UserType>(), new Faker().PickRandom<UserType>()]
@@ -48,7 +48,7 @@ public class UserTypesTagHelperTests
     public async Task ProcessAsync_WithNoTypes_GeneratesExpectedOutput()
     {
         // Arrange
-        var (context, output) = TagHelperHelpers.CreateContextAndOutput("account-types");
+        var (context, output) = TagHelperHelpers.CreateContextAndOutput("user-types");
         var sut = new UserTypesTagHelper { Types = null };
 
         // Act

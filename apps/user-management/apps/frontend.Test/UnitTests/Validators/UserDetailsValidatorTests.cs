@@ -32,7 +32,7 @@ public class UserDetailsValidatorTests()
     public void WhenAnyInputNotSupplied_WhenIsNotStaff_HasValidationErrors(string? value)
     {
         // Arrange
-        var account = new UserDetails
+        var user = new UserDetails
         {
             IsStaff = false,
             FirstName = value,
@@ -42,7 +42,7 @@ public class UserDetailsValidatorTests()
         };
 
         // Act
-        var result = Sut.TestValidate(account);
+        var result = Sut.TestValidate(user);
 
         // Assert
         result
