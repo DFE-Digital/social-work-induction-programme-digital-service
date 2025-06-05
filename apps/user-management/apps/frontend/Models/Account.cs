@@ -39,7 +39,7 @@ public record Account
     /// <summary>
     /// FullName
     /// </summary>
-    [Display(Name = "Full name")]
+    [Display(Name = "Name")]
     public string FullName => $"{FirstName} {LastName}".Trim();
 
     /// <summary>

@@ -109,7 +109,7 @@ public class AddAccountDetails(
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect(linkGenerator.ConfirmAccountDetails());
+        return Redirect(linkGenerator.SocialWorkerProgrammeDates());
     }
 
     public async Task<IActionResult> OnPostChangeAsync()
