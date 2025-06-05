@@ -107,7 +107,7 @@
 @* ReSharper disable once Razor.SectionNotResolved *@
 
 @section BodyEnd {
-    @Html.GovUkFrontendScriptImports(cspNonce: NonceService.GetNonce(), appendVersion: true)
+    @Html.GovUkFrontendScriptImports(cspNonce: NonceService.GetNonce())
 
     <script src="~/js/site.js" asp-add-nonce="true" asp-append-version="true"></script>
 

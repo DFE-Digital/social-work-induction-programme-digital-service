@@ -1,11 +1,13 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.Installers;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using GovUk.Frontend.AspNetCore;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using NodaTime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +30,10 @@ if (featureFlags.EnableForwardedHeaders)
 }
 
 // Add services to the container.
-builder.Services.AddGovUkFrontend();
+builder.Services.AddGovUkFrontend(options =>
+{
+    options.RegisterDateInputModelConverter(typeof(YearMonth), new YearMonthDateInputModelConverter());
+});
 builder.Services.AddCsp(nonceByteAmount: 32);
 builder
     .Services.AddRazorPages()
