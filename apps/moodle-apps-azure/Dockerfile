@@ -170,6 +170,17 @@ COPY apache-config-cron.conf /app/apache-config-cron.conf
 COPY moodle-cron /app/moodle-cron
 RUN a2enmod headers
 
+# Create symbolic links from Apache's default log file locations
+# to /dev/stdout and /dev/stderr.
+# Before creating symlinks, ensure the target directory exists.
+# For /var/log/apache2/ which is common for php:apache images
+RUN mkdir -p /var/log/apache2/ && \
+# Remove any existing log files first to avoid conflicts
+rm -f /var/log/apache2/access.log /var/log/apache2/error.log && \
+# Create the symbolic links
+ln -sf /dev/stdout /var/log/apache2/access.log && \
+ln -sf /dev/stderr /var/log/apache2/error.log
+
 # Give the cron job some html to serve - the cron job service is still an app service
 # and needs to serve something
 RUN mkdir -p /var/www/html/cron
