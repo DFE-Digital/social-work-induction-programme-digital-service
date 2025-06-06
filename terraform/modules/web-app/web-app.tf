@@ -50,8 +50,16 @@ resource "azurerm_linux_web_app" "webapp" {
 
   # Provide standard setting which gives full app service domain name
   app_settings = merge({
-    "FULL_EXTERNAL_WEB_DOMAIN_NAME"         = "${var.web_app_name}.azurewebsites.net"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
+    "FULL_EXTERNAL_WEB_DOMAIN_NAME"                   = "${var.web_app_name}.azurewebsites.net"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = var.appinsights_connection_string
+    "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
+    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
+    "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
+    "DiagnosticServices_EXTENSION_VERSION"            = "~3"
+    "InstrumentationEngine_EXTENSION_VERSION"         = "~2"
+    "SnapshotDebugger_EXTENSION_VERSION"              = "1.0.15"
+    "XDT_MicrosoftApplicationInsights_BaseExtensions" = "disabled"
+    "XDT_MicrosoftApplicationInsights_Mode"           = "recommended"
   }, var.app_settings)
 
   lifecycle {
