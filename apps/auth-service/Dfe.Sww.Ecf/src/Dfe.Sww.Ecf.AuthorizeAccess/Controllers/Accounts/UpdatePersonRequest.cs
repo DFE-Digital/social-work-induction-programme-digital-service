@@ -14,6 +14,7 @@ public record UpdatePersonRequest
     public string? SocialWorkEnglandNumber { get; init; }
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
+    public bool? CompletedEcswRegistration { get; set; }
 }
 
 public static class UpdatePersonRequestExtensions
@@ -29,6 +30,7 @@ public static class UpdatePersonRequestExtensions
             PersonRoles = request
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
                 .ToList(),
-            Status = request.Status
+            Status = request.Status,
+            CompletedEcswRegistration = request.CompletedEcswRegistration
         };
 }

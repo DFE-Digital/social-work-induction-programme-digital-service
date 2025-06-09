@@ -252,7 +252,8 @@ builder
             Scopes.Profile,
             CustomScopes.SocialWorkerRecord,
             Scopes.Roles,
-            CustomScopes.Organisation
+            CustomScopes.Organisation,
+            CustomScopes.EcswRegistered
         );
 
         options.AllowAuthorizationCodeFlow();
