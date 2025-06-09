@@ -1,14 +1,27 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages;
 
 [Authorize]
-public class SignIn : BasePageModel
+public class SignIn(EcfLinkGenerator linkGenerator, IAuthServiceClient authServiceClient) : BasePageModel
 {
-    public RedirectToPageResult OnGet()
+    public IActionResult OnGet()
     {
-        return RedirectToPage(nameof(Index));
+        var isEcswRegistered = authServiceClient.HttpContextService.GetIsEcswRegistered();
+        if (isEcswRegistered == false)
+        {
+            return Redirect(linkGenerator.SocialWorkerRegistration());
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult OnPost()
+    {
+        return Redirect(linkGenerator.ManageAccounts()); // TODO update this ECSW DoB page
     }
 }
