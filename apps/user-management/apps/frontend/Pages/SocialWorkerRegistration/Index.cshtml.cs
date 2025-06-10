@@ -15,9 +15,4 @@ public class Index(EcfLinkGenerator linkGenerator) : BasePageModel
     {
         return Page();
     }
-
-    public IActionResult OnPost()
-    {
-        return Redirect(linkGenerator.Home()); // TODO update this ECSW DoB page
-    }
 }
