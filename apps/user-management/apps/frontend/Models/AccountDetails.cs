@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Repositories;
+using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -44,6 +45,12 @@ public class AccountDetails
 
     public string? SocialWorkEnglandNumber { get; init; }
 
+
+    public YearMonth? ProgrammeStartDate { get; set; }
+
+
+    public YearMonth? ProgrammeEndDate { get; set; }
+
     public int? ExternalUserId { get; set; }
 
     public bool IsStaff { get; set; }
@@ -57,6 +64,8 @@ public class AccountDetails
             LastName = account.LastName,
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
+            ProgrammeStartDate = account.ProgrammeStartDate,
+            ProgrammeEndDate = account.ProgrammeEndDate,
             ExternalUserId = account.ExternalUserId,
             IsStaff = account.IsStaff
         };

@@ -38,6 +38,8 @@ public class CreateAccountJourneyModel
             LastName = AccountDetails?.LastName,
             Types = AccountTypes,
             SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
+            ProgrammeStartDate = AccountDetails?.ProgrammeStartDate,
+            ProgrammeEndDate = AccountDetails?.ProgrammeEndDate,
             ExternalUserId = ExternalUserId,
             IsFunded = IsEligibleForFunding()
         };

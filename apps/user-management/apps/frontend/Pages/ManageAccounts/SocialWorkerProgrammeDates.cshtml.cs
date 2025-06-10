@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using FluentValidation;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SocialWorkerProgrammeDates(
+    ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<SocialWorkerProgrammeDates> validator) : BasePageModel
 {
@@ -48,6 +51,11 @@ public class SocialWorkerProgrammeDates(
             BackLinkPath = linkGenerator.AddAccountDetails();
             return Page();
         }
+
+        var accountDetails = createAccountJourneyService.GetAccountDetails();
+        accountDetails!.ProgrammeStartDate = ProgrammeStartDate;
+        accountDetails!.ProgrammeEndDate = ProgrammeEndDate;
+        createAccountJourneyService.SetAccountDetails(accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetails());
     }
