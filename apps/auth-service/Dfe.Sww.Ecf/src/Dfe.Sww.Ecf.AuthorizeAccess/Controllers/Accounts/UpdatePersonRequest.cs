@@ -29,6 +29,6 @@ public static class UpdatePersonRequestExtensions
             PersonRoles = request
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
                 .ToList(),
-            Status = request.Status,
+            Status = request.Status
         };
 }

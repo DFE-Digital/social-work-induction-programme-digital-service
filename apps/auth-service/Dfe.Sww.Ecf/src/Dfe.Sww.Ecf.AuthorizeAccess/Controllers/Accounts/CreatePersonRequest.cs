@@ -36,6 +36,6 @@ public static class CreatePersonRequestExtensions
                 new() { OrganisationId = request.OrganisationId }
             },
             ExternalUserId = request.ExternalUserId,
-            IsFunded = request.IsFunded,
+            IsFunded = request.IsFunded
         };
 }
