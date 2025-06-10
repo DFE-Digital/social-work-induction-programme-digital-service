@@ -37,6 +37,5 @@ public static class CreatePersonRequestExtensions
             },
             ExternalUserId = request.ExternalUserId,
             IsFunded = request.IsFunded,
-            CompletedEcswRegistration = request.Roles.Any(x => x == RoleType.EarlyCareerSocialWorker) ? false : null
         };
 }

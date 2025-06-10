@@ -263,10 +263,6 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("person_id");
 
-                    b.Property<bool?>("CompletedEcswRegistration")
-                        .HasColumnType("boolean")
-                        .HasColumnName("completed_ecsw_registration");
-
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_on");

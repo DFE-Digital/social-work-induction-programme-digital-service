@@ -119,14 +119,14 @@ public class OAuth2Controller(
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
             dbContext);
 
-        // Only false for ECSWs, currently null for other account types
-        if (oneLoginUser.Person.CompletedEcswRegistration == false)
+        // Claim only false for ECSWs that are pending registration
+        if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)
         {
             claimsBuilder
                 .AddIfScope(
                     CustomScopes.EcswRegistered,
                     ClaimTypes.IsEcswRegistered,
-                    () => oneLoginUser.Person.CompletedEcswRegistration.ToString()
+                    () => "false"
                 );
         }
     }
