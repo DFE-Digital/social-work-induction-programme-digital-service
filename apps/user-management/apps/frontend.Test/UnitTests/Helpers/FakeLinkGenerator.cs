@@ -42,6 +42,12 @@ public class FakeLinkGenerator()
 
         var generatedLink = new SlugifyRouteParameterTransformer().TransformOutbound(page)!;
 
+        // This is needed the home page redirects where the string is empty, which can't be passed into the redirect method
+        if (string.IsNullOrEmpty(generatedLink))
+        {
+            return "index";
+        }
+
         if (routeValues is not null)
             generatedLink = AddRouteValues(generatedLink, routeValues);
 

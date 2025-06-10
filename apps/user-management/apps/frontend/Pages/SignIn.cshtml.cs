@@ -17,11 +17,6 @@ public class SignIn(EcfLinkGenerator linkGenerator, IAuthServiceClient authServi
             return Redirect(linkGenerator.SocialWorkerRegistration());
         }
 
-        return RedirectToAction("Index", "Home");
-    }
-
-    public IActionResult OnPost()
-    {
-        return Redirect(linkGenerator.ManageAccounts()); // TODO update this ECSW DoB page
+        return Redirect(linkGenerator.Home());
     }
 }

@@ -37,11 +37,10 @@ public class SignInTests
         var result = Sut.OnGet();
 
         // Assert
-        result.Should().BeOfType<RedirectToActionResult>();
-        var response = result as RedirectToActionResult;
+        result.Should().BeOfType<RedirectResult>();
+        var response = result as RedirectResult;
         response.Should().NotBeNull();
-        response!.ControllerName.Should().Be("Home");
-        response.ActionName.Should().Be("Index");
+        response!.Url.Should().Be("index");
 
         _authServiceClient.Verify(
             x =>
