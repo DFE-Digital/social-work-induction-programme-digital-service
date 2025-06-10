@@ -3,4 +3,5 @@
 public interface IHttpContextService
 {
     string GetOrganisationId();
+    bool GetIsEcswRegistered();
 }

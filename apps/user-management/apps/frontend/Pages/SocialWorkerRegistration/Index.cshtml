@@ -1,0 +1,41 @@
+@page
+@model Index
+
+@{
+    Model.Title = "Welcome to the digital service";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+            Welcome to the digital service
+        </h1>
+
+        <p class="govuk-body">
+            Through this service, you can:
+        </p>
+
+        <ul class="govuk-list govuk-list--bullet">
+            <li>access learning resources</li>
+            <li>write and submit your assessments</li>
+            <li>view feedback on your assessments</li>
+            <li>track your progress against the post-qualifying standards</li>
+        </ul>
+
+        <h2 class="govuk-heading-m">Before you begin</h2>
+
+        <p class="govuk-body">You need to provide some information to complete your registration.</p>
+
+        <p class="govuk-body">You'll need to tell us:</p>
+
+        <ul class="govuk-list govuk-list--bullet">
+            <li>some personal information</li>
+            <li>the date that you were added to the Social Work England register</li>
+            <li>the highest qualification you hold</li>
+            <li>the year you received your social work qualification</li>
+            <li>your route into social work</li>
+        </ul>
+
+        <govuk-button-link is-start-button="true" href="@LinkGenerator.Home()">Start registration</govuk-button-link>
+    </div>
+</div >
