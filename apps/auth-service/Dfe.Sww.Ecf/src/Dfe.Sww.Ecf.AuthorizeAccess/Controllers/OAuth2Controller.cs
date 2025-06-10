@@ -115,9 +115,20 @@ public class OAuth2Controller(
                 () => oneLoginUser.Person.Trn
             )
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
+
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
             dbContext);
 
+        // Claim only false for ECSWs that are pending registration
+        if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)
+        {
+            claimsBuilder
+                .AddIfScope(
+                    CustomScopes.EcswRegistered,
+                    ClaimTypes.IsEcswRegistered,
+                    () => "false"
+                );
+        }
     }
 
     private async Task<IActionResult> HandleAuthenticationFailureAsync(
@@ -344,6 +355,13 @@ public class OAuth2Controller(
 
             case ClaimTypes.OrganisationId:
                 if (claim.Subject!.HasScope(CustomScopes.Organisation))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
+                yield break;
+            case ClaimTypes.IsEcswRegistered:
+                if (claim.Subject!.HasScope(CustomScopes.EcswRegistered))
                 {
                     yield return Destinations.AccessToken;
                     yield return Destinations.IdentityToken;
