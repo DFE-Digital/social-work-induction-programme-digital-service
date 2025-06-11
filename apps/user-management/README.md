@@ -23,6 +23,7 @@ For package management, we use [pnpm](https://pnpm.io). Once you have installed 
 ```shell
 asdf plugin add nodejs
 asdf plugin add pnpm
+asdf plugin add dotnet
 asdf install
 ```
 
