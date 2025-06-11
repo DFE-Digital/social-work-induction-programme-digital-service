@@ -8,6 +8,7 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 public record CreatePersonRequest
 {
     public required string FirstName { get; init; }
+    public string? MiddleName { get; init; }
     public required string LastName { get; init; }
     public required string? EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
@@ -16,6 +17,8 @@ public record CreatePersonRequest
     public Guid OrganisationId { get; init; }
     public int? ExternalUserId { get; set; }
     public bool IsFunded { get; set; }
+    public DateOnly? ProgrammeStartDate { get; init; }
+    public DateOnly? ProgrammeEndDate { get; init; }
 }
 
 public static class CreatePersonRequestExtensions
@@ -25,6 +28,7 @@ public static class CreatePersonRequestExtensions
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
+            MiddleName = request.MiddleName,
             EmailAddress = request.EmailAddress,
             Trn = request.SocialWorkEnglandNumber,
             PersonRoles = request
@@ -36,6 +40,8 @@ public static class CreatePersonRequestExtensions
                 new() { OrganisationId = request.OrganisationId }
             },
             ExternalUserId = request.ExternalUserId,
-            IsFunded = request.IsFunded
+            IsFunded = request.IsFunded,
+            ProgrammeStartDate = request.ProgrammeStartDate,
+            ProgrammeEndDate = request.ProgrammeEndDate
         };
 }

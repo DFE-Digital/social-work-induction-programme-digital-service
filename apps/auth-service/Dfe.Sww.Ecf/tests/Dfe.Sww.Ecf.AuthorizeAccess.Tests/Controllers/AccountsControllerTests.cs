@@ -214,13 +214,16 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 new CreatePersonRequest
                 {
                     FirstName = expectedNewUser.FirstName,
+                    MiddleName = expectedNewUser.MiddleName,
                     LastName = expectedNewUser.LastName,
                     EmailAddress = expectedNewUser.EmailAddress,
                     SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
                     Roles = expectedNewUser.Roles,
                     Status = expectedNewUser.Status,
                     OrganisationId = organisation.OrganisationId,
-                    IsFunded = expectedNewUser.IsFunded
+                    IsFunded = expectedNewUser.IsFunded,
+                    ProgrammeStartDate = expectedNewUser.ProgrammeStartDate,
+                    ProgrammeEndDate = expectedNewUser.ProgrammeEndDate
                 }
             );
 

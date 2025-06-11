@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace Dfe.Sww.Ecf.TestCommon;
 
@@ -30,7 +31,9 @@ public partial class TestData
                 Status = createPersonResult.Status,
                 PersonOrganisations = createPersonResult.PersonOrganisations,
                 ExternalUserId = createPersonResult.ExternalUserId,
-                IsFunded = createPersonResult.IsFunded
+                IsFunded = createPersonResult.IsFunded,
+                ProgrammeStartDate = createPersonResult.ProgrammeStartDate,
+                ProgrammeEndDate = createPersonResult.ProgrammeEndDate
             };
 
             if (addToDb is not true)
@@ -72,6 +75,8 @@ public partial class TestData
         private Guid _organisationId;
         private int _externalUserId;
         private bool _isFunded;
+        private DateOnly? _programmeStartDate;
+        private DateOnly? _programmeEndDate;
 
         public Guid PersonId { get; } = Guid.NewGuid();
 
@@ -257,6 +262,32 @@ public partial class TestData
             return this;
         }
 
+        public CreatePersonBuilder WithProgrammeStartDate(DateOnly programmeStartDate)
+        {
+            if (_programmeStartDate is not null && _programmeStartDate != programmeStartDate)
+            {
+                throw new InvalidOperationException(
+                    "WithProgrammeStartDate cannot be changed after it's set."
+                );
+            }
+
+            _programmeStartDate = programmeStartDate;
+            return this;
+        }
+
+        public CreatePersonBuilder WithProgrammeEndDate(DateOnly programmeEndDate)
+        {
+            if (_programmeEndDate is not null && _programmeEndDate != programmeEndDate)
+            {
+                throw new InvalidOperationException(
+                    "WithProgrammeEndDate cannot be changed after it's set."
+                );
+            }
+
+            _programmeEndDate = programmeEndDate;
+            return this;
+        }
+
         internal async Task<CreatePersonResult> Execute(TestData testData)
         {
             var hasTrn = _hasTrn ?? true;
@@ -288,6 +319,8 @@ public partial class TestData
                 ]
                 : new List<PersonOrganisation>();
             var isFunded = true;
+            var programmeStartDate = _programmeStartDate ?? testData.GenerateDate(DateOnly.FromDateTime(DateTime.Now));
+            var programmeEndDate = _programmeEndDate ?? testData.GenerateDate(programmeStartDate);
 
             return new CreatePersonResult()
             {
@@ -302,7 +335,9 @@ public partial class TestData
                 CreatedOn = testData.Clock.UtcNow,
                 Status = status,
                 PersonOrganisations = personOrganisations,
-                IsFunded = isFunded
+                IsFunded = isFunded,
+                ProgrammeStartDate = programmeStartDate,
+                ProgrammeEndDate = programmeEndDate
             };
         }
     }
@@ -321,10 +356,10 @@ public partial class TestData
         public DateTime? UpdatedOn { get; init; }
         public PersonStatus Status { get; init; }
         public List<PersonOrganisation> PersonOrganisations { get; init; } = [];
-
         public int? ExternalUserId { get; set; }
-
         public bool IsFunded { get; set; }
+        public DateOnly? ProgrammeStartDate { get; init; }
+        public DateOnly? ProgrammeEndDate { get; init; }
 
         public Person ToPerson() =>
             new Person
@@ -341,7 +376,9 @@ public partial class TestData
                 UpdatedOn = UpdatedOn,
                 Status = Status,
                 ExternalUserId = ExternalUserId,
-                IsFunded = IsFunded
+                IsFunded = IsFunded,
+                ProgrammeStartDate = ProgrammeStartDate,
+                ProgrammeEndDate = ProgrammeEndDate
             };
 
         public PersonDto ToPersonDto() => ToPerson().ToDto();

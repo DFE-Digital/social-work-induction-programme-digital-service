@@ -16,6 +16,8 @@ public class Person
     public PersonStatus? Status { get; set; }
     public int? ExternalUserId { get; set; }
     public bool IsFunded { get; set; }
+    public DateOnly? ProgrammeStartDate { get; set; }
+    public DateOnly? ProgrammeEndDate { get; set; }
 
     public ICollection<PersonRole> PersonRoles { get; set; } = new List<PersonRole>();
     public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
