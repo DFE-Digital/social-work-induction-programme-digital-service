@@ -26,11 +26,10 @@ public class DateOfBirth(
     [Required(ErrorMessage = "Enter your date of birth")]
     public LocalDate? UserDateOfBirth { get; set; }
 
-    private readonly Guid _personId = authServiceClient.HttpContextService.GetPersonId();
-
     public async Task<PageResult> OnGetAsync()
     {
-        var dob = await socialWorkerJourneyService.GetDateOfBirthAsync(_personId);
+        var person = authServiceClient.HttpContextService.GetPersonId();
+        var dob = await socialWorkerJourneyService.GetDateOfBirthAsync(person);
         if (dob.HasValue)
         {
             UserDateOfBirth = LocalDate.FromDateTime(dob.Value);
@@ -59,7 +58,8 @@ public class DateOfBirth(
             UserDateOfBirth.Value.Month,
             UserDateOfBirth.Value.Day);
 
-        await socialWorkerJourneyService.SetDateOfBirthAsync(_personId, dateOfBirth);
+        var person = authServiceClient.HttpContextService.GetPersonId();
+        await socialWorkerJourneyService.SetDateOfBirthAsync(person, dateOfBirth);
 
         return Redirect(linkGenerator.Home()); // TODO update this ECSW sex and gender page
     }
