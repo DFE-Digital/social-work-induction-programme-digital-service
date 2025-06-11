@@ -28,6 +28,8 @@ If using [asdf](https://asdf-vm.com/), a `.tool-versions` file has been created 
 asdf plugin add just
 asdf plugin add powershell-core
 asdf plugin add nodejs
+asdf plugin add dotnet
+asdf plugin add mkcert
 asdf install
 ```
 
@@ -72,8 +74,8 @@ Note you should use a different database for tests as the test database will be 
 There are `just` commands defined to help set the correct user-secrets for you:
 
 ```shell
-just set-db-connection "Host=localhost;Username=<DB_USER>;Password=<DB_PASSWORD>;Database=sww-ecf"
-just set-test-db-connection "Host=localhost;Username=<TEST_DB_USER>;Password=<TEST_DB_PASSWORD>;Database=sww-ecf_tests"
+just set-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf"
+just set-test-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf_tests"
 ```
 
 To execute the migrations and set up the initial database schema run:
@@ -166,6 +168,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:password123
 ```
 
+You will need to ensure this cert is added to your trusted root certs in order to allow apps to communicate with the auth service via SSL. The process for doing this differs based on your OS so lookup how to do this for your system.
 
 ## Formatting
 
