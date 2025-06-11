@@ -114,6 +114,7 @@ public class OAuth2Controller(
                 ClaimTypes.Trn,
                 () => oneLoginUser.Person.Trn
             )
+            .AddIfScope(CustomScopes.Person, ClaimTypes.PersonId, () => oneLoginUser.PersonId.ToString())
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
 
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
@@ -362,6 +363,13 @@ public class OAuth2Controller(
                 yield break;
             case ClaimTypes.IsEcswRegistered:
                 if (claim.Subject!.HasScope(CustomScopes.EcswRegistered))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
+                yield break;
+            case ClaimTypes.PersonId:
+                if (claim.Subject!.HasScope(CustomScopes.Person))
                 {
                     yield return Destinations.AccessToken;
                     yield return Destinations.IdentityToken;
