@@ -93,6 +93,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         var account = AccountBuilder
             .WithSocialWorkEnglandNumber(sweId)
             .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithNoRegistrationQuestions()
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 

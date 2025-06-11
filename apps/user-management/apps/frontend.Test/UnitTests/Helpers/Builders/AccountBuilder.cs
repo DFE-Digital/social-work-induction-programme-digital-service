@@ -96,9 +96,16 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithDateOfBirth(DateTime dateOfBirth)
+    public AccountBuilder WithDateOfBirth(DateTime? dateOfBirth)
     {
         _faker.RuleFor(a => a.DateOfBirth, _ => dateOfBirth);
+
+        return this;
+    }
+
+    public AccountBuilder WithNoRegistrationQuestions()
+    {
+        _faker.RuleFor(a => a.DateOfBirth, _ => null);
 
         return this;
     }
