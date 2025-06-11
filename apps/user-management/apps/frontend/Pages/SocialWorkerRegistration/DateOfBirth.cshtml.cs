@@ -50,7 +50,7 @@ public class DateOfBirth(
 
         if (!ModelState.IsValid || !result.IsValid)
         {
-            BackLinkPath = linkGenerator.AddAccountDetails();
+            BackLinkPath = linkGenerator.SocialWorkerRegistration();
             return Page();
         }
 
