@@ -13,6 +13,10 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 {
     public Account Account { get; set; } = default!;
 
+    public bool IsSocialWorker { get; set; } = false;
+
+    public bool IsAssessor { get; set; } = false;
+
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
         var account = await accountService.GetByIdAsync(id);
@@ -23,6 +27,11 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 
         BackLinkPath = linkGenerator.ManageAccounts();
         Account = account;
+
+        if (Account.Types is null) return Page();
+
+        IsSocialWorker = Account.Types.Contains(AccountType.EarlyCareerSocialWorker);
+        IsAssessor = Account.Types.Contains(AccountType.Assessor);
 
         return Page();
     }
