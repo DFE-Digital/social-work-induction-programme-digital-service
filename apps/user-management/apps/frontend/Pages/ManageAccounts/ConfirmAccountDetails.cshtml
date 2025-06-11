@@ -19,8 +19,7 @@
                     <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SelectedAccountType)</govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Model.SelectedAccountType</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                       visually-hidden-text="@Html.DisplayNameFor(model => model.SelectedAccountType)">
+                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SelectedAccountType)">
                             Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
@@ -32,8 +31,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.RegisteredWithSocialWorkEngland</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -46,8 +44,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.StatutoryWorker)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.StatutoryWorker</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.StatutoryWorker)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.StatutoryWorker)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -60,8 +57,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.AgencyWorker)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.AgencyWorker</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.AgencyWorker)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.AgencyWorker)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -74,8 +70,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Qualified)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Qualified</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.Qualified)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.Qualified)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -86,8 +81,7 @@
                     <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.FirstName)</govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Model.FirstName</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                       visually-hidden-text="first name">Change
+                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.FirstName)">Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
@@ -98,8 +92,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.MiddleNames)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.MiddleNames</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.Qualified)">Change
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.MiddleNames)">Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>
@@ -111,7 +104,7 @@
                     </govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Model.LastName</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="last name">
+                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.LastName)">
                             Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
@@ -124,11 +117,12 @@
                     <govuk-summary-list-row-value>@Model.Email</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
                         <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                       visually-hidden-text="email address">Change
+                                                       visually-hidden-text="@Html.DisplayNameFor(model => model.Email)">Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
             </govuk-summary-list>
+
             @if (Model.SocialWorkEnglandNumber is not null)
             {
                 <govuk-summary-list>
@@ -137,12 +131,48 @@
                         <govuk-summary-list-row-value>@Model.SocialWorkEnglandNumber</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
                             <govuk-summary-list-row-action href="@Model.ChangeDetailsLink"
-                                                           visually-hidden-text="social work england number">Change
+                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)">Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>
                 </govuk-summary-list>
             }
+
+            @if (Model.ProgrammeStartDate is not null)
+            {
+                <govuk-summary-list>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.ProgrammeStartDate)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.ProgrammeStartDate</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.ProgrammeStartDate)">Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                </govuk-summary-list>
+            }
+
+            @if (Model.ProgrammeEndDate is not null)
+            {
+                <govuk-summary-list>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.ProgrammeEndDate)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.ProgrammeEndDate</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.ProgrammeEndDate)">Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                </govuk-summary-list>
+            }
+
+            <h2 class="govuk-heading-m">What happens next</h2>
+
+            <p class="govuk-body">When you add this user, we will send them an invitation email with a link to enter the service through GOV.UK One Login.</p>
+
+            <p class="govuk-body">This link will expire after 72 hours. If they do not activate their account in this time, they will need to request a new invitation email.</p>
+
+            <p class="govuk-body">When they sign in for the first time, we will ask them to complete their registration by adding some personal information. Once this is done, they will be fully registered and able to use the service.</p>
 
             <govuk-button type="submit">@(Model.IsUpdatingAccount ? "Update" : "Add new user")</govuk-button>
         </form>

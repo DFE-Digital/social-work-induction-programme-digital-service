@@ -177,7 +177,7 @@ public class CreateAccountJourneyService(
     public string? GetIsQualifiedWithin3YearsLabel()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        return createAccountJourneyModel.IsAgencyWorker switch
+        return createAccountJourneyModel.IsQualifiedWithin3Years switch
         {
             true => "Yes",
             false => "No",

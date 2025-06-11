@@ -45,11 +45,9 @@ public class AccountDetails
 
     public string? SocialWorkEnglandNumber { get; init; }
 
+    public DateOnly? ProgrammeStartDate { get; set; }
 
-    public YearMonth? ProgrammeStartDate { get; set; }
-
-
-    public YearMonth? ProgrammeEndDate { get; set; }
+    public DateOnly? ProgrammeEndDate { get; set; }
 
     public int? ExternalUserId { get; set; }
 

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -35,6 +35,22 @@ public class SocialWorkerProgrammeDates(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.AddAccountDetails();
+
+        var accountDetails = createAccountJourneyService.GetAccountDetails();
+
+        ProgrammeStartDate = (accountDetails?.ProgrammeStartDate.HasValue ?? false)
+            ? new YearMonth(
+                accountDetails.ProgrammeStartDate.Value.Year,
+                accountDetails.ProgrammeStartDate.Value.Month
+            )
+            : null;
+        ProgrammeEndDate = (accountDetails?.ProgrammeEndDate.HasValue ?? false)
+            ? new YearMonth(
+                accountDetails.ProgrammeEndDate.Value.Year,
+                accountDetails.ProgrammeEndDate.Value.Month
+            )
+            : null;
+
         return Page();
     }
 
@@ -52,10 +68,16 @@ public class SocialWorkerProgrammeDates(
             return Page();
         }
 
-        var accountDetails = createAccountJourneyService.GetAccountDetails();
-        accountDetails!.ProgrammeStartDate = ProgrammeStartDate;
-        accountDetails!.ProgrammeEndDate = ProgrammeEndDate;
-        createAccountJourneyService.SetAccountDetails(accountDetails);
+        if (ProgrammeStartDate.HasValue && ProgrammeEndDate.HasValue)
+        {
+            //dates will be stored as the month and year entered, defaulted to day 1 of the month
+            var accountDetails = createAccountJourneyService.GetAccountDetails();
+            accountDetails!.ProgrammeStartDate =
+                new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
+            accountDetails!.ProgrammeEndDate =
+                new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
+            createAccountJourneyService.SetAccountDetails(accountDetails);
+        }
 
         return Redirect(linkGenerator.ConfirmAccountDetails());
     }

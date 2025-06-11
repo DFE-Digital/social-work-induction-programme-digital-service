@@ -67,9 +67,9 @@ public record Account
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; init; }
 
-    public YearMonth? ProgrammeStartDate { get; init; }
+    public DateOnly? ProgrammeStartDate { get; init; }
 
-    public YearMonth? ProgrammeEndDate { get; init; }
+    public DateOnly? ProgrammeEndDate { get; init; }
 
     public int? ExternalUserId { get; set; }
 

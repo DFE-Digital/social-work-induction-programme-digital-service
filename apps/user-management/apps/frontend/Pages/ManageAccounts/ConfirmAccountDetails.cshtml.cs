@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
@@ -8,7 +9,6 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Dfe.Sww.Ecf.Frontend.Helpers;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
@@ -34,7 +34,7 @@ public class ConfirmAccountDetails(
     [Display(Name = "Are they an agency worker?")]
     public string? AgencyWorker { get; set; }
 
-    [Display(Name = "Have they completed their social work qualification within the last 3 years??")]
+    [Display(Name = "Have they completed their social work qualification within the last 3 years?")]
     public string? Qualified { get; set; }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.AddAccountDetails();
+        BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
         ChangeDetailsLink = linkGenerator.AddAccountDetailsChange();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
@@ -95,6 +95,10 @@ public class ConfirmAccountDetails(
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
+        ProgrammeStartDate = accountDetails?.ProgrammeStartDate?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        ProgrammeEndDate = accountDetails?.ProgrammeEndDate?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         return Page();
     }
