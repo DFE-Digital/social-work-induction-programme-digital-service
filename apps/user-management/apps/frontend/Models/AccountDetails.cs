@@ -43,6 +43,7 @@ public class AccountDetails
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             ExternalUserId = account.ExternalUserId,
+            IsFunded = account.IsFunded,
             IsStaff = account.IsStaff,
             DateOfBirth = account.DateOfBirth
         };

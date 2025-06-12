@@ -6,6 +6,6 @@ public interface IRegisterSocialWorkerJourneyService
 {
     Task<DateTime?> GetDateOfBirthAsync(Guid accountId);
     Task SetDateOfBirthAsync(Guid accountId, DateTime? dateOfBirth);
-    Task ResetRegisterSocialWorkerJourneyModel(Guid accountId);
+    void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

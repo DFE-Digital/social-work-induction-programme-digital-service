@@ -32,7 +32,7 @@ public class CompleteJourneyShould : RegisterSocialWorkerJourneyServiceTestBase
 
         registerSocialWorkerJourneyModel.Should().BeNull();
 
-        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Exactly(2));
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         MockAccountService.Verify(
             x => x.UpdateAsync(MoqHelpers.ShouldBeEquivalentTo(account)),
             Times.Once

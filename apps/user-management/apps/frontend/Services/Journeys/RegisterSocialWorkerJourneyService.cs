@@ -57,14 +57,8 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task ResetRegisterSocialWorkerJourneyModel(Guid accountId)
+    public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
-        var account = await _accountService.GetByIdAsync(accountId);
-        if (account is null)
-        {
-            throw AccountNotFoundException(accountId);
-        }
-
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
     }
 
@@ -82,7 +76,7 @@ public class RegisterSocialWorkerJourneyService(
         var updatedAccount = registerSocialWorkerJourneyModel.ToAccount();
         await _accountService.UpdateAsync(updatedAccount);
 
-        await ResetRegisterSocialWorkerJourneyModel(accountId);
+        ResetRegisterSocialWorkerJourneyModel(accountId);
         return updatedAccount;
     }
 }
