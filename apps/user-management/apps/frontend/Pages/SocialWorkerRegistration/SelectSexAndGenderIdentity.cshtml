@@ -33,7 +33,16 @@
                     </govuk-radios-fieldset-legend>
 
                     <govuk-radios-item value="@GenderMatchesSexAtBirth.Yes">@GenderMatchesSexAtBirth.Yes.GetDisplayName()</govuk-radios-item>
-                    <govuk-radios-item value="@GenderMatchesSexAtBirth.No">@GenderMatchesSexAtBirth.No.GetDisplayName()</govuk-radios-item>
+
+                    <govuk-radios-item value="@GenderMatchesSexAtBirth.No">
+                        @GenderMatchesSexAtBirth.No.GetDisplayName()
+                        <govuk-radios-item-conditional>
+                            <govuk-input id="gender-description" name="gender-description" type="text" input-class="govuk-!-width-one-half">
+                                <govuk-input-label>What is your gender identity? (optional)</govuk-input-label>
+                            </govuk-input>
+                        </govuk-radios-item-conditional>
+                    </govuk-radios-item>
+
                     <govuk-radios-item value="@GenderMatchesSexAtBirth.PreferNotToSay">@GenderMatchesSexAtBirth.PreferNotToSay.GetDisplayName()</govuk-radios-item>
                 </govuk-radios-fieldset>
             </govuk-radios>
