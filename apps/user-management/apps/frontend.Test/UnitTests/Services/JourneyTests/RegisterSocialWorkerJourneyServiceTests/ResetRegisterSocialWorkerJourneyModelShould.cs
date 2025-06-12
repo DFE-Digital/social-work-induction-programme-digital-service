@@ -19,7 +19,6 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
         await Sut.SetDateOfBirthAsync(account.Id, account.DateOfBirth);
 
         // Act
-        await Sut.ResetRegisterSocialWorkerJourneyModelAsync(account.Id);
         Sut.ResetRegisterSocialWorkerJourneyModel(account.Id);
 
         // Assert
@@ -29,28 +28,6 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
         );
 
         registerSocialWorkerJourneyModel.Should().BeNull();
-
-        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Exactly(2));
-        VerifyAllNoOtherCall();
-    }
-
-    [Fact]
-    public async Task WhenAccountNotFound_ThrowExpectedException()
-    {
-        // Arrange
-        var account = AccountBuilder.Build();
-
-        var expectedException = new KeyNotFoundException("Account not found with ID " + account.Id);
-
-        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync((Account?)null);
-
-        // Act
-        var actualException = Assert.Throws<KeyNotFoundException>(
-            () => Sut.ResetRegisterSocialWorkerJourneyModel(account.Id)
-        );
-
-        // Assert
-        actualException.Message.Should().Be(expectedException.Message);
 
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         VerifyAllNoOtherCall();

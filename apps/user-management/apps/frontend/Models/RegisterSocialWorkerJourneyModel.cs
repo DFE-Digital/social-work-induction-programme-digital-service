@@ -15,7 +15,8 @@ public class RegisterSocialWorkerJourneyModel(Account account)
         return new Account(Account)
         {
             DateOfBirth = DateOfBirth,
-            UserSex = UserSex
+            UserSex = UserSex,
+            GenderMatchesSexAtBirth = GenderMatchesSexAtBirth
         };
     }
 }

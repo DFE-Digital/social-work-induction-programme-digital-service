@@ -76,7 +76,7 @@ public class AccountBuilder
     {
         _faker.RuleFor(
             x => x.SocialWorkEnglandNumber,
-            (f, current) =>
+            (_, current) =>
                 current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
                     ? socialWorkEnglandNumber
                     : null
@@ -94,6 +94,36 @@ public class AccountBuilder
     public AccountBuilder WithIsStaff(bool isStaff)
     {
         _faker.RuleFor(a => a.IsStaff, _ => isStaff);
+
+        return this;
+    }
+
+    public AccountBuilder WithDateOfBirth(DateOnly? dateOfBirth)
+    {
+        _faker.RuleFor(a => a.DateOfBirth, _ => dateOfBirth);
+
+        return this;
+    }
+
+    public AccountBuilder WithUserSex(UserSex userSex)
+    {
+        _faker.RuleFor(a => a.UserSex, _ => userSex);
+
+        return this;
+    }
+
+    public AccountBuilder WithGenderMatchesSexAtBirth(GenderMatchesSexAtBirth? genderMatchesSexAtBirth)
+    {
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => genderMatchesSexAtBirth);
+
+        return this;
+    }
+
+    public AccountBuilder WithNoRegistrationQuestions()
+    {
+        _faker.RuleFor(a => a.DateOfBirth, _ => null);
+        _faker.RuleFor(a => a.UserSex, _ => null);
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
 
         return this;
     }
