@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using static Dfe.Sww.Ecf.Frontend.Models.AccountStatus;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 

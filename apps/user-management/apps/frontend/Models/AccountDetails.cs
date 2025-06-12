@@ -6,27 +6,12 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class AccountDetails
 {
-    /// <summary>
-    /// First Name
-    /// </summary>
-    [Display(Name = "First name")]
-    public string? FirstName { get; init; }
+    [Display(Name = "First name")] public string? FirstName { get; init; }
 
-    /// <summary>
-    /// Middle Names
-    /// </summary>
-    [Display(Name = "Middle names")]
-    public string? MiddleNames { get; init; }
+    [Display(Name = "Middle names")] public string? MiddleNames { get; init; }
 
-    /// <summary>
-    /// Last Name
-    /// </summary>
-    [Display(Name = "Last name")]
-    public string? LastName { get; init; }
+    [Display(Name = "Last name")] public string? LastName { get; init; }
 
-    /// <summary>
-    /// FullName
-    /// </summary>
     [Display(Name = "Full name")]
     public string FullName => string.Join(" ",
         new[]
@@ -37,11 +22,7 @@ public class AccountDetails
             }
             .Where(s => !string.IsNullOrWhiteSpace(s)));
 
-    /// <summary>
-    /// Email
-    /// </summary>
-    [Display(Name = "Email address")]
-    public string? Email { get; init; }
+    [Display(Name = "Email address")] public string? Email { get; init; }
 
     public string? SocialWorkEnglandNumber { get; init; }
 
@@ -51,7 +32,11 @@ public class AccountDetails
 
     public int? ExternalUserId { get; set; }
 
+    public bool IsFunded { get; set; }
+
     public bool IsStaff { get; set; }
+
+    public DateOnly? DateOfBirth { get; set; }
 
     public static AccountDetails FromAccount(Account account)
     {
@@ -65,7 +50,9 @@ public class AccountDetails
             ProgrammeStartDate = account.ProgrammeStartDate,
             ProgrammeEndDate = account.ProgrammeEndDate,
             ExternalUserId = account.ExternalUserId,
-            IsStaff = account.IsStaff
+            IsFunded = account.IsFunded,
+            IsStaff = account.IsStaff,
+            DateOfBirth = account.DateOfBirth
         };
     }
 }

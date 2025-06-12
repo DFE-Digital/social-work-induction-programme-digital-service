@@ -25,17 +25,4 @@ public class IndexPageTests : SocialWorkerRegistrationPageTestBase<SocialWorkerR
         // Assert
         result.Should().BeOfType<PageResult>();
     }
-
-    [Fact]
-    public void OnPost_WhenCalled_RedirectsToHome()
-    {
-        // Act
-        var result = Sut.OnPost();
-
-        // Assert
-        result.Should().BeOfType<RedirectResult>();
-        var response = result as RedirectResult;
-        response.Should().NotBeNull();
-        response!.Url.Should().Be("index"); // TODO update this ECSW DoB page
-    }
 }

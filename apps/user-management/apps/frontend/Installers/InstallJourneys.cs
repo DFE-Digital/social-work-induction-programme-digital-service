@@ -19,5 +19,6 @@ public static class InstallJourneys
     {
         services.AddTransient<ICreateAccountJourneyService, CreateAccountJourneyService>();
         services.AddTransient<IEditAccountJourneyService, EditAccountJourneyService>();
+        services.AddTransient<IRegisterSocialWorkerJourneyService, RegisterSocialWorkerJourneyService>();
     }
 }

@@ -5,9 +5,9 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests;
 
-public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
+public class CompleteJourneyShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
     public async Task WhenCalled_CompletesJourney()
@@ -15,7 +15,6 @@ public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
         // Arrange
         var account = AccountBuilder
             .WithSocialWorkEnglandNumber()
-            .WithNoRegistrationQuestions()
             .WithStatus(AccountStatus.Active)
             .Build();
 
@@ -27,13 +26,13 @@ public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
 
         // Assert
         HttpContext.Session.TryGet(
-            EditAccountSessionKey(account.Id),
-            out EditAccountJourneyModel? editAccountJourneyModel
+            RegisterSocialWorkerSessionKey(account.Id),
+            out RegisterSocialWorkerJourneyModel? registerSocialWorkerJourneyModel
         );
 
-        editAccountJourneyModel.Should().BeNull();
+        registerSocialWorkerJourneyModel.Should().BeNull();
 
-        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Exactly(2));
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         MockAccountService.Verify(
             x => x.UpdateAsync(MoqHelpers.ShouldBeEquivalentTo(account)),
             Times.Once

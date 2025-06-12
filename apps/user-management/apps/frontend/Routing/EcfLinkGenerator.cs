@@ -89,6 +89,8 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
 
     public string SocialWorkerRegistration() => GetRequiredPathByPage("/SocialWorkerRegistration/Index");
+    public string SocialWorkerRegistrationDateOfBirth() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDateOfBirth");
+    public string SocialWorkerRegistrationSexAndGenderIdentity() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSexAndGenderIdentity");
 
     protected abstract string GetRequiredPathByPage(
         string page,
