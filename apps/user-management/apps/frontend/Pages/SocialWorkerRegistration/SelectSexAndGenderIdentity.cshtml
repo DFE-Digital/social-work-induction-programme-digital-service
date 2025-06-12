@@ -1,0 +1,44 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model SelectSexAndGenderIdentity
+
+@{
+    Model.Title = "Sex and gender identity";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-l">Sex and gender identity</h1>
+
+        <form method="post">
+            <govuk-radios for="SelectedUserSex">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend class="govuk-fieldset__legend--m">
+                        What is your sex?
+                    </govuk-radios-fieldset-legend>
+
+                    <govuk-radios-item value="@UserSex.Female">@UserSex.Female.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@UserSex.Male">@UserSex.Male.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@UserSex.PreferNotToSay">@UserSex.PreferNotToSay.GetDisplayName()</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-radios for="GenderMatchesSexAtBirth">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend class="govuk-fieldset__legend--m">
+                        Is the gender you identify with the same as your sex registered at birth?
+                    </govuk-radios-fieldset-legend>
+
+                    <govuk-radios-item value="@GenderMatchesSexAtBirth.Yes">@GenderMatchesSexAtBirth.Yes.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@GenderMatchesSexAtBirth.No">@GenderMatchesSexAtBirth.No.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@GenderMatchesSexAtBirth.PreferNotToSay">@GenderMatchesSexAtBirth.PreferNotToSay.GetDisplayName()</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-button type="submit">Continue</govuk-button>
+        </form>
+    </div>
+</div>

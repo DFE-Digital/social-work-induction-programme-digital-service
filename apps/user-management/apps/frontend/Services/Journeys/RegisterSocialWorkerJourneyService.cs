@@ -57,7 +57,37 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task ResetRegisterSocialWorkerJourneyModel(Guid accountId)
+    public async Task<UserSex?> GetUserSexAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.UserSex;
+    }
+
+    public async Task SetUserSexAsync(Guid accountId, UserSex? userSex)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.UserSex = userSex;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.GenderMatchesSexAtBirth;
+    }
+
+    public async Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.GenderMatchesSexAtBirth = genderMatchesSexAtBirth;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task ResetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
     {
         var account = await _accountService.GetByIdAsync(accountId);
         if (account is null)
@@ -68,7 +98,8 @@ public class RegisterSocialWorkerJourneyService(
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
     }
 
-    private void SetRegisterSocialWorkerJourneyModel(Guid accountId, RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
+    private void SetRegisterSocialWorkerJourneyModel(Guid accountId,
+        RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
     {
         Session.Set(RegisterSocialWorkerSessionKey(accountId), registerSocialWorkerJourneyModel);
     }
@@ -82,7 +113,7 @@ public class RegisterSocialWorkerJourneyService(
         var updatedAccount = registerSocialWorkerJourneyModel.ToAccount();
         await _accountService.UpdateAsync(updatedAccount);
 
-        await ResetRegisterSocialWorkerJourneyModel(accountId);
+        await ResetRegisterSocialWorkerJourneyModelAsync(accountId);
         return updatedAccount;
     }
 }

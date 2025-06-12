@@ -12,13 +12,13 @@ public abstract class SocialWorkerRegistrationPageTestBase<[MeansTestSubject] T>
 {
     private protected Mock<IRegisterSocialWorkerJourneyService> MockRegisterSocialWorkerJourneyService { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }
+    private protected Guid PersonId { get; }
 
     protected SocialWorkerRegistrationPageTestBase()
     {
+        PersonId = Guid.NewGuid();
         MockRegisterSocialWorkerJourneyService = new();
         MockAuthServiceClient = new();
-
-        MockAuthServiceClient.SetupMockHttpContextAccessorWithPersonId();
     }
 
     private protected void VerifyAllNoOtherCalls()

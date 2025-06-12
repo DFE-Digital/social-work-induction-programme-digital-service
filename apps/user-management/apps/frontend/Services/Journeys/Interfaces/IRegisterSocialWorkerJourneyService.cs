@@ -6,6 +6,11 @@ public interface IRegisterSocialWorkerJourneyService
 {
     Task<DateTime?> GetDateOfBirthAsync(Guid accountId);
     Task SetDateOfBirthAsync(Guid accountId, DateTime? dateOfBirth);
-    Task ResetRegisterSocialWorkerJourneyModel(Guid accountId);
+
+    Task<UserSex?> GetUserSexAsync(Guid accountId);
+    Task SetUserSexAsync(Guid accountId, UserSex? userSex);
+    Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId);
+    Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? userSex);
+    Task ResetRegisterSocialWorkerJourneyModelAsync(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

@@ -26,6 +26,8 @@ public class AccountBuilder
                     : null
         );
         _faker.RuleFor(a => a.DateOfBirth, f => f.Date.Past());
+        _faker.RuleFor(a => a.UserSex, f => f.PickRandom<UserSex>());
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, f => f.PickRandom<GenderMatchesSexAtBirth>());
     }
 
     public AccountBuilder WithId(Guid id)
@@ -74,7 +76,7 @@ public class AccountBuilder
     {
         _faker.RuleFor(
             x => x.SocialWorkEnglandNumber,
-            (f, current) =>
+            (_, current) =>
                 current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
                     ? socialWorkEnglandNumber
                     : null
@@ -99,6 +101,20 @@ public class AccountBuilder
     public AccountBuilder WithDateOfBirth(DateTime? dateOfBirth)
     {
         _faker.RuleFor(a => a.DateOfBirth, _ => dateOfBirth);
+
+        return this;
+    }
+
+    public AccountBuilder WithUserSex(UserSex userSex)
+    {
+        _faker.RuleFor(a => a.UserSex, _ => userSex);
+
+        return this;
+    }
+
+    public AccountBuilder WithGenderMatchesSexAtBirth(GenderMatchesSexAtBirth? genderMatchesSexAtBirth)
+    {
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => genderMatchesSexAtBirth);
 
         return this;
     }

@@ -4,7 +4,7 @@ using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Validation;
 
-public class SocialWorkerDateOfBirthValidator : AbstractValidator<DateOfBirth>
+public class SocialWorkerDateOfBirthValidator : AbstractValidator<SelectDateOfBirth>
 {
     public SocialWorkerDateOfBirthValidator()
     {

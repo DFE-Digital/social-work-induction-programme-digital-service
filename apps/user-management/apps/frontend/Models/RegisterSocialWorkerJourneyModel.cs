@@ -6,11 +6,16 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public DateTime? DateOfBirth { get; set; } = account.DateOfBirth;
 
+    public UserSex? UserSex { get; set; } = account.UserSex;
+
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; } = account.GenderMatchesSexAtBirth;
+
     public Account ToAccount()
     {
         return new Account(Account)
         {
-            DateOfBirth = DateOfBirth
+            DateOfBirth = DateOfBirth,
+            UserSex = UserSex
         };
     }
 }

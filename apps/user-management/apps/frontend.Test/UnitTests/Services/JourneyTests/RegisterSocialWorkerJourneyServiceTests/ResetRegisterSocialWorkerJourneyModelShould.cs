@@ -19,7 +19,7 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
         await Sut.SetDateOfBirthAsync(account.Id, account.DateOfBirth);
 
         // Act
-        await Sut.ResetRegisterSocialWorkerJourneyModel(account.Id);
+        await Sut.ResetRegisterSocialWorkerJourneyModelAsync(account.Id);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -45,7 +45,7 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
 
         // Act
         var actualException = await Assert.ThrowsAsync<KeyNotFoundException>(
-            () => Sut.ResetRegisterSocialWorkerJourneyModel(account.Id)
+            () => Sut.ResetRegisterSocialWorkerJourneyModelAsync(account.Id)
         );
 
         // Assert

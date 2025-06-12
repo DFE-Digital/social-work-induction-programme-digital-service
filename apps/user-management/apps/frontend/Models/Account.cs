@@ -72,6 +72,10 @@ public record Account
 
     public DateTime? DateOfBirth { get; set; }
 
+    public UserSex? UserSex { get; set; }
+
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
@@ -91,5 +95,7 @@ public record Account
         ExternalUserId = account.ExternalUserId;
         IsFunded = account.IsFunded;
         DateOfBirth = account.DateOfBirth;
+        UserSex = account.UserSex;
+        GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth;
     }
 }
