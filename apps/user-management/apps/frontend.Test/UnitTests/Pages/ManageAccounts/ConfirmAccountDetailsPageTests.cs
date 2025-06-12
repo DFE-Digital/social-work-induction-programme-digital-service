@@ -1,3 +1,4 @@
+using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -46,14 +47,24 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         Sut.FirstName.Should().Be(expectedAccountDetails.FirstName);
         Sut.LastName.Should().Be(expectedAccountDetails.LastName);
+        Sut.MiddleNames.Should().Be(expectedAccountDetails.MiddleNames);
         Sut.Email.Should().Be(expectedAccountDetails.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(expectedAccountDetails.SocialWorkEnglandNumber);
 
         Sut.IsUpdatingAccount.Should().BeFalse();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/social-worker-programme-dates");
         Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(),   Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(),   Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStaffLabel(),   Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEnglandLabel(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorkerLabel(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorkerLabel(),   Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3YearsLabel(), Times.Once);
+
         VerifyAllNoOtherCalls();
     }
 

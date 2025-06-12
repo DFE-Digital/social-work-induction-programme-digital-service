@@ -13,7 +13,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.Id, f => f.Random.Guid());
         _faker.RuleFor(a => a.CreatedAt, f => f.Date.Past());
         _faker.RuleFor(a => a.FirstName, f => f.Name.FirstName());
-        _faker.RuleFor(a => a.MiddleNames, f => f.Name.LastName());
+        _faker.RuleFor(a => a.MiddleNames, f => f.Name.FirstName());
         _faker.RuleFor(a => a.LastName, f => f.Name.LastName());
         _faker.RuleFor(a => a.Status, f => f.PickRandom<AccountStatus>());
         _faker.RuleFor(a => a.Email, f => f.Internet.Email());
@@ -127,6 +127,19 @@ public class AccountBuilder
 
         return this;
     }
+
+    public AccountBuilder WithStartDate(DateOnly startDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeStartDate, startDate);
+        return this;
+    }
+
+    public AccountBuilder WithEndDate(DateOnly endDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeEndDate, endDate);
+        return this;
+    }
+
 
     public Account Build()
     {

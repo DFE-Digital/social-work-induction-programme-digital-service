@@ -95,9 +95,9 @@ public class ConfirmAccountDetails(
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
-        ProgrammeStartDate = accountDetails?.ProgrammeStartDate?
+        ProgrammeStartDate = createAccountJourneyService.GetProgrammeStartDate()?
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
-        ProgrammeEndDate = accountDetails?.ProgrammeEndDate?
+        ProgrammeEndDate = createAccountJourneyService.GetProgrammeEndDate()?
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         return Page();

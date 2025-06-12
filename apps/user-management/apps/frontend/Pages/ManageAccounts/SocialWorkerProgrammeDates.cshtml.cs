@@ -36,20 +36,17 @@ public class SocialWorkerProgrammeDates(
     {
         BackLinkPath = linkGenerator.AddAccountDetails();
 
-        var accountDetails = createAccountJourneyService.GetAccountDetails();
+        DateOnly? retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
 
-        ProgrammeStartDate = (accountDetails?.ProgrammeStartDate.HasValue ?? false)
-            ? new YearMonth(
-                accountDetails.ProgrammeStartDate.Value.Year,
-                accountDetails.ProgrammeStartDate.Value.Month
-            )
-            : null;
-        ProgrammeEndDate = (accountDetails?.ProgrammeEndDate.HasValue ?? false)
-            ? new YearMonth(
-                accountDetails.ProgrammeEndDate.Value.Year,
-                accountDetails.ProgrammeEndDate.Value.Month
-            )
-            : null;
+        ProgrammeStartDate = retrievedStartDate.HasValue
+            ? new YearMonth(retrievedStartDate.Value.Year, retrievedStartDate.Value.Month)
+            : (YearMonth?)null;
+
+        DateOnly? retrievedEndDate = createAccountJourneyService.GetProgrammeEndDate();
+
+        ProgrammeEndDate = retrievedEndDate.HasValue
+            ? new YearMonth(retrievedEndDate.Value.Year, retrievedEndDate.Value.Month)
+            : (YearMonth?)null;
 
         return Page();
     }
@@ -70,13 +67,11 @@ public class SocialWorkerProgrammeDates(
 
         if (ProgrammeStartDate.HasValue && ProgrammeEndDate.HasValue)
         {
-            //dates will be stored as the month and year entered, defaulted to day 1 of the month
-            var accountDetails = createAccountJourneyService.GetAccountDetails();
-            accountDetails!.ProgrammeStartDate =
-                new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
-            accountDetails!.ProgrammeEndDate =
-                new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
-            createAccountJourneyService.SetAccountDetails(accountDetails);
+            var dateOnlyStartDate = new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
+            var dateOnlyEndDate = new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
+
+            createAccountJourneyService.SetProgrammeStartDate(dateOnlyStartDate);
+            createAccountJourneyService.SetProgrammeEndDate(dateOnlyEndDate);
         }
 
         return Redirect(linkGenerator.ConfirmAccountDetails());

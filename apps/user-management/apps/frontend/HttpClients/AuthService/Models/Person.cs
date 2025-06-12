@@ -11,9 +11,12 @@ public class Person
     public DateTime? DeletedOn { get; set; }
     public string? SocialWorkEnglandNumber { get; set; }
     public required string FirstName { get; set; }
+    public string? MiddleName { get; set; }
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
     public AccountStatus? Status { get; set; }
     public ImmutableList<AccountType> Roles { get; set; } = [];
     public bool IsFunded { get; set; }
+    public DateOnly? ProgrammeStartDate { get; set; }
+    public DateOnly? ProgrammeEndDate { get; set; }
 }

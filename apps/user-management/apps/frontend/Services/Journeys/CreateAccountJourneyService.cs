@@ -185,6 +185,31 @@ public class CreateAccountJourneyService(
         };
     }
 
+    public DateOnly? GetProgrammeStartDate()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.ProgrammeStartDate;
+    }
+
+    public void SetProgrammeStartDate(DateOnly programmeStartDate)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.ProgrammeStartDate = programmeStartDate;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public DateOnly? GetProgrammeEndDate()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.ProgrammeEndDate;
+    }
+    public void SetProgrammeEndDate(DateOnly programmeEndDate)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.ProgrammeEndDate = programmeEndDate;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
     public void ResetCreateAccountJourneyModel()
     {
         Session.Remove(CreateAccountSessionKey);

@@ -90,7 +90,6 @@ public class AddAccountDetails(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var existingAccountDetails = createAccountJourneyService.GetAccountDetails();
         var accountDetails = new AccountDetails
         {
             FirstName = FirstName,
@@ -99,8 +98,6 @@ public class AddAccountDetails(
             Email = Email,
             SocialWorkEnglandNumber = SocialWorkEnglandNumber,
             IsStaff = IsStaff,
-            ProgrammeStartDate = existingAccountDetails?.ProgrammeStartDate,
-            ProgrammeEndDate = existingAccountDetails?.ProgrammeEndDate
         };
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)

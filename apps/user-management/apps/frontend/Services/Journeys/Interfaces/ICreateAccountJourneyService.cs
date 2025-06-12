@@ -45,6 +45,14 @@ public interface ICreateAccountJourneyService
 
     string? GetIsQualifiedWithin3YearsLabel();
 
+    void SetProgrammeStartDate(DateOnly programmeStartDate);
+
+    DateOnly? GetProgrammeStartDate();
+
+    void SetProgrammeEndDate(DateOnly programmeEndDate);
+
+    DateOnly? GetProgrammeEndDate();
+
     Task<Account> CompleteJourneyAsync();
 
     void ResetCreateAccountJourneyModel();
