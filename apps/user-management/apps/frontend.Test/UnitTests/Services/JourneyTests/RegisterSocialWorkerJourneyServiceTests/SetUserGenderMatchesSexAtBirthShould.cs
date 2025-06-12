@@ -28,7 +28,7 @@ public class SetUserGenderMatchesSexAtBirthShould : RegisterSocialWorkerJourneyS
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.DateOfBirth.Should().Be(originalAccount.DateOfBirth);
+        registerSocialWorkerJourneyModel!.GenderMatchesSexAtBirth.Should().Be(originalAccount.GenderMatchesSexAtBirth);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

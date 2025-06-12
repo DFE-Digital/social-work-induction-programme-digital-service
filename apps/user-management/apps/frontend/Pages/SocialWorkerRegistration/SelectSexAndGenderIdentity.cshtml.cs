@@ -38,7 +38,7 @@ public class SelectSexAndGenderIdentity(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SocialWorkerRegistration();
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
             return Page();
         }
 

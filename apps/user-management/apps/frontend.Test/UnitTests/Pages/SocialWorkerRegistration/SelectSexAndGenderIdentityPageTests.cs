@@ -101,7 +101,7 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         modelState["GenderMatchesSexAtBirth"]!.Errors[0].ErrorMessage.Should()
             .Be("Select your gender identity");
 
-        Sut.BackLinkPath.Should().Be("/social-worker-registration");
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-date-of-birth");
 
         VerifyAllNoOtherCalls();
     }

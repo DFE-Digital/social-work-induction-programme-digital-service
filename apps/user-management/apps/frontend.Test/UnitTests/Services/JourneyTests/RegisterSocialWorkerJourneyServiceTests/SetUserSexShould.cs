@@ -28,7 +28,7 @@ public class SetUserSexShould : RegisterSocialWorkerJourneyServiceTestBase
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.DateOfBirth.Should().Be(originalAccount.DateOfBirth);
+        registerSocialWorkerJourneyModel!.UserSex.Should().Be(originalAccount.UserSex);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

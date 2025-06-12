@@ -8,7 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSoci
 public class GetUserGenderMatchesSexAtBirthShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_ReturnUserSex()
+    public async Task WhenCalled_ReturnsUserGenderMatchesSexAtBirth()
     {
         // Arrange
         var id = Guid.NewGuid();
