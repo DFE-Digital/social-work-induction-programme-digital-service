@@ -12,12 +12,15 @@ public class PersonDto
     public DateTime? UpdatedOn { get; init; }
     public string? SocialWorkEnglandNumber { get; set; }
     public required string FirstName { get; set; }
+    public string? MiddleName { get; set; }
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
     public ImmutableList<RoleType> Roles { get; set; } = [];
     public PersonStatus? Status { get; set; }
     public int? ExternalUserId { get; set; }
     public bool IsFunded { get; set; }
+    public DateOnly? ProgrammeStartDate { get; set; }
+    public DateOnly? ProgrammeEndDate { get; set; }
 }
 
 public static class PersonDtoExtensions
@@ -30,11 +33,14 @@ public static class PersonDtoExtensions
             UpdatedOn = person.UpdatedOn,
             SocialWorkEnglandNumber = person.Trn,
             FirstName = person.FirstName,
+            MiddleName = person.MiddleName,
             LastName = person.LastName,
             EmailAddress = person.EmailAddress,
             Roles = person.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList() ?? [],
             Status = person.Status,
             ExternalUserId = person.ExternalUserId,
-            IsFunded = person.IsFunded
+            IsFunded = person.IsFunded,
+            ProgrammeStartDate = person.ProgrammeStartDate,
+            ProgrammeEndDate = person.ProgrammeEndDate
         };
 }
