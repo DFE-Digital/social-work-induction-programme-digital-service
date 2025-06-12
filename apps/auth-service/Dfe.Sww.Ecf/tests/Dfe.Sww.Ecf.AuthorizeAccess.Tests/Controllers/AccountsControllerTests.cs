@@ -257,6 +257,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 CreatedOn = existingUser.CreatedOn,
                 UpdatedOn = Clock.UtcNow,
                 FirstName = "Changed First Name",
+                MiddleName = existingUser.MiddleName,
                 LastName = "Changed Last Name",
                 EmailAddress = "Changed Email",
                 SocialWorkEnglandNumber = "123",
@@ -267,7 +268,9 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     RoleType.EarlyCareerSocialWorker,
                 }.ToImmutableList(),
                 Status = PersonStatus.Paused,
-                IsFunded = existingUser.IsFunded
+                IsFunded = existingUser.IsFunded,
+                ProgrammeStartDate = existingUser.ProgrammeStartDate,
+                ProgrammeEndDate = existingUser.ProgrammeEndDate
             };
 
             var accountsService = new AccountsService(dbContext, Clock);
@@ -288,7 +291,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     EmailAddress = expectedUser.EmailAddress,
                     SocialWorkEnglandNumber = expectedUser.SocialWorkEnglandNumber,
                     Roles = expectedUser.Roles,
-                    Status = expectedUser.Status,
+                    Status = expectedUser.Status
                 }
             );
 
