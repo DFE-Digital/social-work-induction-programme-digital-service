@@ -32,7 +32,7 @@ public class DateOfBirth(
         var dob = await socialWorkerJourneyService.GetDateOfBirthAsync(person);
         if (dob.HasValue)
         {
-            UserDateOfBirth = LocalDate.FromDateTime(dob.Value);
+            UserDateOfBirth = LocalDate.FromDateOnly(dob.Value);
         }
 
         BackLinkPath = linkGenerator.SocialWorkerRegistration();
@@ -53,7 +53,7 @@ public class DateOfBirth(
             return Page();
         }
 
-        var dateOfBirth = new DateTime(
+        var dateOfBirth = new DateOnly(
             UserDateOfBirth!.Value.Year,
             UserDateOfBirth.Value.Month,
             UserDateOfBirth.Value.Day);

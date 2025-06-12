@@ -4,8 +4,8 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 public interface IRegisterSocialWorkerJourneyService
 {
-    Task<DateTime?> GetDateOfBirthAsync(Guid accountId);
-    Task SetDateOfBirthAsync(Guid accountId, DateTime? dateOfBirth);
+    Task<DateOnly?> GetDateOfBirthAsync(Guid accountId);
+    Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

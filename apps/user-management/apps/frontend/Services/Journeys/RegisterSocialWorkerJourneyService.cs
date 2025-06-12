@@ -42,13 +42,13 @@ public class RegisterSocialWorkerJourneyService(
         return registerSocialWorkerJourneyModel;
     }
 
-    public async Task<DateTime?> GetDateOfBirthAsync(Guid accountId)
+    public async Task<DateOnly?> GetDateOfBirthAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
         return registerSocialWorkerJourneyModel?.DateOfBirth;
     }
 
-    public async Task SetDateOfBirthAsync(Guid accountId, DateTime? dateOfBirth)
+    public async Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth)
     {
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)

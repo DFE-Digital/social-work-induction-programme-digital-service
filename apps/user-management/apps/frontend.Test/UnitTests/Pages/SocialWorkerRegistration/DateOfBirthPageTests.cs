@@ -30,8 +30,8 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
         MockAuthServiceClient.SetupMockHttpContextAccessorWithPersonId(personId);
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(personId);
 
-        var dob = DateTime.UtcNow;
-        var expectedDob = LocalDate.FromDateTime(dob);
+        var dob = DateOnly.FromDateTime(DateTime.UtcNow);
+        var expectedDob = LocalDate.FromDateOnly(dob);
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetDateOfBirthAsync(personId)).ReturnsAsync(dob);
 
         // Act
@@ -56,7 +56,7 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(personId);
 
         Sut.UserDateOfBirth = new LocalDate(2020, 12, 31);
-        var expectedDob = new DateTime(
+        var expectedDob = new DateOnly(
             Sut.UserDateOfBirth.Value.Year,
             Sut.UserDateOfBirth.Value.Month,
             Sut.UserDateOfBirth.Value.Day);

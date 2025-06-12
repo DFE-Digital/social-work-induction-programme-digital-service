@@ -31,7 +31,7 @@ public class AccountDetails
 
     public bool IsStaff { get; set; }
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     public static AccountDetails FromAccount(Account account)
     {

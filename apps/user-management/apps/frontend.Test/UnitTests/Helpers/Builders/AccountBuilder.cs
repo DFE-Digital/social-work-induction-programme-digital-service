@@ -25,7 +25,7 @@ public class AccountBuilder
                     ? f.Random.Number(1, 1000).ToString()
                     : null
         );
-        _faker.RuleFor(a => a.DateOfBirth, f => f.Date.Past());
+        _faker.RuleFor(a => a.DateOfBirth, f => DateOnly.FromDateTime(f.Date.Past()));
     }
 
     public AccountBuilder WithId(Guid id)
@@ -96,7 +96,7 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithDateOfBirth(DateTime? dateOfBirth)
+    public AccountBuilder WithDateOfBirth(DateOnly? dateOfBirth)
     {
         _faker.RuleFor(a => a.DateOfBirth, _ => dateOfBirth);
 

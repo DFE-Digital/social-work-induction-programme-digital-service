@@ -19,7 +19,7 @@ public class AccountNotFoundExceptionShould : RegisterSocialWorkerJourneyService
 
         // Act
         var actualException = await Assert.ThrowsAsync<KeyNotFoundException>(
-            () => Sut.SetDateOfBirthAsync(account.Id, DateTime.UtcNow)
+            () => Sut.SetDateOfBirthAsync(account.Id, DateOnly.FromDateTime(DateTime.UtcNow))
         );
 
         // Assert
