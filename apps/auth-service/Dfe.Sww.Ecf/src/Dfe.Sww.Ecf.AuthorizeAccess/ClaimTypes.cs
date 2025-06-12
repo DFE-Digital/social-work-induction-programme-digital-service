@@ -10,4 +10,5 @@ public static class ClaimTypes
     public const string OneLoginVerifiedBirthDates = "onelogin_verified_birthdates";
     public const string OrganisationId = "organisation_id";
     public const string IsEcswRegistered = "is_ecsw_registered";
+    public const string PersonId = "person_id";
 }
