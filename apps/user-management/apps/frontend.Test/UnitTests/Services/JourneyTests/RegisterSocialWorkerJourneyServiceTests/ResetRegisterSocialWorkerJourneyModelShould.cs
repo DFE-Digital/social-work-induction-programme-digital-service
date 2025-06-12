@@ -20,6 +20,7 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
 
         // Act
         await Sut.ResetRegisterSocialWorkerJourneyModelAsync(account.Id);
+        Sut.ResetRegisterSocialWorkerJourneyModel(account.Id);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -44,8 +45,8 @@ public class ResetRegisterSocialWorkerJourneyModelShould : RegisterSocialWorkerJ
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync((Account?)null);
 
         // Act
-        var actualException = await Assert.ThrowsAsync<KeyNotFoundException>(
-            () => Sut.ResetRegisterSocialWorkerJourneyModelAsync(account.Id)
+        var actualException = Assert.Throws<KeyNotFoundException>(
+            () => Sut.ResetRegisterSocialWorkerJourneyModel(account.Id)
         );
 
         // Assert

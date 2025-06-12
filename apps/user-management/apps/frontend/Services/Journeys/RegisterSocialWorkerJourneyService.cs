@@ -42,13 +42,13 @@ public class RegisterSocialWorkerJourneyService(
         return registerSocialWorkerJourneyModel;
     }
 
-    public async Task<DateTime?> GetDateOfBirthAsync(Guid accountId)
+    public async Task<DateOnly?> GetDateOfBirthAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
         return registerSocialWorkerJourneyModel?.DateOfBirth;
     }
 
-    public async Task SetDateOfBirthAsync(Guid accountId, DateTime? dateOfBirth)
+    public async Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth)
     {
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
@@ -87,19 +87,12 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task ResetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
+    public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
-        var account = await _accountService.GetByIdAsync(accountId);
-        if (account is null)
-        {
-            throw AccountNotFoundException(accountId);
-        }
-
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
     }
 
-    private void SetRegisterSocialWorkerJourneyModel(Guid accountId,
-        RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
+    private void SetRegisterSocialWorkerJourneyModel(Guid accountId, RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
     {
         Session.Set(RegisterSocialWorkerSessionKey(accountId), registerSocialWorkerJourneyModel);
     }
@@ -113,7 +106,7 @@ public class RegisterSocialWorkerJourneyService(
         var updatedAccount = registerSocialWorkerJourneyModel.ToAccount();
         await _accountService.UpdateAsync(updatedAccount);
 
-        await ResetRegisterSocialWorkerJourneyModelAsync(accountId);
+        ResetRegisterSocialWorkerJourneyModel(accountId);
         return updatedAccount;
     }
 }

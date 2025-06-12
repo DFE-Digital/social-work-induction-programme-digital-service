@@ -31,7 +31,7 @@ public class AccountDetails
 
     public bool IsStaff { get; set; }
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     public static AccountDetails FromAccount(Account account)
     {
@@ -43,6 +43,7 @@ public class AccountDetails
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             ExternalUserId = account.ExternalUserId,
+            IsFunded = account.IsFunded,
             IsStaff = account.IsStaff,
             DateOfBirth = account.DateOfBirth
         };

@@ -1,4 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using JetBrains.Annotations;

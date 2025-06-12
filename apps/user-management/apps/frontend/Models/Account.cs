@@ -70,7 +70,7 @@ public record Account
 
     public bool IsFunded { get; set; }
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     public UserSex? UserSex { get; set; }
 
@@ -94,8 +94,5 @@ public record Account
         SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
         ExternalUserId = account.ExternalUserId;
         IsFunded = account.IsFunded;
-        DateOfBirth = account.DateOfBirth;
-        UserSex = account.UserSex;
-        GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth;
     }
 }
