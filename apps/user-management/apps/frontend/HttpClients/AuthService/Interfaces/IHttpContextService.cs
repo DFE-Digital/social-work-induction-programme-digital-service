@@ -2,6 +2,7 @@
 
 public interface IHttpContextService
 {
+    Guid GetPersonId();
     string GetOrganisationId();
     bool GetIsEcswRegistered();
 }

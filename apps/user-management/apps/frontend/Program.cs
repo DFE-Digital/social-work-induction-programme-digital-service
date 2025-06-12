@@ -32,6 +32,7 @@ if (featureFlags.EnableForwardedHeaders)
 // Add services to the container.
 builder.Services.AddGovUkFrontend(options =>
 {
+    options.RegisterDateInputModelConverter(typeof(LocalDate), new LocalDateDateInputModelConverter());
     options.RegisterDateInputModelConverter(typeof(YearMonth), new YearMonthDateInputModelConverter());
 });
 builder.Services.AddCsp(nonceByteAmount: 32);

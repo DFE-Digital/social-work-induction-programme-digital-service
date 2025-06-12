@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Moq;
 using NodaTime;
 using Xunit;
 
@@ -73,7 +71,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         {
             foreach (var memberName in validationResult.MemberNames)
             {
-                Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage);
+                Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
             }
         }
 

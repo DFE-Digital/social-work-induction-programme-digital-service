@@ -80,6 +80,15 @@ public class MockAuthServiceClient : Mock<IAuthServiceClient>
         MockHttpContextAccessor.Setup(a => a.HttpContext).Returns(mockHttpContext);
     }
 
+    public void SetupMockHttpContextAccessorWithPersonId(Guid? personId = null)
+    {
+        var claims = new List<Claim> { new Claim("person_id", personId?.ToString() ?? Guid.NewGuid().ToString() ) };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        var mockHttpContext = new DefaultHttpContext { User = claimsPrincipal };
+        MockHttpContextAccessor.Setup(a => a.HttpContext).Returns(mockHttpContext);
+    }
+
     public void SetupMockHttpContextAccessorWithEmptyClaimsPrincipal()
     {
         var emptyClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
