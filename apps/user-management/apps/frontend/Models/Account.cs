@@ -80,6 +80,10 @@ public record Account
 
     public EthnicGroup? EthnicGroup { get; set; }
 
+    public EthnicGroupWhite? EthnicGroupWhite { get; set; }
+
+    public string? OtherWhiteEthnicGroup { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 

@@ -1,9 +1,9 @@
-using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using FluentValidation;
+using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Validation;
 
-public class SelectEthnicGroupValidator : AbstractValidator<SelectEthnicGroup>
+public class SelectEthnicGroupValidator : AbstractValidator<Index>
 {
     public SelectEthnicGroupValidator()
     {

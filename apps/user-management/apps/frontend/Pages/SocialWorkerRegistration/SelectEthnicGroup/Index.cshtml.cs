@@ -9,14 +9,14 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
+namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectEthnicGroup(
+public class Index(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectEthnicGroup> validator)
+    IValidator<Index> validator)
     : BasePageModel
 {
     [BindProperty] public EthnicGroup? SelectedEthnicGroup { get; set; }
@@ -43,6 +43,15 @@ public class SelectEthnicGroup(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW relevant ethnic group sub page
+        return SelectedEthnicGroup switch
+        {
+            EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationWhiteEthnicGroup()),
+            EthnicGroup.PreferNotToSay
+                or EthnicGroup.MixedOrMultipleEthnicGroups
+                or EthnicGroup.AsianOrAsianBritish
+                or EthnicGroup.BlackAfricanCaribbeanOrBlackBritish
+                or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),
+            _ => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth())
+        };
     }
 }
