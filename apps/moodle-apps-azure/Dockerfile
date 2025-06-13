@@ -160,7 +160,7 @@ RUN if [ ! -f composer.json ]; then \
 COPY plugins/appinsights /var/www/html/public/local/appinsights
 
 # Moosh is required to run the install-oidc-plugin script at deployment time
-COPY install-moosh install-moosh
+COPY --chown=www-data:www-data install-moosh install-moosh 
 RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
