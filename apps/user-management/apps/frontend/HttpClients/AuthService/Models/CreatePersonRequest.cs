@@ -8,6 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 public record CreatePersonRequest
 {
     public required string FirstName { get; init; }
+    public string? MiddleName { get; init; }
     public required string LastName { get; init; }
     public required string EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
@@ -16,4 +17,6 @@ public record CreatePersonRequest
     public Guid OrganisationId { get; init; }
     public int? ExternalUserId { get; set; }
     public bool IsFunded { get; set; }
+    public DateOnly? ProgrammeStartDate { get; init; }
+    public DateOnly? ProgrammeEndDate { get; init; }
 }

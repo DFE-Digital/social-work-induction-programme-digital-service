@@ -23,6 +23,10 @@ public class CreateAccountJourneyModel
 
     public bool? IsQualifiedWithin3Years { get; set; }
 
+    public DateOnly? ProgrammeStartDate { get; set; }
+
+    public DateOnly? ProgrammeEndDate { get; set; }
+
     public Account ToAccount()
     {
         return new Account
@@ -38,6 +42,8 @@ public class CreateAccountJourneyModel
             LastName = AccountDetails?.LastName,
             Types = AccountTypes,
             SocialWorkEnglandNumber = AccountDetails?.SocialWorkEnglandNumber,
+            ProgrammeStartDate = ProgrammeStartDate,
+            ProgrammeEndDate = ProgrammeEndDate,
             ExternalUserId = ExternalUserId,
             IsFunded = IsEligibleForFunding()
         };

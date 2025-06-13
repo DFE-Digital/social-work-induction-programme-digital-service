@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -17,6 +19,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     public SocialWorkerProgrammeDatesPageTests()
     {
         Sut = new SocialWorkerProgrammeDates(
+            MockCreateAccountJourneyService.Object,
             new FakeLinkGenerator(),
             new SocialWorkerProgrammeDatesValidator()
         );
@@ -25,13 +28,35 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     [Fact]
     public void OnGet_WhenCalled_LoadsTheView()
     {
+        // Arrange
+        var account = AccountBuilder
+            .WithStartDate(DateOnly.FromDateTime(DateTime.Today))
+            .WithEndDate(DateOnly.FromDateTime(DateTime.Today.AddYears(1)))
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockCreateAccountJourneyService.Setup(x => x.GetProgrammeStartDate()).Returns(accountDetails.ProgrammeStartDate);
+        MockCreateAccountJourneyService.Setup(x => x.GetProgrammeEndDate()).Returns(accountDetails.ProgrammeEndDate);
+        var expectedProgrammeStartDate = new YearMonth(
+            accountDetails.ProgrammeStartDate!.Value.Year,
+            accountDetails.ProgrammeStartDate.Value.Month
+        );
+        var expectedProgrammeEndDate = new YearMonth(
+                accountDetails.ProgrammeEndDate!.Value.Year,
+                accountDetails.ProgrammeEndDate.Value.Month
+            );
+
         // Act
         var result = Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
+        Sut.ProgrammeStartDate.Should().Be(expectedProgrammeStartDate);
+        Sut.ProgrammeEndDate.Should().Be(expectedProgrammeEndDate);
         Sut.BackLinkPath.Should().Be("/manage-accounts/add-account-details");
 
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -40,7 +65,15 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     {
         // Arrange
         Sut.ProgrammeStartDate = new YearMonth(2020, 1);
-        Sut.ProgrammeEndDate = new YearMonth(2030, 12);
+        Sut.ProgrammeEndDate = new YearMonth(2050, 12);
+        var expectedStartDate = new DateOnly(
+            Sut.ProgrammeStartDate.Value.Year,
+            Sut.ProgrammeStartDate.Value.Month,
+            1);
+        var expectedEndDate = new DateOnly(
+            Sut.ProgrammeEndDate.Value.Year,
+            Sut.ProgrammeEndDate.Value.Month,
+            1);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -51,6 +84,8 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
 
+        MockCreateAccountJourneyService.Verify(x => x.SetProgrammeStartDate(expectedStartDate), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetProgrammeEndDate(expectedEndDate), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
