@@ -168,13 +168,14 @@ RUN mkdir appinsights-isolated-vendor
 COPY appinsights-composer.json /var/www/html/public/composer.json
 
 # Install SDK's dependencies into isolated vendor directory
-RUN composer install --no-dev --optimize-autoloader -d appinsights-isolated-vendor
+RUN composer install --optimize-autoloader -d appinsights-isolated-vendor
 
 # Create scoper.inc.php
 COPY plugins/scoper.inc.php /var/www/html/public/scoper.inc.php
 
 # Run php-scoper to prefix the SDK and its dependencies
 RUN php-scoper add-prefix --force --config=scoper.inc.php --output-dir appinsights-scoped
+chown -R www-data:www-data appinsights-scoped/
 
 # Clean up temporary files
 RUN rm -rf appinsights-isolated-vendor composer.json scoper.inc.php
