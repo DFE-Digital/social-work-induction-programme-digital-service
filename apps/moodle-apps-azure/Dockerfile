@@ -153,7 +153,7 @@ RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
 
-RUN composer global require php-scoper/php-scoper --prefer-dist --no-dev
+RUN composer global require php-scoper/php-scoper --prefer-dist
 
 # --- START APPLICATION INSIGHTS INTEGRATION (Scoped Guzzle) ---
 # Got this site error when attempting to integrate with the App Insights PHP SDK:
