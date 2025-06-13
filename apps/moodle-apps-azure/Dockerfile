@@ -153,13 +153,13 @@ RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
 
-RUN composer global require php-scoper/php-scoper --prefer-dist
-
 # --- START APPLICATION INSIGHTS INTEGRATION (Scoped Guzzle) ---
 # Got this site error when attempting to integrate with the App Insights PHP SDK:
 # Fatal error: Cannot redeclare GuzzleHttp\describe_type() (previously declared in /var/www/html/public/lib/guzzlehttp/guzzle/src/functions.php:16) in /var/www/html/public/vendor/guzzlehttp/guzzle/src/functions.php on line 42
 # This is a namespace conflict with the SDK and Moodle. Solution is to run php-scoper to
 # create plugin specific namespaces
+
+RUN composer global require humbug/php-scoper --prefer-dist
 
 # Create a temporary directory for isolated vendor
 RUN mkdir appinsights-isolated-vendor
