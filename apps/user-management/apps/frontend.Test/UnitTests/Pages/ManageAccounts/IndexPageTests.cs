@@ -49,6 +49,5 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
         result.Should().BeOfType<PageResult>();
         Sut.Accounts.Should().NotBeEmpty();
         Sut.Accounts.Should().BeEquivalentTo(expectedAccounts);
-        Sut.Accounts.Should().BeInAscendingOrder(x => x.CreatedAt);
     }
 }

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -7,9 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
-using NodaTime;
 using Xunit;
-using SocialWorkerRegistrationIndex = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
@@ -70,7 +67,7 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW select ethnic group page
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetUserSexAsync(PersonId, UserSex.Male), Times.Once);

@@ -11,6 +11,7 @@ public class RegisterSocialWorkerJourneyModel(Account account)
     public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; } = account.GenderMatchesSexAtBirth;
 
     public string? OtherGenderIdentity { get; set; } = account.OtherGenderIdentity;
+    public EthnicGroup? EthnicGroup { get; set; } = account.EthnicGroup;
 
     public Account ToAccount()
     {
@@ -20,6 +21,7 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             UserSex = UserSex,
             GenderMatchesSexAtBirth = GenderMatchesSexAtBirth,
             OtherGenderIdentity = OtherGenderIdentity,
+            EthnicGroup = EthnicGroup
         };
     }
 }
