@@ -10,6 +10,8 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetUserSexAsync(Guid accountId, UserSex? userSex);
     Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId);
     Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? userSex);
+    Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
+    Task SetOtherGenderIdentityAsync(Guid accountId, string? userSex);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

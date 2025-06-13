@@ -124,6 +124,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.DateOfBirth, _ => null);
         _faker.RuleFor(a => a.UserSex, _ => null);
         _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
+        _faker.RuleFor(a => a.OtherGenderIdentity, _ => null);
 
         return this;
     }
