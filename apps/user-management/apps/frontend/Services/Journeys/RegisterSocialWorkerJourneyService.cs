@@ -87,6 +87,21 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
+    public async Task<string?> GetOtherGenderIdentityAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.OtherGenderIdentity;
+    }
+
+    public async Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.OtherGenderIdentity = otherGenderIdentity;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
     public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));

@@ -76,6 +76,8 @@ public record Account
 
     public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
 
+    public string? OtherGenderIdentity { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 

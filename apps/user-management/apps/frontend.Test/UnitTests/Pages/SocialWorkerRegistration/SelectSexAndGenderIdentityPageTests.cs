@@ -29,10 +29,12 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         // Arrange
         var userSex = UserSex.Female;
         var genderMatchesSexAtBirth = GenderMatchesSexAtBirth.Yes;
+        var otherGender = "test value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetUserSexAsync(PersonId)).ReturnsAsync(userSex);
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetUserGenderMatchesSexAtBirthAsync(PersonId)).ReturnsAsync(genderMatchesSexAtBirth);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherGenderIdentityAsync(PersonId)).ReturnsAsync(otherGender);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -46,6 +48,7 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.GetUserSexAsync(PersonId), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.GetUserGenderMatchesSexAtBirthAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherGenderIdentityAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -55,8 +58,10 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
+        var otherGender = "test value";
         Sut.SelectedUserSex = UserSex.Male;
         Sut.GenderMatchesSexAtBirth = GenderMatchesSexAtBirth.No;
+        Sut.OtherGenderIdentity = otherGender;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -70,6 +75,7 @@ public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageT
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetUserSexAsync(PersonId, UserSex.Male), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetUserGenderMatchesSexAtBirthAsync(PersonId, GenderMatchesSexAtBirth.No), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherGenderIdentityAsync(PersonId, otherGender), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
