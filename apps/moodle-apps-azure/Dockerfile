@@ -147,6 +147,8 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && rm composer-setup.php \
     && composer --version
 
+USER www-data
+
 # Install the App Insights Moodle plugin
 RUN if [ ! -f composer.json ]; then \
         echo '{ "name": "moodle/appinsights", "description": "App Insights for Moodle", "require": { "microsoft/application-insights": "^0.3.0" } }' > composer.json; \
@@ -162,6 +164,8 @@ COPY install-moosh install-moosh
 RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
+
+USER root
 
 COPY --from=full-moodle-builder /app/ /app
 COPY entry-point.sh /app/entry-point.sh
