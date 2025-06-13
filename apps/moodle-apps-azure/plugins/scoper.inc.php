@@ -6,7 +6,7 @@ require_once '/root/.composer/vendor/autoload.php';
 return [
     'prefix' => 'MoodleAppInsights', // Your chosen prefix
     'finders' => [
-        new \PhpScoper\Finder\ComposerFinder::create(__DIR__ . '/appinsights-isolated-vendor'),
+        new \PhpScoper\Finder\ComposerFinder(__DIR__ . '/appinsights-isolated-vendor'),
     ],
     'exclude-namespaces' => [
         // If the SDK itself uses the original Guzzle classes directly (unlikely)
