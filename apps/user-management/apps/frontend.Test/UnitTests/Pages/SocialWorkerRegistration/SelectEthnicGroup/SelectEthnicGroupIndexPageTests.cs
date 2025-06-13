@@ -10,7 +10,7 @@ using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGr
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestBase<Index>
+public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestBase
 {
     private Index Sut { get; }
 
