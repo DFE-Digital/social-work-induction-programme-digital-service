@@ -25,6 +25,7 @@ locals {
     "MOODLE_ADMIN_USER"                   = var.moodle_admin_user
     "MOODLE_ADMIN_PASSWORD"               = var.moodle_admin_password
     "MOODLE_ADMIN_EMAIL"                  = var.moodle_admin_email
+    "APPINSIGHTS_WEBSITES_ENABLE_VERSION" = "disabled" # Essential to disable default app insights injection for PHP
     DOCKER_ENABLE_CI                      = "false" # Github will control CI, not Azure
   }
   moodle_auth_redirect_uri             = "${module.web_app_moodle["primary"].front_door_app_url}/auth/oidc/"

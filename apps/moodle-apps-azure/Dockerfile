@@ -147,6 +147,16 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && rm composer-setup.php \
     && composer --version
 
+# Install the App Insights Moodle plugin
+RUN if [ ! -f composer.json ]; then \
+        echo '{ "name": "moodle/appinsights", "description": "App Insights for Moodle", "require": { "microsoft/application-insights": "^0.3.0" } }' > composer.json; \
+    fi && \
+    composer install --no-dev --optimize-autoloader && \
+    rm -f composer.json.lock composer.json
+
+# Copy the custom Application Insights Moodle local plugin
+COPY plugins/appinsights /var/www/html/public/local/appinsights
+
 # Moosh is required to run the install-oidc-plugin script at deployment time
 COPY install-moosh install-moosh
 RUN chmod +x install-moosh \
@@ -169,17 +179,6 @@ COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
 COPY apache-config-cron.conf /app/apache-config-cron.conf
 COPY moodle-cron /app/moodle-cron
 RUN a2enmod headers
-
-# Create symbolic links from Apache's default log file locations
-# to /dev/stdout and /dev/stderr.
-# Before creating symlinks, ensure the target directory exists.
-# For /var/log/apache2/ which is common for php:apache images
-RUN mkdir -p /var/log/apache2/ && \
-# Remove any existing log files first to avoid conflicts
-rm -f /var/log/apache2/access.log /var/log/apache2/error.log && \
-# Create the symbolic links
-ln -sf /dev/stdout /var/log/apache2/access.log && \
-ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Give the cron job some html to serve - the cron job service is still an app service
 # and needs to serve something
