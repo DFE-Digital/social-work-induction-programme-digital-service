@@ -165,7 +165,7 @@ RUN composer global require humbug/php-scoper --prefer-dist
 RUN mkdir appinsights-isolated-vendor
 
 # Create appinsights-composer.json for SDK only
-COPY appinsights-composer.json /var/www/html/public/composer.json
+COPY appinsights-composer.json /var/www/html/public/appinsights-isolated-vendor/composer.json
 
 # Install SDK's dependencies into isolated vendor directory
 RUN composer install --optimize-autoloader -d appinsights-isolated-vendor
