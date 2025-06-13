@@ -5,10 +5,10 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests;
 
-public class GetDateOfBirthShould : RegisterSocialWorkerJourneyServiceTestBase
+public class GetUserSexShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_ReturnDateOfBirth()
+    public async Task WhenCalled_ReturnUserSex()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -19,11 +19,11 @@ public class GetDateOfBirthShould : RegisterSocialWorkerJourneyServiceTestBase
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.GetDateOfBirthAsync(id);
+        var response = await Sut.GetUserSexAsync(id);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(expected.DateOfBirth);
+        response.Should().Be(expected.UserSex);
 
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();

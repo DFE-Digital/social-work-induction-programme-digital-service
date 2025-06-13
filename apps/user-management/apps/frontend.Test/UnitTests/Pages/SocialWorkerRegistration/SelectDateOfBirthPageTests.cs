@@ -12,11 +12,11 @@ using SocialWorkerRegistrationIndex = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerReg
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
-public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialWorkerRegistrationIndex>
+public class SelectDateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialWorkerRegistrationIndex>
 {
-    private DateOfBirth Sut { get; }
+    private SelectDateOfBirth Sut { get; }
 
-    public DateOfBirthPageTests()
+    public SelectDateOfBirthPageTests()
     {
         Sut = new(new FakeLinkGenerator(), MockRegisterSocialWorkerJourneyService.Object, MockAuthServiceClient.Object,
             new SocialWorkerDateOfBirthValidator());
@@ -26,13 +26,11 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
     public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var personId = Guid.NewGuid();
-        MockAuthServiceClient.SetupMockHttpContextAccessorWithPersonId(personId);
-        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(personId);
+        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
         var dob = DateOnly.FromDateTime(DateTime.UtcNow);
         var expectedDob = LocalDate.FromDateOnly(dob);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetDateOfBirthAsync(personId)).ReturnsAsync(dob);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetDateOfBirthAsync(PersonId)).ReturnsAsync(dob);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -43,7 +41,7 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetDateOfBirthAsync(personId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetDateOfBirthAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -51,9 +49,7 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
     public async Task OnPostAsync_WhenCalledWithValidDate_SavesDateAndRedirectsUser()
     {
         // Arrange
-        var personId = Guid.NewGuid();
-        MockAuthServiceClient.SetupMockHttpContextAccessorWithPersonId(personId);
-        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(personId);
+        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
         Sut.UserDateOfBirth = new LocalDate(2020, 12, 31);
         var expectedDob = new DateOnly(
@@ -68,10 +64,10 @@ public class DateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialW
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("index"); // TODO update this ECSW sex and gender page
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-sex-and-gender-identity");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetDateOfBirthAsync(personId, expectedDob), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetDateOfBirthAsync(PersonId, expectedDob), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

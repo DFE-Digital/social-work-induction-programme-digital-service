@@ -14,11 +14,11 @@ using NodaTime;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class DateOfBirth(
+public class SelectDateOfBirth(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<DateOfBirth> validator)
+    IValidator<SelectDateOfBirth> validator)
     : BasePageModel
 {
     [BindProperty]
@@ -28,8 +28,8 @@ public class DateOfBirth(
 
     public async Task<PageResult> OnGetAsync()
     {
-        var person = authServiceClient.HttpContextService.GetPersonId();
-        var dob = await socialWorkerJourneyService.GetDateOfBirthAsync(person);
+        var personId = authServiceClient.HttpContextService.GetPersonId();
+        var dob = await socialWorkerJourneyService.GetDateOfBirthAsync(personId);
         if (dob.HasValue)
         {
             UserDateOfBirth = LocalDate.FromDateOnly(dob.Value);
@@ -58,9 +58,9 @@ public class DateOfBirth(
             UserDateOfBirth.Value.Month,
             UserDateOfBirth.Value.Day);
 
-        var person = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetDateOfBirthAsync(person, dateOfBirth);
+        var personId = authServiceClient.HttpContextService.GetPersonId();
+        await socialWorkerJourneyService.SetDateOfBirthAsync(personId, dateOfBirth);
 
-        return Redirect(linkGenerator.Home()); // TODO update this ECSW sex and gender page
+        return Redirect(linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity());
     }
 }

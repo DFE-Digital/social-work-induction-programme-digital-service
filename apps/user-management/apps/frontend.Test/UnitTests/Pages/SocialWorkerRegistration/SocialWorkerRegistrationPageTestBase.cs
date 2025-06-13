@@ -1,4 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using JetBrains.Annotations;
@@ -12,13 +11,13 @@ public abstract class SocialWorkerRegistrationPageTestBase<[MeansTestSubject] T>
 {
     private protected Mock<IRegisterSocialWorkerJourneyService> MockRegisterSocialWorkerJourneyService { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }
+    private protected Guid PersonId { get; }
 
     protected SocialWorkerRegistrationPageTestBase()
     {
+        PersonId = Guid.NewGuid();
         MockRegisterSocialWorkerJourneyService = new();
         MockAuthServiceClient = new();
-
-        MockAuthServiceClient.SetupMockHttpContextAccessorWithPersonId();
     }
 
     private protected void VerifyAllNoOtherCalls()
