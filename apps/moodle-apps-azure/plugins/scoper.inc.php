@@ -3,14 +3,10 @@
 
 require_once '/root/.composer/vendor/autoload.php';
 
-use PhpScoper\Configuration\Option\ExcludeNamespace;
-use PhpScoper\Finder\ComposerFinder; // Ensure this is used
-use PhpScoper\PhpScoper; // This might not be needed if not used directly, but good to include relevant Scoper classes
-
 return [
     'prefix' => 'MoodleAppInsights', // Your chosen prefix
     'finders' => [
-        ComposerFinder::create(__DIR__ . '/appinsights-isolated-vendor'),
+        new \PhpScoper\Finder\ComposerFinder::create(__DIR__ . '/appinsights-isolated-vendor'),
     ],
     'exclude-namespaces' => [
         // If the SDK itself uses the original Guzzle classes directly (unlikely)
