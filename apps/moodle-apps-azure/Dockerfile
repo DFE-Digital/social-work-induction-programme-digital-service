@@ -147,6 +147,12 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && rm composer-setup.php \
     && composer --version
 
+# Moosh is required to run the install-oidc-plugin script at deployment time
+COPY install-moosh install-moosh 
+RUN chmod +x install-moosh \
+    && ./install-moosh \
+    && rm install-moosh
+
 USER www-data
 
 # Install the App Insights Moodle plugin
@@ -157,13 +163,7 @@ RUN if [ ! -f composer.json ]; then \
     rm -f composer.json.lock composer.json
 
 # Copy the custom Application Insights Moodle local plugin
-COPY plugins/appinsights /var/www/html/public/local/appinsights
-
-# Moosh is required to run the install-oidc-plugin script at deployment time
-COPY --chown=www-data:www-data install-moosh install-moosh 
-RUN chmod +x install-moosh \
-    && ./install-moosh \
-    && rm install-moosh
+COPY --chown=www-data:www-data plugins/appinsights /var/www/html/public/local/appinsights
 
 USER root
 
