@@ -19,7 +19,7 @@ public class SetEthnicGroupShould : RegisterSocialWorkerJourneyServiceTestBase
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.SetUserSexAsync(originalAccount.Id, originalAccount.UserSex);
+        await Sut.SetEthnicGroupAsync(originalAccount.Id, originalAccount.EthnicGroup);
 
         // Assert
         HttpContext.Session.TryGet(
