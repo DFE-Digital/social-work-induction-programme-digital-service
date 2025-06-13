@@ -78,6 +78,8 @@ public record Account
 
     public string? OtherGenderIdentity { get; set; }
 
+    public EthnicGroup? EthnicGroup { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 

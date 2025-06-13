@@ -12,25 +12,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectSexAndGenderIdentity(
+public class SelectEthnicGroup(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectSexAndGenderIdentity> validator)
+    IValidator<SelectEthnicGroup> validator)
     : BasePageModel
 {
-    [BindProperty] public UserSex? SelectedUserSex { get; set; }
-    [BindProperty] public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
-    [BindProperty] public string? OtherGenderIdentity { get; set; }
+    [BindProperty] public EthnicGroup? SelectedEthnicGroup { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedUserSex = await socialWorkerJourneyService.GetUserSexAsync(personId);
-        GenderMatchesSexAtBirth = await socialWorkerJourneyService.GetUserGenderMatchesSexAtBirthAsync(personId);
-        OtherGenderIdentity = await socialWorkerJourneyService.GetOtherGenderIdentityAsync(personId);
+        SelectedEthnicGroup = await socialWorkerJourneyService.GetEthnicGroupAsync(personId);
 
-        BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
         return Page();
     }
 
@@ -40,16 +36,13 @@ public class SelectSexAndGenderIdentity(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
             return Page();
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetUserSexAsync(personId, SelectedUserSex);
-        await socialWorkerJourneyService.SetUserGenderMatchesSexAtBirthAsync(personId, GenderMatchesSexAtBirth);
-        await socialWorkerJourneyService.SetOtherGenderIdentityAsync(personId, OtherGenderIdentity);
+        await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
-        return Redirect(linkGenerator
-            .SocialWorkerRegistrationEthnicGroup());
+        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW relevant ethnic group sub page
     }
 }

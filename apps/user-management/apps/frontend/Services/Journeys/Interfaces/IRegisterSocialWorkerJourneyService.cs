@@ -12,6 +12,8 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? userSex);
     Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
     Task SetOtherGenderIdentityAsync(Guid accountId, string? userSex);
+    Task<EthnicGroup?> GetEthnicGroupAsync(Guid accountId);
+    Task SetEthnicGroupAsync(Guid accountId, EthnicGroup? userSex);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }
