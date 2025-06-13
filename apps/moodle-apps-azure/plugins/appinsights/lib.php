@@ -2,9 +2,10 @@
 // This file is loaded by Moodle on every page request if the plugin is installed.
 defined('MOODLE_INTERNAL') || die();
 
-use ApplicationInsights\Channel\Telemetry_Context;
-use ApplicationInsights\Channel\Telemetry_Channel;
-use ApplicationInsights\Telemetry_Client;
+use MoodleAppInsights\ApplicationInsights\Channel\Telemetry_Context;
+use MoodleAppInsights\ApplicationInsights\Channel\Telemetry_Channel;
+use MoodleAppInsights\ApplicationInsights\Telemetry_Client;
+use MoodleAppInsights\ApplicationInsights\Telemetry_Context_Data_Severity_Level;
 
 // Global instance of the telemetry client to use across Moodle
 $GLOBALS['APPINSIGHTS_TELEMETRY_CLIENT'] = null;
@@ -43,28 +44,28 @@ function local_appinsights_init_telemetry() {
                     return false;
                 }
 
-                $severity = \ApplicationInsights\Telemetry_Context_Data_Severity_Level::INFORMATION;
+                $severity = Telemetry_Context_Data_Severity_Level::INFORMATION;
                 switch ($errno) {
                     case E_ERROR:
                     case E_CORE_ERROR:
                     case E_COMPILE_ERROR:
                     case E_USER_ERROR:
                     case E_RECOVERABLE_ERROR:
-                        $severity = \ApplicationInsights\Telemetry_Context_Data_Severity_Level::CRITICAL;
+                        $severity = Telemetry_Context_Data_Severity_Level::CRITICAL;
                         break;
                     case E_WARNING:
                     case E_CORE_WARNING:
                     case E_COMPILE_WARNING:
                     case E_USER_WARNING:
-                        $severity = \ApplicationInsights\Telemetry_Context_Data_Severity_Level::WARNING;
+                        $severity = Telemetry_Context_Data_Severity_Level::WARNING;
                         break;
                     case E_NOTICE:
                     case E_USER_NOTICE:
-                        $severity = \ApplicationInsights\Telemetry_Context_Data_Severity_Level::INFORMATION;
+                        $severity = Telemetry_Context_Data_Severity_Level::INFORMATION;
                         break;
                     case E_DEPRECATED:
                     case E_USER_DEPRECATED:
-                        $severity = \ApplicationInsights\Telemetry_Context_Data_Severity_Level::VERBOSE;
+                        $severity = Telemetry_Context_Data_Severity_Level::VERBOSE;
                         break;
                 }
 
@@ -113,12 +114,13 @@ function local_appinsights_init_telemetry() {
     }
 }
 
-// Ensure autoloader is included for the SDK classes
+// Ensure scoped autoloader is included for the SDK classes
 // This path is relative to the Moodle root which is /var/www/html/public
-if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
-    require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../appinsights-scoped/vendor/autoload.php')) {
+    require_once __DIR__ . '/../../appinsights-scoped/vendor/autoload.php';
 } else {
-    error_log("Application Insights SDK: Composer autoloader not found at " . __DIR__ . "/../../vendor/autoload.php");
+    // Log to stderr because App Insights isn't initialized yet
+    error_log("Application Insights SDK: Composer autoloader (scoped) not found at " . __DIR__ . "/../../appinsights-scoped/vendor/autoload.php");
 }
 
 // Call the initialization function early in Moodle's lifecycle

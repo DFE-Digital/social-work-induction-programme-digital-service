@@ -153,19 +153,36 @@ RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
 
-USER www-data
+RUN composer global require php-scoper/php-scoper --prefer-dist --no-dev
 
-# Install the App Insights Moodle plugin
-RUN if [ ! -f composer.json ]; then \
-        echo '{ "name": "moodle/appinsights", "description": "App Insights for Moodle", "require": { "microsoft/application-insights": "^0.3.0" } }' > composer.json; \
-    fi && \
-    composer install --no-dev --optimize-autoloader && \
-    rm -f composer.json.lock composer.json
+# --- START APPLICATION INSIGHTS INTEGRATION (Scoped Guzzle) ---
+# Got this site error when attempting to integrate with the App Insights PHP SDK:
+# Fatal error: Cannot redeclare GuzzleHttp\describe_type() (previously declared in /var/www/html/public/lib/guzzlehttp/guzzle/src/functions.php:16) in /var/www/html/public/vendor/guzzlehttp/guzzle/src/functions.php on line 42
+# This is a namespace conflict with the SDK and Moodle. Solution is to run php-scoper to
+# create plugin specific namespaces
+
+# Create a temporary directory for isolated vendor
+RUN mkdir appinsights-isolated-vendor
+
+# Create appinsights-composer.json for SDK only
+COPY appinsights-composer.json /var/www/html/public/composer.json
+
+# Install SDK's dependencies into isolated vendor directory
+RUN composer install --no-dev --optimize-autoloader -d appinsights-isolated-vendor
+
+# Create scoper.inc.php
+COPY plugins/scoper.inc.php /var/www/html/public/scoper.inc.php
+
+# Run php-scoper to prefix the SDK and its dependencies
+RUN php-scoper add-prefix --force --config=scoper.inc.php --output-dir appinsights-scoped
+
+# Clean up temporary files
+RUN rm -rf appinsights-isolated-vendor appinsights-composer.json scoper.inc.php
 
 # Copy the custom Application Insights Moodle local plugin
-COPY --chown=www-data:www-data plugins/appinsights /var/www/html/public/local/appinsights
+COPY local/appinsights /var/www/html/public/local/appinsights
 
-USER root
+# --- END APPLICATION INSIGHTS INTEGRATION ---
 
 COPY --from=full-moodle-builder /app/ /app
 COPY entry-point.sh /app/entry-point.sh
