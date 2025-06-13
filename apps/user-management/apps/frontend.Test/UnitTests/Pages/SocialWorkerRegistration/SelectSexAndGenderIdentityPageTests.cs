@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
-public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageTestBase<SelectSexAndGenderIdentity>
+public class SelectSexAndGenderIdentityPageTests : SocialWorkerRegistrationPageTestBase
 {
     private SelectSexAndGenderIdentity Sut { get; }
 
