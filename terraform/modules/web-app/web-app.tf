@@ -75,7 +75,11 @@ resource "azurerm_linux_web_app" "webapp" {
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
       virtual_network_subnet_id,
-      logs
+      logs,
+      # These are silently added when hooking up app insights
+      tags["hidden-link: /app-insights-conn-string"],
+      tags["hidden-link: /app-insights-instrumentation-key"],
+      tags["hidden-link: /app-insights-resource-id"]
     ]
   }
 
