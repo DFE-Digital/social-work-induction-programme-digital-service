@@ -1,5 +1,4 @@
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -7,14 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
+using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase<SelectEthnicGroup>
+public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestBase<Index>
 {
-    private SelectEthnicGroup Sut { get; }
+    private Index Sut { get; }
 
-    public SelectEthnicGroupPageTests()
+    public SelectEthnicGroupIndexPageTests()
     {
         Sut = new(new FakeLinkGenerator(), MockRegisterSocialWorkerJourneyService.Object, MockAuthServiceClient.Object,
             new SelectEthnicGroupValidator());
@@ -42,13 +42,14 @@ public class SelectEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase<S
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser()
+    [Theory]
+    [InlineData(EthnicGroup.White, "/social-worker-registration/select-ethnic-group/white")]
+    [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
+    public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser(EthnicGroup ethnicGroup, string redirectUrl)
     {
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
-        var ethnicGroup = EthnicGroup.White;
         Sut.SelectedEthnicGroup = ethnicGroup;
 
         // Act
@@ -58,7 +59,7 @@ public class SelectEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase<S
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW relevant ethnic group sub page
+        redirectResult!.Url.Should().Be(redirectUrl); // TODO update this when more sub pages are added
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
