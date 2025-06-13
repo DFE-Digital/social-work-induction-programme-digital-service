@@ -9,6 +9,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
     public async Task<PaginationResult<PersonDto>> GetAllAsync(PaginationRequest request, Guid organisationId)
     {
         var accounts = dbContext.Persons
+            .OrderBy(x => x.FirstName)
             .Include(p => p.PersonOrganisations)
             .Where(p => p.PersonOrganisations.Any(o => o.OrganisationId == organisationId)
                         && p.DeletedOn.HasValue == false)
