@@ -160,6 +160,7 @@ RUN chmod +x install-moosh \
 # create plugin specific namespaces
 
 RUN composer global require humbug/php-scoper --prefer-dist
+ENV PATH="/root/.composer/vendor/bin:${PATH}"
 
 # Create a temporary directory for isolated vendor
 RUN mkdir appinsights-isolated-vendor
