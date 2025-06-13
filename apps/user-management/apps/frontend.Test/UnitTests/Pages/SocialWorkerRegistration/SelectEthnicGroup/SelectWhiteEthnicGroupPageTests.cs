@@ -11,7 +11,7 @@ using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGr
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectWhiteEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase
+public class SelectWhiteEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase<Index>
 {
     private SelectWhiteEthnicGroup Sut { get; }
 

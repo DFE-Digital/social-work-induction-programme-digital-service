@@ -105,7 +105,7 @@
                         var currentPage = paging?.Page ?? 0;
 
                         <govuk-pagination-item
-                            current=@(currentPage == pageNo)
+                            is-current=@(currentPage == pageNo)
                             href=@LinkGenerator.ManageAccounts((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
                             @pageNo
                         </govuk-pagination-item>

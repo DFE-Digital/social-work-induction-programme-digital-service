@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class Index() : BasePageModel
+public class Index(EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public PageResult OnGet()
     {

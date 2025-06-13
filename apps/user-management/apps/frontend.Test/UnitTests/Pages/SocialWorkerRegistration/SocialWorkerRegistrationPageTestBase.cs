@@ -6,7 +6,8 @@ using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
-public abstract class SocialWorkerRegistrationPageTestBase
+public abstract class SocialWorkerRegistrationPageTestBase<[MeansTestSubject] T> : PageModelTestBase<T>
+    where T : PageModel
 {
     private protected Mock<IRegisterSocialWorkerJourneyService> MockRegisterSocialWorkerJourneyService { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }

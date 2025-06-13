@@ -7,13 +7,13 @@ using SocialWorkerRegistrationIndex = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerReg
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
-public class IndexPageTests : SocialWorkerRegistrationPageTestBase
+public class IndexPageTests : SocialWorkerRegistrationPageTestBase<SocialWorkerRegistrationIndex>
 {
     private SocialWorkerRegistrationIndex Sut { get; }
 
     public IndexPageTests()
     {
-        Sut = new();
+        Sut = new(new FakeLinkGenerator());
     }
 
     [Fact]

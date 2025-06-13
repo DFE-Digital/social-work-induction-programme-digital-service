@@ -147,36 +147,6 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<EthnicGroupMixed?> GetMixedEthnicGroupAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroupMixed;
-    }
-
-    public async Task SetEthnicGroupMixedAsync(Guid accountId, EthnicGroupMixed? ethnicGroupMixed)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroupMixed = ethnicGroupMixed;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<string?> GetOtherMixedEthnicGroupAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherMixedEthnicGroup;
-    }
-
-    public async Task SetOtherMixedEthnicGroupAsync(Guid accountId, string? ethnicGroupMixed)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherMixedEthnicGroup = ethnicGroupMixed;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
     public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));

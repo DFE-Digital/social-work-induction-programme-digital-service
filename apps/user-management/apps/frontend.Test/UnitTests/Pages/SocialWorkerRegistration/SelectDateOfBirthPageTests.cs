@@ -12,7 +12,7 @@ using SocialWorkerRegistrationIndex = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerReg
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
-public class SelectDateOfBirthPageTests : SocialWorkerRegistrationPageTestBase
+public class SelectDateOfBirthPageTests : SocialWorkerRegistrationPageTestBase<SocialWorkerRegistrationIndex>
 {
     private SelectDateOfBirth Sut { get; }
 

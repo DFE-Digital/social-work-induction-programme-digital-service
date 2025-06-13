@@ -18,11 +18,6 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherWhiteEthnicGroup { get; set; } = account.OtherWhiteEthnicGroup;
 
-
-    public EthnicGroupMixed? EthnicGroupMixed { get; set; } = account.EthnicGroupMixed;
-
-    public string? OtherMixedEthnicGroup { get; set; } = account.OtherMixedEthnicGroup;
-
     public Account ToAccount()
     {
         return new Account(Account)
@@ -33,9 +28,7 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             OtherGenderIdentity = OtherGenderIdentity,
             EthnicGroup = EthnicGroup,
             EthnicGroupWhite = EthnicGroupWhite,
-            OtherWhiteEthnicGroup = OtherWhiteEthnicGroup,
-            EthnicGroupMixed = EthnicGroupMixed,
-            OtherMixedEthnicGroup = OtherMixedEthnicGroup
+            OtherWhiteEthnicGroup = OtherWhiteEthnicGroup
         };
     }
 }
