@@ -52,9 +52,9 @@ public class CreateAccountJourneyModel
     private bool IsEligibleForFunding()
     {
         return AccountTypes?.Contains(AccountType.EarlyCareerSocialWorker) == true
-               && IsRegisteredWithSocialWorkEngland == true
-               && IsStatutoryWorker == true
-               && IsAgencyWorker == false
-               && IsQualifiedWithin3Years == true;
+            && IsRegisteredWithSocialWorkEngland == true
+            && IsStatutoryWorker == true
+            && IsAgencyWorker == false
+            && IsQualifiedWithin3Years == true;
     }
 }

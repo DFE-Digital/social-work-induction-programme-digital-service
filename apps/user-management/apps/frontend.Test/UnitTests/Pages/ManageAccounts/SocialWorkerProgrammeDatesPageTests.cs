@@ -29,10 +29,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder
-            .WithStartDate(DateOnly.FromDateTime(DateTime.Today))
-            .WithEndDate(DateOnly.FromDateTime(DateTime.Today.AddYears(1)))
-            .Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService.Setup(x => x.GetProgrammeStartDate()).Returns(accountDetails.ProgrammeStartDate);

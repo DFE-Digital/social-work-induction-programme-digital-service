@@ -28,6 +28,23 @@ public class AccountBuilder
         _faker.RuleFor(a => a.DateOfBirth, f => DateOnly.FromDateTime(f.Date.Past()));
         _faker.RuleFor(a => a.UserSex, f => f.PickRandom<UserSex>());
         _faker.RuleFor(a => a.GenderMatchesSexAtBirth, f => f.PickRandom<GenderMatchesSexAtBirth>());
+        _faker.RuleFor(a => a.ProgrammeStartDate, f => DateOnly.FromDateTime(f.Date.Past()));
+        _faker.RuleFor(a => a.ProgrammeEndDate, f => DateOnly.FromDateTime(f.Date.Future()));
+    }
+
+    public AccountBuilder WithAddOrEditAccountDetailsData()
+    {
+        _faker.RuleFor(a => a.FirstName, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.MiddleNames, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.LastName, f => f.Name.LastName());
+        _faker.RuleFor(a => a.Email, f => f.Internet.Email());
+        _faker.RuleFor(a => a.DateOfBirth, _ => null);
+        _faker.RuleFor(a => a.UserSex, _ => null);
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
+        _faker.RuleFor(a => a.ProgrammeStartDate, _ => null);
+        _faker.RuleFor(a => a.ProgrammeEndDate, _ => null);
+
+        return this;
     }
 
     public AccountBuilder WithId(Guid id)
@@ -119,15 +136,6 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithNoRegistrationQuestions()
-    {
-        _faker.RuleFor(a => a.DateOfBirth, _ => null);
-        _faker.RuleFor(a => a.UserSex, _ => null);
-        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
-
-        return this;
-    }
-
     public AccountBuilder WithStartDate(DateOnly startDate)
     {
         _faker.RuleFor(x => x.ProgrammeStartDate, startDate);
@@ -139,7 +147,6 @@ public class AccountBuilder
         _faker.RuleFor(x => x.ProgrammeEndDate, endDate);
         return this;
     }
-
 
     public Account Build()
     {

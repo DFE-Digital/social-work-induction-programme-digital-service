@@ -56,15 +56,9 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(),   Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(),   Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStaffLabel(),   Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEnglandLabel(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorkerLabel(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorkerLabel(),   Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3YearsLabel(), Times.Once);
-
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

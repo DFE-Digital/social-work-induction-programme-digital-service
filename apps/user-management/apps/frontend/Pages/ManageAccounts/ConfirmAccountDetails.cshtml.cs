@@ -84,12 +84,13 @@ public class ConfirmAccountDetails(
         ChangeDetailsLink = linkGenerator.AddAccountDetailsChange();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
+        var accountLabels = createAccountJourneyService.GetAccountLabels();
 
-        SelectedAccountType = createAccountJourneyService.GetIsStaffLabel();
-        RegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEnglandLabel();
-        StatutoryWorker = createAccountJourneyService.GetIsStatutoryWorkerLabel();
-        AgencyWorker = createAccountJourneyService.GetIsAgencyWorkerLabel();
-        Qualified = createAccountJourneyService.GetIsQualifiedWithin3YearsLabel();
+        SelectedAccountType = accountLabels?.IsStaffLabel;
+        RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
+        StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
+        AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
+        Qualified = accountLabels?.IsQualifiedWithin3Years;
         FirstName = accountDetails?.FirstName;
         MiddleNames = accountDetails?.MiddleNames;
         LastName = accountDetails?.LastName;
