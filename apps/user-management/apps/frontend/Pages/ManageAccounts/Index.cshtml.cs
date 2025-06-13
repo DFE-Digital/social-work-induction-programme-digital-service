@@ -27,7 +27,7 @@ public class Index(IAccountService accountService) : BasePageModel
             new PaginationRequest(Offset, PageSize)
         );
 
-        Accounts = paginatedResults.Records.OrderBy(account => account.CreatedAt).ToList();
+        Accounts = paginatedResults.Records.ToList();
         Pagination = paginatedResults.MetaData;
 
         return Page();
