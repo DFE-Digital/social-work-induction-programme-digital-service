@@ -3,12 +3,12 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests.SelectEthnicGroup;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests.SelectEthnicGroupService;
 
-public class GetEthnicGroupAsianShould : RegisterSocialWorkerJourneyServiceTestBase
+public class GetOtherEthnicGroupWhiteShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_ReturnEthnicGroupAsian()
+    public async Task WhenCalled_ReturnOtherEthnicGroupWhite()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -19,11 +19,11 @@ public class GetEthnicGroupAsianShould : RegisterSocialWorkerJourneyServiceTestB
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.GetEthnicGroupAsianAsync(id);
+        var response = await Sut.EthnicGroupService.GetOtherEthnicGroupWhiteAsync(id);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(expected.EthnicGroupAsian);
+        response.Should().Be(expected.OtherEthnicGroupWhite);
 
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();

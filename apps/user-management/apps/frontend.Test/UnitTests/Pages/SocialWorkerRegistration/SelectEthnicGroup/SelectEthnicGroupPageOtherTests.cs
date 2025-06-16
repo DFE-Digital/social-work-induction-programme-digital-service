@@ -7,43 +7,42 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
-using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestBase
+public class SelectEthnicGroupPageOtherTests : SocialWorkerRegistrationPageTestBase
 {
-    private SelectEthnicGroupMixed Sut { get; }
+    private SelectEthnicGroupOther Sut { get; }
 
-    public SelectEthnicGroupMixedPageTests()
+    public SelectEthnicGroupPageOtherTests()
     {
         Sut = new(new FakeLinkGenerator(), MockRegisterSocialWorkerJourneyService.Object, MockAuthServiceClient.Object,
-            new SelectEthnicGroupMixedValidator());
+            new SelectEthnicGroupOtherValidator());
     }
 
     [Fact]
     public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var ethnicGroupMixed = EthnicGroupMixed.WhiteAndBlackCaribbean;
-        var otherEthnicGroupMixed = "Test Value";
+        var ethnicGroupOther = EthnicGroupOther.Arab;
+        var otherEthnicGroupOther = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetEthnicGroupMixedAsync(PersonId)).ReturnsAsync(ethnicGroupMixed);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetOtherEthnicGroupMixedAsync(PersonId)).ReturnsAsync(otherEthnicGroupMixed);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetEthnicGroupOtherAsync(PersonId)).ReturnsAsync(ethnicGroupOther);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetOtherEthnicGroupOtherAsync(PersonId)).ReturnsAsync(otherEthnicGroupOther);
 
         // Act
         var result = await Sut.OnGetAsync();
 
         // Assert
-        Sut.SelectedEthnicGroupMixed.Should().Be(ethnicGroupMixed);
-        Sut.OtherEthnicGroupMixed.Should().Be(otherEthnicGroupMixed);
+        Sut.SelectedEthnicGroupOther.Should().Be(ethnicGroupOther);
+        Sut.OtherEthnicGroupOther.Should().Be(otherEthnicGroupOther);
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetEthnicGroupMixedAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetOtherEthnicGroupMixedAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetEthnicGroupOtherAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetOtherEthnicGroupOtherAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -53,10 +52,10 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
-        var ethnicGroup = EthnicGroupMixed.WhiteAndBlackCaribbean;
-        Sut.SelectedEthnicGroupMixed = ethnicGroup;
-        var otherEthnicGroupMixed = "test value";
-        Sut.OtherEthnicGroupMixed = otherEthnicGroupMixed;
+        var ethnicGroupOther = EthnicGroupOther.Arab;
+        Sut.SelectedEthnicGroupOther = ethnicGroupOther;
+        var otherEthnicGroupOther = "test value";
+        Sut.OtherEthnicGroupOther = otherEthnicGroupOther;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -68,8 +67,8 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetOtherEthnicGroupMixedAsync(PersonId, otherEthnicGroupMixed), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetEthnicGroupOtherAsync(PersonId, ethnicGroupOther), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetOtherEthnicGroupOtherAsync(PersonId, otherEthnicGroupOther), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -78,7 +77,7 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
     public async Task OnPostAsync_WhenCalledWithInvalidValues_ReturnsValidationErrors()
     {
         // Arrange
-        Sut.SelectedEthnicGroupMixed = null;
+        Sut.SelectedEthnicGroupOther = null;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -90,10 +89,10 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         var modelStateKeys = modelState.Keys.ToList();
         modelStateKeys.Count.Should().Be(1);
 
-        modelStateKeys.Should().Contain("SelectedEthnicGroupMixed");
-        modelState["SelectedEthnicGroupMixed"]!.Errors.Count.Should().Be(1);
-        modelState["SelectedEthnicGroupMixed"]!.Errors[0].ErrorMessage.Should()
-            .Be("Select an option that best describes your mixed or multiple ethnic groups background");
+        modelStateKeys.Should().Contain("SelectedEthnicGroupOther");
+        modelState["SelectedEthnicGroupOther"]!.Errors.Count.Should().Be(1);
+        modelState["SelectedEthnicGroupOther"]!.Errors[0].ErrorMessage.Should()
+            .Be("Select an option that best describes your background");
 
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
 

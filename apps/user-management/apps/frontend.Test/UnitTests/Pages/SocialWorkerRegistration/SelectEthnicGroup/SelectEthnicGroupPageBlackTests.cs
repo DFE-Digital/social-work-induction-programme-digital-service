@@ -28,8 +28,8 @@ public class SelectEthnicGroupPageBlackTests : SocialWorkerRegistrationPageTestB
         var otherEthnicGroupBlack = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupBlackAsync(PersonId)).ReturnsAsync(ethnicGroupBlack);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupBlackAsync(PersonId)).ReturnsAsync(otherEthnicGroupBlack);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetEthnicGroupBlackAsync(PersonId)).ReturnsAsync(ethnicGroupBlack);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetOtherEthnicGroupBlackAsync(PersonId)).ReturnsAsync(otherEthnicGroupBlack);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -41,8 +41,8 @@ public class SelectEthnicGroupPageBlackTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupBlackAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupBlackAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetEthnicGroupBlackAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetOtherEthnicGroupBlackAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -67,8 +67,8 @@ public class SelectEthnicGroupPageBlackTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupBlackAsync(PersonId, ethnicGroupBlack), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupBlackAsync(PersonId, otherEthnicGroupBlack), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetEthnicGroupBlackAsync(PersonId, ethnicGroupBlack), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetOtherEthnicGroupBlackAsync(PersonId, otherEthnicGroupBlack), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -92,7 +92,7 @@ public class SelectEthnicGroupPageBlackTests : SocialWorkerRegistrationPageTestB
         modelStateKeys.Should().Contain("SelectedEthnicGroupBlack");
         modelState["SelectedEthnicGroupBlack"]!.Errors.Count.Should().Be(1);
         modelState["SelectedEthnicGroupBlack"]!.Errors[0].ErrorMessage.Should()
-            .Be("Select an option that best describes your Black background");
+            .Be("Select an option that best describes your Black, African, Caribbean or Black British background");
 
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
 

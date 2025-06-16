@@ -24,7 +24,7 @@ public class Index(
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroup = await socialWorkerJourneyService.GetEthnicGroupAsync(personId);
+        SelectedEthnicGroup = await socialWorkerJourneyService.EthnicGroupService.GetEthnicGroupAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
         return Page();
@@ -41,7 +41,7 @@ public class Index(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
+        await socialWorkerJourneyService.EthnicGroupService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
         return SelectedEthnicGroup switch
         {
@@ -49,9 +49,9 @@ public class Index(
             EthnicGroup.MixedOrMultipleEthnicGroups => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupMixed()),
             EthnicGroup.AsianOrAsianBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupAsian()),
             EthnicGroup.BlackAfricanCaribbeanOrBlackBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupBlack()),
-            EthnicGroup.PreferNotToSay
-                or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),
-            _ => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth())
+            EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupOther()),
+            EthnicGroup.PreferNotToSay => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()), // TODO update this ECSW disability page
+            _ => Page()
         };
     }
 }

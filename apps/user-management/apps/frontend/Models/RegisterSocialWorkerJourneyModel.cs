@@ -30,6 +30,10 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherEthnicGroupBlack { get; set; } = account.OtherEthnicGroupBlack;
 
+    public EthnicGroupOther? EthnicGroupOther { get; set; } = account.EthnicGroupOther;
+
+    public string? OtherEthnicGroupOther { get; set; } = account.OtherEthnicGroupOther;
+
 
     public Account ToAccount()
     {
@@ -47,7 +51,9 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             EthnicGroupAsian = EthnicGroupAsian,
             OtherEthnicGroupAsian = OtherEthnicGroupAsian,
             EthnicGroupBlack = EthnicGroupBlack,
-            OtherEthnicGroupBlack = OtherEthnicGroupBlack
+            OtherEthnicGroupBlack = OtherEthnicGroupBlack,
+            EthnicGroupOther = EthnicGroupOther,
+            OtherEthnicGroupOther = OtherEthnicGroupOther
         };
     }
 }
