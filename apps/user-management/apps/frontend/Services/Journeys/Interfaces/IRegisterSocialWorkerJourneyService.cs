@@ -26,6 +26,10 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetEthnicGroupAsianAsync(Guid accountId, EthnicGroupAsian? ethnicGroupAsian);
     Task<string?> GetOtherEthnicGroupAsianAsync(Guid accountId);
     Task SetOtherEthnicGroupAsianAsync(Guid accountId, string? otherEthnicGroupAsian);
+    Task<EthnicGroupBlack?> GetEthnicGroupBlackAsync(Guid accountId);
+    Task SetEthnicGroupBlackAsync(Guid accountId, EthnicGroupBlack? ethnicGroupBlack);
+    Task<string?> GetOtherEthnicGroupBlackAsync(Guid accountId);
+    Task SetOtherEthnicGroupBlackAsync(Guid accountId, string? otherEthnicGroupBlack);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

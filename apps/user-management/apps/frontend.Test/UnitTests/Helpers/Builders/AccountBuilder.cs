@@ -39,6 +39,8 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupMixed, f => f.Name.FirstName());
         _faker.RuleFor(a => a.EthnicGroupAsian, f => f.PickRandom<EthnicGroupAsian>());
         _faker.RuleFor(a => a.OtherEthnicGroupAsian, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.EthnicGroupBlack, f => f.PickRandom<EthnicGroupBlack>());
+        _faker.RuleFor(a => a.OtherEthnicGroupBlack, f => f.Name.FirstName());
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -61,6 +63,8 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupMixed, _ => null);
         _faker.RuleFor(a => a.EthnicGroupAsian, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupAsian, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupBlack, _ => null);
+        _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
         return this;
     }
 
@@ -200,6 +204,20 @@ public class AccountBuilder
         return this;
     }
 
+    public AccountBuilder WithEthnicGroupBlack(EthnicGroupBlack ethnicGroupBlack)
+    {
+        _faker.RuleFor(a => a.EthnicGroupBlack, _ => ethnicGroupBlack);
+
+        return this;
+    }
+
+    public AccountBuilder WithOtherEthnicGroupBlack(string otherEthnicGroupBlack)
+    {
+        _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => otherEthnicGroupBlack);
+
+        return this;
+    }
+
     public AccountBuilder WithNoRegistrationQuestions()
     {
         _faker.RuleFor(a => a.DateOfBirth, _ => null);
@@ -214,6 +232,8 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupMixed, _ => null);
         _faker.RuleFor(a => a.EthnicGroupAsian, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupAsian, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupBlack, _ => null);
+        _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
 
         return this;
     }
