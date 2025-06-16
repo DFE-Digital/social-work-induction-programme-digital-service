@@ -41,7 +41,7 @@ public class Index(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.EthnicGroupService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
+        await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
         return SelectedEthnicGroup switch
         {
