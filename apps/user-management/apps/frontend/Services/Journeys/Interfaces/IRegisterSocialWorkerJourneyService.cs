@@ -14,10 +14,14 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
     Task<EthnicGroup?> GetEthnicGroupAsync(Guid accountId);
     Task SetEthnicGroupAsync(Guid accountId, EthnicGroup? ethnicGroup);
-    Task<EthnicGroupWhite?> GetWhiteEthnicGroupAsync(Guid accountId);
+    Task<EthnicGroupWhite?> GetEthnicGroupWhiteAsync(Guid accountId);
     Task SetEthnicGroupWhiteAsync(Guid accountId, EthnicGroupWhite? ethnicGroupWhite);
-    Task<string?> GetOtherWhiteEthnicGroupAsync(Guid accountId);
-    Task SetOtherWhiteEthnicGroupAsync(Guid accountId, string? otherWhiteEthnicGroup);
+    Task<string?> GetOtherEthnicGroupWhiteAsync(Guid accountId);
+    Task SetOtherEthnicGroupWhiteAsync(Guid accountId, string? otherEthnicGroupWhite);
+    Task<EthnicGroupAsian?> GetEthnicGroupAsianAsync(Guid accountId);
+    Task SetEthnicGroupAsianAsync(Guid accountId, EthnicGroupAsian? ethnicGroupAsian);
+    Task<string?> GetOtherEthnicGroupAsianAsync(Guid accountId);
+    Task SetOtherEthnicGroupAsianAsync(Guid accountId, string? otherEthnicGroupAsian);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

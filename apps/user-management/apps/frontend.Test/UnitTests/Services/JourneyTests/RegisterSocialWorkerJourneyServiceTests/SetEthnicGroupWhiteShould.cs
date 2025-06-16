@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests;
 
-public class SetWhiteEthnicGroupShould : RegisterSocialWorkerJourneyServiceTestBase
+public class SetEthnicGroupWhiteShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
     public async Task WhenCalled_SetsEthnicGroupWhite()
