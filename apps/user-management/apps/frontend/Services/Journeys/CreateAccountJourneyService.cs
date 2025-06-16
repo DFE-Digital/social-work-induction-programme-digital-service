@@ -11,7 +11,6 @@ using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -126,16 +125,16 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
-    public bool? GetIsQualifiedWithin3Years()
+    public bool? GetIsRecentlyQualified()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        return createAccountJourneyModel.IsQualifiedWithin3Years;
+        return createAccountJourneyModel.IsRecentlyQualified;
     }
 
-    public void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years)
+    public void SetIsRecentlyQualified(bool? isRecentlyQualified)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        createAccountJourneyModel.IsQualifiedWithin3Years = isQualifiedWithin3Years;
+        createAccountJourneyModel.IsRecentlyQualified = isRecentlyQualified;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -165,7 +164,7 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
-    public AccountLabels? GetAccountLabels()
+    public AccountLabels GetAccountLabels()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         var accountLabels = new AccountLabels
@@ -184,7 +183,7 @@ public class CreateAccountJourneyService(
             },
             IsStatutoryWorkerLabel =
                 createAccountJourneyModel.IsStatutoryWorker == true ? "Yes" : null,
-            IsQualifiedWithin3Years = createAccountJourneyModel.IsQualifiedWithin3Years switch
+            IsRecentlyQualifiedLabel = createAccountJourneyModel.IsRecentlyQualified switch
             {
                 true => "Yes",
                 false => "No",
@@ -192,6 +191,20 @@ public class CreateAccountJourneyService(
             }
         };
         return accountLabels;
+    }
+
+    public AccountChangeLinks GetAccountChangeLinks()
+    {
+        return new AccountChangeLinks
+        {
+            SelectedAccountChangeLink = linkGenerator.SelectAccountType(),
+            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEngland(),
+            StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWork(),
+            AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorker(),
+            RecentlyQualifiedChangeLink = linkGenerator.EligibilityQualification(),
+            CoreDetailsChangeLink = linkGenerator.AddAccountDetailsChange(),
+            ProgrammeDatesChangeLink = linkGenerator.SocialWorkerProgrammeDates()
+        };
     }
 
     public void ResetCreateAccountJourneyModel()
