@@ -12,21 +12,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectMixedEthnicGroup(
+public class SelectEthnicGroupMixed(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectMixedEthnicGroup> validator)
+    IValidator<SelectEthnicGroupMixed> validator)
     : BasePageModel
 {
     [BindProperty] public EthnicGroupMixed? SelectedEthnicGroupMixed { get; set; }
-    [BindProperty] public string? OtherMixedEthnicGroup { get; set; }
+    [BindProperty] public string? OtherEthnicGroupMixed { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroupMixed = await socialWorkerJourneyService.GetMixedEthnicGroupAsync(personId);
-        OtherMixedEthnicGroup = await socialWorkerJourneyService.GetOtherMixedEthnicGroupAsync(personId);
+        SelectedEthnicGroupMixed = await socialWorkerJourneyService.GetEthnicGroupMixedAsync(personId);
+        OtherEthnicGroupMixed = await socialWorkerJourneyService.GetOtherEthnicGroupMixedAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
@@ -44,7 +44,7 @@ public class SelectMixedEthnicGroup(
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetEthnicGroupMixedAsync(personId, SelectedEthnicGroupMixed);
-        await socialWorkerJourneyService.SetOtherMixedEthnicGroupAsync(personId, OtherMixedEthnicGroup);
+        await socialWorkerJourneyService.SetOtherEthnicGroupMixedAsync(personId, OtherEthnicGroupMixed);
 
         return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
     }

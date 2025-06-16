@@ -2,7 +2,7 @@
 @using Dfe.Sww.Ecf.Frontend.Extensions
 @using Dfe.Sww.Ecf.Frontend.Models
 @using GovUk.Frontend.AspNetCore.TagHelpers
-@model SelectMixedEthnicGroup
+@model SelectEthnicGroupMixed
 
 @{
     Model.Title = "Which of the following best describes your mixed or multiple ethnic groups background?";
@@ -25,7 +25,7 @@
                     <govuk-radios-item value="@EthnicGroupMixed.OtherEthnicGroup">
                         @EthnicGroupMixed.OtherEthnicGroup.GetDisplayName()
                         <govuk-radios-item-conditional>
-                            <govuk-input for="OtherMixedEthnicGroup" spellcheck="false" type="text">
+                            <govuk-input for="OtherEthnicGroupMixed" spellcheck="false" type="text">
                                 <govuk-input-label>How would you describe your background? (optional)</govuk-input-label>
                             </govuk-input>
                         </govuk-radios-item-conditional>

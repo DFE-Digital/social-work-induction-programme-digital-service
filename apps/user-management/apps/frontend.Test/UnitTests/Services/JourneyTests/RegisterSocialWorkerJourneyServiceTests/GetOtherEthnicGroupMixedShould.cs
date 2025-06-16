@@ -8,7 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSoci
 public class GetOtherEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_ReturnOtherMixedEthnicGroup()
+    public async Task WhenCalled_ReturnOtherEthnicGroupMixed()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -19,11 +19,11 @@ public class GetOtherEthnicGroupMixedShould : RegisterSocialWorkerJourneyService
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.GetOtherMixedEthnicGroupAsync(id);
+        var response = await Sut.GetOtherEthnicGroupMixedAsync(id);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(expected.OtherMixedEthnicGroup);
+        response.Should().Be(expected.OtherEthnicGroupMixed);
 
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();

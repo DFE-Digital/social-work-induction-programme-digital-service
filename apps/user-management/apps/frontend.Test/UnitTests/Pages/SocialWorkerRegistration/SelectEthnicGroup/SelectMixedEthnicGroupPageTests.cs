@@ -11,39 +11,39 @@ using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGr
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectMixedEthnicGroupPageTests : SocialWorkerRegistrationPageTestBase
+public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestBase
 {
-    private SelectMixedEthnicGroup Sut { get; }
+    private SelectEthnicGroupMixed Sut { get; }
 
-    public SelectMixedEthnicGroupPageTests()
+    public SelectEthnicGroupMixedPageTests()
     {
         Sut = new(new FakeLinkGenerator(), MockRegisterSocialWorkerJourneyService.Object, MockAuthServiceClient.Object,
-            new SelectMixedEthnicGroupValidator());
+            new SelectEthnicGroupMixedValidator());
     }
 
     [Fact]
     public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var mixedEthnicGroup = EthnicGroupMixed.WhiteAndBlackCaribbean;
-        var otherMixedEthnicGroup = "Test Value";
+        var ethnicGroupMixed = EthnicGroupMixed.WhiteAndBlackCaribbean;
+        var otherEthnicGroupMixed = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetMixedEthnicGroupAsync(PersonId)).ReturnsAsync(mixedEthnicGroup);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherMixedEthnicGroupAsync(PersonId)).ReturnsAsync(otherMixedEthnicGroup);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupMixedAsync(PersonId)).ReturnsAsync(ethnicGroupMixed);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupMixedAsync(PersonId)).ReturnsAsync(otherEthnicGroupMixed);
 
         // Act
         var result = await Sut.OnGetAsync();
 
         // Assert
-        Sut.SelectedEthnicGroupMixed.Should().Be(mixedEthnicGroup);
-        Sut.OtherMixedEthnicGroup.Should().Be(otherMixedEthnicGroup);
+        Sut.SelectedEthnicGroupMixed.Should().Be(ethnicGroupMixed);
+        Sut.OtherEthnicGroupMixed.Should().Be(otherEthnicGroupMixed);
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetMixedEthnicGroupAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherMixedEthnicGroupAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupMixedAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupMixedAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -55,8 +55,8 @@ public class SelectMixedEthnicGroupPageTests : SocialWorkerRegistrationPageTestB
 
         var ethnicGroup = EthnicGroupMixed.WhiteAndBlackCaribbean;
         Sut.SelectedEthnicGroupMixed = ethnicGroup;
-        var otherMixedEthnicGroup = "test value";
-        Sut.OtherMixedEthnicGroup = otherMixedEthnicGroup;
+        var otherEthnicGroupMixed = "test value";
+        Sut.OtherEthnicGroupMixed = otherEthnicGroupMixed;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -69,7 +69,7 @@ public class SelectMixedEthnicGroupPageTests : SocialWorkerRegistrationPageTestB
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherMixedEthnicGroupAsync(PersonId, otherMixedEthnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupMixedAsync(PersonId, otherEthnicGroupMixed), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

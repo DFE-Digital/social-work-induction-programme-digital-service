@@ -147,7 +147,7 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<EthnicGroupMixed?> GetMixedEthnicGroupAsync(Guid accountId)
+    public async Task<EthnicGroupMixed?> GetEthnicGroupMixedAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
         return registerSocialWorkerJourneyModel?.EthnicGroupMixed;
@@ -162,18 +162,18 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<string?> GetOtherMixedEthnicGroupAsync(Guid accountId)
+    public async Task<string?> GetOtherEthnicGroupMixedAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherMixedEthnicGroup;
+        return registerSocialWorkerJourneyModel?.OtherEthnicGroupMixed;
     }
 
-    public async Task SetOtherMixedEthnicGroupAsync(Guid accountId, string? ethnicGroupMixed)
+    public async Task SetOtherEthnicGroupMixedAsync(Guid accountId, string? ethnicGroupMixed)
     {
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherMixedEthnicGroup = ethnicGroupMixed;
+        registerSocialWorkerJourneyModel.OtherEthnicGroupMixed = ethnicGroupMixed;
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
