@@ -92,8 +92,9 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationDateOfBirth() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDateOfBirth");
     public string SocialWorkerRegistrationSexAndGenderIdentity() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSexAndGenderIdentity");
     public string SocialWorkerRegistrationEthnicGroup() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/Index");
-    public string SocialWorkerRegistrationWhiteEthnicGroup() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/White");
+    public string SocialWorkerRegistrationEthnicGroupWhite() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/White");
     public string SocialWorkerRegistrationEthnicGroupMixed() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/MixedOrMultipleEthnicGroups");
+    public string SocialWorkerRegistrationEthnicGroupAsian() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/AsianOrAsianBritish");
 
     protected abstract string GetRequiredPathByPage(
         string page,

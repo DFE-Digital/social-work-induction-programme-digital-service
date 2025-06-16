@@ -87,7 +87,11 @@ public record Account
 
     public EthnicGroupWhite? EthnicGroupWhite { get; set; }
 
-    public string? OtherWhiteEthnicGroup { get; set; }
+    public string? OtherEthnicGroupWhite { get; set; }
+
+    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
+
+    public string? OtherEthnicGroupAsian { get; set; }
 
     public EthnicGroupMixed? EthnicGroupMixed { get; set; }
 

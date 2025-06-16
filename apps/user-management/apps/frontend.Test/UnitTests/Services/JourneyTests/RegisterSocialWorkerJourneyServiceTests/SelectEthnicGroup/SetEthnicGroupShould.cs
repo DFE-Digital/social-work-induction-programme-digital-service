@@ -4,12 +4,12 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests.SelectEthnicGroup;
 
-public class SetEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestBase
+public class SetEthnicGroupShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_SetsEthnicGroupMixed()
+    public async Task WhenCalled_SetsEthnicGroup()
     {
         // Arrange
         var originalAccount = AccountBuilder.Build();
@@ -19,7 +19,7 @@ public class SetEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestB
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.SetEthnicGroupMixedAsync(originalAccount.Id, originalAccount.EthnicGroupMixed);
+        await Sut.SetEthnicGroupAsync(originalAccount.Id, originalAccount.EthnicGroup);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -28,7 +28,7 @@ public class SetEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestB
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.EthnicGroupMixed.Should().Be(originalAccount.EthnicGroupMixed);
+        registerSocialWorkerJourneyModel!.EthnicGroup.Should().Be(originalAccount.EthnicGroup);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();
