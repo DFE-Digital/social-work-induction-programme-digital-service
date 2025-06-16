@@ -30,21 +30,28 @@ public class AccountBuilder
         _faker.RuleFor(a => a.GenderMatchesSexAtBirth, f => f.PickRandom<GenderMatchesSexAtBirth>());
         _faker.RuleFor(a => a.ProgrammeStartDate, f => DateOnly.FromDateTime(f.Date.Past()));
         _faker.RuleFor(a => a.ProgrammeEndDate, f => DateOnly.FromDateTime(f.Date.Future()));
-    }
-
+        _faker.RuleFor(a => a.OtherGenderIdentity, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.EthnicGroup, f => f.PickRandom<EthnicGroup>());
+        _faker.RuleFor(a => a.EthnicGroupWhite, f => f.PickRandom<EthnicGroupWhite>());
+        _faker.RuleFor(a => a.OtherWhiteEthnicGroup, f => f.Name.FirstName());
+      }
+      
     public AccountBuilder WithAddOrEditAccountDetailsData()
     {
         _faker.RuleFor(a => a.FirstName, f => f.Name.FirstName());
         _faker.RuleFor(a => a.MiddleNames, f => f.Name.FirstName());
         _faker.RuleFor(a => a.LastName, f => f.Name.LastName());
-        _faker.RuleFor(a => a.Email, f => f.Internet.Email());
+        _faker.RuleFor(a => a.Email, f => f.Internet.Email());   
         _faker.RuleFor(a => a.DateOfBirth, _ => null);
         _faker.RuleFor(a => a.UserSex, _ => null);
         _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
+        _faker.RuleFor(a => a.OtherGenderIdentity, _ => null);
+        _faker.RuleFor(a => a.EthnicGroup, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupWhite, _ => null);
+        _faker.RuleFor(a => a.OtherWhiteEthnicGroup, _ => null);      
         _faker.RuleFor(a => a.ProgrammeStartDate, _ => null);
         _faker.RuleFor(a => a.ProgrammeEndDate, _ => null);
-
-        return this;
+        return this;  
     }
 
     public AccountBuilder WithId(Guid id)
@@ -139,6 +146,27 @@ public class AccountBuilder
     public AccountBuilder WithStartDate(DateOnly startDate)
     {
         _faker.RuleFor(x => x.ProgrammeStartDate, startDate);
+        return this;
+    }
+
+    public AccountBuilder WithEthnicGroup(EthnicGroup ethnicGroup)
+    {
+        _faker.RuleFor(a => a.EthnicGroup, _ => ethnicGroup);
+
+        return this;
+    }
+
+    public AccountBuilder WithEthnicGroupWhite(EthnicGroupWhite ethnicGroupWhite)
+    {
+        _faker.RuleFor(a => a.EthnicGroupWhite, _ => ethnicGroupWhite);
+
+        return this;
+    }
+
+    public AccountBuilder WithOtherWhiteEthnicGroup(string otherWhiteEthnicGroup)
+    {
+        _faker.RuleFor(a => a.OtherWhiteEthnicGroup, _ => otherWhiteEthnicGroup);
+
         return this;
     }
 

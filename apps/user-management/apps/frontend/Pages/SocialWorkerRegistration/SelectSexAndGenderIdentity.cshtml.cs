@@ -21,12 +21,14 @@ public class SelectSexAndGenderIdentity(
 {
     [BindProperty] public UserSex? SelectedUserSex { get; set; }
     [BindProperty] public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
+    [BindProperty] public string? OtherGenderIdentity { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
         SelectedUserSex = await socialWorkerJourneyService.GetUserSexAsync(personId);
         GenderMatchesSexAtBirth = await socialWorkerJourneyService.GetUserGenderMatchesSexAtBirthAsync(personId);
+        OtherGenderIdentity = await socialWorkerJourneyService.GetOtherGenderIdentityAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
         return Page();
@@ -45,7 +47,9 @@ public class SelectSexAndGenderIdentity(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetUserSexAsync(personId, SelectedUserSex);
         await socialWorkerJourneyService.SetUserGenderMatchesSexAtBirthAsync(personId, GenderMatchesSexAtBirth);
+        await socialWorkerJourneyService.SetOtherGenderIdentityAsync(personId, OtherGenderIdentity);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW select ethnic group page
+        return Redirect(linkGenerator
+            .SocialWorkerRegistrationEthnicGroup());
     }
 }
