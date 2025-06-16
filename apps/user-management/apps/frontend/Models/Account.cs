@@ -97,6 +97,10 @@ public record Account
 
     public string? OtherEthnicGroupMixed { get; set; }
 
+    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
+
+    public string? OtherEthnicGroupBlack { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
