@@ -117,7 +117,7 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<EthnicGroupWhite?> GetWhiteEthnicGroupAsync(Guid accountId)
+    public async Task<EthnicGroupWhite?> GetEthnicGroupWhiteAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
         return registerSocialWorkerJourneyModel?.EthnicGroupWhite;
@@ -132,18 +132,108 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<string?> GetOtherWhiteEthnicGroupAsync(Guid accountId)
+    public async Task<string?> GetOtherEthnicGroupWhiteAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherWhiteEthnicGroup;
+        return registerSocialWorkerJourneyModel?.OtherEthnicGroupWhite;
     }
 
-    public async Task SetOtherWhiteEthnicGroupAsync(Guid accountId, string? ethnicGroupWhite)
+    public async Task SetOtherEthnicGroupWhiteAsync(Guid accountId, string? ethnicGroupWhite)
     {
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherWhiteEthnicGroup = ethnicGroupWhite;
+        registerSocialWorkerJourneyModel.OtherEthnicGroupWhite = ethnicGroupWhite;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<EthnicGroupAsian?> GetEthnicGroupAsianAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.EthnicGroupAsian;
+    }
+
+    public async Task SetEthnicGroupAsianAsync(Guid accountId, EthnicGroupAsian? ethnicGroupAsian)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.EthnicGroupAsian = ethnicGroupAsian;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<string?> GetOtherEthnicGroupAsianAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.OtherEthnicGroupAsian;
+    }
+
+    public async Task SetOtherEthnicGroupAsianAsync(Guid accountId, string? ethnicGroupAsian)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.OtherEthnicGroupAsian = ethnicGroupAsian;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<EthnicGroupMixed?> GetEthnicGroupMixedAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.EthnicGroupMixed;
+    }
+
+    public async Task SetEthnicGroupMixedAsync(Guid accountId, EthnicGroupMixed? ethnicGroupMixed)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.EthnicGroupMixed = ethnicGroupMixed;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<string?> GetOtherEthnicGroupMixedAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.OtherEthnicGroupMixed;
+    }
+
+    public async Task SetOtherEthnicGroupMixedAsync(Guid accountId, string? ethnicGroupMixed)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.OtherEthnicGroupMixed = ethnicGroupMixed;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<EthnicGroupBlack?> GetEthnicGroupBlackAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.EthnicGroupBlack;
+    }
+
+    public async Task SetEthnicGroupBlackAsync(Guid accountId, EthnicGroupBlack? ethnicGroupBlack)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.EthnicGroupBlack = ethnicGroupBlack;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<string?> GetOtherEthnicGroupBlackAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.OtherEthnicGroupBlack;
+    }
+
+    public async Task SetOtherEthnicGroupBlackAsync(Guid accountId, string? ethnicGroupBlack)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.OtherEthnicGroupBlack = ethnicGroupBlack;
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 

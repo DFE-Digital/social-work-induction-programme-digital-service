@@ -2,7 +2,7 @@
 @using Dfe.Sww.Ecf.Frontend.Extensions
 @using Dfe.Sww.Ecf.Frontend.Models
 @using GovUk.Frontend.AspNetCore.TagHelpers
-@model SelectWhiteEthnicGroup
+@model SelectEthnicGroupWhite
 
 @{
     Model.Title = "Which of the following best describes your White background?";
@@ -25,7 +25,7 @@
                     <govuk-radios-item value="@EthnicGroupWhite.AnyOtherWhiteBackground">
                         @EthnicGroupWhite.AnyOtherWhiteBackground.GetDisplayName()
                         <govuk-radios-item-conditional>
-                            <govuk-input for="OtherWhiteEthnicGroup" spellcheck="false" type="text">
+                            <govuk-input for="OtherEthnicGroupWhite" spellcheck="false" type="text">
                                 <govuk-input-label>How would you describe your background? (optional)</govuk-input-label>
                             </govuk-input>
                         </govuk-radios-item-conditional>
@@ -33,7 +33,7 @@
 
                     <govuk-radios-divider>or</govuk-radios-divider>
 
-                    <govuk-radios-item value="@EthnicGroup.PreferNotToSay">@EthnicGroup.PreferNotToSay.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@EthnicGroupWhite.PreferNotToSay">@EthnicGroupWhite.PreferNotToSay.GetDisplayName()</govuk-radios-item>
                 </govuk-radios-fieldset>
             </govuk-radios>
 

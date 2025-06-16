@@ -87,7 +87,19 @@ public record Account
 
     public EthnicGroupWhite? EthnicGroupWhite { get; set; }
 
-    public string? OtherWhiteEthnicGroup { get; set; }
+    public string? OtherEthnicGroupWhite { get; set; }
+
+    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
+
+    public string? OtherEthnicGroupAsian { get; set; }
+
+    public EthnicGroupMixed? EthnicGroupMixed { get; set; }
+
+    public string? OtherEthnicGroupMixed { get; set; }
+
+    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
+
+    public string? OtherEthnicGroupBlack { get; set; }
 
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;

@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Dfe.Sww.Ecf.Frontend.Validation;
 
-public class SelectWhiteEthnicGroupValidator : AbstractValidator<SelectWhiteEthnicGroup>
+public class SelectEthnicGroupWhiteValidator : AbstractValidator<SelectEthnicGroupWhite>
 {
-    public SelectWhiteEthnicGroupValidator()
+    public SelectEthnicGroupWhiteValidator()
     {
         RuleFor(model => model.SelectedEthnicGroupWhite)
             .NotEmpty()

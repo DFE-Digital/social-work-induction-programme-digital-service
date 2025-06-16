@@ -45,11 +45,11 @@ public class Index(
 
         return SelectedEthnicGroup switch
         {
-            EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationWhiteEthnicGroup()),
+            EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupWhite()),
+            EthnicGroup.MixedOrMultipleEthnicGroups => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupMixed()),
+            EthnicGroup.AsianOrAsianBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupAsian()),
+            EthnicGroup.BlackAfricanCaribbeanOrBlackBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupBlack()),
             EthnicGroup.PreferNotToSay
-                or EthnicGroup.MixedOrMultipleEthnicGroups
-                or EthnicGroup.AsianOrAsianBritish
-                or EthnicGroup.BlackAfricanCaribbeanOrBlackBritish
                 or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),
             _ => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth())
         };

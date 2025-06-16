@@ -11,29 +11,29 @@
             <govuk-fieldset>
                 <govuk-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">Enter their details</govuk-fieldset-legend>
 
-                <govuk-input asp-for="FirstName" autocomplete="given-name" spellcheck="false" type="text">
+                <govuk-input for="FirstName" autocomplete="given-name" spellcheck="false" type="text">
                     <govuk-input-label/>
                     <govuk-input-error-message/>
                 </govuk-input>
 
-                <govuk-input asp-for="MiddleNames" autocomplete="additional-name" spellcheck="false" type="text">
+                <govuk-input for="MiddleNames" autocomplete="additional-name" spellcheck="false" type="text">
                     <govuk-input-label/>
                     <govuk-input-error-message/>
                 </govuk-input>
 
-                <govuk-input asp-for="LastName" autocomplete="family-name" spellcheck="false" type="text">
+                <govuk-input for="LastName" autocomplete="family-name" spellcheck="false" type="text">
                     <govuk-input-label/>
                     <govuk-input-error-message/>
                 </govuk-input>
 
-                <govuk-input asp-for="Email" autocomplete="email" spellcheck="false" type="email">
+                <govuk-input for="Email" autocomplete="email" spellcheck="false" type="email">
                     <govuk-input-label/>
                     <govuk-input-error-message/>
                 </govuk-input>
 
                 @if (!Model.IsStaff)
                 {
-                    <govuk-input asp-for="SocialWorkEnglandNumber" spellcheck="false" input-class="govuk-input--width-10">
+                    <govuk-input for="SocialWorkEnglandNumber" spellcheck="false" input-class="govuk-input--width-10">
                         <govuk-input-label>Social Work England registration number</govuk-input-label>
                         <govuk-input-hint>For example, SW1234</govuk-input-hint>
                         <govuk-input-error-message/>
