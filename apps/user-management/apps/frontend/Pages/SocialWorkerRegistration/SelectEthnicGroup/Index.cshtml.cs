@@ -46,8 +46,8 @@ public class Index(
         return SelectedEthnicGroup switch
         {
             EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationWhiteEthnicGroup()),
+            EthnicGroup.MixedOrMultipleEthnicGroups => Redirect(linkGenerator.SocialWorkerRegistrationMixedEthnicGroup()),
             EthnicGroup.PreferNotToSay
-                or EthnicGroup.MixedOrMultipleEthnicGroups
                 or EthnicGroup.AsianOrAsianBritish
                 or EthnicGroup.BlackAfricanCaribbeanOrBlackBritish
                 or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),

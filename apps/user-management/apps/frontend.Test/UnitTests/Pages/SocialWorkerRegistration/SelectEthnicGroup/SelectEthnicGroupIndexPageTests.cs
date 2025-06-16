@@ -44,7 +44,8 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
 
     [Theory]
     [InlineData(EthnicGroup.White, "/social-worker-registration/select-ethnic-group/white")]
-    [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
+    [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-ethnic-group/mixed")]
+    [InlineData(EthnicGroup.OtherEthnicGroup, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
     public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser(EthnicGroup ethnicGroup, string redirectUrl)
     {
         // Arrange
