@@ -132,6 +132,18 @@ public class AccountBuilder
         return this;
     }
 
+    public AccountBuilder WithStartDate(DateOnly startDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeStartDate, startDate);
+        return this;
+    }
+
+    public AccountBuilder WithEndDate(DateOnly endDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeEndDate, endDate);
+        return this;
+    }
+
     public AccountBuilder WithDateOfBirth(DateOnly? dateOfBirth)
     {
         _faker.RuleFor(a => a.DateOfBirth, _ => dateOfBirth);
