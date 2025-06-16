@@ -9,6 +9,6 @@ public class SelectEthnicGroupBlackValidator : AbstractValidator<SelectEthnicGro
     {
         RuleFor(model => model.SelectedEthnicGroupBlack)
             .NotEmpty()
-            .WithMessage("Select an option that best describes your Black background");
+            .WithMessage("Select an option that best describes your Black, African, Caribbean or Black British background");
     }
 }
