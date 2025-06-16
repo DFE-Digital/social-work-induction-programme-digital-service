@@ -14,8 +14,7 @@ public class CompleteJourneyShould : EditAccountJourneyServiceTestBase
     {
         // Arrange
         var account = AccountBuilder
-            .WithSocialWorkEnglandNumber()
-            .WithNoRegistrationQuestions()
+            .WithAddOrEditAccountDetailsData()
             .WithStatus(AccountStatus.Active)
             .Build();
 

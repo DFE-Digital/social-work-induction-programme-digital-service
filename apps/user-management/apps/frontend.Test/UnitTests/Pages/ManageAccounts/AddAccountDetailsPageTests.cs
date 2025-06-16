@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -86,14 +87,14 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithoutSocialWorkNumber_RedirectsToConfirmAccountDetails()
+    public async Task Post_WhenCalledWithValidData_RedirectsToConfirmAccountDetails()
     {
         // Arrange
         var sweId = "1";
         var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
             .WithSocialWorkEnglandNumber(sweId)
             .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
-            .WithNoRegistrationQuestions()
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 

@@ -11,39 +11,39 @@ using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGr
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestBase<Index>
+public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestBase
 {
-    private SelectEthnicGroupWhite Sut { get; }
+    private SelectEthnicGroupMixed Sut { get; }
 
-    public SelectEthnicGroupPageWhiteTests()
+    public SelectEthnicGroupMixedPageTests()
     {
         Sut = new(new FakeLinkGenerator(), MockRegisterSocialWorkerJourneyService.Object, MockAuthServiceClient.Object,
-            new SelectEthnicGroupWhiteValidator());
+            new SelectEthnicGroupMixedValidator());
     }
 
     [Fact]
     public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var ethnicGroupWhite = EthnicGroupWhite.EnglishWelshScottishNorthernIrishOrBritish;
-        var otherEthnicGroupWhite = "Test Value";
+        var ethnicGroupMixed = EthnicGroupMixed.WhiteAndBlackCaribbean;
+        var otherEthnicGroupMixed = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupWhiteAsync(PersonId)).ReturnsAsync(ethnicGroupWhite);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherWhiteEthnicGroupAsync(PersonId)).ReturnsAsync(otherEthnicGroupWhite);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupMixedAsync(PersonId)).ReturnsAsync(ethnicGroupMixed);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupMixedAsync(PersonId)).ReturnsAsync(otherEthnicGroupMixed);
 
         // Act
         var result = await Sut.OnGetAsync();
 
         // Assert
-        Sut.SelectedEthnicGroupWhite.Should().Be(ethnicGroupWhite);
-        Sut.OtherEthnicGroupWhite.Should().Be(otherEthnicGroupWhite);
+        Sut.SelectedEthnicGroupMixed.Should().Be(ethnicGroupMixed);
+        Sut.OtherEthnicGroupMixed.Should().Be(otherEthnicGroupMixed);
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupWhiteAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherWhiteEthnicGroupAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupMixedAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupMixedAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -53,10 +53,10 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
-        var ethnicGroupWhite = EthnicGroupWhite.EnglishWelshScottishNorthernIrishOrBritish;
-        Sut.SelectedEthnicGroupWhite = ethnicGroupWhite;
-        var otherEthnicGroupWhite = "test value";
-        Sut.OtherEthnicGroupWhite = otherEthnicGroupWhite;
+        var ethnicGroup = EthnicGroupMixed.WhiteAndBlackCaribbean;
+        Sut.SelectedEthnicGroupMixed = ethnicGroup;
+        var otherEthnicGroupMixed = "test value";
+        Sut.OtherEthnicGroupMixed = otherEthnicGroupMixed;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -68,8 +68,8 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupWhiteAsync(PersonId, ethnicGroupWhite), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupWhiteAsync(PersonId, otherEthnicGroupWhite), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupMixedAsync(PersonId, otherEthnicGroupMixed), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -78,7 +78,7 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
     public async Task OnPostAsync_WhenCalledWithInvalidValues_ReturnsValidationErrors()
     {
         // Arrange
-        Sut.SelectedEthnicGroupWhite = null;
+        Sut.SelectedEthnicGroupMixed = null;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -90,10 +90,10 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
         var modelStateKeys = modelState.Keys.ToList();
         modelStateKeys.Count.Should().Be(1);
 
-        modelStateKeys.Should().Contain("SelectedEthnicGroupWhite");
-        modelState["SelectedEthnicGroupWhite"]!.Errors.Count.Should().Be(1);
-        modelState["SelectedEthnicGroupWhite"]!.Errors[0].ErrorMessage.Should()
-            .Be("Select an option that best describes your White background");
+        modelStateKeys.Should().Contain("SelectedEthnicGroupMixed");
+        modelState["SelectedEthnicGroupMixed"]!.Errors.Count.Should().Be(1);
+        modelState["SelectedEthnicGroupMixed"]!.Errors[0].ErrorMessage.Should()
+            .Be("Select an option that best describes your mixed or multiple ethnic groups background");
 
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
 

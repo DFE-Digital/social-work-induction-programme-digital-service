@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using FluentValidation;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 /// </summary>
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SocialWorkerProgrammeDates(
+    ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<SocialWorkerProgrammeDates> validator) : BasePageModel
 {
@@ -32,6 +35,19 @@ public class SocialWorkerProgrammeDates(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.AddAccountDetails();
+
+        DateOnly? retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
+
+        ProgrammeStartDate = retrievedStartDate.HasValue
+            ? new YearMonth(retrievedStartDate.Value.Year, retrievedStartDate.Value.Month)
+            : (YearMonth?)null;
+
+        DateOnly? retrievedEndDate = createAccountJourneyService.GetProgrammeEndDate();
+
+        ProgrammeEndDate = retrievedEndDate.HasValue
+            ? new YearMonth(retrievedEndDate.Value.Year, retrievedEndDate.Value.Month)
+            : (YearMonth?)null;
+
         return Page();
     }
 
@@ -47,6 +63,15 @@ public class SocialWorkerProgrammeDates(
         {
             BackLinkPath = linkGenerator.AddAccountDetails();
             return Page();
+        }
+
+        if (ProgrammeStartDate.HasValue && ProgrammeEndDate.HasValue)
+        {
+            var dateOnlyStartDate = new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
+            var dateOnlyEndDate = new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
+
+            createAccountJourneyService.SetProgrammeStartDate(dateOnlyStartDate);
+            createAccountJourneyService.SetProgrammeEndDate(dateOnlyEndDate);
         }
 
         return Redirect(linkGenerator.ConfirmAccountDetails());

@@ -11,6 +11,7 @@ using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -136,6 +137,61 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsQualifiedWithin3Years = isQualifiedWithin3Years;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public DateOnly? GetProgrammeStartDate()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.ProgrammeStartDate;
+    }
+
+    public void SetProgrammeStartDate(DateOnly programmeStartDate)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.ProgrammeStartDate = programmeStartDate;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public DateOnly? GetProgrammeEndDate()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.ProgrammeEndDate;
+    }
+
+    public void SetProgrammeEndDate(DateOnly programmeEndDate)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.ProgrammeEndDate = programmeEndDate;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public AccountLabels? GetAccountLabels()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        var accountLabels = new AccountLabels
+        {
+            IsStaffLabel =
+                createAccountJourneyModel.IsStaff == true
+                    ? IsStaffLabels.IsStaffTrue
+                    : IsStaffLabels.IsStaffFalse,
+            IsRegisteredWithSocialWorkEnglandLabel =
+                createAccountJourneyModel.IsRegisteredWithSocialWorkEngland == true ? "Yes" : null,
+            IsAgencyWorkerLabel = createAccountJourneyModel.IsAgencyWorker switch
+            {
+                true => "Yes",
+                false => "No",
+                null => null
+            },
+            IsStatutoryWorkerLabel =
+                createAccountJourneyModel.IsStatutoryWorker == true ? "Yes" : null,
+            IsQualifiedWithin3Years = createAccountJourneyModel.IsQualifiedWithin3Years switch
+            {
+                true => "Yes",
+                false => "No",
+                null => null
+            }
+        };
+        return accountLabels;
     }
 
     public void ResetCreateAccountJourneyModel()
