@@ -5,7 +5,7 @@
 @model SelectEthnicGroupOther
 
 @{
-    Model.Title = "What is your ethnic group?";
+    Model.Title = "Which of the following best describes your background?";
 }
 
 <div class="govuk-grid-row">
@@ -15,7 +15,7 @@
             <govuk-radios for="SelectedEthnicGroupOther">
                 <govuk-radios-fieldset>
                     <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
-                        What is your ethnic group?
+                        Which of the following best describes your background?
                     </govuk-radios-fieldset-legend>
 
                     <govuk-radios-item value="@EthnicGroupOther.Arab">@EthnicGroupOther.Arab.GetDisplayName()</govuk-radios-item>

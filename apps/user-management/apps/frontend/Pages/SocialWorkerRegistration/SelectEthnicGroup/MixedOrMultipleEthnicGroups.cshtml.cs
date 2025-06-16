@@ -25,8 +25,8 @@ public class SelectEthnicGroupMixed(
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroupService.GetEthnicGroupMixedAsync(personId);
-        OtherEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroupService.GetOtherEthnicGroupMixedAsync(personId);
+        SelectedEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupMixedAsync(personId);
+        OtherEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroups.GetOtherEthnicGroupMixedAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
@@ -43,8 +43,8 @@ public class SelectEthnicGroupMixed(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.EthnicGroupService.SetEthnicGroupMixedAsync(personId, SelectedEthnicGroupMixed);
-        await socialWorkerJourneyService.EthnicGroupService.SetOtherEthnicGroupMixedAsync(personId, OtherEthnicGroupMixed);
+        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupMixedAsync(personId, SelectedEthnicGroupMixed);
+        await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupMixedAsync(personId, OtherEthnicGroupMixed);
 
         return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
     }

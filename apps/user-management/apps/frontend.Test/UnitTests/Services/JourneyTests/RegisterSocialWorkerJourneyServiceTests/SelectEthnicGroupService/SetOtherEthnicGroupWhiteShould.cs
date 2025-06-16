@@ -19,7 +19,7 @@ public class SetOtherEthnicGroupWhiteShould : RegisterSocialWorkerJourneyService
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.EthnicGroupService.SetOtherEthnicGroupWhiteAsync(originalAccount.Id, originalAccount.OtherEthnicGroupWhite);
+        await Sut.EthnicGroups.SetOtherEthnicGroupWhiteAsync(originalAccount.Id, originalAccount.OtherEthnicGroupWhite);
 
         // Assert
         HttpContext.Session.TryGet(

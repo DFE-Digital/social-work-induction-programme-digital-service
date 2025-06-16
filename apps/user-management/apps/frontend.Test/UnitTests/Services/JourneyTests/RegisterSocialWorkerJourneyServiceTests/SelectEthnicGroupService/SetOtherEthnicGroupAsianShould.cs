@@ -19,7 +19,7 @@ public class SetOtherEthnicGroupAsianShould : RegisterSocialWorkerJourneyService
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.EthnicGroupService.SetOtherEthnicGroupAsianAsync(originalAccount.Id, originalAccount.OtherEthnicGroupAsian);
+        await Sut.EthnicGroups.SetOtherEthnicGroupAsianAsync(originalAccount.Id, originalAccount.OtherEthnicGroupAsian);
 
         // Assert
         HttpContext.Session.TryGet(

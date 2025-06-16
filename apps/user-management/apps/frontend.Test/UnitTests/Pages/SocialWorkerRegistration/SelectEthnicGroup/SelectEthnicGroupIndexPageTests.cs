@@ -28,7 +28,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         var ethnicGroup = EthnicGroup.White;
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService.GetEthnicGroupAsync(PersonId)).ReturnsAsync(ethnicGroup);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetEthnicGroupAsync(PersonId)).ReturnsAsync(ethnicGroup);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -39,7 +39,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.GetEthnicGroupAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetEthnicGroupAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -67,7 +67,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be(redirectUrl);
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroupService.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

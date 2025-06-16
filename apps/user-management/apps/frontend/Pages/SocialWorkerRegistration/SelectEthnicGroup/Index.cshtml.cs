@@ -24,7 +24,7 @@ public class Index(
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroup = await socialWorkerJourneyService.EthnicGroupService.GetEthnicGroupAsync(personId);
+        SelectedEthnicGroup = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
         return Page();
@@ -41,7 +41,7 @@ public class Index(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.EthnicGroupService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
+        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
         return SelectedEthnicGroup switch
         {

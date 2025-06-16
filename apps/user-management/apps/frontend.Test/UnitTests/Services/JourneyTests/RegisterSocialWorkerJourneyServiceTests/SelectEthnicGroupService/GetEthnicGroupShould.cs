@@ -19,7 +19,7 @@ public class GetEthnicGroupShould : RegisterSocialWorkerJourneyServiceTestBase
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.EthnicGroupService.GetEthnicGroupAsync(id);
+        var response = await Sut.EthnicGroups.GetEthnicGroupAsync(id);
 
         // Assert
         response.Should().NotBeNull();

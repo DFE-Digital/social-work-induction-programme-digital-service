@@ -19,7 +19,7 @@ public class SetEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestB
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.EthnicGroupService.SetEthnicGroupMixedAsync(originalAccount.Id, originalAccount.EthnicGroupMixed);
+        await Sut.EthnicGroups.SetEthnicGroupMixedAsync(originalAccount.Id, originalAccount.EthnicGroupMixed);
 
         // Assert
         HttpContext.Session.TryGet(

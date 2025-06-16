@@ -13,7 +13,7 @@ public interface IRegisterSocialWorkerJourneyService
     Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
     Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
 
-    public IEthnicGroupService EthnicGroupService { get; init; }
+    public IEthnicGroupService EthnicGroups { get; init; }
 
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);

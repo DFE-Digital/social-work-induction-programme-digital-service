@@ -19,7 +19,7 @@ public class GetOtherEthnicGroupAsianShould : RegisterSocialWorkerJourneyService
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.EthnicGroupService.GetOtherEthnicGroupAsianAsync(id);
+        var response = await Sut.EthnicGroups.GetOtherEthnicGroupAsianAsync(id);
 
         // Assert
         response.Should().NotBeNull();

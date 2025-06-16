@@ -9,7 +9,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAccountService _accountService;
-    public IEthnicGroupService EthnicGroupService { get; init; }
+    public IEthnicGroupService EthnicGroups { get; init; }
 
     public RegisterSocialWorkerJourneyService(
         IHttpContextAccessor httpContextAccessor,
@@ -17,7 +17,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
     {
         _httpContextAccessor = httpContextAccessor;
         _accountService = accountService;
-        EthnicGroupService = new EthnicGroupService(this);
+        EthnicGroups = new EthnicGroupService(this);
     }
 
     private static string RegisterSocialWorkerSessionKey(Guid id) => "_registerSocialWorker-" + id;

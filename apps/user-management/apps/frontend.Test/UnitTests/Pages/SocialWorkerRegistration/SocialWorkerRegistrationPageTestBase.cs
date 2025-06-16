@@ -20,7 +20,7 @@ public abstract class SocialWorkerRegistrationPageTestBase
         MockRegisterSocialWorkerJourneyService = new();
         MockAuthServiceClient = new();
 
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroupService).Returns(MockEthnicGroupService.Object);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups).Returns(MockEthnicGroupService.Object);
     }
 
     private protected void VerifyAllNoOtherCalls()
