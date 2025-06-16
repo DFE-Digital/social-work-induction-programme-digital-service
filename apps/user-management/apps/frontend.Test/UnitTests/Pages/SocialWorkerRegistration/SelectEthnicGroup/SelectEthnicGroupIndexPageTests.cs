@@ -61,7 +61,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW relevant ethnic group sub page
+        redirectResult!.Url.Should().Be(redirectUrl);
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
