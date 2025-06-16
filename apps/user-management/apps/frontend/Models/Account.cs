@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -66,6 +67,10 @@ public record Account
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; init; }
 
+    public DateOnly? ProgrammeStartDate { get; init; }
+
+    public DateOnly? ProgrammeEndDate { get; init; }
+
     public int? ExternalUserId { get; set; }
 
     public bool IsFunded { get; set; }
@@ -104,6 +109,8 @@ public record Account
         Status = account.Status;
         Types = account.Types;
         SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+        ProgrammeStartDate = account.ProgrammeStartDate;
+        ProgrammeEndDate = account.ProgrammeEndDate;
         ExternalUserId = account.ExternalUserId;
         IsFunded = account.IsFunded;
     }

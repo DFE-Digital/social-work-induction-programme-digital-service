@@ -57,13 +57,16 @@ public class AccountService(
             {
                 FirstName = account.FirstName,
                 LastName = account.LastName,
+                MiddleName = account.MiddleNames,
                 EmailAddress = account.Email,
                 SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
                 Roles = account.Types ?? [],
                 Status = account.Status,
                 OrganisationId = new Guid(organisationId),
                 ExternalUserId = account.ExternalUserId,
-                IsFunded = account.IsFunded
+                IsFunded = account.IsFunded,
+                ProgrammeStartDate = account.ProgrammeStartDate,
+                ProgrammeEndDate = account.ProgrammeEndDate
             }
         );
 

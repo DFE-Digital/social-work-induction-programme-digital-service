@@ -13,7 +13,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.Id, f => f.Random.Guid());
         _faker.RuleFor(a => a.CreatedAt, f => f.Date.Past());
         _faker.RuleFor(a => a.FirstName, f => f.Name.FirstName());
-        _faker.RuleFor(a => a.MiddleNames, f => f.Name.LastName());
+        _faker.RuleFor(a => a.MiddleNames, f => f.Name.FirstName());
         _faker.RuleFor(a => a.LastName, f => f.Name.LastName());
         _faker.RuleFor(a => a.Status, f => f.PickRandom<AccountStatus>());
         _faker.RuleFor(a => a.Email, f => f.Internet.Email());
@@ -25,6 +25,9 @@ public class AccountBuilder
                     ? f.Random.Number(1, 1000).ToString()
                     : null
         );
+        _faker.RuleFor(a => a.ProgrammeStartDate, f => DateOnly.FromDateTime(f.Date.Past()));
+        _faker.RuleFor(a => a.ProgrammeEndDate, f => DateOnly.FromDateTime(f.Date.Future()));
+
         _faker.RuleFor(a => a.DateOfBirth, f => DateOnly.FromDateTime(f.Date.Past()));
         _faker.RuleFor(a => a.UserSex, f => f.PickRandom<UserSex>());
         _faker.RuleFor(a => a.GenderMatchesSexAtBirth, f => f.PickRandom<GenderMatchesSexAtBirth>());
@@ -32,8 +35,24 @@ public class AccountBuilder
         _faker.RuleFor(a => a.EthnicGroup, f => f.PickRandom<EthnicGroup>());
         _faker.RuleFor(a => a.EthnicGroupWhite, f => f.PickRandom<EthnicGroupWhite>());
         _faker.RuleFor(a => a.OtherWhiteEthnicGroup, f => f.Name.FirstName());
-        _faker.RuleFor(a => a.EthnicGroupMixed, f => f.PickRandom<EthnicGroupMixed>());
-        _faker.RuleFor(a => a.OtherMixedEthnicGroup, f => f.Name.FirstName());
+    }
+
+    public AccountBuilder WithAddOrEditAccountDetailsData()
+    {
+        _faker.RuleFor(a => a.FirstName, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.MiddleNames, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.LastName, f => f.Name.LastName());
+        _faker.RuleFor(a => a.Email, f => f.Internet.Email());
+        _faker.RuleFor(a => a.DateOfBirth, _ => null);
+        _faker.RuleFor(a => a.UserSex, _ => null);
+        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
+        _faker.RuleFor(a => a.OtherGenderIdentity, _ => null);
+        _faker.RuleFor(a => a.EthnicGroup, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupWhite, _ => null);
+        _faker.RuleFor(a => a.OtherWhiteEthnicGroup, _ => null);
+        _faker.RuleFor(a => a.ProgrammeStartDate, _ => null);
+        _faker.RuleFor(a => a.ProgrammeEndDate, _ => null);
+        return this;
     }
 
     public AccountBuilder WithId(Guid id)
@@ -101,6 +120,19 @@ public class AccountBuilder
     {
         _faker.RuleFor(a => a.IsStaff, _ => isStaff);
 
+        return this;
+    }
+
+
+    public AccountBuilder WithStartDate(DateOnly startDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeStartDate, startDate);
+        return this;
+    }
+
+    public AccountBuilder WithEndDate(DateOnly endDate)
+    {
+        _faker.RuleFor(x => x.ProgrammeEndDate, endDate);
         return this;
     }
 

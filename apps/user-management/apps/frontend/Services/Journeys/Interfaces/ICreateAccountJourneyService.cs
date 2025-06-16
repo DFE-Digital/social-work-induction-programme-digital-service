@@ -35,6 +35,14 @@ public interface ICreateAccountJourneyService
 
     void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years);
 
+    void SetProgrammeStartDate(DateOnly programmeStartDate);
+
+    DateOnly? GetProgrammeStartDate();
+
+    void SetProgrammeEndDate(DateOnly programmeEndDate);
+
+    DateOnly? GetProgrammeEndDate();
+
     Task<Account> CompleteJourneyAsync();
 
     void ResetCreateAccountJourneyModel();
@@ -42,4 +50,6 @@ public interface ICreateAccountJourneyService
     void SetSocialWorkerDetails(SocialWorker socialWorkerDetails);
 
     SocialWorker? GetSocialWorkerDetails();
+
+    AccountLabels? GetAccountLabels();
 }

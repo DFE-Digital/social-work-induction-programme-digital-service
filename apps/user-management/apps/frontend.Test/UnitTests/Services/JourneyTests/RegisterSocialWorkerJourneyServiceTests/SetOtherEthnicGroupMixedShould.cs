@@ -6,10 +6,10 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests;
 
-public class SetOtherMixedEthnicGroupShould : RegisterSocialWorkerJourneyServiceTestBase
+public class SetOtherEthnicGroupMixedShould : RegisterSocialWorkerJourneyServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_SetsOtherMixedEthnicGroup()
+    public async Task WhenCalled_SetsOtherEthnicGroupMixed()
     {
         // Arrange
         var originalAccount = AccountBuilder.Build();
@@ -19,7 +19,7 @@ public class SetOtherMixedEthnicGroupShould : RegisterSocialWorkerJourneyService
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.SetOtherMixedEthnicGroupAsync(originalAccount.Id, originalAccount.OtherMixedEthnicGroup);
+        await Sut.SetOtherEthnicGroupMixedAsync(originalAccount.Id, originalAccount.OtherEthnicGroupMixed);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -28,7 +28,7 @@ public class SetOtherMixedEthnicGroupShould : RegisterSocialWorkerJourneyService
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.OtherMixedEthnicGroup.Should().Be(originalAccount.OtherMixedEthnicGroup);
+        registerSocialWorkerJourneyModel!.OtherEthnicGroupMixed.Should().Be(originalAccount.OtherEthnicGroupMixed);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();
