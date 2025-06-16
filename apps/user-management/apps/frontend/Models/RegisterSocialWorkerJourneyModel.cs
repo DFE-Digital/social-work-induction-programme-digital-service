@@ -17,7 +17,6 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherWhiteEthnicGroup { get; set; } = account.OtherWhiteEthnicGroup;
 
-
     public EthnicGroupMixed? EthnicGroupMixed { get; set; } = account.EthnicGroupMixed;
 
     public string? OtherMixedEthnicGroup { get; set; } = account.OtherMixedEthnicGroup;

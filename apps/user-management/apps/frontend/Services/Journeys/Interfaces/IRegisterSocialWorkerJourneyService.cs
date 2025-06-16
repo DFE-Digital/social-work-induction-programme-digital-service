@@ -9,9 +9,9 @@ public interface IRegisterSocialWorkerJourneyService
     Task<UserSex?> GetUserSexAsync(Guid accountId);
     Task SetUserSexAsync(Guid accountId, UserSex? userSex);
     Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId);
-    Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? userSex);
+    Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
     Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
-    Task SetOtherGenderIdentityAsync(Guid accountId, string? userSex);
+    Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
     Task<EthnicGroup?> GetEthnicGroupAsync(Guid accountId);
     Task SetEthnicGroupAsync(Guid accountId, EthnicGroup? ethnicGroup);
     Task<EthnicGroupWhite?> GetWhiteEthnicGroupAsync(Guid accountId);
