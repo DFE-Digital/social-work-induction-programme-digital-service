@@ -10,7 +10,7 @@
     <div class="govuk-grid-column-two-thirds">
 
         <form method="post" asp-page-handler="@(Model.EditAccountId is not null ? "Edit" : "")">
-            <govuk-radios asp-for="IsStaff">
+            <govuk-radios for="IsStaff">
                 <govuk-radios-fieldset>
                     <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
                         @(Model.EditAccountId is not null ? "What is their role?" : "Who do you want to add?")

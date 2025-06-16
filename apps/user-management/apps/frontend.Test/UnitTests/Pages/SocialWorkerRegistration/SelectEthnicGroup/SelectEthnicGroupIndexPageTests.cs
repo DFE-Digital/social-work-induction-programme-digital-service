@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -10,7 +11,7 @@ using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGr
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestBase<Index>
+public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestBase
 {
     private Index Sut { get; }
 
@@ -44,7 +45,8 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
 
     [Theory]
     [InlineData(EthnicGroup.White, "/social-worker-registration/select-ethnic-group/white")]
-    [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
+    [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-ethnic-group/mixed-or-multiple-ethnic-groups")]
+    [InlineData(EthnicGroup.OtherEthnicGroup, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
     public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser(EthnicGroup ethnicGroup, string redirectUrl)
     {
         // Arrange
@@ -59,7 +61,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be(redirectUrl); // TODO update this when more sub pages are added
+        redirectResult!.Url.Should().Be(redirectUrl);
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);

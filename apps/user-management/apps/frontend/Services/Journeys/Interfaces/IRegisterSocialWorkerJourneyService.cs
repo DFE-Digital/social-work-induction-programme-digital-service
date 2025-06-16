@@ -18,6 +18,10 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetEthnicGroupWhiteAsync(Guid accountId, EthnicGroupWhite? ethnicGroupWhite);
     Task<string?> GetOtherWhiteEthnicGroupAsync(Guid accountId);
     Task SetOtherWhiteEthnicGroupAsync(Guid accountId, string? otherWhiteEthnicGroup);
+    Task<EthnicGroupMixed?> GetEthnicGroupMixedAsync(Guid accountId);
+    Task SetEthnicGroupMixedAsync(Guid accountId, EthnicGroupMixed? ethnicGroupMixed);
+    Task<string?> GetOtherEthnicGroupMixedAsync(Guid accountId);
+    Task SetOtherEthnicGroupMixedAsync(Guid accountId, string? otherEthnicGroupMixed);
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
 }

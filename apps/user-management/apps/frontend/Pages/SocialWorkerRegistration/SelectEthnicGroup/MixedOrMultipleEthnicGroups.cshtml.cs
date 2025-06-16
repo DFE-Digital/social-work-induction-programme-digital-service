@@ -12,21 +12,23 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class Index(
+public class SelectEthnicGroupMixed(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<Index> validator)
+    IValidator<SelectEthnicGroupMixed> validator)
     : BasePageModel
 {
-    [BindProperty] public EthnicGroup? SelectedEthnicGroup { get; set; }
+    [BindProperty] public EthnicGroupMixed? SelectedEthnicGroupMixed { get; set; }
+    [BindProperty] public string? OtherEthnicGroupMixed { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroup = await socialWorkerJourneyService.GetEthnicGroupAsync(personId);
+        SelectedEthnicGroupMixed = await socialWorkerJourneyService.GetEthnicGroupMixedAsync(personId);
+        OtherEthnicGroupMixed = await socialWorkerJourneyService.GetOtherEthnicGroupMixedAsync(personId);
 
-        BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
     }
 
@@ -36,22 +38,14 @@ public class Index(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
             return Page();
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
+        await socialWorkerJourneyService.SetEthnicGroupMixedAsync(personId, SelectedEthnicGroupMixed);
+        await socialWorkerJourneyService.SetOtherEthnicGroupMixedAsync(personId, OtherEthnicGroupMixed);
 
-        return SelectedEthnicGroup switch
-        {
-            EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationWhiteEthnicGroup()),
-            EthnicGroup.MixedOrMultipleEthnicGroups => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupMixed()),
-            EthnicGroup.PreferNotToSay
-                or EthnicGroup.AsianOrAsianBritish
-                or EthnicGroup.BlackAfricanCaribbeanOrBlackBritish
-                or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),
-            _ => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth())
-        };
+        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
     }
 }
