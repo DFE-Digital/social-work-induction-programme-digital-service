@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
-using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
-public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestBase<Index>
+public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestBase
 {
     private SelectEthnicGroupWhite Sut { get; }
 
@@ -30,7 +29,7 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupWhiteAsync(PersonId)).ReturnsAsync(ethnicGroupWhite);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherWhiteEthnicGroupAsync(PersonId)).ReturnsAsync(otherEthnicGroupWhite);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupWhiteAsync(PersonId)).ReturnsAsync(otherEthnicGroupWhite);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -43,7 +42,7 @@ public class SelectEthnicGroupPageWhiteTests : SocialWorkerRegistrationPageTestB
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupWhiteAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherWhiteEthnicGroupAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupWhiteAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
