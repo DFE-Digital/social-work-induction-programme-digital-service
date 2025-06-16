@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -60,7 +61,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be(redirectUrl); // TODO update this when more sub pages are added
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW relevant ethnic group sub page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
