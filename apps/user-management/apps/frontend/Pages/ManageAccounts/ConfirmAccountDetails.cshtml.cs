@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
@@ -21,11 +22,29 @@ public class ConfirmAccountDetails(
 {
     public Guid Id { get; set; }
 
+    [Display(Name = "Who do you want to add?")]
+    public string? SelectedAccountType { get; set; }
+
+    [Display(Name = "Are they registered with Social Work England?")]
+    public string? RegisteredWithSocialWorkEngland { get; set; }
+
+    [Display(Name = "Are they working in statutory child and family social work?")]
+    public string? StatutoryWorker { get; set; }
+
+    [Display(Name = "Are they an agency worker?")]
+    public string? AgencyWorker { get; set; }
+
+    [Display(Name = "Have they completed their social work qualification within the last 3 years?")]
+    public string? Qualified { get; set; }
+
     /// <summary>
     /// First Name
     /// </summary>
     [Display(Name = "First name")]
     public string? FirstName { get; set; }
+
+    [Display(Name = "Middle names")]
+    public string? MiddleNames { get; set; }
 
     /// <summary>
     /// Last Name
@@ -42,8 +61,14 @@ public class ConfirmAccountDetails(
     /// <summary>
     /// Social Work England number
     /// </summary>
-    [Display(Name = "Social Work England number")]
+    [Display(Name = "Social Work England registration number")]
     public string? SocialWorkEnglandNumber { get; set; }
+
+    [Display(Name = "What is their programme start date?")]
+    public string? ProgrammeStartDate { get; set; }
+
+    [Display(Name = "What is their expected programme end date?")]
+    public string? ProgrammeEndDate { get; set; }
 
     public string? ChangeDetailsLink { get; set; }
 
@@ -55,15 +80,26 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.AddAccountDetails();
+        BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
         ChangeDetailsLink = linkGenerator.AddAccountDetailsChange();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
+        var accountLabels = createAccountJourneyService.GetAccountLabels();
 
+        SelectedAccountType = accountLabels?.IsStaffLabel;
+        RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
+        StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
+        AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
+        Qualified = accountLabels?.IsQualifiedWithin3Years;
         FirstName = accountDetails?.FirstName;
+        MiddleNames = accountDetails?.MiddleNames;
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
         SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
+        ProgrammeStartDate = createAccountJourneyService.GetProgrammeStartDate()?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        ProgrammeEndDate = createAccountJourneyService.GetProgrammeEndDate()?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         return Page();
     }

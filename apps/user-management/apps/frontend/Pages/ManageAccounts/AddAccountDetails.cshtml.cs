@@ -97,7 +97,7 @@ public class AddAccountDetails(
             MiddleNames = MiddleNames,
             Email = Email,
             SocialWorkEnglandNumber = SocialWorkEnglandNumber,
-            IsStaff = IsStaff
+            IsStaff = IsStaff,
         };
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)

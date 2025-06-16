@@ -12,7 +12,9 @@ public class SetAccountDetailsShould : EditAccountJourneyServiceTestBase
     public async Task WhenCalled_SetsAccountDetails()
     {
         // Arrange
-        var originalAccount = AccountBuilder.WithNoRegistrationQuestions().Build();
+        var originalAccount = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .Build();
 
         var updatedAccount = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(updatedAccount);

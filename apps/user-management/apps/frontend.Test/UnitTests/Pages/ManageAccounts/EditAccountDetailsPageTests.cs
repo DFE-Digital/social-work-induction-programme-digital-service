@@ -136,7 +136,9 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
     {
         // Arrange
-        var account = AccountBuilder.WithNoRegistrationQuestions().Build();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
@@ -233,7 +235,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task PostChange_WhenCalled_HasCorrectBackLink()
     {
         // Arrange
-        var account = AccountBuilder.WithNoRegistrationQuestions().Build();
+        var account = AccountBuilder.WithAddOrEditAccountDetailsData().Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         Sut.FirstName = account.FirstName;
