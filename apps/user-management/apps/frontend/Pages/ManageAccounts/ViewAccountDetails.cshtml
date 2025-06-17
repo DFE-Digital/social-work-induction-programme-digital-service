@@ -13,6 +13,10 @@
             Change details
         </h1>
 
+        <div class="govuk-!-margin-bottom-6">
+            <account-status status="@Model.Account.Status"/>
+        </div>
+
         <govuk-summary-list>
             <govuk-summary-list-row>
                 <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Account.Types)</govuk-summary-list-row-key>
