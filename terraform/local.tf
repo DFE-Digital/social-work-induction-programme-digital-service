@@ -6,4 +6,5 @@ locals {
     "Product"          = var.product_tag
     "Service Offering" = var.service_offering_tag
   }
+  basic_auth_password = var.environment_audience == "team" ? var.basic_auth_password_team_environments : var.basic_auth_password_user_environments
 }

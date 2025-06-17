@@ -6,6 +6,7 @@ azure_region = "westeurope"
 environment = "development"
 resource_name_prefix = "${project_code}d01"
 primary_resource_group = "${project_code}d01-swip-rg"
+environment_audience = "team"
 create_and_own_container_registry = true
 acr_name = "${project_code}d01acr"
 acr_sku = "Basic"
