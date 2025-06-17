@@ -13,17 +13,14 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 {
     public Account Account { get; set; } = default!;
 
-    public bool IsSocialWorker { get; set; } = false;
+    public bool IsSocialWorker { get; set; }
 
-    public bool IsAssessor { get; set; } = false;
+    public bool IsAssessor { get; set; }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
         var account = await accountService.GetByIdAsync(id);
-        if (account is null)
-        {
-            return NotFound();
-        }
+        if (account is null) return NotFound();
 
         BackLinkPath = linkGenerator.ManageAccounts();
         Account = account;

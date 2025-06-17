@@ -11,12 +11,15 @@ public class AccountMapper : IModelMapper<Person, Account>
         {
             Id = person.PersonId,
             FirstName = person.FirstName,
+            MiddleNames = person.MiddleName,
             LastName = person.LastName,
             SocialWorkEnglandNumber = person.SocialWorkEnglandNumber,
             Email = person.EmailAddress,
             Status = person.Status,
             Types = person.Roles,
-            CreatedAt = person.CreatedOn
+            CreatedAt = person.CreatedOn,
+            ProgrammeStartDate = person.ProgrammeStartDate,
+            ProgrammeEndDate = person.ProgrammeEndDate,
         };
     }
 
@@ -26,12 +29,15 @@ public class AccountMapper : IModelMapper<Person, Account>
         {
             PersonId = account.Id,
             FirstName = account.FirstName ?? string.Empty,
+            MiddleName = account.MiddleNames,
             LastName = account.LastName ?? string.Empty,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             EmailAddress = account.Email,
             Status = account.Status,
             Roles = account.Types ?? [],
-            CreatedOn = account.CreatedAt
+            CreatedOn = account.CreatedAt,
+            ProgrammeStartDate = account.ProgrammeStartDate,
+            ProgrammeEndDate = account.ProgrammeEndDate,
         };
     }
 }
