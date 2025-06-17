@@ -4,6 +4,5 @@ public enum PersonStatus
 {
     Active,
     Inactive,
-    PendingRegistration,
-    Paused,
+    PendingRegistration
 }
