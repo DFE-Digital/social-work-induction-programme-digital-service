@@ -12,13 +12,20 @@ public class AccountTypesTagHelper : TagHelper
     {
         output.TagName = null;
 
-        if (Types == null) return;
+        if (Types == null || Types.Count == 0) return;
 
+        // Singular account types are displayed without a wrapping tag
+        if (Types.Count == 1)
+        {
+            output.Content.SetContent(Types[0].GetDisplayName());
+            return;
+        }
+
+        // Multiple account types are displayed a separate `p` tags
         var content = Types.Aggregate(
             "",
             (current, accountType) => current + $"<p>{accountType.GetDisplayName()}</p>"
         );
-
         output.Content.SetHtmlContent(content);
     }
 }
