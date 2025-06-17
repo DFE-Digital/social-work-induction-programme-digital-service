@@ -1,10 +1,5 @@
 @page
-@using Dfe.Sww.Ecf.Frontend.Extensions
-@using Dfe.Sww.Ecf.Frontend.Models
-@using Dfe.Sww.Ecf.Frontend.TagHelpers
 @using GovUk.Frontend.AspNetCore
-@using GovUk.Frontend.AspNetCore.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Index
 
 @{
@@ -61,29 +56,14 @@
                 {
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="account-name">
-                            <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state" asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
+                            <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state"
+                               asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
                         </td>
                         <td class="govuk-table__cell">
                             <account-types types="account.Types"/>
                         </td>
                         <td class="govuk-table__cell">
-                            @{
-                                var tagClass = account.Status switch
-                                {
-                                    AccountStatus.Active => "govuk-tag--green",
-                                    AccountStatus.PendingRegistration => "govuk-tag--orange",
-                                    _ => "govuk-tag--yellow"
-                                };
-                            }
-                            @if (account.Status is not null)
-                            {
-                                <strong class="govuk-tag @tagClass" data-test-class="account-status">
-                                    @account.Status.GetDisplayName()
-                                </strong>
-                                <span class="govuk-!-display-block govuk-hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">
-                                    @account.Status.GetDescription()
-                                </span>
-                            }
+                            <account-status status="account.Status"/>
                         </td>
                     </tr>
                 }
@@ -93,7 +73,7 @@
             @if (paging?.PageCount > 1)
             {
                 <govuk-pagination>
-                    @if (paging?.Links?["previous"] != null && paging.Page != 1)
+                    @if (paging.Links?["previous"] != null && paging.Page != 1)
                     {
                         var prev = paging.Links["previous"];
                         <govuk-pagination-previous href="@LinkGenerator.ManageAccounts(prev.Offset, prev.PageSize)"/>
@@ -120,4 +100,4 @@
             }
         }
     </div>
-</div >
+</div>
