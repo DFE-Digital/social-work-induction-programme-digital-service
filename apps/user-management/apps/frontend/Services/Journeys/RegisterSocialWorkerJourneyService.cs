@@ -5,23 +5,30 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class RegisterSocialWorkerJourneyService(
-    IHttpContextAccessor httpContextAccessor,
-    IAccountService accountService
-) : IRegisterSocialWorkerJourneyService
+public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneyService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IAccountService _accountService = accountService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAccountService _accountService;
+    public IEthnicGroupService EthnicGroups { get; init; }
+
+    public RegisterSocialWorkerJourneyService(
+        IHttpContextAccessor httpContextAccessor,
+        IAccountService accountService)
+    {
+        _httpContextAccessor = httpContextAccessor;
+        _accountService = accountService;
+        EthnicGroups = new EthnicGroupService(this);
+    }
 
     private static string RegisterSocialWorkerSessionKey(Guid id) => "_registerSocialWorker-" + id;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
-    private static KeyNotFoundException AccountNotFoundException(Guid id) =>
+    protected internal KeyNotFoundException AccountNotFoundException(Guid id) =>
         new("Account not found with ID " + id);
 
-    private async Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
+    protected internal async Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
     {
         Session.TryGet(
             RegisterSocialWorkerSessionKey(accountId),
@@ -102,147 +109,12 @@ public class RegisterSocialWorkerJourneyService(
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<EthnicGroup?> GetEthnicGroupAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroup;
-    }
-
-    public async Task SetEthnicGroupAsync(Guid accountId, EthnicGroup? ethnicGroup)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroup = ethnicGroup;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<EthnicGroupWhite?> GetEthnicGroupWhiteAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroupWhite;
-    }
-
-    public async Task SetEthnicGroupWhiteAsync(Guid accountId, EthnicGroupWhite? ethnicGroupWhite)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroupWhite = ethnicGroupWhite;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<string?> GetOtherEthnicGroupWhiteAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherEthnicGroupWhite;
-    }
-
-    public async Task SetOtherEthnicGroupWhiteAsync(Guid accountId, string? ethnicGroupWhite)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherEthnicGroupWhite = ethnicGroupWhite;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<EthnicGroupAsian?> GetEthnicGroupAsianAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroupAsian;
-    }
-
-    public async Task SetEthnicGroupAsianAsync(Guid accountId, EthnicGroupAsian? ethnicGroupAsian)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroupAsian = ethnicGroupAsian;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<string?> GetOtherEthnicGroupAsianAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherEthnicGroupAsian;
-    }
-
-    public async Task SetOtherEthnicGroupAsianAsync(Guid accountId, string? ethnicGroupAsian)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherEthnicGroupAsian = ethnicGroupAsian;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<EthnicGroupMixed?> GetEthnicGroupMixedAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroupMixed;
-    }
-
-    public async Task SetEthnicGroupMixedAsync(Guid accountId, EthnicGroupMixed? ethnicGroupMixed)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroupMixed = ethnicGroupMixed;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<string?> GetOtherEthnicGroupMixedAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherEthnicGroupMixed;
-    }
-
-    public async Task SetOtherEthnicGroupMixedAsync(Guid accountId, string? ethnicGroupMixed)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherEthnicGroupMixed = ethnicGroupMixed;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<EthnicGroupBlack?> GetEthnicGroupBlackAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.EthnicGroupBlack;
-    }
-
-    public async Task SetEthnicGroupBlackAsync(Guid accountId, EthnicGroupBlack? ethnicGroupBlack)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.EthnicGroupBlack = ethnicGroupBlack;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
-    public async Task<string?> GetOtherEthnicGroupBlackAsync(Guid accountId)
-    {
-        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.OtherEthnicGroupBlack;
-    }
-
-    public async Task SetOtherEthnicGroupBlackAsync(Guid accountId, string? ethnicGroupBlack)
-    {
-        var registerSocialWorkerJourneyModel =
-            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
-            ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.OtherEthnicGroupBlack = ethnicGroupBlack;
-        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
-    }
-
     public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
     }
 
-    private void SetRegisterSocialWorkerJourneyModel(Guid accountId, RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
+    protected internal void SetRegisterSocialWorkerJourneyModel(Guid accountId, RegisterSocialWorkerJourneyModel registerSocialWorkerJourneyModel)
     {
         Session.Set(RegisterSocialWorkerSessionKey(accountId), registerSocialWorkerJourneyModel);
     }

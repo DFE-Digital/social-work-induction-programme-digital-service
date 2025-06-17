@@ -18,6 +18,7 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
     private protected HttpContext HttpContext { get; }
     private protected ITempDataDictionary TempData { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
+    private protected Mock<EthnicGroupService> MockEthnicGroupService { get; }
 
     private protected RegisterSocialWorkerJourneyService Sut;
 
@@ -36,6 +37,7 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
         MockAccountService = new();
+        MockEthnicGroupService = new();
 
         Sut = new(httpContextAccessor, MockAccountService.Object);
     }

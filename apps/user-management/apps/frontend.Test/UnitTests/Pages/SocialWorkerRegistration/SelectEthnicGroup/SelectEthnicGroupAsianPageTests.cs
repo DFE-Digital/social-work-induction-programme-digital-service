@@ -29,8 +29,8 @@ public class SelectEthnicGroupAsianPageTests : SocialWorkerRegistrationPageTestB
         var otherEthnicGroupAsian = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupAsianAsync(PersonId)).ReturnsAsync(ethnicGroupAsian);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupAsianAsync(PersonId)).ReturnsAsync(otherEthnicGroupAsian);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetEthnicGroupAsianAsync(PersonId)).ReturnsAsync(ethnicGroupAsian);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetOtherEthnicGroupAsianAsync(PersonId)).ReturnsAsync(otherEthnicGroupAsian);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -42,8 +42,8 @@ public class SelectEthnicGroupAsianPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupAsianAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupAsianAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetEthnicGroupAsianAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetOtherEthnicGroupAsianAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -68,8 +68,8 @@ public class SelectEthnicGroupAsianPageTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsianAsync(PersonId, ethnicGroup), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupAsianAsync(PersonId, otherEthnicGroupAsian), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetEthnicGroupAsianAsync(PersonId, ethnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetOtherEthnicGroupAsianAsync(PersonId, otherEthnicGroupAsian), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

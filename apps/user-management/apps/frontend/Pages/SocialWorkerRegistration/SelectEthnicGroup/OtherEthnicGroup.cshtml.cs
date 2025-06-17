@@ -12,21 +12,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectEthnicGroupMixed(
+public class SelectEthnicGroupOther(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectEthnicGroupMixed> validator)
+    IValidator<SelectEthnicGroupOther> validator)
     : BasePageModel
 {
-    [BindProperty] public EthnicGroupMixed? SelectedEthnicGroupMixed { get; set; }
-    [BindProperty] public string? OtherEthnicGroupMixed { get; set; }
+    [BindProperty] public EthnicGroupOther? SelectedEthnicGroupOther { get; set; }
+    [BindProperty] public string? OtherEthnicGroupOther { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupMixedAsync(personId);
-        OtherEthnicGroupMixed = await socialWorkerJourneyService.EthnicGroups.GetOtherEthnicGroupMixedAsync(personId);
+        SelectedEthnicGroupOther = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupOtherAsync(personId);
+        OtherEthnicGroupOther = await socialWorkerJourneyService.EthnicGroups.GetOtherEthnicGroupOtherAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
@@ -43,8 +43,8 @@ public class SelectEthnicGroupMixed(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupMixedAsync(personId, SelectedEthnicGroupMixed);
-        await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupMixedAsync(personId, OtherEthnicGroupMixed);
+        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupOtherAsync(personId, SelectedEthnicGroupOther);
+        await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupOtherAsync(personId, OtherEthnicGroupOther);
 
         return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
     }

@@ -3,7 +3,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests.SelectEthnicGroup;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.RegisterSocialWorkerJourneyServiceTests.SelectEthnicGroupService;
 
 public class GetOtherEthnicGroupWhiteShould : RegisterSocialWorkerJourneyServiceTestBase
 {
@@ -19,7 +19,7 @@ public class GetOtherEthnicGroupWhiteShould : RegisterSocialWorkerJourneyService
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(account);
 
         // Act
-        var response = await Sut.GetOtherEthnicGroupWhiteAsync(id);
+        var response = await Sut.EthnicGroups.GetOtherEthnicGroupWhiteAsync(id);
 
         // Assert
         response.Should().NotBeNull();
