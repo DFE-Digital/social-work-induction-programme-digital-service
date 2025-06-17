@@ -74,8 +74,8 @@ Note you should use a different database for tests as the test database will be 
 There are `just` commands defined to help set the correct user-secrets for you:
 
 ```shell
-just set-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf"
-just set-test-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf_tests"
+just set-db-connection "Host=localhost;Username=<DB_USER>;Password=<DB_PASSWORD>;Database=sww-ecf"
+just set-test-db-connection "Host=localhost;Username=<TEST_DB_USER>;Password=<TEST_DB_PASSWORD>;Database=sww-ecf_tests"
 ```
 
 To execute the migrations and set up the initial database schema run:
