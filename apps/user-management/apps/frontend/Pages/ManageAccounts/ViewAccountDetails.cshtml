@@ -36,15 +36,18 @@
                     </govuk-summary-list-row-action>
                 </govuk-summary-list-row-actions>
             </govuk-summary-list-row>
-            <govuk-summary-list-row>
-                <govuk-summary-list-row-key>Middle names</govuk-summary-list-row-key>
-                <govuk-summary-list-row-value>@Model.Account.MiddleNames</govuk-summary-list-row-value>
-                <govuk-summary-list-row-actions>
-                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                   visually-hidden-text="account details">Change
-                    </govuk-summary-list-row-action>
-                </govuk-summary-list-row-actions>
-            </govuk-summary-list-row>
+            @if (!string.IsNullOrEmpty(Model.Account.MiddleNames))
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>Middle names</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Account.MiddleNames</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                       visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            }
             <govuk-summary-list-row>
                 <govuk-summary-list-row-key>Last name</govuk-summary-list-row-key>
                 <govuk-summary-list-row-value>@Model.Account.LastName</govuk-summary-list-row-value>
