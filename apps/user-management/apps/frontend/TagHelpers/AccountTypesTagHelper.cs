@@ -10,13 +10,15 @@ public class AccountTypesTagHelper : TagHelper
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "";
+        output.TagName = null;
 
-        if (Types == null)
-        {
-            return;
-        }
+        if (Types == null) return;
 
-        output.Content.SetContent(string.Join(", ", Types.Select(type => type.GetDisplayName())));
+        var content = Types.Aggregate(
+            "",
+            (current, accountType) => current + $"<p>{accountType.GetDisplayName()}</p>"
+        );
+
+        output.Content.SetHtmlContent(content);
     }
 }
