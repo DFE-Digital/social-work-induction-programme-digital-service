@@ -1,7 +1,7 @@
 #!/bin/bash
 
 log() {
-    log "[$(date '+%Y-%m-%d %H:%M:%S')] [STARTUP] $1"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [STARTUP] $1"
 }
 
 # Support SSH for troubleshooting
