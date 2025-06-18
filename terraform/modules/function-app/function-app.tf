@@ -1,4 +1,4 @@
-resource "axurerm_linux_function_app" "function_app" {
+resource "azurerm_linux_function_app" "function_app" {
   name                       = var.function_app_name
   location                   = var.location
   resource_group_name        = var.resource_group
@@ -10,7 +10,7 @@ resource "axurerm_linux_function_app" "function_app" {
     type = "SystemAssigned"
   }
 
-  site_config = {
+  site_config {
     # No application_stack needed, it's defined in the Docker image
   }
 

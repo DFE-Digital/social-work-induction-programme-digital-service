@@ -43,3 +43,13 @@ variable "docker_image_name" {
   description = "The Docker image name to use for the web app"
   type        = string
 }
+
+variable "storage_account_name" {
+  description = "The name of the storage account"
+  type        = string
+}
+
+variable "storage_account_access_key" {
+  description = "The primary access key for the storage account"
+  type        = string
+}
