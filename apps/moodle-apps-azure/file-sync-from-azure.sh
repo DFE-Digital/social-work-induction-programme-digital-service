@@ -61,6 +61,7 @@ list_blob_files() {
     log "Listing files in blob storage..."
     
     az storage blob list \
+        --auth-mode login \
         --account-name "$STORAGE_ACCOUNT_NAME" \
         --container-name "$STORAGE_CONTAINER_CONFIG" \
         --prefix "$BLOB_CONTENT_PATH/" \
@@ -113,6 +114,7 @@ restore_files() {
         log "  Downloading: $relative_path"
         
         if az storage blob download \
+            --auth-mode login \
             --account-name "$STORAGE_ACCOUNT_NAME" \
             --container-name "$STORAGE_CONTAINER_CONFIG" \
             --name "$blob_name" \

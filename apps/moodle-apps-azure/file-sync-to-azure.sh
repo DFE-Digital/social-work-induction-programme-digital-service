@@ -141,6 +141,7 @@ sync_changes() {
                 local blob_dir=$(dirname "$blob_path")
                 
                 az storage blob upload \
+                    --auth-mode login \
                     --account-name "$STORAGE_ACCOUNT_NAME" \
                     --container-name "$STORAGE_CONTAINER_CONFIG" \
                     --name "$blob_path" \
@@ -163,6 +164,7 @@ sync_changes() {
             
             log "  Deleting: $relative_path"
             az storage blob delete \
+                --auth-mode login \
                 --account-name "$STORAGE_ACCOUNT_NAME" \
                 --container-name "$STORAGE_CONTAINER_CONFIG" \
                 --name "$blob_path" \
