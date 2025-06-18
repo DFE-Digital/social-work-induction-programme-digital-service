@@ -33,6 +33,11 @@ variable "acr_name" {
   type        = string
 }
 
+variable "acr_id" {
+  description = "ID of the Container Registry"
+  type        = string
+}
+
 variable "function_app_name" {
   description = "Name of the function app"
   type        = string
