@@ -27,12 +27,13 @@ auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
 }
-# Needs wiring up
 one_login_client_id = "xCtiHWNyTayG6HcaeYMxBNP4t8U"
 moodle_app_settings = {
-  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
-  "MOODLE_SWITCH_OFF_OAUTH"         = "true"
-  "BASIC_AUTH_ENABLED"              = "true"
+  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true" # Should be false for prod environment
+  "MOODLE_SWITCH_OFF_OAUTH"         = "true" # Should be false for prod environment
+  "BASIC_AUTH_ENABLED"              = "true" # Should be false for prod environment
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true" # Should be false for prod environment
+  "MOODLE_FILE_SYNC_PATHS"          = "lang"
 }
 
 user_management_app_settings = {

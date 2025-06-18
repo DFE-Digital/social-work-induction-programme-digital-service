@@ -31,6 +31,8 @@ moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
   "BASIC_AUTH_ENABLED"              = "true"
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
+  "MOODLE_FILE_SYNC_PATHS"          = "lang"
 }
 user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"

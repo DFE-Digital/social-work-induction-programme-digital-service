@@ -105,13 +105,14 @@ ARG PHP_COMPOSER_VERSION=2.6.5
 
 WORKDIR /var/www/html/public
 
-# Mandatory tools for remote SSH + general mgmt
+# Mandatory tools for remote SSH + general mgmt and az for file sync
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
         postgresql-client \
         cron \
         apache2-utils \
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -159,8 +160,11 @@ COPY entry-point.sh /app/entry-point.sh
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
+COPY file-sync-from-azure.sh /app/file-sync-from-azure.sh
+COPY file-sync-to-azure.sh /app/file-sync-to-azure.sh
+COPY file-sync-generate-inventory.sh /app/file-sync-generate-inventory.sh
 COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
-RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh /app/save-env.sh /app/restore-env.sh
+RUN chmod +x *.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
 # will override this with the cron config

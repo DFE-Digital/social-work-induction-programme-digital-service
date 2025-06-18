@@ -83,6 +83,29 @@ resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
   name      = each.value.db_name
 }
 
+resource "azurerm_storage_container" "moodleconfig" {
+  name               = "${var.resource_name_prefix}-sc-moodle-config"
+  storage_account_id = module.stack.storage_account_id
+
+  # Prevent any anonymous or public blob reads
+  container_access_type = "private"
+}
+
+resource "azurerm_role_assignment" "moodleconfig" {
+  scope                = azurerm_storage_container.moodleconfig.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_type       = "ServicePrincipal"
+  principal_id         = module.web_app_moodle["primary"].web_app_id
+}
+
+resource "azurerm_storage_container" "moodlecontent" {
+  name               = "${var.resource_name_prefix}-sc-moodle-content"
+  storage_account_id = module.stack.storage_account_id
+
+  # Prevent any anonymous or public blob reads
+  container_access_type = "private"
+}
+
 module "web_app_moodle" {
   for_each = local.moodle_instance_resource_naming
 
@@ -107,6 +130,9 @@ module "web_app_moodle" {
 
   app_settings = merge({
     "IS_CRON_JOB_ONLY"                 = "false"
+    "STORAGE_ACCOUNT_NAME"             = module.stack.storage_account_name
+    "STORAGE_CONTAINER_CONFIG"         = azurerm_storage_container.moodleconfig.name
+    "STORAGE_CONTAINER_CONTENT"        = azurerm_storage_container.moodlecontent.name
     "MOODLE_WEB_SERVICE_NAME"          = var.moodle_web_service_name
     "MOODLE_WEB_SERVICE_USER"          = var.moodle_web_service_user
     "MOODLE_WEB_SERVICE_USER_EMAIL"    = var.moodle_web_service_user_email
