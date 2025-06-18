@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
 /// <summary>
-/// Account Status
+///     Account Status
 /// </summary>
 public enum AccountStatus
 {
-    [Display(Name = "Active")]
-    Active,
+    [Display(Name = "Active")] Active,
 
-    [Display(Name = "Pending")]
-    PendingRegistration
+    [Display(Name = "Inactive")] Inactive,
+
+    [Display(Name = "Pending")] PendingRegistration
 }
