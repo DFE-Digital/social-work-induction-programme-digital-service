@@ -1,8 +1,8 @@
 resource "azurerm_key_vault_secret" "basic_auth_password" {
-  name            = "Sites-BasicAuthPassword"
-  value           = var.basic_auth_password
-  key_vault_id    = azurerm_key_vault.kv.id
-  content_type    = "password"
+  name         = "Sites-BasicAuthPassword"
+  value        = var.basic_auth_password
+  key_vault_id = azurerm_key_vault.kv.id
+  content_type = "password"
 
   // TODO: Managed expiry of db passwords
   //expiration_date = local.expiration_date
@@ -11,7 +11,7 @@ resource "azurerm_key_vault_secret" "basic_auth_password" {
     ignore_changes = [expiration_date]
   }
 
-  depends_on = [ azurerm_key_vault_access_policy.kv_gh_ap ]
+  depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
 
   #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
@@ -97,7 +97,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_moodle_app" {
 
     rule {
       metric_trigger {
-       metric_name        =  "CpuPercentage"
+        metric_name        = "CpuPercentage"
         metric_resource_id = azurerm_service_plan.asp_moodle_app.id
         time_grain         = "PT1M"
         statistic          = "Average"
@@ -115,7 +115,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_moodle_app" {
       }
     }
   }
-  
+
   lifecycle {
     ignore_changes = [tags]
   }
@@ -123,10 +123,10 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_moodle_app" {
 
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_moodle_app" {
-  name                = "AllowMoodleAppSubnet"
-  server_id           = azurerm_postgresql_flexible_server.swipdb.id
-  start_ip_address    = "10.0.3.0"
-  end_ip_address      = "10.0.3.255"
+  name             = "AllowMoodleAppSubnet"
+  server_id        = azurerm_postgresql_flexible_server.swipdb.id
+  start_ip_address = "10.0.3.0"
+  end_ip_address   = "10.0.3.255"
 }
 
 #############################################################################
@@ -172,10 +172,10 @@ resource "azurerm_service_plan" "asp_maintenance_apps" {
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_maintenance_apps" {
-  name                = "AllowMaintenanceAppsSubnet"
-  server_id           = azurerm_postgresql_flexible_server.swipdb.id
-  start_ip_address    = "10.0.4.0"
-  end_ip_address      = "10.0.4.255"
+  name             = "AllowMaintenanceAppsSubnet"
+  server_id        = azurerm_postgresql_flexible_server.swipdb.id
+  start_ip_address = "10.0.4.0"
+  end_ip_address   = "10.0.4.255"
 }
 
 #############################################################################
@@ -259,7 +259,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
 
     rule {
       metric_trigger {
-       metric_name        =  "CpuPercentage"
+        metric_name        = "CpuPercentage"
         metric_resource_id = azurerm_service_plan.asp_service_apps.id
         time_grain         = "PT1M"
         statistic          = "Average"
@@ -277,7 +277,7 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
       }
     }
   }
-  
+
   lifecycle {
     ignore_changes = [tags]
   }
@@ -285,8 +285,28 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
 
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_services" {
-  name                = "AllowServicesSubnet"
-  server_id           = azurerm_postgresql_flexible_server.swipdb.id
-  start_ip_address    = "10.0.5.0"
-  end_ip_address      = "10.0.5.255"
+  name             = "AllowServicesSubnet"
+  server_id        = azurerm_postgresql_flexible_server.swipdb.id
+  start_ip_address = "10.0.5.0"
+  end_ip_address   = "10.0.5.255"
+}
+
+#############################################################################
+# App Service Plan for notification service
+#############################################################################
+
+resource "azurerm_service_plan" "asp_notification_service" {
+  name                = "${var.resource_name_prefix}-asp-notification"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  os_type             = "Linux"
+  sku_name            = var.asp_sku_notification
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  #checkov:skip=CKV_AZURE_225:Ensure the App Service Plan is zone redundant
+  #checkov:skip=CKV_AZURE_212:Ensure App Service has a minimum number of instances for failover
 }

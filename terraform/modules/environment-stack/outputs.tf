@@ -45,22 +45,22 @@ output "full_postgres_secret_password_uri" {
 
 output "front_door_profile_web_id" {
   description = "The ID of the Front Door profile"
-  value = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
+  value       = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
 }
 
 output "subnet_moodle_id" {
   description = "The ID of the Moodle subnet"
-  value = azurerm_subnet.sn_moodle_app.id
+  value       = azurerm_subnet.sn_moodle_app.id
 }
 
 output "subnet_maintenance_id" {
   description = "The ID of the maintenance apps subnet"
-  value = azurerm_subnet.sn_maintenance_apps.id
+  value       = azurerm_subnet.sn_maintenance_apps.id
 }
 
 output "subnet_services_id" {
   description = "The ID of the service apps subnet"
-  value = azurerm_subnet.sn_service_apps.id
+  value       = azurerm_subnet.sn_service_apps.id
 }
 
 output "moodle_service_plan_id" {
@@ -91,4 +91,14 @@ output "storage_account_name" {
 output "support_action_group_id" {
   description = "ID of the support action group"
   value       = azurerm_monitor_action_group.stack_action_group.id
+}
+
+output "storage_account_access_key" {
+  description = "Access key to the storage account"
+  value       = azurerm_storage_account.sa.primary_access_key
+}
+
+output "notification_service_plan_id" {
+  description = "ID of the notification app service plan"
+  value       = azurerm_service_plan.asp_notification_service.id
 }

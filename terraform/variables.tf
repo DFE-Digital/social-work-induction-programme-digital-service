@@ -224,3 +224,8 @@ variable "email_support_address" {
   type        = string
   sensitive   = true
 }
+
+variable "asp_sku_notification" {
+  description = "The app service SKU"
+  type        = string
+}
