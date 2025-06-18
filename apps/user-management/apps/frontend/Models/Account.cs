@@ -105,7 +105,9 @@ public record Account
 
     public string? OtherEthnicGroupOther { get; set; }
 
-    public bool? IsDisabled { get; set; }
+    public Disability? IsDisabled { get; set; }
+
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
 
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;

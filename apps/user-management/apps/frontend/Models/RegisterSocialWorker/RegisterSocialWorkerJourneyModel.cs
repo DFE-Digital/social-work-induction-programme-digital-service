@@ -34,7 +34,9 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherEthnicGroupOther { get; set; } = account.OtherEthnicGroupOther;
 
-    public bool? IsDisabled { get; set; } = account.IsDisabled;
+    public Disability? IsDisabled { get; set; } = account.IsDisabled;
+
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; } = account.SocialWorkEnglandRegistrationDate;
 
     public Account ToAccount()
     {
@@ -55,7 +57,8 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             OtherEthnicGroupBlack = OtherEthnicGroupBlack,
             EthnicGroupOther = EthnicGroupOther,
             OtherEthnicGroupOther = OtherEthnicGroupOther,
-            IsDisabled = IsDisabled
+            IsDisabled = IsDisabled,
+            SocialWorkEnglandRegistrationDate = SocialWorkEnglandRegistrationDate
         };
     }
 }

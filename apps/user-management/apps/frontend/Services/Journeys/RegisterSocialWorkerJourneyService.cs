@@ -110,18 +110,33 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
-    public async Task<bool?> GetIsDisabledAsync(Guid accountId)
+    public async Task<Disability?> GetIsDisabledAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
         return registerSocialWorkerJourneyModel?.IsDisabled;
     }
 
-    public async Task SetIsDisabledAsync(Guid accountId, bool? isDisabled)
+    public async Task SetIsDisabledAsync(Guid accountId, Disability? isDisabled)
     {
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
         registerSocialWorkerJourneyModel.IsDisabled = isDisabled;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<DateOnly?> GetSocialWorkEnglandRegistrationDateAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.SocialWorkEnglandRegistrationDate;
+    }
+
+    public async Task SetSocialWorkEnglandRegistrationDateAsync(Guid accountId, DateOnly? socialWorkEnglandRegistrationDate)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.SocialWorkEnglandRegistrationDate = socialWorkEnglandRegistrationDate;
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 

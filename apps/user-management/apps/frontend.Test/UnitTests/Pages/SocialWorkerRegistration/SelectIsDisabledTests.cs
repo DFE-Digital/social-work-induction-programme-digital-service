@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
@@ -25,7 +26,7 @@ public class SelectIsDisabledPageTests : SocialWorkerRegistrationPageTestBase
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
-        var expectedIsDisabled = true;
+        var expectedIsDisabled = Disability.No;
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetIsDisabledAsync(PersonId)).ReturnsAsync(expectedIsDisabled);
 
         // Act
@@ -47,7 +48,7 @@ public class SelectIsDisabledPageTests : SocialWorkerRegistrationPageTestBase
         // Arrange
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
 
-        var expectedIsDisabled = true;
+        var expectedIsDisabled = Disability.No;
         Sut.IsDisabled = expectedIsDisabled;
 
         // Act
@@ -57,7 +58,7 @@ public class SelectIsDisabledPageTests : SocialWorkerRegistrationPageTestBase
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group"); // TODO update this to SWE register date
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-social-work-england-registration-date");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetIsDisabledAsync(PersonId, expectedIsDisabled), Times.Once);
@@ -84,7 +85,7 @@ public class SelectIsDisabledPageTests : SocialWorkerRegistrationPageTestBase
         modelStateKeys.Should().Contain("IsDisabled");
         modelState["IsDisabled"]!.Errors.Count.Should().Be(1);
         modelState["IsDisabled"]!.Errors[0].ErrorMessage.Should()
-            .Be("Select if you consider yourself to have a disability");
+            .Be("Select yes if you consider yourself to have a disability");
 
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-ethnic-group");
 

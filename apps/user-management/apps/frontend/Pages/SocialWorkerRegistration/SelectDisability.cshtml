@@ -1,4 +1,6 @@
 @page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker
 @using GovUk.Frontend.AspNetCore.TagHelpers
 @model SelectDisability
 
@@ -18,12 +20,12 @@
                         You’re disabled under the Equality Act 2010 if you have a physical or mental impairment that has a substantial and long-term negative effect on your ability to do normal daily activities.
                     </govuk-radios-hint>
 
-                    <govuk-radios-item value="@false">Yes</govuk-radios-item>
-                    <govuk-radios-item value="@true">No</govuk-radios-item>
+                    <govuk-radios-item value="@Disability.Yes">@Disability.Yes.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@Disability.No">@Disability.No.GetDisplayName()</govuk-radios-item>
 
                     <govuk-radios-divider>or</govuk-radios-divider>
 
-                    <govuk-radios-item value="@null">Prefer not to say</govuk-radios-item>
+                    <govuk-radios-item value="@Disability.PreferNotToSay">@Disability.PreferNotToSay.GetDisplayName()</govuk-radios-item>
                 </govuk-radios-fieldset>
             </govuk-radios>
 

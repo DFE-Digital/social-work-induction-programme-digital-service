@@ -60,34 +60,23 @@ public abstract class EcfLinkGenerator(
             routeValues: new { id }
         );
 
-    public string ViewAccountDetails(Guid id) =>
-        GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
-
+    public string ViewAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
     public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
-
-    public string AddSomeoneNew() =>
-        GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
-
+    public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
     public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
-
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
-
     public string EligibilityInformation() => GetRequiredPathByPage("/ManageAccounts/EligibilityInformation");
-
     public string EligibilitySocialWorkEngland() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland");
-
     public string EligibilitySocialWorkEnglandDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout");
-
     public string EligibilityStatutoryWork() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWork");
-
     public string EligibilityStatutoryWorkDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout");
-
     public string EligibilityAgencyWorker() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorker");
     public string EligibilityQualification() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification");
     public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
     public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
     public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
 
+    // SWE registration links
     public string SocialWorkerRegistration() => GetRequiredPathByPage("/SocialWorkerRegistration/Index");
     public string SocialWorkerRegistrationDateOfBirth() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDateOfBirth");
     public string SocialWorkerRegistrationSexAndGenderIdentity() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSexAndGenderIdentity");
@@ -98,6 +87,7 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationEthnicGroupBlack() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish");
     public string SocialWorkerRegistrationEthnicGroupOther() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup");
     public string SocialWorkerRegistrationSelectDisability() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability");
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
 
     protected abstract string GetRequiredPathByPage(
         string page,
