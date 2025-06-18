@@ -9,6 +9,6 @@ public class SelectDisabilityValidator : AbstractValidator<SelectDisability>
     {
         RuleFor(model => model.IsDisabled)
             .NotEmpty()
-            .WithMessage("Select if you consider yourself to have a disability");
+            .WithMessage("Select yes if you consider yourself to have a disability");
     }
 }
