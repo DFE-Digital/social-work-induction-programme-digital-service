@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -12,6 +13,8 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
     Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
     Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
+    Task<bool?> GetIsDisabledAsync(Guid accountId);
+    Task SetIsDisabledAsync(Guid accountId, bool? isDisabled);
 
     public IEthnicGroupService EthnicGroups { get; init; }
 

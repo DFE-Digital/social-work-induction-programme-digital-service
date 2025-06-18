@@ -1,4 +1,6 @@
-namespace Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
+
+namespace Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 public class RegisterSocialWorkerJourneyModel(Account account)
 {
@@ -34,6 +36,7 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherEthnicGroupOther { get; set; } = account.OtherEthnicGroupOther;
 
+    public bool? IsDisabled { get; set; } = account.IsDisabled;
 
     public Account ToAccount()
     {
@@ -53,7 +56,8 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             EthnicGroupBlack = EthnicGroupBlack,
             OtherEthnicGroupBlack = OtherEthnicGroupBlack,
             EthnicGroupOther = EthnicGroupOther,
-            OtherEthnicGroupOther = OtherEthnicGroupOther
+            OtherEthnicGroupOther = OtherEthnicGroupOther,
+            IsDisabled = IsDisabled
         };
     }
 }

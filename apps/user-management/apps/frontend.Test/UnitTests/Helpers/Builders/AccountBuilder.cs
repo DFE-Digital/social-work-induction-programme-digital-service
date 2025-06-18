@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 
@@ -43,6 +44,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, f => f.Name.FirstName());
         _faker.RuleFor(a => a.EthnicGroupOther, f => f.PickRandom<EthnicGroupOther>());
         _faker.RuleFor(a => a.OtherEthnicGroupOther, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.IsDisabled, f => f.Random.Bool());
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -69,6 +71,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
         _faker.RuleFor(a => a.EthnicGroupOther, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => null);
+        _faker.RuleFor(a => a.IsDisabled, _ => null);
         return this;
     }
 
@@ -232,6 +235,13 @@ public class AccountBuilder
     public AccountBuilder WithOtherEthnicGroupOther(string otherEthnicGroupOther)
     {
         _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => otherEthnicGroupOther);
+
+        return this;
+    }
+
+    public AccountBuilder WithIsDisabled(bool isDisabled)
+    {
+        _faker.RuleFor(a => a.IsDisabled, _ => isDisabled);
 
         return this;
     }

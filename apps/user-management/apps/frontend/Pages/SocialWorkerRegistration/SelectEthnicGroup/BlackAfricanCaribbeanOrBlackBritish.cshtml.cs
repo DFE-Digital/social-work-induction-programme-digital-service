@@ -1,7 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -46,6 +46,6 @@ public class SelectEthnicGroupBlack(
         await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupBlackAsync(personId, SelectedEthnicGroupBlack);
         await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupBlackAsync(personId, OtherEthnicGroupBlack);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
+        return Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability());
     }
 }

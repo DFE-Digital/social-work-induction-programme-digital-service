@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using NodaTime;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -104,6 +104,8 @@ public record Account
     public EthnicGroupOther? EthnicGroupOther { get; set; }
 
     public string? OtherEthnicGroupOther { get; set; }
+
+    public bool? IsDisabled { get; set; }
 
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;

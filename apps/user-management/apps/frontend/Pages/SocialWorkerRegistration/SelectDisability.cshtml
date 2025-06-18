@@ -1,0 +1,33 @@
+@page
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model SelectDisability
+
+@{
+    Model.Title = "Do you consider yourself to have a disability as defined under the Equality Act 2010?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post">
+            <govuk-radios for="IsDisabled">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">Do you consider yourself to have a disability as defined under the Equality Act 2010?</govuk-radios-fieldset-legend>
+
+                    <govuk-radios-hint>
+                        You’re disabled under the Equality Act 2010 if you have a physical or mental impairment that has a substantial and long-term negative effect on your ability to do normal daily activities.
+                    </govuk-radios-hint>
+
+                    <govuk-radios-item value="@false">Yes</govuk-radios-item>
+                    <govuk-radios-item value="@true">No</govuk-radios-item>
+
+                    <govuk-radios-divider>or</govuk-radios-divider>
+
+                    <govuk-radios-item value="@null">Prefer not to say</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-button type="submit">Continue</govuk-button>
+        </form>
+    </div>
+</div>

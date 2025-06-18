@@ -2,7 +2,7 @@ using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using FluentValidation;
 using NodaTime;
 
-namespace Dfe.Sww.Ecf.Frontend.Validation;
+namespace Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 
 public class SocialWorkerDateOfBirthValidator : AbstractValidator<SelectDateOfBirth>
 {

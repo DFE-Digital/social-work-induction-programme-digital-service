@@ -1,7 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -9,24 +8,22 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
+namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectEthnicGroupWhite(
+public class SelectDisability(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectEthnicGroupWhite> validator)
+    IValidator<SelectDisability> validator)
     : BasePageModel
 {
-    [BindProperty] public EthnicGroupWhite? SelectedEthnicGroupWhite { get; set; }
-    [BindProperty] public string? OtherEthnicGroupWhite { get; set; }
+    [BindProperty] public bool? IsDisabled { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroupWhite = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupWhiteAsync(personId);
-        OtherEthnicGroupWhite = await socialWorkerJourneyService.EthnicGroups.GetOtherEthnicGroupWhiteAsync(personId);
+        IsDisabled = await socialWorkerJourneyService.GetIsDisabledAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
@@ -43,9 +40,9 @@ public class SelectEthnicGroupWhite(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupWhiteAsync(personId, SelectedEthnicGroupWhite);
-        await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupWhiteAsync(personId, OtherEthnicGroupWhite);
+        await socialWorkerJourneyService.SetIsDisabledAsync(personId, IsDisabled);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability());
+        return Redirect(linkGenerator
+            .SocialWorkerRegistrationEthnicGroup()); // TODO update this to SWE register date
     }
 }
