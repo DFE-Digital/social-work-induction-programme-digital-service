@@ -1,5 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
-
 namespace Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 public class RegisterSocialWorkerJourneyModel(Account account)
