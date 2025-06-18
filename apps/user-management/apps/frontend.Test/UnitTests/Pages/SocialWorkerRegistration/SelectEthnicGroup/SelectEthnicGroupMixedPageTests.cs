@@ -1,13 +1,12 @@
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
-using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
@@ -65,7 +64,7 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-disability");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);

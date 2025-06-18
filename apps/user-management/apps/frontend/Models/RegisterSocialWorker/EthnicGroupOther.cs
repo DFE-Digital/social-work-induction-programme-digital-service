@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Dfe.Sww.Ecf.Frontend.Models;
+namespace Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 public enum EthnicGroupOther
 {

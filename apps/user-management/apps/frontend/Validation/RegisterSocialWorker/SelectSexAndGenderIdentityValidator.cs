@@ -1,7 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using FluentValidation;
 
-namespace Dfe.Sww.Ecf.Frontend.Validation;
+namespace Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 
 public class SelectSexAndGenderIdentityValidator : AbstractValidator<SelectSexAndGenderIdentity>
 {

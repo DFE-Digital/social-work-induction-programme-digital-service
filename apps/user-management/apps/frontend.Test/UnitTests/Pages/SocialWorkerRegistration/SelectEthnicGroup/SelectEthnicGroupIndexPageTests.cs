@@ -1,7 +1,6 @@
-using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -49,7 +48,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
     [InlineData(EthnicGroup.AsianOrAsianBritish, "/social-worker-registration/select-ethnic-group/asian-or-asian-british")]
     [InlineData(EthnicGroup.BlackAfricanCaribbeanOrBlackBritish, "/social-worker-registration/select-ethnic-group/black-african-caribbean-or-black-british")]
     [InlineData(EthnicGroup.OtherEthnicGroup, "/social-worker-registration/select-ethnic-group/other-ethnic-group")]
-    [InlineData(EthnicGroup.PreferNotToSay, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
+    [InlineData(EthnicGroup.PreferNotToSay, "/social-worker-registration/select-disability")]
     public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser(EthnicGroup ethnicGroup, string redirectUrl)
     {
         // Arrange

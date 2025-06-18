@@ -1,7 +1,7 @@
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

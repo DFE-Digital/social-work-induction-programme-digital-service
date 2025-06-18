@@ -1,4 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
