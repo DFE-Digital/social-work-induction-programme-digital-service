@@ -164,7 +164,7 @@ COPY file-sync-from-azure.sh /app/file-sync-from-azure.sh
 COPY file-sync-to-azure.sh /app/file-sync-to-azure.sh
 COPY file-sync-generate-inventory.sh /app/file-sync-generate-inventory.sh
 COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
-RUN chmod +x *.sh
+RUN chmod +x /app/*.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
 # will override this with the cron config
