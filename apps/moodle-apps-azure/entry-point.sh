@@ -34,11 +34,15 @@ else
     if [[ "$MOODLE_PERSISTED_FILE_SYNC" == 'true' ]]; then
         log "Starting background persisted file sync process..."
         (
+            log "Logging in to Azure..."
+            az login --identity --allow-no-subscriptions # --output none
             /app/file-sync-from-azure.sh restore
             /app/file-sync-generate-inventory.sh generate
             while true; do
                 sleep 60
                 /app/file-sync-to-azure.sh sync || log "Background sync failed"
+                # Log in again to refresh token
+                az login --identity --allow-no-subscriptions # --output none
             done
         ) &        
     fi
