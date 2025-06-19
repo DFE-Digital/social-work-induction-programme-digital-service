@@ -64,7 +64,7 @@ public class SelectSocialWorkerRegistrationDatePageTests : SocialWorkerRegistrat
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-sex-and-gender-identity"); // TODO update this to select highest qualification page
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-highest-qualification");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetSocialWorkEnglandRegistrationDateAsync(PersonId, expectedRegDate), Times.Once);

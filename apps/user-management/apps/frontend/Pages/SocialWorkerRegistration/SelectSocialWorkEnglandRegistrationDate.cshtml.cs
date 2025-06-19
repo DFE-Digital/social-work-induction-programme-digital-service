@@ -61,6 +61,6 @@ public class SelectSocialWorkEnglandRegistrationDate(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetSocialWorkEnglandRegistrationDateAsync(personId, socialWorkEnglandRegistrationDate);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity()); // TODO update this to select highest qualification page
+        return Redirect(linkGenerator.SocialWorkerRegistrationSelectHighestQualification());
     }
 }

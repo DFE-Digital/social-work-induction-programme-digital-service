@@ -19,6 +19,8 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetIsDisabledAsync(Guid accountId, Disability? isDisabled);
     Task<DateOnly?> GetSocialWorkEnglandRegistrationDateAsync(Guid accountId);
     Task SetSocialWorkEnglandRegistrationDateAsync(Guid accountId, DateOnly? socialWorkEnglandRegistrationDate);
+    Task<Qualification?> GetHighestQualificationAsync(Guid accountId);
+    Task SetHighestQualificationAsync(Guid accountId, Qualification? userSex);
 
     void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);

@@ -140,6 +140,21 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
+    public async Task<Qualification?> GetHighestQualificationAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.HighestQualification;
+    }
+
+    public async Task SetHighestQualificationAsync(Guid accountId, Qualification? highestQualification)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.HighestQualification = highestQualification;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
     public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
