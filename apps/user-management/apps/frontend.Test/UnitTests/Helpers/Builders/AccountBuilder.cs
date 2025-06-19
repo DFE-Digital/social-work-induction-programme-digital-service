@@ -44,7 +44,8 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, f => f.Name.FirstName());
         _faker.RuleFor(a => a.EthnicGroupOther, f => f.PickRandom<EthnicGroupOther>());
         _faker.RuleFor(a => a.OtherEthnicGroupOther, f => f.Name.FirstName());
-        _faker.RuleFor(a => a.IsDisabled, f => f.Random.Bool());
+        _faker.RuleFor(a => a.IsDisabled, f => f.PickRandom<Disability>());
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, f => DateOnly.FromDateTime(f.Date.Past()));
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -72,6 +73,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.EthnicGroupOther, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => null);
         _faker.RuleFor(a => a.IsDisabled, _ => null);
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => null);
         return this;
     }
 
@@ -239,9 +241,16 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithIsDisabled(bool isDisabled)
+    public AccountBuilder WithIsDisabled(Disability isDisabled)
     {
         _faker.RuleFor(a => a.IsDisabled, _ => isDisabled);
+
+        return this;
+    }
+
+    public AccountBuilder WithSocialWorkerRegistrationDate(DateOnly socialWorkEnglandRegistrationDate)
+    {
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => socialWorkEnglandRegistrationDate);
 
         return this;
     }

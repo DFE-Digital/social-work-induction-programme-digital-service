@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
+using Dfe.Sww.Ecf.Frontend.Validation.Common;
 using FluentValidation;
 using NodaTime;
 
@@ -11,15 +12,6 @@ public class SocialWorkerDateOfBirthValidator : AbstractValidator<SelectDateOfBi
         When(
             x => x.UserDateOfBirth.HasValue,
             () => RuleFor(x => x.UserDateOfBirth)
-                .Must(BeInThePast)
-                .WithMessage("Date of birth must be in the past"));
-    }
-
-    private bool BeInThePast(LocalDate? date)
-    {
-        var now = DateTime.UtcNow;
-        var currentYearMonth = new LocalDate(now.Year, now.Month, now.Day);
-
-        return date < currentYearMonth;
+                .PastLocalDateValidation("Date of birth must be in the past"));
     }
 }
