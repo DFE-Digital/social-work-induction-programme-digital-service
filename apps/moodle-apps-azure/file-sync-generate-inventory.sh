@@ -2,7 +2,8 @@
 set -euo pipefail
 
 MOODLE_PATH="/var/www/html/public"
-INVENTORY_FILE="/tmp/moodle-inventory.json"
+# Accept optional extension for inventory file name
+INVENTORY_FILE="/tmp/moodle-inventory.json$2"
 INSTANCE_ID="${WEBSITE_INSTANCE_ID:-$(hostname)}"
 
 log() {

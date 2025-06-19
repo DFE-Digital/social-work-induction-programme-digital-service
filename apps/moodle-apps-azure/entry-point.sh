@@ -45,7 +45,7 @@ else
             log "Logging in to Azure..."
             az login --identity --allow-no-subscriptions # --output none
             /app/file-sync-from-azure.sh restore
-            /app/file-sync-generate-inventory.sh generate
+            /app/file-sync-generate-inventory.sh generate .previous
             while true; do
                 sleep 60
                 /app/file-sync-to-azure.sh sync || log "Background sync failed"
