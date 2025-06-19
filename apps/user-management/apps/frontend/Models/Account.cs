@@ -109,6 +109,8 @@ public record Account
 
     public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
 
+    public Qualification? HighestQualification { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
