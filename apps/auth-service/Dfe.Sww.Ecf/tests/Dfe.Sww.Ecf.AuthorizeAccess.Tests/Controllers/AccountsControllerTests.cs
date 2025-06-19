@@ -267,7 +267,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     RoleType.Coordinator,
                     RoleType.EarlyCareerSocialWorker,
                 }.ToImmutableList(),
-                Status = PersonStatus.Paused,
+                Status = PersonStatus.Inactive,
                 IsFunded = existingUser.IsFunded,
                 ProgrammeStartDate = existingUser.ProgrammeStartDate,
                 ProgrammeEndDate = existingUser.ProgrammeEndDate
