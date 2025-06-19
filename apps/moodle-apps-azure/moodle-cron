@@ -1,8 +1,0 @@
-# /app/moodle-cron
-# ┌──────── minute (every minute)
-# │ ┌────── hour
-# │ │ ┌──── day of month
-# │ │ │ ┌── month
-# │ │ │ │ ┌─ day of week
-# │ │ │ │ │   user       command
-* * * * * www-data php /var/www/html/admin/cli/cron.php >/proc/1/fd/1 2>/proc/1/fd/2

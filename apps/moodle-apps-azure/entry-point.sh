@@ -8,9 +8,6 @@ log() {
 log "Starting SSH..."
 /usr/sbin/sshd
 
-# Save non-sensitive environment variables to file (will be used by SSH install / update session)
-/app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD
-
 # The Moodle container will operate in one of 2 modes. Either full-blown Moodle instance, or 
 # a cut-down version which just runs the cron jobs
 
@@ -18,12 +15,23 @@ log "Cron configuration, IS_CRON_JOB_ONLY: $IS_CRON_JOB_ONLY"
 if [[ "$IS_CRON_JOB_ONLY" == 'true' ]]; then
     log "Switching to cron-only mode..."
     cp /app/apache-config-cron.conf /etc/apache2/sites-available/000-default.conf
-    cp /app/moodle-cron /etc/cron.d/moodle-cron
-    chmod 0644 /etc/cron.d/moodle-cron
     mv /var/www/html/public/version.txt /var/www/html/cron/version.txt
-    log "Starting cron daemon..."
-    /usr/sbin/cron
+
+    # It was too involved to get cron to inherit all of the environment variables for
+    # Moodle and php, so create a simple background process here. All of the necessary
+    # variables are available to the startup process.
+    log "Starting periodic background Moodle cron execution job..."
+    (
+        cd /var/www/html/public
+        while true; do
+            sleep 60
+            su -s /bin/sh www-data -c 'php admin/cli/cron.php'
+        done
+    ) &        
 else 
+    # Save non-sensitive environment variables to file (will be used by SSH install / update session)
+    /app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD
+
     log "This will be a full Moodle instance..."
     if [[ "$BASIC_AUTH_ENABLED" == 'true' ]]; then
         # Configure basic auth to restrict access / prevent Moodle from being indexed

@@ -172,7 +172,6 @@ RUN chmod +x /app/*.sh
 COPY apache-security.conf /etc/apache2/conf-enabled/security.conf
 COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
 COPY apache-config-cron.conf /app/apache-config-cron.conf
-COPY moodle-cron /app/moodle-cron
 RUN a2enmod headers
 
 # Give the cron job some html to serve - the cron job service is still an app service
