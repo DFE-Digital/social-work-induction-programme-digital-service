@@ -4,6 +4,13 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [STARTUP] $1"
 }
 
+azure_login() {
+    az login --identity --allow-no-subscriptions >/dev/null
+    if [ $? -ne 0 ]; then
+        log "ERROR: Config file syncing - Azure login with managed identity failed." >&2
+    fi
+}
+
 # Support SSH for troubleshooting
 log "Starting SSH..."
 /usr/sbin/sshd
@@ -43,14 +50,14 @@ else
         log "Starting background persisted file sync process..."
         (
             log "Logging in to Azure..."
-            az login --identity --allow-no-subscriptions # --output none
+            azure_login
             /app/file-sync-from-azure.sh restore
             /app/file-sync-generate-inventory.sh generate .previous
             while true; do
                 sleep 60
                 /app/file-sync-to-azure.sh sync || log "Background sync failed"
                 # Log in again to refresh token
-                az login --identity --allow-no-subscriptions # --output none
+               azure_login
             done
         ) &        
     fi
