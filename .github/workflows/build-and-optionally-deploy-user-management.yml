@@ -1,4 +1,4 @@
-name: Build user management (optionally deploy to non-prod) 
+name: Build user management (optionally deploy to non-prod)
 
 on:
   workflow_dispatch:
@@ -13,7 +13,8 @@ on:
           - d01
           - d02
           - d03
-      
+          - d04
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
   cancel-in-progress: true
