@@ -18,5 +18,5 @@ resource "azurerm_role_assignment" "tf_sp_owner_on_rg" {
   scope                = azurerm_resource_group.rg_primary.id
   role_definition_name = "Owner"
   principal_type       = "ServicePrincipal"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = data.azurerm_client_config.az_config.object_id
 }
