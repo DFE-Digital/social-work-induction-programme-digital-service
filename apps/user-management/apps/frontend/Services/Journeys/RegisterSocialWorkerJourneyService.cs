@@ -155,6 +155,36 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
+    public async Task<RouteIntoSocialWork?> GetRouteIntoSocialWorkAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.RouteIntoSocialWork;
+    }
+
+    public async Task SetRouteIntoSocialWorkAsync(Guid accountId, RouteIntoSocialWork? routeIntoSocialWork)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.RouteIntoSocialWork = routeIntoSocialWork;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
+    public async Task<string?> GetOtherRouteIntoSocialWorkAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.OtherRouteIntoSocialWork;
+    }
+
+    public async Task SetOtherRouteIntoSocialWorkAsync(Guid accountId, string? otherRouteIntoSocialWorkAsync)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.OtherRouteIntoSocialWork = otherRouteIntoSocialWorkAsync;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
     public void ResetRegisterSocialWorkerJourneyModel(Guid accountId)
     {
         Session.Remove(RegisterSocialWorkerSessionKey(accountId));
