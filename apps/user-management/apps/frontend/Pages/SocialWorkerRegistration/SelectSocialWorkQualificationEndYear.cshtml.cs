@@ -46,6 +46,6 @@ public class SelectSocialWorkQualificationEndYear(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetSocialWorkQualificationEndYearAsync(personId, SocialWorkQualificationEndYear);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectHighestQualification()); // TODO update this to select entry route page
+        return Redirect(linkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWork());
     }
 }
