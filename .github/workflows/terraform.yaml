@@ -13,6 +13,7 @@ on:
           - d01
           - d02
           - d03
+          - d04
 
       action:
         description: "Test the planned changes or plan and apply the changes"
@@ -135,7 +136,8 @@ jobs:
             -var='moodle_web_service_user=${{ vars.MOODLE_WEB_SERVICE_USER }}' \
             -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
             -var='basic_auth_user=${{ vars.BASIC_AUTH_USER }}' \
-            -var='basic_auth_password=${{ secrets.BASIC_AUTH_PASSWORD }}' \
+            -var='basic_auth_password_team_environments=${{ secrets.BASIC_AUTH_PASSWORD_TEAM_ENVIRONMENTS }}' \
+            -var='basic_auth_password_user_environments=${{ secrets.BASIC_AUTH_PASSWORD_USER_ENVIRONMENTS }}' \
             -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
             || export exitcode=$?
 

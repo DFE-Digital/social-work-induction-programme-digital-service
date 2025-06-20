@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 
@@ -41,6 +42,14 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupAsian, f => f.Name.FirstName());
         _faker.RuleFor(a => a.EthnicGroupBlack, f => f.PickRandom<EthnicGroupBlack>());
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.EthnicGroupOther, f => f.PickRandom<EthnicGroupOther>());
+        _faker.RuleFor(a => a.OtherEthnicGroupOther, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.IsDisabled, f => f.PickRandom<Disability>());
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, f => DateOnly.FromDateTime(f.Date.Past()));
+        _faker.RuleFor(a => a.HighestQualification, f => f.PickRandom<Qualification>());
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, f => f.Random.Number(1900, 2000));
+        _faker.RuleFor(a => a.RouteIntoSocialWork, f => f.PickRandom<RouteIntoSocialWork>());
+        _faker.RuleFor(a => a.OtherRouteIntoSocialWork, f => f.Name.FirstName());
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -65,6 +74,14 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupAsian, _ => null);
         _faker.RuleFor(a => a.EthnicGroupBlack, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupOther, _ => null);
+        _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => null);
+        _faker.RuleFor(a => a.IsDisabled, _ => null);
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => null);
+        _faker.RuleFor(a => a.HighestQualification, _ => null);
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => null);
+        _faker.RuleFor(a => a.RouteIntoSocialWork, _ => null);
+        _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => null);
         return this;
     }
 
@@ -218,22 +235,58 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithNoRegistrationQuestions()
+    public AccountBuilder WithEthnicGroupOther(EthnicGroupOther ethnicGroupOther)
     {
-        _faker.RuleFor(a => a.DateOfBirth, _ => null);
-        _faker.RuleFor(a => a.UserSex, _ => null);
-        _faker.RuleFor(a => a.GenderMatchesSexAtBirth, _ => null);
-        _faker.RuleFor(a => a.OtherGenderIdentity, _ => null);
-        _faker.RuleFor(a => a.EthnicGroup, _ => null);
-        _faker.RuleFor(a => a.EthnicGroupWhite, _ => null);
-        _faker.RuleFor(a => a.OtherEthnicGroupWhite, _ => null);
-        _faker.RuleFor(a => a.OtherEthnicGroupWhite, _ => null);
-        _faker.RuleFor(a => a.EthnicGroupMixed, _ => null);
-        _faker.RuleFor(a => a.OtherEthnicGroupMixed, _ => null);
-        _faker.RuleFor(a => a.EthnicGroupAsian, _ => null);
-        _faker.RuleFor(a => a.OtherEthnicGroupAsian, _ => null);
-        _faker.RuleFor(a => a.EthnicGroupBlack, _ => null);
-        _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
+        _faker.RuleFor(a => a.EthnicGroupOther, _ => ethnicGroupOther);
+
+        return this;
+    }
+
+    public AccountBuilder WithOtherEthnicGroupOther(string otherEthnicGroupOther)
+    {
+        _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => otherEthnicGroupOther);
+
+        return this;
+    }
+
+    public AccountBuilder WithIsDisabled(Disability isDisabled)
+    {
+        _faker.RuleFor(a => a.IsDisabled, _ => isDisabled);
+
+        return this;
+    }
+
+    public AccountBuilder WithSocialWorkerRegistrationDate(DateOnly socialWorkEnglandRegistrationDate)
+    {
+        _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => socialWorkEnglandRegistrationDate);
+
+        return this;
+    }
+
+    public AccountBuilder WithHighestQualification(Qualification highestQualification)
+    {
+        _faker.RuleFor(a => a.HighestQualification, _ => highestQualification);
+
+        return this;
+    }
+
+    public AccountBuilder WithSocialWorkQualificationEndYear(int socialWorkQualificationEndYear)
+    {
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => socialWorkQualificationEndYear);
+
+        return this;
+    }
+
+    public AccountBuilder WithRouteIntoSocialWork(RouteIntoSocialWork routeIntoSocialWork)
+    {
+        _faker.RuleFor(a => a.RouteIntoSocialWork, _ => routeIntoSocialWork);
+
+        return this;
+    }
+
+    public AccountBuilder WithOtherRouteIntoSocialWork(string otherRouteIntoSocialWork)
+    {
+        _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => otherRouteIntoSocialWork);
 
         return this;
     }

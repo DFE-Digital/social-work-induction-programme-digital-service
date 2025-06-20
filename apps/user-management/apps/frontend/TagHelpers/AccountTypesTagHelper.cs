@@ -10,13 +10,22 @@ public class AccountTypesTagHelper : TagHelper
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "";
+        output.TagName = null;
 
-        if (Types == null)
+        if (Types == null || Types.Count == 0) return;
+
+        // Singular account types are displayed without a wrapping tag
+        if (Types.Count == 1)
         {
+            output.Content.SetContent(Types[0].GetDisplayName());
             return;
         }
 
-        output.Content.SetContent(string.Join(", ", Types.Select(type => type.GetDisplayName())));
+        // Multiple account types are displayed a separate `p` tags
+        var content = Types.Aggregate(
+            "",
+            (current, accountType) => current + $"<p>{accountType.GetDisplayName()}</p>"
+        );
+        output.Content.SetHtmlContent(content);
     }
 }

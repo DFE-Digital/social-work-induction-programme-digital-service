@@ -1,3 +1,5 @@
 just 1.40.0
 powershell-core 7.5.1
 nodejs 22.15.0
+dotnet 8.0.410
+mkcert 1.4.4

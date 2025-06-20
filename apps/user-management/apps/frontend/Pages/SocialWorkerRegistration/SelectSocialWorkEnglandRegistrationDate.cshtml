@@ -1,0 +1,30 @@
+@page
+@model SelectSocialWorkEnglandRegistrationDate
+
+@{
+    Model.Title = "What is your date of birth?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            <govuk-date-input for="SocialWorkEnglandRegistrationDate">
+                <govuk-date-input-fieldset>
+                    <govuk-date-input-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                        What date were you added to the Social Work England register?
+                    </govuk-date-input-fieldset-legend>
+
+                    <govuk-date-input-hint>
+                        For example, 31 3 2024
+                    </govuk-date-input-hint>
+                </govuk-date-input-fieldset>
+            </govuk-date-input>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+
+        <p class="govuk-body">
+            <a href="https://www.socialworkengland.org.uk/umbraco/surface/searchregister/results" target="_blank" class="govuk-link">Find the date you were added to the Social Work England register (opens in new tab)</a>
+        </p>
+    </div>
+</div>

@@ -8,6 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;
 
 public abstract class SocialWorkerRegistrationPageTestBase
 {
+    private protected Mock<IEthnicGroupService> MockEthnicGroupService { get; }
     private protected Mock<IRegisterSocialWorkerJourneyService> MockRegisterSocialWorkerJourneyService { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }
     private protected Guid PersonId { get; }
@@ -15,8 +16,11 @@ public abstract class SocialWorkerRegistrationPageTestBase
     protected SocialWorkerRegistrationPageTestBase()
     {
         PersonId = Guid.NewGuid();
+        MockEthnicGroupService = new();
         MockRegisterSocialWorkerJourneyService = new();
         MockAuthServiceClient = new();
+
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups).Returns(MockEthnicGroupService.Object);
     }
 
     private protected void VerifyAllNoOtherCalls()

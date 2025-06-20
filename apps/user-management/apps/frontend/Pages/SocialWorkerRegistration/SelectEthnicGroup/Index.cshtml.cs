@@ -1,7 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -24,7 +24,7 @@ public class Index(
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroup = await socialWorkerJourneyService.GetEthnicGroupAsync(personId);
+        SelectedEthnicGroup = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationSexAndGenderIdentity();
         return Page();
@@ -41,7 +41,7 @@ public class Index(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
+        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
         return SelectedEthnicGroup switch
         {
@@ -49,9 +49,9 @@ public class Index(
             EthnicGroup.MixedOrMultipleEthnicGroups => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupMixed()),
             EthnicGroup.AsianOrAsianBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupAsian()),
             EthnicGroup.BlackAfricanCaribbeanOrBlackBritish => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupBlack()),
-            EthnicGroup.PreferNotToSay
-                or EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()),
-            _ => Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth())
+            EthnicGroup.OtherEthnicGroup => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupOther()),
+            EthnicGroup.PreferNotToSay => Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability()),
+            _ => Page()
         };
     }
 }

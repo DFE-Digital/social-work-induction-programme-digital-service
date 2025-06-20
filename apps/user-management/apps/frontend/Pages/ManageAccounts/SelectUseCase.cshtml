@@ -1,9 +1,8 @@
 ﻿@page "{id:Guid?}"
 @using Dfe.Sww.Ecf.Frontend.Models
-@using GovUk.Frontend.AspNetCore.TagHelpers
 @model SelectUseCase
 @{
-    Model.Title = "Choose account type";
+    Model.Title = "What do they need to do?";
 }
 
 <div class="govuk-grid-row">
@@ -17,9 +16,16 @@
                         <govuk-checkboxes-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
                             What do they need to do?
                         </govuk-checkboxes-fieldset-legend>
+                        <govuk-checkboxes-hint>
+                            Select all that apply
+                        </govuk-checkboxes-hint>
 
-                        <govuk-checkboxes-item value="@AccountType.Assessor">Assess work and provide feedback to early career social workers</govuk-checkboxes-item>
-                        <govuk-checkboxes-item value="@AccountType.Coordinator">Add, remove and manage users for your organisation</govuk-checkboxes-item>
+                        <govuk-checkboxes-item value="@AccountType.Assessor">Assess work and provide feedback to early
+                            career social workers
+                        </govuk-checkboxes-item>
+                        <govuk-checkboxes-item value="@AccountType.Coordinator">Add, remove and manage users for your
+                            organisation
+                        </govuk-checkboxes-item>
                     </govuk-checkboxes-fieldset>
                 </govuk-checkboxes>
             </div>

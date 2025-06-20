@@ -10,7 +10,7 @@ module "stack" {
   admin_enabled                              = var.admin_enabled
   webapp_storage_account_name                = var.webapp_storage_account_name
   assign_delivery_team_key_vault_permissions = var.assign_delivery_team_key_vault_permissions
-  basic_auth_password                        = var.basic_auth_password
+  basic_auth_password                        = local.basic_auth_password
   email_support_address                      = var.email_support_address
   tags                                       = local.common_tags
   asp_sku_notification                       = var.asp_sku_notification

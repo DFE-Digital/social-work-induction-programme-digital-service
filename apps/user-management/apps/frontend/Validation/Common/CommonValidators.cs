@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Models;
 using FluentValidation;
 using FluentValidation.Results;
+using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Validation.Common;
 
@@ -23,6 +24,26 @@ public static class CommonValidators
             .WithMessage("Enter an email address")
             .EmailAddress()
             .WithMessage("Enter an email address in the correct format, like name@example.com");
+    }
+
+    public static void PastYearMonthDateValidation<T>(this IRuleBuilder<T, YearMonth?> ruleBuilder, string errorMessage)
+    {
+        ruleBuilder.Must(CommonExtensions.BeInThePast).WithMessage(errorMessage);
+    }
+
+    public static void FutureYearMonthDateValidation<T>(this IRuleBuilder<T, YearMonth?> ruleBuilder, string errorMessage)
+    {
+        ruleBuilder.Must(CommonExtensions.BeInTheFuture).WithMessage(errorMessage);
+    }
+
+    public static void PastLocalDateValidation<T>(this IRuleBuilder<T, LocalDate?> ruleBuilder, string errorMessage)
+    {
+        ruleBuilder.Must(CommonExtensions.BeInThePast).WithMessage(errorMessage);
+    }
+
+    public static void FutureLocalDateValidation<T>(this IRuleBuilder<T, LocalDate?> ruleBuilder, string errorMessage)
+    {
+        ruleBuilder.Must(CommonExtensions.BeInTheFuture).WithMessage(errorMessage);
     }
 
     public static void SocialWorkEnglandNumberValidation<T>(
