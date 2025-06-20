@@ -40,4 +40,3 @@ storage_redundancy = "LRS"
 blob_storage_account_tier = "Standard"
 # Standard pay as you go HDD file share 
 file_storage_account_tier = "Standard"
-file_storage_account_kind = "StorageV2"

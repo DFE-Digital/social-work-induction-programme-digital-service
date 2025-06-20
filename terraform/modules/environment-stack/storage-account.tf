@@ -54,6 +54,7 @@ resource "azurerm_storage_account" "sa_app_file_storage" {
   resource_group_name              = azurerm_resource_group.rg_primary.name
   location                         = var.location
   account_tier                     = var.file_storage_account_tier
+  account_kind                     = var.file_storage_account_tier == "Premium" ? "FileStorage" : "StorageV2"
   min_tls_version                  = "TLS1_2"
   account_replication_type         = var.storage_redundancy
   allow_nested_items_to_be_public  = false
