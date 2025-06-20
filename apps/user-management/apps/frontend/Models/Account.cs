@@ -71,45 +71,49 @@ public record Account
 
     public DateOnly? ProgrammeEndDate { get; init; }
 
-    public int? ExternalUserId { get; set; }
+    public int? ExternalUserId { get; init; }
 
-    public bool IsFunded { get; set; }
+    public bool IsFunded { get; init; }
 
-    public DateOnly? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; init; }
 
-    public UserSex? UserSex { get; set; }
+    public UserSex? UserSex { get; init; }
 
-    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; init; }
 
-    public string? OtherGenderIdentity { get; set; }
+    public string? OtherGenderIdentity { get; init; }
 
-    public EthnicGroup? EthnicGroup { get; set; }
+    public EthnicGroup? EthnicGroup { get; init; }
 
-    public EthnicGroupWhite? EthnicGroupWhite { get; set; }
+    public EthnicGroupWhite? EthnicGroupWhite { get; init; }
 
-    public string? OtherEthnicGroupWhite { get; set; }
+    public string? OtherEthnicGroupWhite { get; init; }
 
-    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
+    public EthnicGroupAsian? EthnicGroupAsian { get; init; }
 
-    public string? OtherEthnicGroupAsian { get; set; }
+    public string? OtherEthnicGroupAsian { get; init; }
 
-    public EthnicGroupMixed? EthnicGroupMixed { get; set; }
+    public EthnicGroupMixed? EthnicGroupMixed { get; init; }
 
-    public string? OtherEthnicGroupMixed { get; set; }
+    public string? OtherEthnicGroupMixed { get; init; }
 
-    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
+    public EthnicGroupBlack? EthnicGroupBlack { get; init; }
 
-    public string? OtherEthnicGroupBlack { get; set; }
+    public string? OtherEthnicGroupBlack { get; init; }
 
-    public EthnicGroupOther? EthnicGroupOther { get; set; }
+    public EthnicGroupOther? EthnicGroupOther { get; init; }
 
-    public string? OtherEthnicGroupOther { get; set; }
+    public string? OtherEthnicGroupOther { get; init; }
 
-    public Disability? Disability { get; set; }
+    public Disability? IsDisabled { get; init; }
 
-    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; init; }
 
-    public Qualification? HighestQualification { get; set; }
+    public Qualification? HighestQualification { get; init; }
+
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; init; }
+
+    public string? OtherRouteIntoSocialWork { get; init; }
 
     public int? SocialWorkQualificationEndYear { get; set; }
 
