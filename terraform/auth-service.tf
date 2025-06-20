@@ -108,7 +108,7 @@ module "auth_service" {
 
 resource "azurerm_storage_container" "dpkeys" {
   name               = "${var.resource_name_prefix}-sc-auth-service-dpkeys"
-  storage_account_id = module.stack.storage_account_id
+  storage_account_id = module.stack.blob_storage_account_id
 
   # Prevent any anonymous or public blob reads
   container_access_type = "private"
