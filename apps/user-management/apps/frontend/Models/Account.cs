@@ -75,45 +75,45 @@ public record Account
 
     public bool IsFunded { get; init; }
 
-    public DateOnly? DateOfBirth { get; init; }
+    public DateOnly? DateOfBirth { get; set; }
 
-    public UserSex? UserSex { get; init; }
+    public UserSex? UserSex { get; set; }
 
-    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; init; }
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
 
-    public string? OtherGenderIdentity { get; init; }
+    public string? OtherGenderIdentity { get; set; }
 
-    public EthnicGroup? EthnicGroup { get; init; }
+    public EthnicGroup? EthnicGroup { get; set; }
 
-    public EthnicGroupWhite? EthnicGroupWhite { get; init; }
+    public EthnicGroupWhite? EthnicGroupWhite { get; set; }
 
-    public string? OtherEthnicGroupWhite { get; init; }
+    public string? OtherEthnicGroupWhite { get; set; }
 
-    public EthnicGroupAsian? EthnicGroupAsian { get; init; }
+    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
 
-    public string? OtherEthnicGroupAsian { get; init; }
+    public string? OtherEthnicGroupAsian { get; set; }
 
-    public EthnicGroupMixed? EthnicGroupMixed { get; init; }
+    public EthnicGroupMixed? EthnicGroupMixed { get; set; }
 
-    public string? OtherEthnicGroupMixed { get; init; }
+    public string? OtherEthnicGroupMixed { get; set; }
 
-    public EthnicGroupBlack? EthnicGroupBlack { get; init; }
+    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
 
-    public string? OtherEthnicGroupBlack { get; init; }
+    public string? OtherEthnicGroupBlack { get; set; }
 
-    public EthnicGroupOther? EthnicGroupOther { get; init; }
+    public EthnicGroupOther? EthnicGroupOther { get; set; }
 
-    public string? OtherEthnicGroupOther { get; init; }
+    public string? OtherEthnicGroupOther { get; set; }
 
-    public Disability? IsDisabled { get; init; }
+    public Disability? Disability { get; set; }
 
-    public DateOnly? SocialWorkEnglandRegistrationDate { get; init; }
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
 
-    public Qualification? HighestQualification { get; init; }
+    public Qualification? HighestQualification { get; set; }
 
-    public RouteIntoSocialWork? RouteIntoSocialWork { get; init; }
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
 
-    public string? OtherRouteIntoSocialWork { get; init; }
+    public string? OtherRouteIntoSocialWork { get; set; }
 
     public int? SocialWorkQualificationEndYear { get; set; }
 
@@ -137,5 +137,26 @@ public record Account
         ProgrammeEndDate = account.ProgrammeEndDate;
         ExternalUserId = account.ExternalUserId;
         IsFunded = account.IsFunded;
+        DateOfBirth = account.DateOfBirth;
+        UserSex = account.UserSex;
+        GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth;
+        OtherGenderIdentity = account.OtherGenderIdentity;
+        EthnicGroup = account.EthnicGroup;
+        EthnicGroupWhite = account.EthnicGroupWhite;
+        OtherEthnicGroupWhite = account.OtherEthnicGroupWhite;
+        EthnicGroupMixed = account.EthnicGroupMixed;
+        OtherEthnicGroupMixed = account.OtherEthnicGroupMixed;
+        EthnicGroupAsian = account.EthnicGroupAsian;
+        OtherEthnicGroupAsian = account.OtherEthnicGroupAsian;
+        EthnicGroupBlack = account.EthnicGroupBlack;
+        OtherEthnicGroupBlack = account.OtherEthnicGroupBlack;
+        EthnicGroupOther = account.EthnicGroupOther;
+        OtherEthnicGroupOther = account.OtherEthnicGroupOther;
+        Disability = account.Disability;
+        SocialWorkEnglandRegistrationDate = account.SocialWorkEnglandRegistrationDate;
+        HighestQualification = account.HighestQualification;
+        SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear;
+        RouteIntoSocialWork = account.RouteIntoSocialWork;
+        OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
     }
 }

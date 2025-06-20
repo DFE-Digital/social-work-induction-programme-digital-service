@@ -93,7 +93,26 @@ public class AccountService(
                 EmailAddress = updatedAccount.Email,
                 SocialWorkEnglandNumber = updatedAccount.SocialWorkEnglandNumber,
                 Roles = updatedAccount.Types ?? [],
-                Status = updatedAccount.Status
+                Status = updatedAccount.Status,
+                DateOfBirth = updatedAccount.DateOfBirth,
+                UserSex = updatedAccount.UserSex,
+                GenderMatchesSexAtBirth = updatedAccount.GenderMatchesSexAtBirth,
+                OtherGenderIdentity = updatedAccount.OtherGenderIdentity,
+                EthnicGroup = updatedAccount.EthnicGroup,
+                EthnicGroupWhite = updatedAccount.EthnicGroupWhite,
+                OtherEthnicGroupWhite = updatedAccount.OtherEthnicGroupWhite,
+                EthnicGroupMixed = updatedAccount.EthnicGroupMixed,
+                OtherEthnicGroupMixed = updatedAccount.OtherEthnicGroupMixed,
+                EthnicGroupBlack = updatedAccount.EthnicGroupBlack,
+                OtherEthnicGroupBlack = updatedAccount.OtherEthnicGroupBlack,
+                EthnicGroupOther = updatedAccount.EthnicGroupOther,
+                OtherEthnicGroupOther = updatedAccount.OtherEthnicGroupOther,
+                Disability = updatedAccount.Disability,
+                SocialWorkEnglandRegistrationDate = updatedAccount.SocialWorkEnglandRegistrationDate,
+                HighestQualification = updatedAccount.HighestQualification,
+                RouteIntoSocialWork = updatedAccount.RouteIntoSocialWork,
+                OtherRouteIntoSocialWork = updatedAccount.OtherRouteIntoSocialWork,
+                SocialWorkQualificationEndYear = updatedAccount.SocialWorkQualificationEndYear
             }
         );
 

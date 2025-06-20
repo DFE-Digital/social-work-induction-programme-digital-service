@@ -28,7 +28,7 @@ public class SetSocialWorkQualificationEndYearShould : RegisterSocialWorkerJourn
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.SocialWorkEnglandQualificationEndYear.Should().Be(originalAccount.SocialWorkQualificationEndYear);
+        registerSocialWorkerJourneyModel!.SocialWorkQualificationEndYear.Should().Be(originalAccount.SocialWorkQualificationEndYear);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

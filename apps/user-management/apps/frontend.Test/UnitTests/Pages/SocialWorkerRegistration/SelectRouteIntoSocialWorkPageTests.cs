@@ -65,7 +65,7 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group"); // TODO update this check your answers page
+        redirectResult!.Url.Should().Be("/social-worker-registration/check-your-answers");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetRouteIntoSocialWorkAsync(PersonId, entryRoute), Times.Once);

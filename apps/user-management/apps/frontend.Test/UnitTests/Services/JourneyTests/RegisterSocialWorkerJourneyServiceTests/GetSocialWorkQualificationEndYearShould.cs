@@ -23,7 +23,7 @@ public class GetSocialWorkQualificationEndYearShould : RegisterSocialWorkerJourn
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(expected.SocialWorkEnglandQualificationEndYear);
+        response.Should().Be(expected.SocialWorkQualificationEndYear);
 
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();
