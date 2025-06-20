@@ -76,61 +76,6 @@ public class CheckYourAnswersPageTests : SocialWorkerRegistrationPageTestBase
         VerifyAllNoOtherCalls();
     }
 
-
-    // [Fact]
-    // public async Task OnPostAsync_WhenCalledWithInvalidValues_ReturnsValidationErrors()
-    // {
-    //     // Arrange
-    //     Sut.SelectedRouteIntoSocialWork = null;
-    //     Sut.OtherRouteIntoSocialWork = null;
-    //
-    //     // Act
-    //     var result = await Sut.OnPostAsync();
-    //
-    //     // Assert
-    //     result.Should().BeOfType<PageResult>();
-    //
-    //     var modelState = Sut.ModelState;
-    //     var modelStateKeys = modelState.Keys.ToList();
-    //     modelStateKeys.Count.Should().Be(1);
-    //
-    //     modelStateKeys.Should().Contain("SelectedRouteIntoSocialWork");
-    //     modelState["SelectedRouteIntoSocialWork"]!.Errors.Count.Should().Be(1);
-    //     modelState["SelectedRouteIntoSocialWork"]!.Errors[0].ErrorMessage.Should()
-    //         .Be("Select your entry route into social work");
-    //
-    //     Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
-    //
-    //     VerifyAllNoOtherCalls();
-    // }
-    //
-    // [Fact]
-    // public async Task OnPostAsync_WhenCalledWithInvalidOtherValues_ReturnsValidationErrors()
-    // {
-    //     // Arrange
-    //     Sut.SelectedRouteIntoSocialWork = RouteIntoSocialWork.Other;
-    //     Sut.OtherRouteIntoSocialWork = null;
-    //
-    //     // Act
-    //     var result = await Sut.OnPostAsync();
-    //
-    //     // Assert
-    //     result.Should().BeOfType<PageResult>();
-    //
-    //     var modelState = Sut.ModelState;
-    //     var modelStateKeys = modelState.Keys.ToList();
-    //     modelStateKeys.Count.Should().Be(1);
-    //
-    //     modelStateKeys.Should().Contain("OtherRouteIntoSocialWork");
-    //     modelState["OtherRouteIntoSocialWork"]!.Errors.Count.Should().Be(1);
-    //     modelState["OtherRouteIntoSocialWork"]!.Errors[0].ErrorMessage.Should()
-    //         .Be("Enter your entry route");
-    //
-    //     Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
-    //
-    //     VerifyAllNoOtherCalls();
-    // }
-
     private static string? GetOtherEthnicGroup(RegisterSocialWorkerJourneyModel? accountDetails)
     {
         return accountDetails?.OtherEthnicGroupWhite
