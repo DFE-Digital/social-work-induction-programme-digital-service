@@ -29,7 +29,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
     protected internal KeyNotFoundException AccountNotFoundException(Guid id) =>
         new("Account not found with ID " + id);
 
-    protected internal async Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
+    public async Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid accountId)
     {
         Session.TryGet(
             RegisterSocialWorkerSessionKey(accountId),
@@ -158,7 +158,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
     public async Task<int?> GetSocialWorkQualificationEndYearAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.SocialWorkEnglandQualificationEndYear;
+        return registerSocialWorkerJourneyModel?.SocialWorkQualificationEndYear;
     }
 
     public async Task SetSocialWorkQualificationEndYearAsync(Guid accountId, int? socialWorkEnglandQualificationEndYear)
@@ -166,7 +166,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.SocialWorkEnglandQualificationEndYear = socialWorkEnglandQualificationEndYear;
+        registerSocialWorkerJourneyModel.SocialWorkQualificationEndYear = socialWorkEnglandQualificationEndYear;
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 

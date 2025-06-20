@@ -7,6 +7,8 @@ public interface IRegisterSocialWorkerJourneyService
 {
     public IEthnicGroupService EthnicGroups { get; init; }
 
+    public Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid accountId);
+
     Task<DateOnly?> GetDateOfBirthAsync(Guid accountId);
     Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth);
     Task<UserSex?> GetUserSexAsync(Guid accountId);

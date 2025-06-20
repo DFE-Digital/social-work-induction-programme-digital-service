@@ -19,7 +19,7 @@ public class SetIsDisabledShould : RegisterSocialWorkerJourneyServiceTestBase
             .ReturnsAsync(originalAccount);
 
         // Act
-        await Sut.SetIsDisabledAsync(originalAccount.Id, originalAccount.IsDisabled);
+        await Sut.SetIsDisabledAsync(originalAccount.Id, originalAccount.Disability);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -28,7 +28,7 @@ public class SetIsDisabledShould : RegisterSocialWorkerJourneyServiceTestBase
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.IsDisabled.Should().Be(originalAccount.IsDisabled);
+        registerSocialWorkerJourneyModel!.IsDisabled.Should().Be(originalAccount.Disability);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

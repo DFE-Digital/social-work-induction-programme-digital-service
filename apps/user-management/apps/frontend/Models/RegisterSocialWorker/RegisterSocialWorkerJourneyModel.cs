@@ -34,13 +34,13 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherEthnicGroupOther { get; set; } = account.OtherEthnicGroupOther;
 
-    public Disability? IsDisabled { get; set; } = account.IsDisabled;
+    public Disability? IsDisabled { get; set; } = account.Disability;
 
     public DateOnly? SocialWorkEnglandRegistrationDate { get; set; } = account.SocialWorkEnglandRegistrationDate;
 
     public Qualification? HighestQualification { get; set; } = account.HighestQualification;
 
-    public int? SocialWorkEnglandQualificationEndYear { get; set; } = account.SocialWorkQualificationEndYear;
+    public int? SocialWorkQualificationEndYear { get; set; } = account.SocialWorkQualificationEndYear;
 
     public Account ToAccount()
     {
@@ -61,10 +61,10 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             OtherEthnicGroupBlack = OtherEthnicGroupBlack,
             EthnicGroupOther = EthnicGroupOther,
             OtherEthnicGroupOther = OtherEthnicGroupOther,
-            IsDisabled = IsDisabled,
+            Disability = IsDisabled,
             SocialWorkEnglandRegistrationDate = SocialWorkEnglandRegistrationDate,
             HighestQualification = HighestQualification,
-            SocialWorkQualificationEndYear = SocialWorkEnglandQualificationEndYear
+            SocialWorkQualificationEndYear = SocialWorkQualificationEndYear
         };
     }
 }

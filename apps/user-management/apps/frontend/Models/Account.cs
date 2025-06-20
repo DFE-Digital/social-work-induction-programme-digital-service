@@ -105,7 +105,7 @@ public record Account
 
     public string? OtherEthnicGroupOther { get; set; }
 
-    public Disability? IsDisabled { get; set; }
+    public Disability? Disability { get; set; }
 
     public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
 
