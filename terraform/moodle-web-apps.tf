@@ -84,9 +84,9 @@ resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
 }
 
 resource "azurerm_storage_share" "moodle_content_share" {
-  name                = "${var.resource_name_prefix}-ss-moodle-content"
-  storage_account_id  = module.stack.storage_account_id
-  quota               = var.moodle_max_data_storage_size_in_gb
+  name               = "${var.resource_name_prefix}-ss-moodle-content"
+  storage_account_id = module.stack.storage_account_id
+  quota              = var.moodle_max_data_storage_size_in_gb
 }
 
 resource "azurerm_role_assignment" "moodle_content_share" {
