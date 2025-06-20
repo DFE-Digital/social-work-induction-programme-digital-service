@@ -60,6 +60,7 @@ resource "azurerm_storage_account" "sa_app_file_storage" {
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
   large_file_share_enabled         = true
+  shared_access_key_enabled        = true
   
   tags = var.tags
 
