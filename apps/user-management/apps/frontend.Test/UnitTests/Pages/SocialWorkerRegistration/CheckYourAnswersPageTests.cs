@@ -74,7 +74,7 @@ public class CheckYourAnswersPageTests : SocialWorkerRegistrationPageTestBase
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.CompleteJourneyAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
-    }sss
+    }
 
     private static string? GetOtherEthnicGroup(RegisterSocialWorkerJourneyModel? accountDetails)
     {
