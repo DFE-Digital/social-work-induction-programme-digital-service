@@ -140,7 +140,7 @@ public record Account
         DateOfBirth = account.DateOfBirth;
         UserSex = account.UserSex;
         GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth;
-        OtherGenderIdentity = account.OtherRouteIntoSocialWork;
+        OtherGenderIdentity = account.OtherGenderIdentity;
         EthnicGroup = account.EthnicGroup;
         EthnicGroupWhite = account.EthnicGroupWhite;
         OtherEthnicGroupWhite = account.OtherEthnicGroupWhite;
@@ -157,5 +157,6 @@ public record Account
         HighestQualification = account.HighestQualification;
         SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear;
         RouteIntoSocialWork = account.RouteIntoSocialWork;
+        OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
     }
 }

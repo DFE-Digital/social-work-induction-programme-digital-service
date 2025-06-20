@@ -23,7 +23,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             DateOfBirth = person.DateOfBirth,
             UserSex = person.UserSex,
             GenderMatchesSexAtBirth = person.GenderMatchesSexAtBirth,
-            OtherGenderIdentity = person.OtherRouteIntoSocialWork,
+            OtherGenderIdentity = person.OtherGenderIdentity,
             EthnicGroup = person.EthnicGroup,
             EthnicGroupWhite = person.EthnicGroupWhite,
             OtherEthnicGroupWhite = person.OtherEthnicGroupWhite,
@@ -40,6 +40,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             HighestQualification = person.HighestQualification,
             SocialWorkQualificationEndYear = person.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = person.RouteIntoSocialWork,
+            OtherRouteIntoSocialWork = person.OtherRouteIntoSocialWork
         };
     }
 
@@ -61,7 +62,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             DateOfBirth = account.DateOfBirth,
             UserSex = account.UserSex,
             GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth,
-            OtherGenderIdentity = account.OtherRouteIntoSocialWork,
+            OtherGenderIdentity = account.OtherGenderIdentity,
             EthnicGroup = account.EthnicGroup,
             EthnicGroupWhite = account.EthnicGroupWhite,
             OtherEthnicGroupWhite = account.OtherEthnicGroupWhite,
@@ -78,6 +79,7 @@ public class AccountMapper : IModelMapper<Person, Account>
             HighestQualification = account.HighestQualification,
             SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = account.RouteIntoSocialWork,
+            OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork
         };
     }
 }
