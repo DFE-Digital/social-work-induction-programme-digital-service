@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -11,21 +12,23 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectSocialWorkQualificationEndYear(
+public class SelectRouteIntoSocialWork(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectSocialWorkQualificationEndYear> validator)
+    IValidator<SelectRouteIntoSocialWork> validator)
     : BasePageModel
 {
-    [BindProperty] public int? SocialWorkQualificationEndYear { get; set; }
+    [BindProperty] public RouteIntoSocialWork? SelectedRouteIntoSocialWork { get; set; }
+    [BindProperty] public string? OtherRouteIntoSocialWork { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SocialWorkQualificationEndYear = await socialWorkerJourneyService.GetSocialWorkQualificationEndYearAsync(personId);
+        SelectedRouteIntoSocialWork = await socialWorkerJourneyService.GetRouteIntoSocialWorkAsync(personId);
+        OtherRouteIntoSocialWork = await socialWorkerJourneyService.GetOtherRouteIntoSocialWorkAsync(personId);
 
-        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectHighestQualification();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear();
         return Page();
     }
 
@@ -35,17 +38,15 @@ public class SelectSocialWorkQualificationEndYear(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-        }
-
-        if (!result.IsValid)
-        {
-            BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectHighestQualification();
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear();
             return Page();
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetSocialWorkQualificationEndYearAsync(personId, SocialWorkQualificationEndYear);
+        await socialWorkerJourneyService.SetRouteIntoSocialWorkAsync(personId, SelectedRouteIntoSocialWork);
+        await socialWorkerJourneyService.SetOtherRouteIntoSocialWorkAsync(personId, OtherRouteIntoSocialWork);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWork());
+        return Redirect(linkGenerator
+            .SocialWorkerRegistrationEthnicGroup()); // TODO update this check your answers page
     }
 }

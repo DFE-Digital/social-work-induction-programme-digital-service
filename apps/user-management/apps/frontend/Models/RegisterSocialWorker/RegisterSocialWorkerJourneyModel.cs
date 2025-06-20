@@ -42,6 +42,10 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public int? SocialWorkEnglandQualificationEndYear { get; set; } = account.SocialWorkQualificationEndYear;
 
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; } = account.RouteIntoSocialWork;
+
+    public string? OtherRouteIntoSocialWork { get; set; } = account.OtherRouteIntoSocialWork;
+
     public Account ToAccount()
     {
         return new Account(Account)
@@ -64,7 +68,9 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             IsDisabled = IsDisabled,
             SocialWorkEnglandRegistrationDate = SocialWorkEnglandRegistrationDate,
             HighestQualification = HighestQualification,
-            SocialWorkQualificationEndYear = SocialWorkEnglandQualificationEndYear
+            SocialWorkQualificationEndYear = SocialWorkEnglandQualificationEndYear,
+            RouteIntoSocialWork = RouteIntoSocialWork,
+            OtherRouteIntoSocialWork = OtherRouteIntoSocialWork
         };
     }
 }
