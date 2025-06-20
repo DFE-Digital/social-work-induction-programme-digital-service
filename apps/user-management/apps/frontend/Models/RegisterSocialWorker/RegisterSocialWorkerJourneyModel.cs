@@ -4,6 +4,8 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 {
     public Account Account { get; } = account;
 
+    public AccountDetails? AccountDetails { get; set; }
+
     public DateOnly? DateOfBirth { get; set; } = account.DateOfBirth;
 
     public UserSex? UserSex { get; set; } = account.UserSex;

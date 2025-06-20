@@ -1,14 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -16,28 +12,34 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
 public class CheckYourAnswers(
+    EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService registerSocialWorkerJourneyService,
-    IAuthServiceClient authServiceClient,
-    EcfLinkGenerator linkGenerator
+    IAuthServiceClient authServiceClient
 ) : BasePageModel
 {
-    public string ChangeDetailsLink { get; set; } = linkGenerator.ManageAccounts();
+    public string ChangeDetailsLink { get; set; } = linkGenerator.SocialWorkerRegistration(); // TODO update this to relevant change link per row
 
-    [Display(Name = "Date of birth")] public DateOnly? DateOfBirth { get; set; }
+    [Display(Name = "Date of birth")] public string? DateOfBirth { get; set; }
 
     [Display(Name = "What is your sex?")] public UserSex? UserSex { get; set; }
 
     [Display(Name = "Is the gender you identify with the same as your sex registered at birth?")]
     public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
 
+    [Display(Name = "What is your gender identity?")]
+    public string? OtherGenderIdentity { get; set; }
+
     [Display(Name = "What is your ethnic group?")]
     public EthnicGroup? EthnicGroup { get; set; }
+
+    [Display(Name = "How would you describe your background?")]
+    public string? OtherEthnicGroup { get; set; }
 
     [Display(Name = "Do you have a disability?")]
     public Disability? Disability { get; set; }
 
     [Display(Name = "What date were you added to the Social Work England register?")]
-    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
+    public string? SocialWorkEnglandRegistrationDate { get; set; }
 
     [Display(Name = "What is the highest qualification you hold?")]
     public Qualification? HighestQualification { get; set; }
@@ -45,8 +47,11 @@ public class CheckYourAnswers(
     [Display(Name = "What year did you finish your social work qualification?")]
     public int? SocialWorkQualificationEndYear { get; set; }
 
-    // [Display(Name = "What entry route into social work did you take?")]
-    // public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
+    [Display(Name = "What entry route into social work did you take?")]
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
+
+    [Display(Name = "What entry route into social work did you take?")]
+    public string? OtherRouteIntoSocialWork { get; set; }
 
     /// <summary>
     /// Action for confirming user details
@@ -54,84 +59,43 @@ public class CheckYourAnswers(
     /// <returns>A confirmation screen displaying user details</returns>
     public async Task<PageResult> OnGetAsync()
     {
-        BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
-        // ChangeDetailsLink = linkGenerator.AddAccountDetailsChange();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWork();
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
 
-        var accountDetails = await registerSocialWorkerJourneyService.GetRegisterSocialWorkerJourneyModelAsync(personId);
+        var registerModel = await registerSocialWorkerJourneyService.GetRegisterSocialWorkerJourneyModelAsync(personId);
 
-        DateOfBirth = accountDetails?.DateOfBirth;
-        UserSex = accountDetails?.UserSex;
-        GenderMatchesSexAtBirth = accountDetails?.GenderMatchesSexAtBirth;
-        EthnicGroup = accountDetails?.EthnicGroup;
-        Disability = accountDetails?.Disability;
-        SocialWorkEnglandRegistrationDate = accountDetails?.SocialWorkEnglandRegistrationDate;
-        HighestQualification = accountDetails?.HighestQualification;
-        SocialWorkQualificationEndYear = accountDetails?.SocialWorkQualificationEndYear;
-
-        // RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
-        // StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
-        // AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
-        // Qualified = accountLabels?.IsQualifiedWithin3Years;
-        // FirstName = accountDetails?.FirstName;
-        // MiddleNames = accountDetails?.MiddleNames;
-        // LastName = accountDetails?.LastName;
-        // Email = accountDetails?.Email;
-        // SocialWorkEnglandNumber = accountDetails?.SocialWorkEnglandNumber;
-        // ProgrammeStartDate = createAccountJourneyService.GetProgrammeStartDate()?
-        //     .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
-        // ProgrammeEndDate = createAccountJourneyService.GetProgrammeEndDate()?
-        //     .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        DateOfBirth = registerModel?.DateOfBirth?.ToString("d MMMM yyyy");
+        UserSex = registerModel?.UserSex;
+        GenderMatchesSexAtBirth = registerModel?.GenderMatchesSexAtBirth;
+        EthnicGroup = registerModel?.EthnicGroup;
+        OtherEthnicGroup = GetOtherEthnicGroup(registerModel);
+        Disability = registerModel?.Disability;
+        SocialWorkEnglandRegistrationDate = registerModel?.SocialWorkEnglandRegistrationDate?.ToString("d MMMM yyyy");
+        HighestQualification = registerModel?.HighestQualification;
+        SocialWorkQualificationEndYear = registerModel?.SocialWorkQualificationEndYear;
+        RouteIntoSocialWork = registerModel?.RouteIntoSocialWork;
+        OtherRouteIntoSocialWork = registerModel?.OtherRouteIntoSocialWork;
+        OtherGenderIdentity = registerModel?.OtherGenderIdentity;
 
         return Page();
     }
 
-    // /// <summary>
-    // /// Action for confirming user details
-    // /// </summary>
-    // /// <returns>A confirmation screen displaying user details</returns>
-    // public async Task<IActionResult> OnPostAsync()
-    // {
-    //     var accountDetails = createAccountJourneyService.GetAccountDetails();
-    //     if (accountDetails is null)
-    //     {
-    //         return BadRequest();
-    //     }
-    //
-    //     var moodleRequest = new CreateMoodleUserRequest
-    //     {
-    //         Username = accountDetails.Email,
-    //         Email = accountDetails.Email,
-    //         FirstName = accountDetails.FirstName,
-    //         LastName = accountDetails.LastName
-    //     };
-    //     var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-    //     if (response.Successful == false)
-    //     {
-    //         return BadRequest();
-    //     }
-    //
-    //     createAccountJourneyService.SetExternalUserId(response.Id);
-    //
-    //     await createAccountJourneyService.CompleteJourneyAsync();
-    //
-    //     TempData["NotificationType"] = NotificationBannerType.Success;
-    //     TempData["NotificationHeader"] = "New user added";
-    //     TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}";
-    //
-    //     return Redirect(linkGenerator.ManageAccounts());
-    // }
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var personId = authServiceClient.HttpContextService.GetPersonId();
 
-    // public async Task<IActionResult> OnPostUpdateAsync(Guid id)
-    // {
-    //     if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-    //     {
-    //         return NotFound();
-    //     }
-    //
-    //     await editAccountJourneyService.CompleteJourneyAsync(id);
-    //
-    //     return Redirect(linkGenerator.ViewAccountDetails(id));
-    // }
+        await registerSocialWorkerJourneyService.CompleteJourneyAsync(personId);
+
+        return Redirect(linkGenerator.ManageAccounts()); // TODO update this to the registration complete page
+    }
+
+    private static string? GetOtherEthnicGroup(RegisterSocialWorkerJourneyModel? accountDetails)
+    {
+        return accountDetails?.OtherEthnicGroupWhite
+               ?? accountDetails?.OtherEthnicGroupMixed
+               ?? accountDetails?.OtherEthnicGroupAsian
+               ?? accountDetails?.OtherEthnicGroupBlack
+               ?? accountDetails?.OtherEthnicGroupOther;
+    }
 }

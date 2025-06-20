@@ -1,4 +1,6 @@
 ﻿@page "{id:Guid?}"
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker
 @model CheckYourAnswers
 
 @{
@@ -13,158 +15,165 @@
             </h1>
 
             <govuk-summary-list>
-                <govuk-summary-list-row>
-                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.DateOfBirth)</govuk-summary-list-row-key>
-                    <govuk-summary-list-row-value>@Model.DateOfBirth</govuk-summary-list-row-value>
-                    <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.DateOfBirth)">
-                            Change
-                        </govuk-summary-list-row-action>
-                    </govuk-summary-list-row-actions>
-                </govuk-summary-list-row>
+                @if (Model.DateOfBirth is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.DateOfBirth)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.DateOfBirth</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.DateOfBirth)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
 
-            @*     @if (Model.RegisteredWithSocialWorkEngland is not null) *@
-            @*     { *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.RegisteredWithSocialWorkEngland</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)"> *@
-            @*                     Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     } *@
-            @* *@
-            @*     @if (Model.StatutoryWorker is not null) *@
-            @*     { *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.StatutoryWorker)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.StatutoryWorker</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.StatutoryWorker)"> *@
-            @*                     Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     } *@
-            @* *@
-            @*     @if (Model.AgencyWorker is not null) *@
-            @*     { *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.AgencyWorker)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.AgencyWorker</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.AgencyWorker)"> *@
-            @*                     Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     } *@
-            @* *@
-            @*     @if (Model.Qualified is not null) *@
-            @*     { *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Qualified)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.Qualified</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.Qualified)"> *@
-            @*                     Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     } *@
-            @* *@
-            @*     <govuk-summary-list-row> *@
-            @*         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.FirstName)</govuk-summary-list-row-key> *@
-            @*         <govuk-summary-list-row-value>@Model.FirstName</govuk-summary-list-row-value> *@
-            @*         <govuk-summary-list-row-actions> *@
-            @*             <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.FirstName)">Change *@
-            @*             </govuk-summary-list-row-action> *@
-            @*         </govuk-summary-list-row-actions> *@
-            @*     </govuk-summary-list-row> *@
-            @* *@
-            @*     @if (Model.MiddleNames is not null) *@
-            @*     { *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.MiddleNames)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.MiddleNames</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.MiddleNames)">Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     } *@
-            @* *@
-            @*     <govuk-summary-list-row> *@
-            @*         <govuk-summary-list-row-key> *@
-            @*             @Html.DisplayNameFor(model => model.LastName) *@
-            @*         </govuk-summary-list-row-key> *@
-            @*         <govuk-summary-list-row-value>@Model.LastName</govuk-summary-list-row-value> *@
-            @*         <govuk-summary-list-row-actions> *@
-            @*             <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.LastName)"> *@
-            @*                 Change *@
-            @*             </govuk-summary-list-row-action> *@
-            @*         </govuk-summary-list-row-actions> *@
-            @*     </govuk-summary-list-row> *@
-            @* *@
-            @*     <govuk-summary-list-row> *@
-            @*         <govuk-summary-list-row-key> *@
-            @*             @Html.DisplayNameFor(model => model.Email) *@
-            @*         </govuk-summary-list-row-key> *@
-            @*         <govuk-summary-list-row-value>@Model.Email</govuk-summary-list-row-value> *@
-            @*         <govuk-summary-list-row-actions> *@
-            @*             <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" *@
-            @*                                            visually-hidden-text="@Html.DisplayNameFor(model => model.Email)">Change *@
-            @*             </govuk-summary-list-row-action> *@
-            @*         </govuk-summary-list-row-actions> *@
-            @*     </govuk-summary-list-row> *@
-            @* </govuk-summary-list> *@
-            @* *@
-            @* @if (Model.SocialWorkEnglandNumber is not null) *@
-            @* { *@
-            @*     <govuk-summary-list> *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.SocialWorkEnglandNumber</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" *@
-            @*                                                visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)">Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     </govuk-summary-list> *@
-            @* } *@
-            @* *@
-            @* @if (Model.ProgrammeStartDate is not null) *@
-            @* { *@
-            @*     <govuk-summary-list> *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.ProgrammeStartDate)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.ProgrammeStartDate</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.ProgrammeStartDate)">Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-            @*     </govuk-summary-list> *@
-            @* } *@
-            @* *@
-            @* @if (Model.ProgrammeEndDate is not null) *@
-            @* { *@
-            @*     <govuk-summary-list> *@
-            @*         <govuk-summary-list-row> *@
-            @*             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.ProgrammeEndDate)</govuk-summary-list-row-key> *@
-            @*             <govuk-summary-list-row-value>@Model.ProgrammeEndDate</govuk-summary-list-row-value> *@
-            @*             <govuk-summary-list-row-actions> *@
-            @*                 <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.ProgrammeEndDate)">Change *@
-            @*                 </govuk-summary-list-row-action> *@
-            @*             </govuk-summary-list-row-actions> *@
-            @*         </govuk-summary-list-row> *@
-                </govuk-summary-list>
-            }
+                @if (Model.UserSex is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.UserSex)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.UserSex.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.UserSex)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.GenderMatchesSexAtBirth is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.GenderMatchesSexAtBirth)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.GenderMatchesSexAtBirth.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.GenderMatchesSexAtBirth)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.OtherGenderIdentity is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherGenderIdentity)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.OtherGenderIdentity</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherGenderIdentity)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.EthnicGroup is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.EthnicGroup)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.EthnicGroup.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.EthnicGroup)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.OtherEthnicGroup is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherEthnicGroup)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.OtherEthnicGroup</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherEthnicGroup)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.Disability is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Disability)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.Disability.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.Disability)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.SocialWorkEnglandRegistrationDate is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandRegistrationDate)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.SocialWorkEnglandRegistrationDate</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandRegistrationDate)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.HighestQualification is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.HighestQualification)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.HighestQualification.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.HighestQualification)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.SocialWorkQualificationEndYear is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkQualificationEndYear)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.SocialWorkQualificationEndYear</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkQualificationEndYear)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.RouteIntoSocialWork is not null && Model.RouteIntoSocialWork != RouteIntoSocialWork.Other)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.RouteIntoSocialWork)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.RouteIntoSocialWork.GetDisplayName()</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.RouteIntoSocialWork)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.OtherRouteIntoSocialWork is not null && Model.RouteIntoSocialWork == RouteIntoSocialWork.Other)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherRouteIntoSocialWork)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.OtherRouteIntoSocialWork</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherRouteIntoSocialWork)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+            </govuk-summary-list>
 
             <govuk-button type="submit">Continue</govuk-button>
-        </form>
-    </div>
-</div>
+        </form >
+    </div >
+</div >
