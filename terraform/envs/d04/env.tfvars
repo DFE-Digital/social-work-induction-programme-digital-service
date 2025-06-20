@@ -15,6 +15,7 @@ admin_enabled               = false
 asp_sku_moodle              = "B2"
 asp_sku_maintenance         = "B2"
 asp_sku_services            = "B1"
+asp_sku_notification        = "Y1"
 days_to_expire              = "365"
 kv_purge_protection_enabled = false
 moodle_instances = {
