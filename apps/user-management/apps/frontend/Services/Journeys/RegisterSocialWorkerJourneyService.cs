@@ -113,7 +113,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
     public async Task<Disability?> GetIsDisabledAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
-        return registerSocialWorkerJourneyModel?.IsDisabled;
+        return registerSocialWorkerJourneyModel?.Disability;
     }
 
     public async Task SetIsDisabledAsync(Guid accountId, Disability? isDisabled)
@@ -121,7 +121,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         var registerSocialWorkerJourneyModel =
             await GetRegisterSocialWorkerJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
-        registerSocialWorkerJourneyModel.IsDisabled = isDisabled;
+        registerSocialWorkerJourneyModel.Disability = isDisabled;
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 

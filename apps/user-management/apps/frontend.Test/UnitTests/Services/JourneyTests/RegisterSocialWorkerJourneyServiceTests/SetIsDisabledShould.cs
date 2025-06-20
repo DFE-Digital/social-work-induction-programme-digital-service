@@ -28,7 +28,7 @@ public class SetIsDisabledShould : RegisterSocialWorkerJourneyServiceTestBase
         );
 
         registerSocialWorkerJourneyModel.Should().NotBeNull();
-        registerSocialWorkerJourneyModel!.IsDisabled.Should().Be(originalAccount.Disability);
+        registerSocialWorkerJourneyModel!.Disability.Should().Be(originalAccount.Disability);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

@@ -65,7 +65,7 @@ public class CheckYourAnswers(
         UserSex = accountDetails?.UserSex;
         GenderMatchesSexAtBirth = accountDetails?.GenderMatchesSexAtBirth;
         EthnicGroup = accountDetails?.EthnicGroup;
-        Disability = accountDetails?.IsDisabled;
+        Disability = accountDetails?.Disability;
         SocialWorkEnglandRegistrationDate = accountDetails?.SocialWorkEnglandRegistrationDate;
         HighestQualification = accountDetails?.HighestQualification;
         SocialWorkQualificationEndYear = accountDetails?.SocialWorkQualificationEndYear;
