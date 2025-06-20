@@ -83,27 +83,17 @@ resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
   name      = each.value.db_name
 }
 
-resource "azurerm_storage_container" "moodleconfig" {
-  name               = "${var.resource_name_prefix}-sc-moodle-config"
-  storage_account_id = module.stack.storage_account_id
-
-  # Prevent any anonymous or public blob reads
-  container_access_type = "private"
+resource "azurerm_storage_share" "moodle_content_share" {
+  name                 = "${var.resource_name_prefix}-ss-moodle-content"
+  storage_account_id   = module.stack.storage_account_id
+  quota                = var.moodle_max_data_storage_size_in_gb
 }
 
-resource "azurerm_role_assignment" "moodleconfig" {
-  scope                = azurerm_storage_container.moodleconfig.id
-  role_definition_name = "Storage Blob Data Contributor"
+resource "azurerm_role_assignment" "moodle_content_share" {
+  scope                = azurerm_storage_share.moodle_content_share.id
+  role_definition_name = "Storage File Data SMB Share Contributor"
   principal_type       = "ServicePrincipal"
   principal_id         = module.web_app_moodle["primary"].web_app_id
-}
-
-resource "azurerm_storage_container" "moodlecontent" {
-  name               = "${var.resource_name_prefix}-sc-moodle-content"
-  storage_account_id = module.stack.storage_account_id
-
-  # Prevent any anonymous or public blob reads
-  container_access_type = "private"
 }
 
 module "web_app_moodle" {
@@ -130,9 +120,6 @@ module "web_app_moodle" {
 
   app_settings = merge({
     "IS_CRON_JOB_ONLY"                 = "false"
-    "STORAGE_ACCOUNT_NAME"             = module.stack.storage_account_name
-    "STORAGE_CONTAINER_CONFIG"         = azurerm_storage_container.moodleconfig.name
-    "STORAGE_CONTAINER_CONTENT"        = azurerm_storage_container.moodlecontent.name
     "MOODLE_WEB_SERVICE_NAME"          = var.moodle_web_service_name
     "MOODLE_WEB_SERVICE_USER"          = var.moodle_web_service_user
     "MOODLE_WEB_SERVICE_USER_EMAIL"    = var.moodle_web_service_user_email
@@ -146,6 +133,18 @@ module "web_app_moodle" {
     "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
+  storage_mounts = {
+    # The key "moodledata" will be used as the mount's 'name'.
+    "moodledata" = {
+      type         = "AzureFiles"
+      mount_path   = "/var/www/moodledata"
+      account_name = module.stack.file_storage_account_name
+      share_name   = azurerm_storage_share.moodle_content_share.name
+      access_key   = module.stack.file_storage_access_key
+    }
+    # You could easily add another mount here if needed!
+    # "another-mount" = { ... }
+  }
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
   ]

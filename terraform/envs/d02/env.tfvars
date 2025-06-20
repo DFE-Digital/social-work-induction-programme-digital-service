@@ -17,6 +17,7 @@ asp_sku_maintenance = "B2"
 asp_sku_services = "B1"
 days_to_expire = "365"
 kv_purge_protection_enabled = false
+moodle_max_data_storage_size_in_gb = 5
 moodle_instances = {
   # Capability to add multiple instances in the future (secondary = {} etc.)
   # They will each have their own dedicated DB
@@ -32,8 +33,6 @@ moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true" # Should be false for prod environment
   "MOODLE_SWITCH_OFF_OAUTH"         = "true" # Should be false for prod environment
   "BASIC_AUTH_ENABLED"              = "true" # Should be false for prod environment
-  "MOODLE_PERSISTED_FILE_SYNC"      = "true" # Should be false for prod environment
-  "MOODLE_FILE_SYNC_PATHS"          = "lang"
 }
 
 user_management_app_settings = {

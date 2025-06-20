@@ -139,6 +139,11 @@ RUN echo "$FULL_TAG" > version.txt
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
 
+# We use the moodledata directory as a reference to seed the Azure file share if empty
+USER www-data
+RUN mv /var/www/moodledata /var/www/moodledata_ref \
+    && mkdir -p /var/www/moodledata
+
 # Needs to run as root for various standard mount point permissions in Azure
 # Apache is configured to run as www-data
 USER root
@@ -161,9 +166,6 @@ COPY entry-point.sh /app/entry-point.sh
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
-COPY file-sync-from-azure.sh /app/file-sync-from-azure.sh
-COPY file-sync-to-azure.sh /app/file-sync-to-azure.sh
-COPY file-sync-generate-inventory.sh /app/file-sync-generate-inventory.sh
 COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
 RUN chmod +x /app/*.sh
 

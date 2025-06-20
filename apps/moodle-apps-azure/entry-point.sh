@@ -46,20 +46,9 @@ else
         htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
         cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
     fi
-    if [[ "$MOODLE_PERSISTED_FILE_SYNC" == 'true' ]]; then
-        log "Starting background persisted file sync process..."
-        (
-            log "Logging in to Azure..."
-            azure_login
-            /app/file-sync-from-azure.sh restore
-            /app/file-sync-generate-inventory.sh generate .previous
-            while true; do
-                sleep 60
-                /app/file-sync-to-azure.sh sync || log "Background sync failed"
-                # Log in again to refresh token
-               azure_login
-            done
-        ) &        
+    if [ -z "$(ls -A '/var/www/moodledata')" ]; then
+        log "Azure file share is empty, seeding with moodledata reference data..."
+        cp -a /var/www/moodledata_ref/. /var/www/moodledata/
     fi
 fi
 

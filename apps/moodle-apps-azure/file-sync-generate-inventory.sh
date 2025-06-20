@@ -92,7 +92,6 @@ EOF
     log "Inventory saved to: $INVENTORY_FILE"
 }
 
-# Main execution
 main() {
     case "${1:-generate}" in
         "generate")
