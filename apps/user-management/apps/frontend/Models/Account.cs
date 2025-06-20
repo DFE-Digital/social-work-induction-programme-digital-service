@@ -115,6 +115,8 @@ public record Account
 
     public string? OtherRouteIntoSocialWork { get; init; }
 
+    public int? SocialWorkQualificationEndYear { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 

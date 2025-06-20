@@ -91,6 +91,7 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationSelectDisability() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability");
     public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
     public string SocialWorkerRegistrationSelectHighestQualification() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification");
+    public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYear() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear");
 
     protected abstract string GetRequiredPathByPage(
         string page,

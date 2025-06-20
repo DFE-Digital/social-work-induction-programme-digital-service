@@ -47,6 +47,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.IsDisabled, f => f.PickRandom<Disability>());
         _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, f => DateOnly.FromDateTime(f.Date.Past()));
         _faker.RuleFor(a => a.HighestQualification, f => f.PickRandom<Qualification>());
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, f => f.Random.Number(1900, 2000));
         _faker.RuleFor(a => a.RouteIntoSocialWork, f => f.PickRandom<RouteIntoSocialWork>());
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, f => f.Name.FirstName());
     }
@@ -78,6 +79,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.IsDisabled, _ => null);
         _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => null);
         _faker.RuleFor(a => a.HighestQualification, _ => null);
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => null);
         _faker.RuleFor(a => a.RouteIntoSocialWork, _ => null);
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => null);
         return this;
@@ -264,6 +266,13 @@ public class AccountBuilder
     public AccountBuilder WithHighestQualification(Qualification highestQualification)
     {
         _faker.RuleFor(a => a.HighestQualification, _ => highestQualification);
+
+        return this;
+    }
+
+    public AccountBuilder WithSocialWorkQualificationEndYear(int socialWorkQualificationEndYear)
+    {
+        _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => socialWorkQualificationEndYear);
 
         return this;
     }

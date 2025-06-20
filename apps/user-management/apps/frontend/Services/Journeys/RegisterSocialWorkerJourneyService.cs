@@ -155,6 +155,21 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
     }
 
+    public async Task<int?> GetSocialWorkQualificationEndYearAsync(Guid accountId)
+    {
+        var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
+        return registerSocialWorkerJourneyModel?.SocialWorkEnglandQualificationEndYear;
+    }
+
+    public async Task SetSocialWorkQualificationEndYearAsync(Guid accountId, int? socialWorkEnglandQualificationEndYear)
+    {
+        var registerSocialWorkerJourneyModel =
+            await GetRegisterSocialWorkerJourneyModelAsync(accountId)
+            ?? throw AccountNotFoundException(accountId);
+        registerSocialWorkerJourneyModel.SocialWorkEnglandQualificationEndYear = socialWorkEnglandQualificationEndYear;
+        SetRegisterSocialWorkerJourneyModel(accountId, registerSocialWorkerJourneyModel);
+    }
+
     public async Task<RouteIntoSocialWork?> GetRouteIntoSocialWorkAsync(Guid accountId)
     {
         var registerSocialWorkerJourneyModel = await GetRegisterSocialWorkerJourneyModelAsync(accountId);
