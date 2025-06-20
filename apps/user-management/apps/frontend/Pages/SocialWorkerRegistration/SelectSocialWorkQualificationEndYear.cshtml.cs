@@ -1,7 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -12,21 +11,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 
 [AuthorizeRoles(RoleType.EarlyCareerSocialWorker)]
-public class SelectHighestQualification(
+public class SelectSocialWorkQualificationEndYear(
     EcfLinkGenerator linkGenerator,
     IRegisterSocialWorkerJourneyService socialWorkerJourneyService,
     IAuthServiceClient authServiceClient,
-    IValidator<SelectHighestQualification> validator)
+    IValidator<SelectSocialWorkQualificationEndYear> validator)
     : BasePageModel
 {
-    [BindProperty] public Qualification? SelectedQualification { get; set; }
+    [BindProperty] public int? SocialWorkQualificationEndYear { get; set; }
 
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedQualification = await socialWorkerJourneyService.GetHighestQualificationAsync(personId);
+        SocialWorkQualificationEndYear = await socialWorkerJourneyService.GetSocialWorkQualificationEndYearAsync(personId);
 
-        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectHighestQualification();
         return Page();
     }
 
@@ -36,13 +35,17 @@ public class SelectHighestQualification(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate();
+        }
+
+        if (!result.IsValid)
+        {
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectHighestQualification();
             return Page();
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetHighestQualificationAsync(personId, SelectedQualification);
+        await socialWorkerJourneyService.SetSocialWorkQualificationEndYearAsync(personId, SocialWorkQualificationEndYear);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear());
+        return Redirect(linkGenerator.SocialWorkerRegistrationSelectHighestQualification()); // TODO update this to select entry route page
     }
 }
