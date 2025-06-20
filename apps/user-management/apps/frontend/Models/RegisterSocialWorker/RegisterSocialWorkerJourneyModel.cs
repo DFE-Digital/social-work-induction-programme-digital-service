@@ -69,7 +69,6 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             SocialWorkEnglandRegistrationDate = SocialWorkEnglandRegistrationDate,
             HighestQualification = HighestQualification,
             SocialWorkQualificationEndYear = SocialWorkEnglandQualificationEndYear,
-            HighestQualification = HighestQualification,
             RouteIntoSocialWork = RouteIntoSocialWork,
             OtherRouteIntoSocialWork = OtherRouteIntoSocialWork
         };

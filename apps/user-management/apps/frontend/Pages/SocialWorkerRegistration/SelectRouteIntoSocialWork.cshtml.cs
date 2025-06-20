@@ -28,7 +28,7 @@ public class SelectRouteIntoSocialWork(
         SelectedRouteIntoSocialWork = await socialWorkerJourneyService.GetRouteIntoSocialWorkAsync(personId);
         OtherRouteIntoSocialWork = await socialWorkerJourneyService.GetOtherRouteIntoSocialWorkAsync(personId);
 
-        BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
+        BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear();
         return Page();
     }
 
@@ -38,7 +38,7 @@ public class SelectRouteIntoSocialWork(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SocialWorkerRegistrationDateOfBirth();
+            BackLinkPath = linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear();
             return Page();
         }
 
@@ -47,6 +47,6 @@ public class SelectRouteIntoSocialWork(
         await socialWorkerJourneyService.SetOtherRouteIntoSocialWorkAsync(personId, OtherRouteIntoSocialWork);
 
         return Redirect(linkGenerator
-            .SocialWorkerRegistrationEthnicGroup());
+            .SocialWorkerRegistrationEthnicGroup()); // TODO update this check your answers page
     }
 }

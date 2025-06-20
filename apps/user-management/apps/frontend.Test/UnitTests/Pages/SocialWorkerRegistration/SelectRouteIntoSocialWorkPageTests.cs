@@ -37,7 +37,7 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
         // Assert
         Sut.SelectedRouteIntoSocialWork.Should().Be(entryRoute);
         Sut.OtherRouteIntoSocialWork.Should().Be(otherRoute);
-        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-date-of-birth");
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
@@ -65,7 +65,7 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group");
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group"); // TODO update this check your answers page
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetRouteIntoSocialWorkAsync(PersonId, entryRoute), Times.Once);
@@ -89,19 +89,41 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
 
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
-        modelStateKeys.Count.Should().Be(2);
+        modelStateKeys.Count.Should().Be(1);
 
         modelStateKeys.Should().Contain("SelectedRouteIntoSocialWork");
         modelState["SelectedRouteIntoSocialWork"]!.Errors.Count.Should().Be(1);
         modelState["SelectedRouteIntoSocialWork"]!.Errors[0].ErrorMessage.Should()
             .Be("Select your entry route into social work");
 
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithInvalidOtherValues_ReturnsValidationErrors()
+    {
+        // Arrange
+        Sut.SelectedRouteIntoSocialWork = RouteIntoSocialWork.Other;
+        Sut.OtherRouteIntoSocialWork = null;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+
         modelStateKeys.Should().Contain("OtherRouteIntoSocialWork");
         modelState["OtherRouteIntoSocialWork"]!.Errors.Count.Should().Be(1);
         modelState["OtherRouteIntoSocialWork"]!.Errors[0].ErrorMessage.Should()
-            .Be("Enter the other entry route");
+            .Be("Enter your entry route");
 
-        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-date-of-birth");
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
 
         VerifyAllNoOtherCalls();
     }
