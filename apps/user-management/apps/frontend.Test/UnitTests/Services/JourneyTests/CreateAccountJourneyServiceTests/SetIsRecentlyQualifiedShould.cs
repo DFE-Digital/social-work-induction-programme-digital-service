@@ -6,20 +6,20 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccountJourneyServiceTests;
 
-public class SetIsQualifiedWithin3YearsShould : CreateAccountJourneyServiceTestBase
+public class SetIsRecentlyQualifiedShould : CreateAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_SetsIsQualifiedWithin3Years()
+    public void WhenCalled_WithExistingSessionData_SetsIsRecentlyQualified()
     {
         // Arrange
         var expected = true;
         HttpContext.Session.Set(
             CreateAccountSessionKey,
-            new CreateAccountJourneyModel { IsQualifiedWithin3Years = expected }
+            new CreateAccountJourneyModel { IsRecentlyQualified = expected }
         );
 
         // Act
-        Sut.SetIsQualifiedWithin3Years(expected);
+        Sut.SetIsRecentlyQualified(expected);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -28,19 +28,19 @@ public class SetIsQualifiedWithin3YearsShould : CreateAccountJourneyServiceTestB
         );
 
         createAccountJourneyModel.Should().NotBeNull();
-        createAccountJourneyModel!.IsQualifiedWithin3Years.Should().Be(expected);
+        createAccountJourneyModel!.IsRecentlyQualified.Should().Be(expected);
 
         VerifyAllNoOtherCall();
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_SetsIsQualifiedWithin3Years()
+    public void WhenCalled_WithBlankSession_SetsIsRecentlyQualified()
     {
         // Arrange
         var expected = true;
 
         // Act
-        Sut.SetIsQualifiedWithin3Years(expected);
+        Sut.SetIsRecentlyQualified(expected);
 
         // Assert
         HttpContext.Session.TryGet(
@@ -49,7 +49,7 @@ public class SetIsQualifiedWithin3YearsShould : CreateAccountJourneyServiceTestB
         );
 
         createAccountJourneyModel.Should().NotBeNull();
-        createAccountJourneyModel!.IsQualifiedWithin3Years.Should().Be(expected);
+        createAccountJourneyModel!.IsRecentlyQualified.Should().Be(expected);
 
         VerifyAllNoOtherCall();
     }

@@ -6,5 +6,5 @@ public class AccountLabels
     public string? IsRegisteredWithSocialWorkEnglandLabel { get; set; }
     public string? IsStatutoryWorkerLabel { get; set; }
     public string? IsAgencyWorkerLabel { get; set; }
-    public string? IsQualifiedWithin3Years { get; set; }
+    public string? IsRecentlyQualifiedLabel { get; set; }
 }

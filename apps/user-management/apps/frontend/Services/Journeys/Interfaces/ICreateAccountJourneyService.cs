@@ -31,9 +31,9 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
-    bool? GetIsQualifiedWithin3Years();
+    bool? GetIsRecentlyQualified();
 
-    void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years);
+    void SetIsRecentlyQualified(bool? isRecentlyQualified);
 
     void SetProgrammeStartDate(DateOnly programmeStartDate);
 
@@ -52,4 +52,6 @@ public interface ICreateAccountJourneyService
     SocialWorker? GetSocialWorkerDetails();
 
     AccountLabels? GetAccountLabels();
+
+    AccountChangeLinks GetAccountChangeLinks();
 }

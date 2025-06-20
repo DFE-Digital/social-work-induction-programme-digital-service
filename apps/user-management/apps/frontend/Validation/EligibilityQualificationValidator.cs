@@ -7,7 +7,7 @@ public class EligibilityQualificationValidator : AbstractValidator<EligibilityQu
 {
     public EligibilityQualificationValidator()
     {
-        RuleFor(model => model.IsQualifiedWithin3Years)
+        RuleFor(model => model.IsRecentlyQualified)
             .NotEmpty()
             .WithMessage("Select if the user completed their social work qualification within the last 3 years");
     }
