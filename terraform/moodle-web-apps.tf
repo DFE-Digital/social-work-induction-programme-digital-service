@@ -142,8 +142,6 @@ module "web_app_moodle" {
       share_name   = azurerm_storage_share.moodle_content_share.name
       access_key   = module.stack.file_storage_access_key
     }
-    # You could easily add another mount here if needed!
-    # "another-mount" = { ... }
   }
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
