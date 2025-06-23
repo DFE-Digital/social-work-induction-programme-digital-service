@@ -87,7 +87,7 @@ public class CheckYourAnswers(
 
         await registerSocialWorkerJourneyService.CompleteJourneyAsync(personId);
 
-        return Redirect(linkGenerator.ManageAccounts()); // TODO update this to the registration complete page
+        return Redirect(linkGenerator.SocialWorkerRegistrationRegistrationComplete());
     }
 
     private static string? GetOtherEthnicGroup(RegisterSocialWorkerJourneyModel? accountDetails)
