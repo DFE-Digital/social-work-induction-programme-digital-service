@@ -94,6 +94,7 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYear() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear");
     public string SocialWorkerRegistrationSelectRouteIntoSocialWork() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork");
     public string SocialWorkerRegistrationCheckYourAnswers() => GetRequiredPathByPage("/SocialWorkerRegistration/CheckYourAnswers");
+    public string SocialWorkerRegistrationRegistrationComplete() => GetRequiredPathByPage("/SocialWorkerRegistration/RegistrationComplete");
 
     protected abstract string GetRequiredPathByPage(
         string page,
