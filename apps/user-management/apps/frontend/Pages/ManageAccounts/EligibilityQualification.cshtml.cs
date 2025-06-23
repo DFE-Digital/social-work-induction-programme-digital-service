@@ -20,9 +20,8 @@ public class EligibilityQualification(
     : BasePageModel
 {
     /// <summary>
-    /// Property capturing whether the user has recently completed their social work qualification.
+    /// Property capturing whether the user has completed their social work qualification within the last 3 years.
     /// </summary>
-    /// <returns>True if the user has qualified in the last 3 years, false otherwise.</returns>
     [BindProperty] public bool? IsRecentlyQualified { get; set; }
 
     public PageResult OnGet()
