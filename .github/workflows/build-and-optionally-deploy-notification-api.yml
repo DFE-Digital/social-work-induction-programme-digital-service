@@ -1,0 +1,52 @@
+name: Build Notification API (optionally deploy to non-prod)
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+          - d03
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish-notifications-api-image:
+    name: Build and Publish Notification API Image
+    uses: ./.github/workflows/build-and-publish-image.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/user-management/apps/notification-service
+      # Path is in relation to the working directory
+      docker-build-file: Dockerfile-azure
+      docker-image-name: notification-api
+      #build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
+      #build-secrets: "AZURE_KUDU_SSH_PASSWORD"
+      build-target: notification-api
+
+  optional-deploy-auth-service:
+    needs: build-and-publish-notifications-api-image
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Notification API (optional)
+    uses: ./.github/workflows/deploy-function-app.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/notification-service
+      app-service-resource-group: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-swip-rg
+      #tunnel-app-service: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
+      requires-container-registry-login: true
+      web-app-name: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-wa-notification-api
+      image-tag: ${{ needs.build-and-publish-notifications-api-image.outputs.docker-image-tag }}
+      #version-endpoint-path: /api/accounts/version
