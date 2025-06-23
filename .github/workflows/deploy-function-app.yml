@@ -1,4 +1,4 @@
-name: Deploy App Service
+name: Deploy Function App
 description: Deploys an image to an Azure app service
 
 on:
