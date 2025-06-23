@@ -1,0 +1,29 @@
+@page
+@model Welcome
+
+@{
+    Model.Title = "Welcome";
+}
+
+<div class="text-center">
+    <h1 class="govuk-heading-l">
+        <span class="govuk-label--l">Welcome to the Social Work Induction Programme</span>
+    </h1>
+
+    <p class="govuk-body">Through this service you can:</p>
+    <ul class="govuk-list govuk-list--bullet">
+        @if (Model.ShowSocialWorkerContent)
+        {
+            <li>access learning resources</li>
+            <li>write and submit your assessments</li>
+            <li>view feedback on your assessments</li>
+            <li>track your progress against the post-qualifying standards</li>
+        }
+        else /* TODO: Show specific content for assessors/coordinators */
+        {
+            <li>add and manage user accounts for your organisation</li>
+            <li>view and manage learner records</li>
+        }
+    </ul>
+
+</div>

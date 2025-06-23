@@ -1,35 +1,34 @@
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 public interface IRegisterSocialWorkerJourneyService
 {
-    Task<DateOnly?> GetDateOfBirthAsync(Guid accountId);
-    Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth);
-    Task<UserSex?> GetUserSexAsync(Guid accountId);
-    Task SetUserSexAsync(Guid accountId, UserSex? userSex);
-    Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId);
-    Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
-    Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
-    Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
-    Task<EthnicGroup?> GetEthnicGroupAsync(Guid accountId);
-    Task SetEthnicGroupAsync(Guid accountId, EthnicGroup? ethnicGroup);
-    Task<EthnicGroupWhite?> GetEthnicGroupWhiteAsync(Guid accountId);
-    Task SetEthnicGroupWhiteAsync(Guid accountId, EthnicGroupWhite? ethnicGroupWhite);
-    Task<string?> GetOtherEthnicGroupWhiteAsync(Guid accountId);
-    Task SetOtherEthnicGroupWhiteAsync(Guid accountId, string? otherEthnicGroupWhite);
-    Task<EthnicGroupMixed?> GetEthnicGroupMixedAsync(Guid accountId);
-    Task SetEthnicGroupMixedAsync(Guid accountId, EthnicGroupMixed? ethnicGroupMixed);
-    Task<string?> GetOtherEthnicGroupMixedAsync(Guid accountId);
-    Task SetOtherEthnicGroupMixedAsync(Guid accountId, string? otherEthnicGroupMixed);
-    Task<EthnicGroupAsian?> GetEthnicGroupAsianAsync(Guid accountId);
-    Task SetEthnicGroupAsianAsync(Guid accountId, EthnicGroupAsian? ethnicGroupAsian);
-    Task<string?> GetOtherEthnicGroupAsianAsync(Guid accountId);
-    Task SetOtherEthnicGroupAsianAsync(Guid accountId, string? otherEthnicGroupAsian);
-    Task<EthnicGroupBlack?> GetEthnicGroupBlackAsync(Guid accountId);
-    Task SetEthnicGroupBlackAsync(Guid accountId, EthnicGroupBlack? ethnicGroupBlack);
-    Task<string?> GetOtherEthnicGroupBlackAsync(Guid accountId);
-    Task SetOtherEthnicGroupBlackAsync(Guid accountId, string? otherEthnicGroupBlack);
-    void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
-    Task<Account> CompleteJourneyAsync(Guid accountId);
+    public IEthnicGroupService EthnicGroups { get; init; }
+
+    public Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid personId);
+
+    Task<DateOnly?> GetDateOfBirthAsync(Guid personId);
+    Task SetDateOfBirthAsync(Guid personId, DateOnly? dateOfBirth);
+    Task<UserSex?> GetUserSexAsync(Guid personId);
+    Task SetUserSexAsync(Guid personId, UserSex? userSex);
+    Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid personId);
+    Task SetUserGenderMatchesSexAtBirthAsync(Guid personId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
+    Task<string?> GetOtherGenderIdentityAsync(Guid personId);
+    Task SetOtherGenderIdentityAsync(Guid personId, string? otherGenderIdentity);
+    Task<Disability?> GetIsDisabledAsync(Guid personId);
+    Task SetIsDisabledAsync(Guid personId, Disability? isDisabled);
+    Task<DateOnly?> GetSocialWorkEnglandRegistrationDateAsync(Guid personId);
+    Task SetSocialWorkEnglandRegistrationDateAsync(Guid personId, DateOnly? socialWorkEnglandRegistrationDate);
+    Task<Qualification?> GetHighestQualificationAsync(Guid personId);
+    Task SetHighestQualificationAsync(Guid personId, Qualification? userSex);
+    Task<int?> GetSocialWorkQualificationEndYearAsync(Guid personId);
+    Task SetSocialWorkQualificationEndYearAsync(Guid personId, int? socialWorkEnglandQualificationEndYear);
+    Task<RouteIntoSocialWork?> GetRouteIntoSocialWorkAsync(Guid personId);
+    Task SetRouteIntoSocialWorkAsync(Guid personId, RouteIntoSocialWork? routeIntoSocialWork);
+    Task<string?> GetOtherRouteIntoSocialWorkAsync(Guid personId);
+    Task SetOtherRouteIntoSocialWorkAsync(Guid personId, string? otherRouteIntoSocialWork);
+    void ResetRegisterSocialWorkerJourneyModel(Guid personId);
+    Task<Account> CompleteJourneyAsync(Guid personId);
 }

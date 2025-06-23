@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using NodaTime;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -71,9 +71,9 @@ public record Account
 
     public DateOnly? ProgrammeEndDate { get; init; }
 
-    public int? ExternalUserId { get; set; }
+    public int? ExternalUserId { get; init; }
 
-    public bool IsFunded { get; set; }
+    public bool IsFunded { get; init; }
 
     public DateOnly? DateOfBirth { get; set; }
 
@@ -101,6 +101,22 @@ public record Account
 
     public string? OtherEthnicGroupBlack { get; set; }
 
+    public EthnicGroupOther? EthnicGroupOther { get; set; }
+
+    public string? OtherEthnicGroupOther { get; set; }
+
+    public Disability? Disability { get; set; }
+
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
+
+    public Qualification? HighestQualification { get; set; }
+
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
+
+    public string? OtherRouteIntoSocialWork { get; set; }
+
+    public int? SocialWorkQualificationEndYear { get; set; }
+
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
@@ -121,5 +137,26 @@ public record Account
         ProgrammeEndDate = account.ProgrammeEndDate;
         ExternalUserId = account.ExternalUserId;
         IsFunded = account.IsFunded;
+        DateOfBirth = account.DateOfBirth;
+        UserSex = account.UserSex;
+        GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth;
+        OtherGenderIdentity = account.OtherGenderIdentity;
+        EthnicGroup = account.EthnicGroup;
+        EthnicGroupWhite = account.EthnicGroupWhite;
+        OtherEthnicGroupWhite = account.OtherEthnicGroupWhite;
+        EthnicGroupMixed = account.EthnicGroupMixed;
+        OtherEthnicGroupMixed = account.OtherEthnicGroupMixed;
+        EthnicGroupAsian = account.EthnicGroupAsian;
+        OtherEthnicGroupAsian = account.OtherEthnicGroupAsian;
+        EthnicGroupBlack = account.EthnicGroupBlack;
+        OtherEthnicGroupBlack = account.OtherEthnicGroupBlack;
+        EthnicGroupOther = account.EthnicGroupOther;
+        OtherEthnicGroupOther = account.OtherEthnicGroupOther;
+        Disability = account.Disability;
+        SocialWorkEnglandRegistrationDate = account.SocialWorkEnglandRegistrationDate;
+        HighestQualification = account.HighestQualification;
+        SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear;
+        RouteIntoSocialWork = account.RouteIntoSocialWork;
+        OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
     }
 }

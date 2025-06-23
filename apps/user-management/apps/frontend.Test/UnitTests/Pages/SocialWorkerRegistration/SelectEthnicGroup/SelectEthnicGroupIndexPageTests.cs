@@ -1,7 +1,6 @@
-using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,7 +27,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         var ethnicGroup = EthnicGroup.White;
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupAsync(PersonId)).ReturnsAsync(ethnicGroup);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetEthnicGroupAsync(PersonId)).ReturnsAsync(ethnicGroup);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -39,14 +38,17 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetEthnicGroupAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Theory]
     [InlineData(EthnicGroup.White, "/social-worker-registration/select-ethnic-group/white")]
     [InlineData(EthnicGroup.MixedOrMultipleEthnicGroups, "/social-worker-registration/select-ethnic-group/mixed-or-multiple-ethnic-groups")]
-    [InlineData(EthnicGroup.OtherEthnicGroup, "/social-worker-registration/select-date-of-birth")] // TODO update this when more sub pages are added
+    [InlineData(EthnicGroup.AsianOrAsianBritish, "/social-worker-registration/select-ethnic-group/asian-or-asian-british")]
+    [InlineData(EthnicGroup.BlackAfricanCaribbeanOrBlackBritish, "/social-worker-registration/select-ethnic-group/black-african-caribbean-or-black-british")]
+    [InlineData(EthnicGroup.OtherEthnicGroup, "/social-worker-registration/select-ethnic-group/other-ethnic-group")]
+    [InlineData(EthnicGroup.PreferNotToSay, "/social-worker-registration/select-disability")]
     public async Task OnPostAsync_WhenCalledWithValidValues_SavesValuesAndRedirectsUser(EthnicGroup ethnicGroup, string redirectUrl)
     {
         // Arrange
@@ -64,7 +66,7 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
         redirectResult!.Url.Should().Be(redirectUrl);
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetEthnicGroupAsync(PersonId, ethnicGroup), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

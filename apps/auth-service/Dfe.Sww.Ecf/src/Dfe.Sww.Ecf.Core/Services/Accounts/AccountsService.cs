@@ -80,6 +80,28 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         account.UpdatedOn = clock.UtcNow;
         account.Status = updatedAccount.Status;
 
+        account.DateOfBirth = updatedAccount.DateOfBirth;
+        account.UserSex = updatedAccount.UserSex;
+        account.GenderMatchesSexAtBirth = updatedAccount.GenderMatchesSexAtBirth;
+        account.OtherGenderIdentity = updatedAccount.OtherGenderIdentity;
+        account.EthnicGroup = updatedAccount.EthnicGroup;
+        account.EthnicGroupWhite = updatedAccount.EthnicGroupWhite;
+        account.OtherEthnicGroupWhite = updatedAccount.OtherEthnicGroupWhite;
+        account.EthnicGroupAsian = updatedAccount.EthnicGroupAsian;
+        account.OtherEthnicGroupAsian = updatedAccount.OtherEthnicGroupAsian;
+        account.EthnicGroupMixed = updatedAccount.EthnicGroupMixed;
+        account.OtherEthnicGroupMixed = updatedAccount.OtherEthnicGroupMixed;
+        account.EthnicGroupBlack = updatedAccount.EthnicGroupBlack;
+        account.OtherEthnicGroupBlack = updatedAccount.OtherEthnicGroupBlack;
+        account.EthnicGroupOther = updatedAccount.EthnicGroupOther;
+        account.OtherEthnicGroupOther = updatedAccount.OtherEthnicGroupOther;
+        account.Disability = updatedAccount.Disability;
+        account.SocialWorkEnglandRegistrationDate = updatedAccount.SocialWorkEnglandRegistrationDate;
+        account.HighestQualification = updatedAccount.HighestQualification;
+        account.RouteIntoSocialWork = updatedAccount.RouteIntoSocialWork;
+        account.OtherRouteIntoSocialWork = updatedAccount.OtherRouteIntoSocialWork;
+        account.SocialWorkQualificationEndYear = updatedAccount.SocialWorkQualificationEndYear;
+
         account.PersonRoles.Clear();
         foreach (var role in updatedAccount.PersonRoles)
         {

@@ -1,0 +1,36 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker
+@using GovUk.Frontend.AspNetCore.TagHelpers
+@model SelectHighestQualification
+
+@{
+    Model.Title = "What is your highest qualification?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post">
+            <govuk-radios for="SelectedQualification">
+                <govuk-radios-fieldset>
+                    <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                        What is your highest qualification?
+                    </govuk-radios-fieldset-legend>
+
+                    <govuk-radios-item value="@Qualification.Ba">@Qualification.Ba.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@Qualification.Bsc">@Qualification.Bsc.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@Qualification.Ma">@Qualification.Ma.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@Qualification.Msc">@Qualification.Msc.GetDisplayName()</govuk-radios-item>
+                    <govuk-radios-item value="@Qualification.PostgraduateDiploma">@Qualification.PostgraduateDiploma.GetDisplayName()</govuk-radios-item>
+
+                    <govuk-radios-divider>or</govuk-radios-divider>
+
+                    <govuk-radios-item value="@Qualification.OtherQualificationDegreeEquivalent">@Qualification.OtherQualificationDegreeEquivalent.GetDisplayName()</govuk-radios-item>
+                </govuk-radios-fieldset>
+            </govuk-radios>
+
+            <govuk-button type="submit">Continue</govuk-button>
+        </form>
+    </div>
+</div>

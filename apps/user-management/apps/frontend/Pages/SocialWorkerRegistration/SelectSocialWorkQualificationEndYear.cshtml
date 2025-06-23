@@ -1,0 +1,22 @@
+@page
+@model SelectSocialWorkQualificationEndYear
+
+@{
+    Model.Title = "What year did you finish your social work qualification?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            <govuk-input for="SocialWorkQualificationEndYear" spellcheck="false" type="number" input-class="govuk-input--width-5">
+                <govuk-input-label is-page-heading="true" class="govuk-label--l">What year did you finish your social work qualification?</govuk-input-label>
+                <govuk-input-hint>
+                    For example, 2023
+                </govuk-input-hint>
+                <govuk-input-error-message/>
+            </govuk-input>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+    </div>
+</div>

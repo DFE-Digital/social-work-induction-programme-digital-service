@@ -1,13 +1,12 @@
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
-using Index = Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration.SelectEthnicGroup.Index;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration.SelectEthnicGroup;
 
@@ -29,8 +28,8 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         var otherEthnicGroupMixed = "Test Value";
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEthnicGroupMixedAsync(PersonId)).ReturnsAsync(ethnicGroupMixed);
-        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetOtherEthnicGroupMixedAsync(PersonId)).ReturnsAsync(otherEthnicGroupMixed);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetEthnicGroupMixedAsync(PersonId)).ReturnsAsync(ethnicGroupMixed);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.EthnicGroups.GetOtherEthnicGroupMixedAsync(PersonId)).ReturnsAsync(otherEthnicGroupMixed);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -42,8 +41,8 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<PageResult>();
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEthnicGroupMixedAsync(PersonId), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetOtherEthnicGroupMixedAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetEthnicGroupMixedAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.GetOtherEthnicGroupMixedAsync(PersonId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -65,11 +64,11 @@ public class SelectEthnicGroupMixedPageTests : SocialWorkerRegistrationPageTestB
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-date-of-birth"); // TODO update this ECSW disability page
+        redirectResult!.Url.Should().Be("/social-worker-registration/select-disability");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);
-        MockRegisterSocialWorkerJourneyService.Verify(x => x.SetOtherEthnicGroupMixedAsync(PersonId, otherEthnicGroupMixed), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetEthnicGroupMixedAsync(PersonId, ethnicGroup), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.EthnicGroups.SetOtherEthnicGroupMixedAsync(PersonId, otherEthnicGroupMixed), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

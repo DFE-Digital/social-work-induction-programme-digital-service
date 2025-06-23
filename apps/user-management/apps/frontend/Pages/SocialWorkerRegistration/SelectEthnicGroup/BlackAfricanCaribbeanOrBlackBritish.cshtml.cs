@@ -1,7 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -25,8 +25,8 @@ public class SelectEthnicGroupBlack(
     public async Task<PageResult> OnGetAsync()
     {
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        SelectedEthnicGroupBlack = await socialWorkerJourneyService.GetEthnicGroupBlackAsync(personId);
-        OtherEthnicGroupBlack = await socialWorkerJourneyService.GetOtherEthnicGroupBlackAsync(personId);
+        SelectedEthnicGroupBlack = await socialWorkerJourneyService.EthnicGroups.GetEthnicGroupBlackAsync(personId);
+        OtherEthnicGroupBlack = await socialWorkerJourneyService.EthnicGroups.GetOtherEthnicGroupBlackAsync(personId);
 
         BackLinkPath = linkGenerator.SocialWorkerRegistrationEthnicGroup();
         return Page();
@@ -43,9 +43,9 @@ public class SelectEthnicGroupBlack(
         }
 
         var personId = authServiceClient.HttpContextService.GetPersonId();
-        await socialWorkerJourneyService.SetEthnicGroupBlackAsync(personId, SelectedEthnicGroupBlack);
-        await socialWorkerJourneyService.SetOtherEthnicGroupBlackAsync(personId, OtherEthnicGroupBlack);
+        await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupBlackAsync(personId, SelectedEthnicGroupBlack);
+        await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupBlackAsync(personId, OtherEthnicGroupBlack);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationDateOfBirth()); // TODO update this ECSW disability page
+        return Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability());
     }
 }

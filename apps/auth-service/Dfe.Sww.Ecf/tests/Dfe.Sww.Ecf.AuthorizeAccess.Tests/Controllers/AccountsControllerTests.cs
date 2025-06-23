@@ -267,10 +267,31 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     RoleType.Coordinator,
                     RoleType.EarlyCareerSocialWorker,
                 }.ToImmutableList(),
-                Status = PersonStatus.Paused,
+                Status = PersonStatus.Inactive,
                 IsFunded = existingUser.IsFunded,
                 ProgrammeStartDate = existingUser.ProgrammeStartDate,
-                ProgrammeEndDate = existingUser.ProgrammeEndDate
+                ProgrammeEndDate = existingUser.ProgrammeEndDate,
+                DateOfBirth = existingUser.DateOfBirth,
+                UserSex = existingUser.UserSex,
+                GenderMatchesSexAtBirth = existingUser.GenderMatchesSexAtBirth,
+                OtherGenderIdentity = existingUser.OtherRouteIntoSocialWork,
+                EthnicGroup = existingUser.EthnicGroup,
+                EthnicGroupWhite = existingUser.EthnicGroupWhite,
+                OtherEthnicGroupWhite = existingUser.OtherEthnicGroupWhite,
+                EthnicGroupAsian = existingUser.EthnicGroupAsian,
+                OtherEthnicGroupAsian = existingUser.OtherEthnicGroupAsian,
+                EthnicGroupMixed = existingUser.EthnicGroupMixed,
+                OtherEthnicGroupMixed = existingUser.OtherEthnicGroupMixed,
+                EthnicGroupBlack = existingUser.EthnicGroupBlack,
+                OtherEthnicGroupBlack = existingUser.OtherEthnicGroupBlack,
+                EthnicGroupOther = existingUser.EthnicGroupOther,
+                OtherEthnicGroupOther = existingUser.OtherEthnicGroupOther,
+                Disability = existingUser.Disability,
+                SocialWorkEnglandRegistrationDate = existingUser.SocialWorkEnglandRegistrationDate,
+                HighestQualification = existingUser.HighestQualification,
+                SocialWorkQualificationEndYear = existingUser.SocialWorkQualificationEndYear,
+                RouteIntoSocialWork = existingUser.RouteIntoSocialWork,
+                OtherRouteIntoSocialWork = existingUser.OtherRouteIntoSocialWork
             };
 
             var accountsService = new AccountsService(dbContext, Clock);
@@ -291,7 +312,28 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     EmailAddress = expectedUser.EmailAddress,
                     SocialWorkEnglandNumber = expectedUser.SocialWorkEnglandNumber,
                     Roles = expectedUser.Roles,
-                    Status = expectedUser.Status
+                    Status = expectedUser.Status,
+                    DateOfBirth = existingUser.DateOfBirth,
+                    UserSex = existingUser.UserSex,
+                    GenderMatchesSexAtBirth = existingUser.GenderMatchesSexAtBirth,
+                    OtherGenderIdentity = existingUser.OtherRouteIntoSocialWork,
+                    EthnicGroup = existingUser.EthnicGroup,
+                    EthnicGroupWhite = existingUser.EthnicGroupWhite,
+                    OtherEthnicGroupWhite = existingUser.OtherEthnicGroupWhite,
+                    EthnicGroupAsian = existingUser.EthnicGroupAsian,
+                    OtherEthnicGroupAsian = existingUser.OtherEthnicGroupAsian,
+                    EthnicGroupMixed = existingUser.EthnicGroupMixed,
+                    OtherEthnicGroupMixed = existingUser.OtherEthnicGroupMixed,
+                    EthnicGroupBlack = existingUser.EthnicGroupBlack,
+                    OtherEthnicGroupBlack = existingUser.OtherEthnicGroupBlack,
+                    EthnicGroupOther = existingUser.EthnicGroupOther,
+                    OtherEthnicGroupOther = existingUser.OtherEthnicGroupOther,
+                    Disability = existingUser.Disability,
+                    SocialWorkEnglandRegistrationDate = existingUser.SocialWorkEnglandRegistrationDate,
+                    HighestQualification = existingUser.HighestQualification,
+                    SocialWorkQualificationEndYear = existingUser.SocialWorkQualificationEndYear,
+                    RouteIntoSocialWork = existingUser.RouteIntoSocialWork,
+                    OtherRouteIntoSocialWork = existingUser.OtherRouteIntoSocialWork
                 }
             );
 

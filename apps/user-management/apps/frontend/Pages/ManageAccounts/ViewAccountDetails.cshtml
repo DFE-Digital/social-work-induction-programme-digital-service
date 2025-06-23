@@ -1,6 +1,6 @@
 @page "{id:Guid}"
-@using GovUk.Frontend.AspNetCore.TagHelpers
-@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.ViewAccountDetails
+@using System.Globalization
+@model ViewAccountDetails
 
 @{
     Model.Title = "View account details ";
@@ -10,26 +10,100 @@
     <div class="govuk-grid-column-two-thirds">
 
         <h1 class="govuk-heading-l">
-            Change details
+            @Model.Account.FullName
         </h1>
+
+        <div class="govuk-!-margin-bottom-6">
+            <account-status status="@Model.Account.Status"/>
+        </div>
 
         <govuk-summary-list>
             <govuk-summary-list-row>
                 <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Account.Types)</govuk-summary-list-row-key>
                 <govuk-summary-list-row-value>
-                    <account-types types="Model.Account.Types" />
+                    <account-types types="Model.Account.Types"/>
                 </govuk-summary-list-row-value>
+                @if (!Model.IsSocialWorker)
+                {
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="#" visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                }
             </govuk-summary-list-row>
-
             <govuk-summary-list-row>
-                <govuk-summary-list-row-key>Account details</govuk-summary-list-row-key>
-                <govuk-summary-list-row-value>
-                    <account-details account="Model.Account"></account-details>
-                </govuk-summary-list-row-value>
+                <govuk-summary-list-row-key>First name</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>@Html.DisplayFor(model => model.Account.FirstName)</govuk-summary-list-row-value>
                 <govuk-summary-list-row-actions>
-                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)" visually-hidden-text="account details">Change</govuk-summary-list-row-action>
+                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                   visually-hidden-text="account details">Change
+                    </govuk-summary-list-row-action>
                 </govuk-summary-list-row-actions>
             </govuk-summary-list-row>
+            @if (!string.IsNullOrEmpty(Model.Account.MiddleNames))
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>Middle names</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Account.MiddleNames</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                       visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            }
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>Last name</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>@Model.Account.LastName</govuk-summary-list-row-value>
+                <govuk-summary-list-row-actions>
+                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                   visually-hidden-text="account details">Change
+                    </govuk-summary-list-row-action>
+                </govuk-summary-list-row-actions>
+            </govuk-summary-list-row>
+            <govuk-summary-list-row>
+                <govuk-summary-list-row-key>Email address</govuk-summary-list-row-key>
+                <govuk-summary-list-row-value>@Model.Account.Email</govuk-summary-list-row-value>
+                <govuk-summary-list-row-actions>
+                    <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                   visually-hidden-text="account details">Change
+                    </govuk-summary-list-row-action>
+                </govuk-summary-list-row-actions>
+            </govuk-summary-list-row>
+
+            @if (Model.IsSocialWorker || Model.IsAssessor)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>SWE registration number</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Account.SocialWorkEnglandNumber</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                       visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            }
+            @if (Model.IsSocialWorker)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>Programme start date</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Account.ProgrammeStartDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                       visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>Expected programme end date</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.Account.ProgrammeEndDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                        <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
+                                                       visually-hidden-text="account details">Change
+                        </govuk-summary-list-row-action>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            }
         </govuk-summary-list>
     </div>
 </div>
