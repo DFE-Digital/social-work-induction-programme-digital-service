@@ -125,6 +125,7 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    /// <inheritdoc />
     public bool? GetIsRecentlyQualified()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
