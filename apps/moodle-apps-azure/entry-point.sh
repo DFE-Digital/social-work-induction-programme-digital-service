@@ -50,6 +50,9 @@ else
         log "Azure file share is empty, seeding with moodledata reference data..."
         cp -a /var/www/moodledata_ref/. /var/www/moodledata/
         chown www-data:www-data /var/www/moodledata
+    else
+        log "Azure file share contains files, SKIPPING moodledata reference data seeding..."
+        ls -A /var/www/moodledata
     fi
 fi
 
