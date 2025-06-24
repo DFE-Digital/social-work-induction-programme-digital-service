@@ -46,10 +46,12 @@ else
         htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
         cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
     fi
+    log "Changing ownership to www-data for file share Moodle data folder..."
+    chown www-data:www-data /var/www/moodledata
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
         cp -a /var/www/moodledata_ref/. /var/www/moodledata/
-        chown www-data:www-data /var/www/moodledata
+        chown -R www-data:www-data /var/www/moodledata/
     else
         log "Azure file share contains files, SKIPPING moodledata reference data seeding..."
         ls -A /var/www/moodledata
