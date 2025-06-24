@@ -34,17 +34,17 @@ ENV ASPNETCORE_HTTP_PORTS=5000
 ENV ASPNETCORE_URLS=http://+:5000
 
 # Install nginx and htpasswd tool for basic auth
-RUN apk update && \
-    apk add --no-cache \
-    nginx \
-    apache2-utils
+#RUN apk update && \
+#    apk add --no-cache \
+#    nginx \
+#    apache2-utils
 
-COPY nginx.conf /etc/nginx/http.d/default.conf
-COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
+#COPY nginx.conf /etc/nginx/http.d/default.conf
+#COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
 
 RUN chown -R app:app /App
 
 ENTRYPOINT ["/App/entry-point.sh"]
-CMD ["nginx","-g", "daemon off;"]
+#CMD ["nginx","-g", "daemon off;"]
 
-EXPOSE 80
+#EXPOSE 80

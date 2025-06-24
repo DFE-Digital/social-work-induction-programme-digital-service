@@ -1,5 +1,5 @@
 name: Deploy Function App
-description: Deploys an image to an Azure app service
+description: Deploys an image to an Azure function app service
 
 on:
   workflow_call:
