@@ -12,7 +12,7 @@ RUN chmod +x entry-point.sh
 COPY bin/Release/net8.0/publish/ .
 RUN rm appsettings.* \
     && echo "$VERSION" > wwwroot/version.txt
-COPY appsettings.Azure.json appsettings.json
+#COPY appsettings.Azure.json appsettings.json
 
 # Install SSH Server for Kudu
 RUN apk --no-cache add openssh \
@@ -29,9 +29,9 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
     && chmod 0755 /var/run/sshd \
     && ssh-keygen -A
 
-# Serve on port 5000 behind nginx
-ENV ASPNETCORE_HTTP_PORTS=5000
-ENV ASPNETCORE_URLS=http://+:5000
+# Serve on port 80 behind nginx
+ENV ASPNETCORE_HTTP_PORTS=80
+ENV ASPNETCORE_URLS=http://+:80
 
 # Install nginx and htpasswd tool for basic auth
 #RUN apk update && \
@@ -47,4 +47,4 @@ RUN chown -R app:app /App
 ENTRYPOINT ["/App/entry-point.sh"]
 #CMD ["nginx","-g", "daemon off;"]
 
-#EXPOSE 80
+EXPOSE 80
