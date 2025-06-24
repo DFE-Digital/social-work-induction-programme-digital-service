@@ -91,7 +91,7 @@ resource "azurerm_storage_share" "moodle_content_share" {
 
 resource "azurerm_role_assignment" "moodle_content_share" {
   scope                = azurerm_storage_share.moodle_content_share.id
-  role_definition_name = "Storage File Data SMB Share Contributor"
+  role_definition_name = "Storage File Data SMB Share Elevated Contributor"
   principal_type       = "ServicePrincipal"
   principal_id         = module.web_app_moodle["primary"].web_app_id
 }
