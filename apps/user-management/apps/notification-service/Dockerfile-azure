@@ -10,8 +10,9 @@ COPY entry-point.sh ./entry-point.sh
 RUN chmod +x entry-point.sh
 
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
-RUN rm appsettings.* \
-    && echo "$VERSION" > wwwroot/version.txt
+# RUN rm appsettings.* \
+#    && echo "$VERSION" > wwwroot/version.txt
+RUN echo "$VERSION" > wwwroot/version.txt
 #COPY appsettings.Azure.json appsettings.json
 
 # Install SSH Server for Kudu
