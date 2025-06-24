@@ -49,6 +49,7 @@ else
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
         cp -a /var/www/moodledata_ref/. /var/www/moodledata/
+        chown www-data:www-data /var/www/moodledata
     fi
 fi
 
