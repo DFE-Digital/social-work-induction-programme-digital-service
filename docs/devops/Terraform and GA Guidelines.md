@@ -38,13 +38,24 @@ resource "azurerm_container_registry" "acr" {
 
 7. If accessing a key vault secret in a Github Actions workflow, remember to use the `echo "::add-mask::$VAL"` statement to mask the secret value in log output.
 
-## Structure
+## Structure / Patterns
 
 1. The Terraform implements the concept of a modular stack of resources which exists to support the operations of the system components. When introducing a new resource, consider whether it will be shared by all of the services (e.g. a key vault, database server etc) or the service is component specific. Add it to the stack if it can be accessed by all components, or declare it with the component if it is specific.
    
 2. Create a Terraform module where there is lots of repeated boilerplate code for the resource in question. Currently this has been done for certificates, web apps and the environment stack.
 
 3. Use `/terraform` to house the components for a particular stack. E.g. introducing a new search service should results in a `/terraform/search-service.tf` declaring the resources which directly comprise the resource and those resources which are service specific. Inspect `/terraform/auth-service.tf` for illustration. It declares a web app module, but also has a number of resources such as database, certificates and secrets which are specific to the resource.
+
+4. In general, the pattern of checking whether an environment is dev, test or prod and toggling a feature accordingly is a bad idea. Why? Environment types can be added or changed, and the code dependent on an environment type is fragmented and not easily visible. A better practice is to declare environment specific variables which clearly convey the intent of the setting. These are then directly visible at the environment level. E.g. `asp_sku_moodle = "B2"` rather than a lower level:
+
+```resource "azurerm_service_plan" "asp_moodle_app" {
+  name                = "${var.resource_name_prefix}-asp-moodle"
+  ...
+  sku_name            = var.environment == "development" ? "B2": "P0v4"
+  tags                = var.tags
+
+}
+```
 
 ## General
 
