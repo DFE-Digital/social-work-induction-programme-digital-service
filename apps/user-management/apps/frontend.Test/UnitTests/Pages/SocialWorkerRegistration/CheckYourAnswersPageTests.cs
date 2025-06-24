@@ -69,7 +69,7 @@ public class CheckYourAnswersPageTests : SocialWorkerRegistrationPageTestBase
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts");
+        redirectResult!.Url.Should().Be("/social-worker-registration/registration-complete");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.CompleteJourneyAsync(PersonId), Times.Once);
