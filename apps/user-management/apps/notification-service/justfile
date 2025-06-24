@@ -8,6 +8,8 @@ default:
 # Install local tools
 install-tools:
   @cd {{solution-root}} && dotnet tool restore
+  # We need to copy the bin folder, the .dockerignore makes it inaccessible
+  @rm .dockerignore
 
 # Restore dependencies
 restore:
