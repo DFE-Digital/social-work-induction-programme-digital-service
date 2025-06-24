@@ -25,7 +25,19 @@ variable "tags" {
 
 variable "asp_sku_moodle" {
   type = string
-  description = "The app service plan SKU"
+  description = "The Moodle app service plan SKU"
+  default = "S3"
+}
+
+variable "asp_sku_services" {
+  type = string
+  description = "The services app service plan SKU"
+  default = "S3"
+}
+
+variable "asp_sku_maintenance" {
+  type = string
+  description = "The maintenance app service plan SKU"
   default = "S3"
 }
 
