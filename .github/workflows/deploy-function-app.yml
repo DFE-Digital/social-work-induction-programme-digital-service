@@ -13,6 +13,35 @@ on:
       working-dir:
         description: Working directory for just command runner
         type: string
+      fetch-web-app-settings:
+        description: Web app settings to fetch to drive deployment
+        type: string
+      tunnel-app-service:
+        description: Name of remote app service providing tunnel
+        type: string
+      tunnel-remote-server-name:
+        description: Name of remote server to tunnel to, if tunnelling connection required
+        type: string
+      tunnel-remote-server-port:
+        description: Port of remote server to tunnel to, if tunnelling connection required
+        type: string
+      requires-container-registry-login:
+        type: boolean
+        default: false
+      app-service-resource-group:
+        description: Name of resource group which hosts the app services
+        type: string
+      web-app-name:
+        description: Name of web app to deploy to, leave empty for no deploy
+        type: string
+        default: ""
+      version-endpoint-path:
+        description: Path to version endpoint
+        type: string
+      image-tag:
+        description: Tag of image to deploy to app service
+        type: string
+        required: true
 
 jobs:
   deploy-function-app:
