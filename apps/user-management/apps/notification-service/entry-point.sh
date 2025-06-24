@@ -17,7 +17,7 @@ echo "Starting SSH..."
 #fi
 
 # Launch notification service
-su-exec app dotnet DfeSwwEcf.NotificationService.dll &
+# su-exec app dotnet DfeSwwEcf.NotificationService.dll &
 
 # echo "Waiting for user management to be ready..."
 # ENDPOINT=http://localhost:5000/version.txt
@@ -59,4 +59,4 @@ su-exec app dotnet DfeSwwEcf.NotificationService.dll &
 
 # Exec the main process passed to us (whatever is specified in CMD - usually nginx)
 # Nginx runs as the user nginx
-exec "$@"
+# exec "$@"
