@@ -94,22 +94,22 @@ resource "azurerm_resource_group_template_deployment" "storage_mount_with_option
       value = azurerm_linux_web_app.webapp.name
     },
     "storageAccountType" = {
-      value = storage_mount_with_options.value.type
+      value = each.value.type
     },
     "storageAccountName" = {
-      value = storage_mount_with_options.value.account_name
+      value = each.value.account_name
     },
     "shareName" = {
-      value = storage_mount_with_options.value.share_name
+      value = each.value.share_name
     },
     "storageAccessKey" = {
-      value = storage_mount_with_options.value.access_key
+      value = each.value.access_key
     },
     "mountPath" = {
-      value = storage_mount_with_options.value.mount_path
+      value = each.value.mount_path
     },
     "mountOptions" = {
-      value = storage_mount_with_options.value.mount_options
+      value = each.value.mount_options
     }
   })
 }
