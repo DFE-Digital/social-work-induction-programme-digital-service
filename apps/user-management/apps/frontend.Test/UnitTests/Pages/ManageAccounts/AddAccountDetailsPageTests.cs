@@ -86,15 +86,19 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task Post_WhenCalledWithValidData_RedirectsToConfirmAccountDetails()
+    [Theory]
+    [InlineData(AccountType.EarlyCareerSocialWorker, "/manage-accounts/social-worker-programme-dates")]
+    [InlineData(AccountType.Assessor, "/manage-accounts/confirm-account-details")]
+    public async Task Post_WhenCalledWithValidData_RedirectsToProgrammeDates(AccountType accountType, string redirectUrl)
     {
         // Arrange
         var sweId = "1";
+        var isStaff = accountType != AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
             .WithSocialWorkEnglandNumber(sweId)
-            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithTypes(ImmutableList.Create(accountType))
+            .WithIsStaff(isStaff)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
@@ -102,9 +106,10 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.MiddleNames = accountDetails.MiddleNames;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;
-        Sut.SocialWorkEnglandNumber = sweId;
+        Sut.SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
+        Sut.IsStaff = accountDetails.IsStaff;
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(isStaff);
         MockCreateAccountJourneyService.Setup(x =>
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
@@ -117,7 +122,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/social-worker-programme-dates");
+        redirectResult!.Url.Should().Be(redirectUrl);
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(

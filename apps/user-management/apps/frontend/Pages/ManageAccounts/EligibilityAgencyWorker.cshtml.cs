@@ -40,6 +40,11 @@ public class EligibilityAgencyWorker(
 
         createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
 
+        if (IsAgencyWorker is true)
+        {
+            createAccountJourneyService.SetIsRecentlyQualified(null);
+        }
+
         return Redirect(IsAgencyWorker is false
             ? linkGenerator.EligibilityQualification()
             : linkGenerator.EligibilityFundingNotAvailable());

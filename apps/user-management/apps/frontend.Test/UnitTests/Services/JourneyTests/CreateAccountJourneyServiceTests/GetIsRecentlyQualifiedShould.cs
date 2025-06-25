@@ -5,20 +5,20 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccountJourneyServiceTests;
 
-public class GetIsQualifiedWithin3YearsShould : CreateAccountJourneyServiceTestBase
+public class GetIsRecentlyQualifiedShould : CreateAccountJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_ReturnsIsQualifiedWithin3Years()
+    public void WhenCalled_WithExistingSessionData_ReturnsIsRecentlyQualified()
     {
         // Arrange
         var expected = false;
         HttpContext.Session.Set(
             CreateAccountSessionKey,
-            new CreateAccountJourneyModel { IsQualifiedWithin3Years = expected }
+            new CreateAccountJourneyModel { IsRecentlyQualified = expected }
         );
 
         // Act
-        var response = Sut.GetIsQualifiedWithin3Years();
+        var response = Sut.GetIsRecentlyQualified();
 
         // Assert
         response.Should().NotBeNull();
@@ -31,7 +31,7 @@ public class GetIsQualifiedWithin3YearsShould : CreateAccountJourneyServiceTestB
     public void WhenCalled_WithBlankSession_ReturnsNull()
     {
         // Act
-        var response = Sut.GetIsQualifiedWithin3Years();
+        var response = Sut.GetIsRecentlyQualified();
 
         // Assert
         response.Should().BeNull();

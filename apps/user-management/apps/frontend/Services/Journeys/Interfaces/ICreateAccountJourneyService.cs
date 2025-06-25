@@ -31,9 +31,13 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
-    bool? GetIsQualifiedWithin3Years();
+    /// <summary>
+    /// Get property capturing whether the user has recently completed their social work qualification.
+    /// </summary>
+    /// <returns>True if the user has qualified in the last 3 years, false otherwise.</returns>
+    bool? GetIsRecentlyQualified();
 
-    void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years);
+    void SetIsRecentlyQualified(bool? isRecentlyQualified);
 
     void SetProgrammeStartDate(DateOnly programmeStartDate);
 
@@ -52,4 +56,6 @@ public interface ICreateAccountJourneyService
     SocialWorker? GetSocialWorkerDetails();
 
     AccountLabels? GetAccountLabels();
+
+    AccountChangeLinks GetAccountChangeLinks();
 }

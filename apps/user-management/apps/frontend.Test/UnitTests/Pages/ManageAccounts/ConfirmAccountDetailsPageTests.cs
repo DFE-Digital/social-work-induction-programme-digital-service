@@ -34,10 +34,13 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var expectedAccountDetails = AccountDetailsFaker.Generate();
-
+        var expectedChangeLinks = new AccountChangeLinks {};
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountDetails())
             .Returns(expectedAccountDetails);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountChangeLinks())
+            .Returns(expectedChangeLinks);
 
         // Act
         var result = Sut.OnGet();
@@ -50,15 +53,16 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.MiddleNames.Should().Be(expectedAccountDetails.MiddleNames);
         Sut.Email.Should().Be(expectedAccountDetails.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(expectedAccountDetails.SocialWorkEnglandNumber);
-
+        Sut.IsStaff.Should().Be(expectedAccountDetails.IsStaff);
         Sut.IsUpdatingAccount.Should().BeFalse();
         Sut.BackLinkPath.Should().Be("/manage-accounts/social-worker-programme-dates");
-        Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
+        Sut.ChangeDetailsLinks.Should().BeEquivalentTo(expectedChangeLinks);
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

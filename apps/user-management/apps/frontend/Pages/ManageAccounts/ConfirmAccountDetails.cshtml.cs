@@ -3,6 +3,7 @@ using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -72,7 +73,11 @@ public class ConfirmAccountDetails(
 
     public string? ChangeDetailsLink { get; set; }
 
+    public AccountChangeLinks ChangeDetailsLinks { get; set; } = null!;
+
     public bool IsUpdatingAccount { get; set; }
+
+    public bool? IsStaff { get; set; }
 
     /// <summary>
     /// Action for confirming user details
@@ -81,7 +86,7 @@ public class ConfirmAccountDetails(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
-        ChangeDetailsLink = linkGenerator.AddAccountDetailsChange();
+        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
@@ -90,7 +95,7 @@ public class ConfirmAccountDetails(
         RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
         StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
         AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
-        Qualified = accountLabels?.IsQualifiedWithin3Years;
+        Qualified = accountLabels?.IsRecentlyQualifiedLabel;
         FirstName = accountDetails?.FirstName;
         MiddleNames = accountDetails?.MiddleNames;
         LastName = accountDetails?.LastName;
@@ -100,6 +105,7 @@ public class ConfirmAccountDetails(
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
         ProgrammeEndDate = createAccountJourneyService.GetProgrammeEndDate()?
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        IsStaff = accountDetails?.IsStaff;
 
         return Page();
     }

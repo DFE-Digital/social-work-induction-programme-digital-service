@@ -99,6 +99,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-funding-not-available");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(null), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
