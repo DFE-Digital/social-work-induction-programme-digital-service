@@ -1,19 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18 AS notification-api
-
-ARG AZURE_KUDU_SSH_USER
-ARG FULL_TAG
-ENV VERSION=${FULL_TAG}
-
-WORKDIR /App
-
-COPY entry-point.sh ./entry-point.sh
-RUN chmod +x entry-point.sh
+# syntax=docker/dockerfile:1
+# Base image for the Azure Functions runtime for .NET 8
+FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8.0 AS base
+WORKDIR /home/site/wwwroot
+EXPOSE 80
 
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
-# RUN rm appsettings.* \
-#    && echo "$VERSION" > wwwroot/version.txt
-RUN echo "$VERSION" > wwwroot/version.txt
-#COPY appsettings.Azure.json appsettings.json
 
 # Install SSH Server for Kudu
 RUN apk --no-cache add openssh \
@@ -30,22 +21,13 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
     && chmod 0755 /var/run/sshd \
     && ssh-keygen -A
 
-# Serve on port 80 behind nginx
-ENV ASPNETCORE_HTTP_PORTS=80
-ENV ASPNETCORE_URLS=http://+:80
+WORKDIR /App
 
-# Install nginx and htpasswd tool for basic auth
-#RUN apk update && \
-#    apk add --no-cache \
-#    nginx \
-#    apache2-utils
+ARG AZURE_KUDU_SSH_USER
 
-#COPY nginx.conf /etc/nginx/http.d/default.conf
-#COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
+COPY entry-point.sh ./entry-point.sh
+RUN chmod +x entry-point.sh
 
 RUN chown -R app:app /App
 
 ENTRYPOINT ["/App/entry-point.sh"]
-#CMD ["nginx","-g", "daemon off;"]
-
-EXPOSE 80
