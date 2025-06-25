@@ -9,7 +9,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        <form method="post" asp-page-handler="@(Model.EditAccountId is not null ? "Edit" : "")">
+        <form method="post" asp-page-handler="@Model.Handler">
             <govuk-radios for="IsStaff">
                 <govuk-radios-fieldset>
                     <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">

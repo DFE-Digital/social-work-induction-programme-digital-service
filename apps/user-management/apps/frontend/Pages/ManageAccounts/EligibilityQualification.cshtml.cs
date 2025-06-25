@@ -26,7 +26,7 @@ public class EligibilityQualification(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityAgencyWorker();
+        BackLinkPath = FromChangeLink ? linkGenerator.EligibilityAgencyWorkerChange() : linkGenerator.EligibilityAgencyWorker();
         IsRecentlyQualified = createAccountJourneyService.GetIsRecentlyQualified();
         return Page();
     }
@@ -42,9 +42,27 @@ public class EligibilityQualification(
         }
 
         createAccountJourneyService.SetIsRecentlyQualified(IsRecentlyQualified);
+        if (FromChangeLink)
+        {
+            return Redirect(IsRecentlyQualified is false
+                ? linkGenerator.EligibilityFundingNotAvailableChange()
+                : linkGenerator.EligibilityFundingAvailableChange());
+        }
 
         return Redirect(IsRecentlyQualified is false
             ? linkGenerator.EligibilityFundingNotAvailable()
             : linkGenerator.EligibilityFundingAvailable());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

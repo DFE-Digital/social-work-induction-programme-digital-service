@@ -14,13 +14,17 @@ public class GetAccountChangeLinksShould : CreateAccountJourneyServiceTestBase
         // Arrange
         var expectedChangeLinks = new AccountChangeLinks
         {
-            SelectedAccountChangeLink                 = "/manage-accounts/select-account-type",
-            RegisteredWithSocialWorkEnglandChangeLink = "/manage-accounts/eligibility-social-work-england",
-            StatutoryWorkerChangeLink                 = "/manage-accounts/eligibility-statutory-work",
-            AgencyWorkerChangeLink                    = "/manage-accounts/eligibility-agency-worker",
-            RecentlyQualifiedChangeLink               = "/manage-accounts/eligibility-qualification",
-            CoreDetailsChangeLink                     = "/manage-accounts/add-account-details?handler=Change",
-            ProgrammeDatesChangeLink                  = "/manage-accounts/social-worker-programme-dates"
+            SelectedAccountChangeLink = "/manage-accounts/select-account-type?handler=Change",
+            RegisteredWithSocialWorkEnglandChangeLink = "/manage-accounts/eligibility-social-work-england?handler=Change",
+            StatutoryWorkerChangeLink = "/manage-accounts/eligibility-statutory-work?handler=Change",
+            AgencyWorkerChangeLink = "/manage-accounts/eligibility-agency-worker?handler=Change",
+            RecentlyQualifiedChangeLink = "/manage-accounts/eligibility-qualification?handler=Change",
+            FirstNameChangeLink = "/manage-accounts/add-account-details?handler=Change#FirstName",
+            MiddleNamesChangeLink = "/manage-accounts/add-account-details?handler=Change#MiddleNames",
+            LastNameChangeLink = "/manage-accounts/add-account-details?handler=Change#LastName",
+            EmailChangeLink = "/manage-accounts/add-account-details?handler=Change#Email",
+            SocialWorkEnglandNumberChangeLink = "/manage-accounts/add-account-details?handler=Change#SocialWorkEnglandNumber",
+            ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates"
         };
 
         // Act

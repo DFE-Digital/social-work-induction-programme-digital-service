@@ -57,8 +57,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
     }
 
     [Fact]
-    public async Task
-        OnPostAsync_WhenCalledWithNullIsAgencyWorker_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
+    public async Task OnPostAsync_WhenCalledWithNullIsAgencyWorker_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
     {
         // Arrange
         Sut.IsAgencyWorker = null;
@@ -82,12 +81,17 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task
-        OnPostAsync_WhenCalledWithIsAgencyWorkerTrue_RedirectsToEligibilityFundingNotAvailable()
+    [Theory]
+    [InlineData(true, "/manage-accounts/eligibility-funding-not-available?handler=Change")]
+    [InlineData(false, "/manage-accounts/eligibility-funding-not-available")]
+    public async Task OnPostAsync_WhenCalledWithIsAgencyWorkerTrue_RedirectsToEligibilityFundingNotAvailable(
+        bool fromChangeLink,
+        string redirectPath
+    )
     {
         // Arrange
         Sut.IsAgencyWorker = true;
+        Sut.FromChangeLink = fromChangeLink;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -96,19 +100,23 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-funding-not-available");
+        redirectResult!.Url.Should().Be(redirectPath);
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(null), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalledWithIsAgencyWorkerFalse_RedirectsToEligibilityQualification()
+    public async Task OnPostAsync_WhenCalledWithIsAgencyWorkerTrueAndPreviousValueSelectedTrue_RedirectsToConfirmAccountDetails()
     {
         // Arrange
-        Sut.IsAgencyWorker = false;
+        Sut.IsAgencyWorker = true;
+        Sut.FromChangeLink = true;
+        MockCreateAccountJourneyService.Setup(x => x.GetIsAgencyWorker())
+            .Returns(true);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -117,10 +125,64 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-qualification");
+        redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(true), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(null), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(true, "/manage-accounts/eligibility-qualification?handler=Change")]
+    [InlineData(false, "/manage-accounts/eligibility-qualification")]
+    public async Task OnPostAsync_WhenCalledWithIsAgencyWorkerFalse_RedirectsToCorrectEligibilityQualificationPage(
+        bool fromChangeLink,
+        string redirectPath
+    )
+    {
+        // Arrange
+        Sut.IsAgencyWorker = false;
+        Sut.FromChangeLink = fromChangeLink;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be(redirectPath);
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsAgencyWorker(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

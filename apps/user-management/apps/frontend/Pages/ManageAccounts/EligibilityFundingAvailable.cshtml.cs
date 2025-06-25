@@ -11,9 +11,17 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 [AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityFundingAvailable(EcfLinkGenerator linkGenerator) : BasePageModel
 {
+    public string? NextPagePath { get; set; }
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityQualification();
+        NextPagePath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails();
         return Page();
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
     }
 }

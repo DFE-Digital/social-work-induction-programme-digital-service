@@ -14,11 +14,19 @@ public class EligibilityFundingNotAvailable(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator) : BasePageModel
 {
+    public string? NextPagePath { get; set; }
     public PageResult OnGet()
     {
         BackLinkPath = createAccountJourneyService.GetIsAgencyWorker() == true
             ? linkGenerator.EligibilityAgencyWorker()
             : linkGenerator.EligibilityQualification();
+        NextPagePath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails();
         return Page();
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
     }
 }

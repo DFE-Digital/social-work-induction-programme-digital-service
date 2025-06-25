@@ -122,4 +122,53 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
 
         VerifyAllNoOtherCalls();
     }
+
+    [Theory]
+    [InlineData(true, "/manage-accounts/eligibility-funding-available?handler=Change")]
+    [InlineData(false, "/manage-accounts/eligibility-funding-not-available?handler=Change")]
+    public async Task
+        OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRecentlyQualified, string redirectPath)
+    {
+        // Arrange
+        Sut.FromChangeLink = true;
+        Sut.IsRecentlyQualified = isRecentlyQualified;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be(redirectPath);
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(isRecentlyQualified), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker?handler=Change");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRecentlyQualified(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
+    }
 }

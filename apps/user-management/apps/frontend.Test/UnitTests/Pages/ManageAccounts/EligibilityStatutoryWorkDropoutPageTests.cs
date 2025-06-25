@@ -29,7 +29,22 @@ public class EligibilityStatutoryWorkDropoutPageTests : ManageAccountsPageTestBa
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-statutory-work");
+        Sut.FromChangeLink.Should().BeFalse();
 
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-statutory-work?handler=Change");
+        Sut.FromChangeLink.Should().BeTrue();
         VerifyAllNoOtherCalls();
     }
 }

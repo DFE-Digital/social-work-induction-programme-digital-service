@@ -32,6 +32,24 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be(expectedBackLink);
+        Sut.NextPagePath.Should().Be("/manage-accounts/add-account-details");
+        Sut.FromChangeLink.Should().BeFalse();
+
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheViewWithNextPageConfirmAccountDetails()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.FromChangeLink.Should().BeTrue();
+        Sut.NextPagePath.Should().Be("/manage-accounts/confirm-account-details");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();

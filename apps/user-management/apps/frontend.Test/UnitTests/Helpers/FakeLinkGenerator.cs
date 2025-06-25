@@ -31,7 +31,8 @@ public class FakeLinkGenerator()
     protected override string GetRequiredPathByPage(
         string page,
         string? handler = null,
-        object? routeValues = null
+        object? routeValues = null,
+        FragmentString? fragment = null
     )
     {
         const string indexPath = "/index";
@@ -50,6 +51,9 @@ public class FakeLinkGenerator()
 
         if (routeValues is not null)
             generatedLink = AddRouteValues(generatedLink, routeValues);
+
+        if  (fragment is not null)
+            generatedLink = AddFragment(generatedLink, (FragmentString)fragment);
 
         return handler is null
             ? generatedLink
@@ -79,6 +83,11 @@ public class FakeLinkGenerator()
             : QueryHelpers.AddQueryString(generatedLink, "handler", handler);
 
         return httpContext.Request.Scheme + "://" + httpContext.Request.Host + generatedLink;
+    }
+
+    private static string AddFragment(string link, FragmentString fragment)
+    {
+        return link + fragment;
     }
 
     private static string AddRouteValues(string link, object routeValues)
