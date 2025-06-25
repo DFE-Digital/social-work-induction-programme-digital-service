@@ -82,21 +82,6 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
 }
 
-  dynamic "storage_account" {
-    for_each = var.storage_mounts
-
-    content {
-      # storage_account.key is the map key (e.g., "moodledata")
-      # storage_account.value is the object with all the settings
-      name           = storage_account.key
-      type           = storage_account.value.type
-      mount_path     = storage_account.value.mount_path
-      account_name   = storage_account.value.account_name
-      share_name     = storage_account.value.share_name
-      access_key     = storage_account.value.access_key
-    }
-  }
-
 resource "azurerm_resource_group_template_deployment" "storage_mount_with_options" {
   for_each            = var.storage_mounts
   name                = "${var.resource_name_prefix}-arm-wa-storage-mount-config"
