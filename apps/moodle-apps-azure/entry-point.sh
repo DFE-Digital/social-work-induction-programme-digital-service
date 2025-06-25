@@ -5,9 +5,10 @@ log() {
 }
 
 azure_login() {
+    log "Logging in to Azure with managed identity..."
     az login --identity --allow-no-subscriptions >/dev/null
     if [ $? -ne 0 ]; then
-        log "ERROR: Config file syncing - Azure login with managed identity failed." >&2
+        log "ERROR: Azure login with managed identity failed." >&2
     fi
 }
 
@@ -46,6 +47,14 @@ else
         htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
         cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
     fi
+    azure_login
+    AZURE_FILE_SHARE="//$FILE_STORAGE_ACCOUNT_NAME.file.core.windows.net/$FILE_STORAGE_SHARE"
+    log "Mounting the Azure file share: $AZURE_FILE_SHARE for persistent Moodle file storage..."
+    sudo mount -t cifs \
+        $AZURE_FILE_SHARE \
+        /var/www/moodledata \
+        -o vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=$FILE_STORAGE_ACCESS_KEY,uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm
+
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
         cp -a /var/www/moodledata_ref/. /var/www/moodledata/

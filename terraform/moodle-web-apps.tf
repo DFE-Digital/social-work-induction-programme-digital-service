@@ -131,18 +131,11 @@ module "web_app_moodle" {
     "AUTH_SERVICE_LOGOUT_URI"          = local.auth_service_logout_uri
     "BASIC_AUTH_USER"                  = var.basic_auth_user
     "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
+    "FILE_STORAGE_ACCOUNT_NAME"        = module.stack.file_storage_account_name
+    "FILE_STORAGE_SHARE"               = azurerm_storage_share.moodle_content_share.name
+    "FILE_STORAGE_ACCESS_KEY"          = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/FileStorage-ConnectionString)"
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
-  storage_mounts = {
-    "moodledata" = {
-      type          = "AzureFiles"
-      account_name  = module.stack.file_storage_account_name
-      share_name    = azurerm_storage_share.moodle_content_share.name
-      mount_path    = "/var/www/moodledata"
-      mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770" # Make www-data owner of the mount
-    }
-  }
-  storage_access_key = module.stack.file_storage_access_key
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
   ]
