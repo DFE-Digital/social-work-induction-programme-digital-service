@@ -58,6 +58,8 @@ resource "azurerm_linux_web_app" "webapp" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
+      # These are specified via the arm template below
+      storage_account,
       # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
@@ -81,6 +83,11 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_222:Network access rules configured
   #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
 }
+
+# Use an ARM template to apply the file share mount to the web app if one has been supplied.
+# We do this, rather than incude a storage_account block in the web app, because storage_account
+# doesn't give us access to the mountOptions parameter and we need to set www-data as the owner
+# of the moodledata folder. Otherwise Moodle and Moosh don't work correctly.
 
 resource "azurerm_resource_group_template_deployment" "storage_mount_with_options" {
   for_each            = var.storage_mounts
