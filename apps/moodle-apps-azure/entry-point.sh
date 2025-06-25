@@ -53,7 +53,7 @@ else
     mount -t cifs \
         $AZURE_FILE_SHARE \
         /var/www/moodledata \
-        -o vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=$FILE_STORAGE_ACCESS_KEY,uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm,rw
+        -o "vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=\"$FILE_STORAGE_ACCESS_KEY\",uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm,rw"
 
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
