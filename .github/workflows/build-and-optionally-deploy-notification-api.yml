@@ -48,6 +48,6 @@ jobs:
       app-service-resource-group: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-swip-rg
       tunnel-app-service: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-wa-proxy-service
       requires-container-registry-login: true
-      web-app-name: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-wa-notification-api
+      function-app-name: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-fa-notification-service
       image-tag: ${{ needs.build-and-publish-notifications-api-image.outputs.docker-image-tag }}
       #version-endpoint-path: /api/accounts/version
