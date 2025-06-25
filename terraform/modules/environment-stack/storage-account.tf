@@ -93,3 +93,13 @@ resource "azurerm_key_vault_secret" "file_storage_connection_string" {
   #checkov:skip=CKV_AZURE_41:Connection string dont need expiry date
 }
 
+resource "azurerm_key_vault_secret" "file_storage_access_key" {
+  name         = "FileStorage-AccessKey"
+  value        = azurerm_storage_account.sa_app_file_storage.primary_access_key
+  key_vault_id = azurerm_key_vault.kv.id
+  content_type = "storage access key"
+  depends_on = [ azurerm_key_vault_access_policy.kv_gh_ap ]
+  
+  #checkov:skip=CKV_AZURE_41:Connection string dont need expiry date
+}
+

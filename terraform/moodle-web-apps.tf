@@ -133,7 +133,7 @@ module "web_app_moodle" {
     "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
     "FILE_STORAGE_ACCOUNT_NAME"        = module.stack.file_storage_account_name
     "FILE_STORAGE_SHARE"               = azurerm_storage_share.moodle_content_share.name
-    "FILE_STORAGE_ACCESS_KEY"          = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/FileStorage-ConnectionString)"
+    "FILE_STORAGE_ACCESS_KEY"          = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/FileStorage-AccessKey)"
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
   depends_on = [
