@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Base image for the Azure Functions runtime for .NET 8
-FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8.0 AS base
+FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8.0 AS notification-api
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
