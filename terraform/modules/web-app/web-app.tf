@@ -103,7 +103,7 @@ resource "azurerm_resource_group_template_deployment" "storage_mount_with_option
       value = each.value.share_name
     },
     "storageAccessKey" = {
-      value = each.value.access_key
+      value = var.storage_access_key
     },
     "mountPath" = {
       value = each.value.mount_path
