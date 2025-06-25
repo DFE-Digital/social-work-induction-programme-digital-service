@@ -86,7 +86,7 @@ resource "azurerm_resource_group_template_deployment" "storage_mount_with_option
   for_each            = var.storage_mounts
   name                = "${var.resource_name_prefix}-arm-wa-storage-mount-config"
   resource_group_name = var.resource_group
-
+  deployment_mode     = "Incremental"
   template_content = file("${path.module}/../../templates/arm-web-app-service-storage-mount.json")
 
   parameters_content = jsonencode({
