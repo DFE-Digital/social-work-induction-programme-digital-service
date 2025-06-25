@@ -31,8 +31,8 @@ on:
       app-service-resource-group:
         description: Name of resource group which hosts the app services
         type: string
-      web-app-name:
-        description: Name of web app to deploy to, leave empty for no deploy
+      function-app-name:
+        description: Name of function app to deploy to, leave empty for no deploy
         type: string
         default: ""
       version-endpoint-path:
