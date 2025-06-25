@@ -134,13 +134,13 @@ module "web_app_moodle" {
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
   storage_mounts = {
-    # The key "moodledata" will be used as the mount's 'name'.
     "moodledata" = {
-      type         = "AzureFiles"
-      mount_path   = "/var/www/moodledata"
-      account_name = module.stack.file_storage_account_name
-      share_name   = azurerm_storage_share.moodle_content_share.name
-      access_key   = module.stack.file_storage_access_key
+      type          = "AzureFiles"
+      account_name  = module.stack.file_storage_account_name
+      share_name    = azurerm_storage_share.moodle_content_share.name
+      access_key    = module.stack.file_storage_access_key
+      mount_path    = "/var/www/moodledata"
+      mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770"
     }
   }
   depends_on = [

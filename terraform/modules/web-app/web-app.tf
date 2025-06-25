@@ -32,21 +32,6 @@ resource "azurerm_linux_web_app" "webapp" {
     }
   }
 
-  dynamic "storage_account" {
-    for_each = var.storage_mounts
-
-    content {
-      # storage_account.key is the map key (e.g., "moodledata")
-      # storage_account.value is the object with all the settings
-      name           = storage_account.key
-      type           = storage_account.value.type
-      mount_path     = storage_account.value.mount_path
-      account_name   = storage_account.value.account_name
-      share_name     = storage_account.value.share_name
-      access_key     = storage_account.value.access_key
-    }
-  }
-
   logs {
     detailed_error_messages = true
     failed_request_tracing  = true
@@ -95,4 +80,51 @@ resource "azurerm_linux_web_app" "webapp" {
   #checkov:skip=CKV_AZURE_71:Using VNET Integration
   #checkov:skip=CKV_AZURE_222:Network access rules configured
   #checkov:skip=CKV_AZURE_213:Ensure that App Service configures health check
+}
+
+  dynamic "storage_account" {
+    for_each = var.storage_mounts
+
+    content {
+      # storage_account.key is the map key (e.g., "moodledata")
+      # storage_account.value is the object with all the settings
+      name           = storage_account.key
+      type           = storage_account.value.type
+      mount_path     = storage_account.value.mount_path
+      account_name   = storage_account.value.account_name
+      share_name     = storage_account.value.share_name
+      access_key     = storage_account.value.access_key
+    }
+  }
+
+resource "azurerm_resource_group_template_deployment" "storage_mount_with_options" {
+  for_each            = var.storage_mounts
+  name                = "${var.resource_name_prefix}-arm-wa-storage-mount-config"
+  resource_group_name = azurerm_resource_group.rg_primary.name
+
+  template_content = file("${path.module}/../../templates/arm-web-app-service-storage-mount.json")
+
+  parameters_content = jsonencode({
+    "appName" = {
+      value = azurerm_linux_web_app.webapp.name
+    },
+    "storageAccountType" = {
+      value = storage_mount_with_options.value.type
+    },
+    "storageAccountName" = {
+      value = storage_mount_with_options.value.account_name
+    },
+    "shareName" = {
+      value = storage_mount_with_options.value.share_name
+    },
+    "storageAccessKey" = {
+      value = storage_mount_with_options.value.access_key
+    },
+    "mountPath" = {
+      value = storage_mount_with_options.value.mount_path
+    },
+    "mountOptions" = {
+      value = storage_mount_with_options.value.mount_options
+    }
+  })
 }
