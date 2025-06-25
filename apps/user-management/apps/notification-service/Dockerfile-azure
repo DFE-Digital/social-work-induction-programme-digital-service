@@ -7,9 +7,10 @@ EXPOSE 80
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
 
 # Install SSH Server for Kudu
-RUN apt-get update && apt-get install -y openssh \
-    shadow \
-    su-exec
+RUN apt-get update && apt-get install -y openssh-server sudo
+#  \
+#     shadow \
+#     su-exec
 
 # Support kudu tools SSH for remote debug
 COPY sshd_config /etc/ssh/sshd_config
