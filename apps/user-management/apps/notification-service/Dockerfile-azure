@@ -6,29 +6,31 @@ EXPOSE 80
 
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
 
+ENV AzureWebJobsScriptRoot=/home/site/wwwroot
+
 # Install SSH Server for Kudu
-RUN apt-get update && apt-get install -y openssh-server sudo
+# RUN apt-get update && apt-get install -y openssh-server sudo
 #  \
 #     shadow \
 #     su-exec
 
 # Support kudu tools SSH for remote debug
-COPY sshd_config /etc/ssh/sshd_config
-RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
-    export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
-    && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
-    && > /etc/motd \
-    && mkdir -p /var/run/sshd \
-    && chmod 0755 /var/run/sshd \
-    && ssh-keygen -A
+# COPY sshd_config /etc/ssh/sshd_config
+# RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
+#     export AZURE_KUDU_SSH_PASSWORD=$(cat /run/secrets/AZURE_KUDU_SSH_PASSWORD) \
+#     && echo "$AZURE_KUDU_SSH_USER:$AZURE_KUDU_SSH_PASSWORD" | chpasswd \
+#     && > /etc/motd \
+#     && mkdir -p /var/run/sshd \
+#     && chmod 0755 /var/run/sshd \
+#     && ssh-keygen -A
 
-WORKDIR /App
+# WORKDIR /App
 
-ARG AZURE_KUDU_SSH_USER
+# ARG AZURE_KUDU_SSH_USER
 
-COPY entry-point.sh ./entry-point.sh
-RUN chmod +x entry-point.sh
+# COPY entry-point.sh ./entry-point.sh
+# RUN chmod +x entry-point.sh
 
-RUN chown -R app:app /App
+# RUN chown -R app:app /App
 
-ENTRYPOINT ["/App/entry-point.sh"]
+# ENTRYPOINT ["/App/entry-point.sh"]
