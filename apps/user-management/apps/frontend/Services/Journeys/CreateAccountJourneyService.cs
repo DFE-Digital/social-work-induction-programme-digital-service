@@ -76,6 +76,10 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsStaff = isStaff;
+        if (createAccountJourneyModel.AccountDetails is not null && isStaff is not null)
+        {
+            createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
+        }
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -198,12 +202,16 @@ public class CreateAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            SelectedAccountChangeLink = linkGenerator.SelectAccountType(),
-            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEngland(),
-            StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWork(),
-            AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorker(),
-            RecentlyQualifiedChangeLink = linkGenerator.EligibilityQualification(),
-            CoreDetailsChangeLink = linkGenerator.AddAccountDetailsChange(),
+            SelectedAccountChangeLink = linkGenerator.SelectAccountTypeChange(),
+            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEnglandChange(),
+            StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWorkChange(),
+            AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorkerChange(),
+            RecentlyQualifiedChangeLink = linkGenerator.EligibilityQualificationChange(),
+            FirstNameChangeLink = linkGenerator.AddAccountDetailsChangeFirstName(),
+            MiddleNamesChangeLink = linkGenerator.AddAccountDetailsChangeMiddleNames(),
+            LastNameChangeLink = linkGenerator.AddAccountDetailsChangeLastName(),
+            EmailChangeLink = linkGenerator.AddAccountDetailsChangeEmail(),
+            SocialWorkEnglandNumberChangeLink = linkGenerator.AddAccountDetailsChangeSocialWorkEnglandNumber(),
             ProgrammeDatesChangeLink = linkGenerator.SocialWorkerProgrammeDates()
         };
     }

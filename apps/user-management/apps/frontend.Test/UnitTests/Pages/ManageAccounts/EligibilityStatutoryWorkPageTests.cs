@@ -32,6 +32,7 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         result.Should().BeOfType<PageResult>();
         Sut.IsStatutoryWorker.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        Sut.FromChangeLink.Should().BeFalse();
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
         VerifyAllNoOtherCalls();
@@ -144,5 +145,54 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(false), Times.Once);
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(true, "/manage-accounts/confirm-account-details")]
+    [InlineData(false, "/manage-accounts/eligibility-statutory-work-dropout?handler=Change")]
+    public async Task
+        OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isStatutoryWorker, string redirectPath)
+    {
+        // Arrange
+        Sut.FromChangeLink = true;
+        Sut.IsStatutoryWorker = isStatutoryWorker;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be(redirectPath);
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(isStatutoryWorker), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

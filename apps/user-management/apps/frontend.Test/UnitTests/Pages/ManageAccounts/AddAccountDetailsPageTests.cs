@@ -238,5 +238,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         // Assert
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }
