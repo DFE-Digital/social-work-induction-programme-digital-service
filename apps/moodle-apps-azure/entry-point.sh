@@ -49,8 +49,8 @@ else
     fi
     azure_login
     AZURE_FILE_SHARE="//$FILE_STORAGE_ACCOUNT_NAME.file.core.windows.net/$FILE_STORAGE_SHARE"
-    log "Mounting the Azure file share: $AZURE_FILE_SHARE for persistent Moodle file storage..."
-    sudo mount -t cifs \
+    log "Mounting Azure file share: $AZURE_FILE_SHARE for persistent Moodle file storage..."
+    mount -t cifs \
         $AZURE_FILE_SHARE \
         /var/www/moodledata \
         -o vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=$FILE_STORAGE_ACCESS_KEY,uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm
