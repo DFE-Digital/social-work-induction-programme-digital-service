@@ -94,5 +94,5 @@ jobs:
       - name: Deploy function app
         uses: azure/webapps-deploy@2fdd5c3ebb4e540834e86ecc1f6fdcd5539023ee # v3
         with:
-          app-name: ${{ inputs.web-app-name }}
+          app-name: ${{ inputs.function-app-name }}
           images: "${{ inputs.image-tag }}"
