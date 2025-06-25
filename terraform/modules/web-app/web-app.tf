@@ -85,7 +85,7 @@ resource "azurerm_linux_web_app" "webapp" {
 resource "azurerm_resource_group_template_deployment" "storage_mount_with_options" {
   for_each            = var.storage_mounts
   name                = "${var.resource_name_prefix}-arm-wa-storage-mount-config"
-  resource_group_name = azurerm_resource_group.rg_primary.name
+  resource_group_name = var.resource_group
 
   template_content = file("${path.module}/../../templates/arm-web-app-service-storage-mount.json")
 

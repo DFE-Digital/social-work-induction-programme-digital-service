@@ -138,11 +138,11 @@ module "web_app_moodle" {
       type          = "AzureFiles"
       account_name  = module.stack.file_storage_account_name
       share_name    = azurerm_storage_share.moodle_content_share.name
-      access_key    = module.stack.file_storage_access_key
       mount_path    = "/var/www/moodledata"
       mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770"
     }
   }
+  storage_access_key = module.stack.file_storage_access_key
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
   ]

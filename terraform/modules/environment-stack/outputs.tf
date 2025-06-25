@@ -101,6 +101,7 @@ output "file_storage_account_name" {
 output "file_storage_access_key" {
   description = "Primary access key for the shared file storage account"
   value       = azurerm_storage_account.sa_app_file_storage.primary_access_key
+  sensitive   = true
 }
 
 output "support_action_group_id" {
