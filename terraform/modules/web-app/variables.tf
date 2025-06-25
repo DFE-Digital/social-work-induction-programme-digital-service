@@ -111,6 +111,7 @@ variable "storage_mounts" {
 # variable with a sensitive value
 variable "storage_access_key" {
   description = "Storage access key for the storage mount"
+  default     = ""
   type        = string
   sensitive   = true
 }
