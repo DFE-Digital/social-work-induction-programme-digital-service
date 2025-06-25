@@ -27,7 +27,7 @@
   "resources": [
     {
       "type": "Microsoft.Web/sites/config",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2024-11-01",
       "name": "[concat(parameters('appName'), '/azurestorageaccounts')]",
       "properties": {
         "moodledata": {
