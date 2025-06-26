@@ -73,8 +73,6 @@ resource "azurerm_linux_web_app" "webapp" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
-      # These are specified via the arm template below
-      storage_account,
       # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
