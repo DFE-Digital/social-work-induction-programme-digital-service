@@ -32,7 +32,7 @@ resource "azurerm_linux_web_app" "webapp" {
     }
   }
 
-  dynamic "storage_account" {
+  dynamic "storage_accoun" {
     for_each = var.storage_mounts
 
     content {
