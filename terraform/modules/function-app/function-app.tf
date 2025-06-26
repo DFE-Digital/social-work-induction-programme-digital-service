@@ -12,6 +12,7 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {
     # No application_stack needed, it's defined in the Docker image
+    always_on = true
   }
 
   app_settings = {
