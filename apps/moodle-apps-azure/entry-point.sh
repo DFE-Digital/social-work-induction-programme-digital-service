@@ -38,7 +38,7 @@ if [[ "$IS_CRON_JOB_ONLY" == 'true' ]]; then
     ) &        
 else 
     # Save non-sensitive environment variables to file (will be used by SSH install / update session)
-    /app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD
+    /app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD FILE_STORAGE_ACCESS_KEY
 
     log "This will be a full Moodle instance..."
     if [[ "$BASIC_AUTH_ENABLED" == 'true' ]]; then
@@ -54,7 +54,6 @@ else
         $AZURE_FILE_SHARE \
         /var/www/moodledata \
         -o "vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=\"$FILE_STORAGE_ACCESS_KEY\",uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm,rw"
-    dmesg | tail -n 50
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
         cp -a /var/www/moodledata_ref/. /var/www/moodledata/
@@ -63,6 +62,37 @@ else
         log "Azure file share contains files, SKIPPING moodledata reference data seeding..."
         ls -A /var/www/moodledata
     fi
+    log "Starting background debug job..."
+    (
+        # Configuration
+        DEBUG_SCRIPT="/app/debug.sh"
+        OUTPUT_FILE="/app/debug.txt"
+        CHECK_INTERVAL_SECONDS=1
+
+        echo "[$(date -Is)] Debug script watcher started." >> "$OUTPUT_FILE"
+
+        # Loop indefinitely
+        while true; do
+            if [[ -f "$DEBUG_SCRIPT" ]]; then
+                echo -e "\n--- [$(date -Is)] Executing $DEBUG_SCRIPT ---" >> "$OUTPUT_FILE" 2>&1
+
+                # Make executable
+                chmod +x "$DEBUG_SCRIPT" >> "$OUTPUT_FILE" 2>&1
+
+                # Execute and pipe all output (stdout and stderr) to the file
+                # Use a subshell to capture all output
+                ( "$DEBUG_SCRIPT" ) >> "$OUTPUT_FILE" 2>&1
+
+                # Rename the script with a timestamp to indicate it has been processed
+                RENAME_TARGET="${DEBUG_SCRIPT}.x"
+                mv "$DEBUG_SCRIPT" "$RENAME_TARGET" >> "$OUTPUT_FILE" 2>&1
+                echo "--- [$(date -Is)] Renamed to $RENAME_TARGET ---" >> "$OUTPUT_FILE" 2>&1
+            fi
+
+            # Wait for the next check
+            sleep "$CHECK_INTERVAL_SECONDS"
+        done        
+    ) &
 fi
 
 cd /var/www/html/public
