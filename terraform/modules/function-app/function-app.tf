@@ -15,8 +15,9 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 
   app_settings = {
-    docker_registry_url = "https://${var.acr_name}.azurecr.io"
-    docker_image_name   = var.docker_image_name
+    docker_registry_url                     = "https://${var.acr_name}.azurecr.io"
+    docker_image_name                       = var.docker_image_name
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
   }
 
   lifecycle {

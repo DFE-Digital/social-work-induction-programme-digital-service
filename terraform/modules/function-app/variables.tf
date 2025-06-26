@@ -58,3 +58,8 @@ variable "storage_account_access_key" {
   description = "The primary access key for the storage account"
   type        = string
 }
+
+variable "appinsights_connection_string" {
+  description = "Application Insights connection string"
+  type        = string
+}

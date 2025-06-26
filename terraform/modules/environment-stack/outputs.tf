@@ -102,3 +102,8 @@ output "notification_service_plan_id" {
   description = "ID of the notification app service plan"
   value       = azurerm_service_plan.asp_notification_service.id
 }
+
+output "appinsights_connection_string" {
+  description = "Connection string to Application Insights"
+  value       = azurerm_application_insights.app_insights_web.connection_string
+}
