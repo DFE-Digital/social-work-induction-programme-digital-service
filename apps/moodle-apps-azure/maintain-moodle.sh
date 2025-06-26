@@ -85,6 +85,9 @@ fi
 
 if [ $? -eq 0 ]; then
     echo "Now running install process for OIDC plugin..."
+    # Make sure Moosh doesn't check for www-data ownership of moodledata directory. Haven't been able to configure 
+    # Azure Files to do this yet.
+    export MOOSH_COMMAND_LINE_ARGS=-n
     su -s /bin/sh www-data -c '/app/install-oidc-plugin config \
         skip-download \
         $AUTH_SERVICE_CLIENT_ID \

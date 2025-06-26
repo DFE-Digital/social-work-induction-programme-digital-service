@@ -53,52 +53,52 @@ fi
 
 if [[ "$INSTALL_ACTIONS" == *"config"* ]]; then
     echo "Enabling oidc authentication method in Moodle config..."
-    moosh auth-manage enable oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS auth-manage enable oidc
     echo "Disabling email-based self-registration..."
-    moosh auth-manage disable email
+    moosh $MOOSH_COMMAND_LINE_ARGS auth-manage disable email
 
     echo "Preventing automatic account creation on authentication..."
-    moosh config-set authpreventaccountcreation 1
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set authpreventaccountcreation 1
 
     echo "Configuring OIDC settings ..."
     echo "Identity provider type:"
-    moosh config-set idptype 3 auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set idptype 3 auth_oidc
     echo "Client auth method:"
     # Without this, you get: "Please configure OpenID Connect client credentials and endpoints."
-    moosh config-set clientauthmethod 1 auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set clientauthmethod 1 auth_oidc
     echo "Client ID:"
-    moosh config-set clientid $AUTH_CLIENT_ID auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set clientid $AUTH_CLIENT_ID auth_oidc
     echo "Client secret:"
-    moosh config-set clientsecret $AUTH_CLIENT_SECRET auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set clientsecret $AUTH_CLIENT_SECRET auth_oidc
     echo "Authorize endpoint:"
-    moosh config-set authendpoint $AUTH_END_POINT auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set authendpoint $AUTH_END_POINT auth_oidc
     echo "Token endpoint:"
-    moosh config-set tokenendpoint $AUTH_TOKEN_END_POINT auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set tokenendpoint $AUTH_TOKEN_END_POINT auth_oidc
     echo "Scopes:"
-    moosh config-set oidcscope "openid profile roles email social_worker_record organisation" auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set oidcscope "openid profile roles email social_worker_record organisation" auth_oidc
     echo "Identity provider name:"
-    moosh config-set providername "GOV.UK OneLogin" auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set providername "GOV.UK OneLogin" auth_oidc
     echo "Force redirect:"
-    moosh config-set forceredirect 1 auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set forceredirect 1 auth_oidc
     echo "Force login:"
-    moosh config-set forcelogin 1
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set forcelogin 1
     echo "Silent login:"
-    moosh config-set silentloginmode 1 auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set silentloginmode 1 auth_oidc
     echo "Single sign out:"
-    moosh config-set single_sign_off 1 auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set single_sign_off 1 auth_oidc
     echo "Logout URI:"
-    moosh config-set logouturi $AUTH_LOGOUT_URI auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set logouturi $AUTH_LOGOUT_URI auth_oidc
     echo "Binding username claim:"
-    moosh config-set bindingusernameclaim email auth_oidc
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set bindingusernameclaim email auth_oidc
     echo "OIDC resource:"
-    moosh config-set oidcresource resource auth_oidc 
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set oidcresource resource auth_oidc 
 
     echo "Clearing list of blocked cURL hosts and opening all cURL ports to allow for localhost connectivity..."
     echo "Curl blocked hosts:"
-    moosh config-set curlsecurityblockedhosts ""
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set curlsecurityblockedhosts ""
     echo "Curl allowed ports:"
-    moosh config-set curlsecurityallowedport ""
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set curlsecurityallowedport ""
 
     echo "Clearing cache to apply all settings changes..."
-    moosh cache-clear
+    moosh $MOOSH_COMMAND_LINE_ARGS cache-clear
 fi
