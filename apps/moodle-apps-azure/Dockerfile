@@ -110,10 +110,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
         postgresql-client \
-        cron \
         apache2-utils \
-        jq \
-    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+        rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug

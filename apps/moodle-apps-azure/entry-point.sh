@@ -47,67 +47,37 @@ else
         htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
         cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
     fi
-    azure_login
-    AZURE_FILE_SHARE="//$FILE_STORAGE_ACCOUNT_NAME.file.core.windows.net/$FILE_STORAGE_SHARE"
-    log "Mounting Azure file share: $AZURE_FILE_SHARE for persistent Moodle file storage..."
-    mount -t cifs \
-        $AZURE_FILE_SHARE \
-        /var/www/moodledata \
-        -o "vers=3.0,username=$FILE_STORAGE_ACCOUNT_NAME,password=\"$FILE_STORAGE_ACCESS_KEY\",uid=33,gid=33,file_mode=0770,dir_mode=0770,serverino,noperm,rw"
     if [ -z "$(ls -A '/var/www/moodledata')" ]; then
         log "Azure file share is empty, seeding with moodledata reference data..."
-        cp -a /var/www/moodledata_ref/. /var/www/moodledata/
+        rsync -av --ignore-existing /var/www/moodledata_ref/ /var/www/moodledata/
         chown -R www-data:www-data /var/www/moodledata/
     else
         log "Azure file share contains files, SKIPPING moodledata reference data seeding..."
         ls -A /var/www/moodledata
     fi
-    log "Starting background debug job..."
-    (
-        # Configuration
-        DEBUG_SCRIPT="/app/debug.sh"
-        OUTPUT_FILE="/app/debug.txt"
-        CHECK_INTERVAL_SECONDS=1
-
-        echo "[$(date -Is)] Debug script watcher started." >> "$OUTPUT_FILE"
-
-        # Loop indefinitely
-        while true; do
-            if [[ -f "$DEBUG_SCRIPT" ]]; then
-                echo -e "\n--- [$(date -Is)] Executing $DEBUG_SCRIPT ---" >> "$OUTPUT_FILE" 2>&1
-
-                # Make executable
-                chmod +x "$DEBUG_SCRIPT" >> "$OUTPUT_FILE" 2>&1
-
-                # Execute and pipe all output (stdout and stderr) to the file
-                # Use a subshell to capture all output
-                ( "$DEBUG_SCRIPT" ) >> "$OUTPUT_FILE" 2>&1
-
-                # Rename the script with a timestamp to indicate it has been processed
-                RENAME_TARGET="${DEBUG_SCRIPT}.x"
-                mv "$DEBUG_SCRIPT" "$RENAME_TARGET" >> "$OUTPUT_FILE" 2>&1
-                echo "--- [$(date -Is)] Renamed to $RENAME_TARGET ---" >> "$OUTPUT_FILE" 2>&1
-            fi
-
-            # Wait for the next check
-            sleep "$CHECK_INTERVAL_SECONDS"
-        done        
-    ) &
 fi
 
 cd /var/www/html/public
+
+# Note, we run moosh with the '-n' option below to switch off permission checking on the
+# moodledata directory. This is because currently we haven't been able to configure
+# mount options for the Azure Files share attached to the directory. Ideally, we'd like something
+# like: -o "...,uid=33,gid=33,file_mode=0770,dir_mode=0770" but this hasn't worked through 
+# Terraform, ARM or even locally (attempting to use mount directly). This would assign ownership
+# to www-data, as opposed to allowing everyone access.
+
 if [[ "$MOODLE_SWITCH_OFF_OAUTH" == 'true' ]]; then
     log "Switching off OAuth..."
     log "Disabling oidc authentication method in Moodle config..."
-    su -s /bin/sh www-data -c 'moosh auth-manage disable oidc'
+    su -s /bin/sh www-data -c 'moosh -n auth-manage disable oidc'
     log "Enabling email-based self-registration..."
-    su -s /bin/sh www-data -c 'moosh auth-manage enable email'
+    su -s /bin/sh www-data -c 'moosh -n auth-manage enable email'
 else
     log "Switching on OAuth..."
     log "Enabling oidc authentication method in Moodle config..."
-    su -s /bin/sh www-data -c 'moosh auth-manage enable oidc'
+    su -s /bin/sh www-data -c 'moosh -n auth-manage enable oidc'
     log "Disabling email-based self-registration..."
-    su -s /bin/sh www-data -c 'moosh auth-manage disable email'
+    su -s /bin/sh www-data -c 'moosh -n auth-manage disable email'
 fi
 su -s /bin/sh www-data -c 'php admin/cli/purge_caches.php'
 
