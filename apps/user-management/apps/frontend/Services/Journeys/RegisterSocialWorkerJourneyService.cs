@@ -239,6 +239,7 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         updatedAccount.SocialWorkQualificationEndYear = registerSocialWorkerJourneyModel.SocialWorkQualificationEndYear;
         updatedAccount.RouteIntoSocialWork = registerSocialWorkerJourneyModel.RouteIntoSocialWork;
         updatedAccount.OtherRouteIntoSocialWork = registerSocialWorkerJourneyModel.OtherRouteIntoSocialWork;
+        //updatedAccount.Status = registerSocialWorkerJourneyModel.Status;
 
         await _accountService.UpdateAsync(updatedAccount);
 

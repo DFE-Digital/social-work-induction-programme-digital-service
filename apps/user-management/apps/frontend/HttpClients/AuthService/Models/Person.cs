@@ -62,4 +62,6 @@ public class Person
     public string? OtherRouteIntoSocialWork { get; set; }
 
     public int? SocialWorkQualificationEndYear { get; set; }
+
+    public bool HasCompletedLoginAccountLinking { get; set; }
 }

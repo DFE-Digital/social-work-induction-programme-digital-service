@@ -40,7 +40,8 @@ public class AccountMapper : IModelMapper<Person, Account>
             HighestQualification = person.HighestQualification,
             SocialWorkQualificationEndYear = person.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = person.RouteIntoSocialWork,
-            OtherRouteIntoSocialWork = person.OtherRouteIntoSocialWork
+            OtherRouteIntoSocialWork = person.OtherRouteIntoSocialWork,
+            HasCompletedLoginAccountLinking = person.HasCompletedLoginAccountLinking
         };
     }
 

@@ -120,6 +120,8 @@ public record Account
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
+    public bool HasCompletedLoginAccountLinking { get; set; }
+
     public Account() { }
 
     public Account(Account account)
@@ -158,5 +160,6 @@ public record Account
         SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear;
         RouteIntoSocialWork = account.RouteIntoSocialWork;
         OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
+        HasCompletedLoginAccountLinking = account.HasCompletedLoginAccountLinking;
     }
 }

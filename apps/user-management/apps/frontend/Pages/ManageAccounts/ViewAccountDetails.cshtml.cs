@@ -3,12 +3,17 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 [AuthorizeRoles(RoleType.Coordinator)]
-public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator linkGenerator)
+public class ViewAccountDetails(
+    IAccountService accountService,
+    EcfLinkGenerator linkGenerator,
+    ICreateAccountJourneyService createAccountJourneyService
+)
     : BasePageModel
 {
     public Account Account { get; set; } = default!;
@@ -16,6 +21,8 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
     public bool IsSocialWorker { get; set; }
 
     public bool IsAssessor { get; set; }
+
+    public bool HasCompletedLoginAccountLinking { get; set; }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
@@ -29,7 +36,14 @@ public class ViewAccountDetails(IAccountService accountService, EcfLinkGenerator
 
         IsSocialWorker = Account.Types.Contains(AccountType.EarlyCareerSocialWorker);
         IsAssessor = Account.Types.Contains(AccountType.Assessor);
+        HasCompletedLoginAccountLinking = Account.HasCompletedLoginAccountLinking;
 
         return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        await createAccountJourneyService.SendInvitationEmailAsync(Account);
+        return Redirect(linkGenerator.ManageAccounts());
     }
 }
