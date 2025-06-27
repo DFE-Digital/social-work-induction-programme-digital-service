@@ -16,6 +16,7 @@ public class ViewAccountDetails(
 )
     : BasePageModel
 {
+    public Guid Id { get; set; }
     public Account Account { get; set; } = default!;
 
     public bool IsSocialWorker { get; set; }
@@ -41,9 +42,11 @@ public class ViewAccountDetails(
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        await createAccountJourneyService.SendInvitationEmailAsync(Account);
+        var account = await accountService.GetByIdAsync(id);
+        if (account is null) return NotFound();
+        await createAccountJourneyService.SendInvitationEmailAsync(account);
         return Redirect(linkGenerator.ManageAccounts());
     }
 }

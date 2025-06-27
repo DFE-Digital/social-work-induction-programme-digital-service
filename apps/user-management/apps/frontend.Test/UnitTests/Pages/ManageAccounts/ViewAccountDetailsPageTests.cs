@@ -13,7 +13,11 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
 {
     public ViewAccountDetailsPageTests()
     {
-        Sut = new ViewAccountDetails(MockAccountService.Object, new FakeLinkGenerator())
+        Sut = new ViewAccountDetails(
+            MockAccountService.Object,
+            new FakeLinkGenerator(),
+            MockCreateAccountJourneyService.Object
+        )
         {
             TempData = TempData
         };

@@ -248,7 +248,7 @@ public class CreateAccountJourneyService(
 
     public async Task SendInvitationEmailAsync(Account account)
     {
-        var accountTypes = GetAccountTypes();
+        var accountTypes = account.Types;
 
         if (
             accountTypes is null
