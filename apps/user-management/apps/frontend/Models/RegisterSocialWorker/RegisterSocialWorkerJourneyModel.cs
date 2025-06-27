@@ -48,8 +48,6 @@ public class RegisterSocialWorkerJourneyModel(Account account)
 
     public string? OtherRouteIntoSocialWork { get; set; } = account.OtherRouteIntoSocialWork;
 
-    public AccountStatus? Status { get; set; } = AccountStatus.Active;
-
     public Account ToAccount()
     {
         return new Account(Account)
@@ -74,8 +72,7 @@ public class RegisterSocialWorkerJourneyModel(Account account)
             HighestQualification = HighestQualification,
             SocialWorkQualificationEndYear = SocialWorkQualificationEndYear,
             RouteIntoSocialWork = RouteIntoSocialWork,
-            OtherRouteIntoSocialWork = OtherRouteIntoSocialWork,
-            Status = Status
+            OtherRouteIntoSocialWork = OtherRouteIntoSocialWork
         };
     }
 }

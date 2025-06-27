@@ -16,6 +16,7 @@ public class ViewAccountDetails(
 )
     : BasePageModel
 {
+    public Guid Id { get; set; }
     public Account Account { get; set; } = default!;
 
     public bool IsSocialWorker { get; set; }
