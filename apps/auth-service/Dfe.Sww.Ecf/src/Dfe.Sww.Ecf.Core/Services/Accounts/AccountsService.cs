@@ -41,7 +41,14 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
             .ThenInclude(pr => pr.Role)
             .FirstOrDefaultAsync(p => p.PersonId == id
                                       && p.DeletedOn.HasValue == false);
-        return account?.ToDto();
+        if (account == null)
+        {
+            return null;
+        }
+        var accountDto = account.ToDto();
+        accountDto.HasCompletedLoginAccountLinking = await dbContext.OneLoginUsers
+            .AnyAsync(o => o.PersonId == account!.PersonId);
+        return accountDto;
     }
 
     public async Task<PersonDto> CreateAsync(Person person)

@@ -63,6 +63,8 @@ public class PersonDto
     public string? OtherRouteIntoSocialWork { get; set; }
 
     public int? SocialWorkQualificationEndYear { get; set; }
+
+    public bool HasCompletedLoginAccountLinking  { get; set; }
 }
 
 public static class PersonDtoExtensions
