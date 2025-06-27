@@ -12,7 +12,9 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {
     # No application_stack needed, it's defined in the Docker image
-    always_on = true
+    always_on                         = true
+    health_check_path                 = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
   }
 
   app_settings = {
@@ -20,6 +22,8 @@ resource "azurerm_linux_function_app" "function_app" {
     docker_image_name                       = var.docker_image_name
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
+    public_network_access_enabled           = false
   }
 
   lifecycle {

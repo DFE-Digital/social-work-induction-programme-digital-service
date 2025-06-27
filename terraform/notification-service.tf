@@ -13,4 +13,5 @@ module "notification-service" {
   storage_account_name          = module.stack.storage_account_name
   storage_account_access_key    = module.stack.storage_account_access_key
   appinsights_connection_string = module.stack.appinsights_connection_string
+  health_check_path             = "/api/health"
 }

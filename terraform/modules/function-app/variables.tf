@@ -63,3 +63,15 @@ variable "appinsights_connection_string" {
   description = "Application Insights connection string"
   type        = string
 }
+
+variable "health_check_path" {
+  description = "The path to use for the health check endpoint. Leave unset to disable"
+  type        = string
+  default     = ""
+}
+
+variable "health_check_eviction_time_in_min" {
+  description = "Time in minutes to wait before evicting a failed instance app instance"
+  type        = number
+  default     = 2
+}
