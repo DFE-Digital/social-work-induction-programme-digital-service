@@ -99,7 +99,6 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     {
         // Arrange
         var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 
