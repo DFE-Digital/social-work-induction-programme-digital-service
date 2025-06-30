@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
+using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
@@ -114,6 +115,15 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
             .Url.Should()
             .Be("/manage-accounts");
 
+        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
+        notificationType.Should().Be(NotificationBannerType.Success);
+
+        var notificationHeader = TempData["NotificationHeader"]?.ToString();
+        notificationHeader.Should().Be("An invitation to register has been resent");
+
+        var notificationMessage = TempData["NotificationMessage"]?.ToString();
+        notificationMessage.Should().Be($"A new invitation to register has been sent to {account.FullName}, {account.Email}");
+        
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SendInvitationEmailAsync(account), Times.Once);
         VerifyAllNoOtherCalls();

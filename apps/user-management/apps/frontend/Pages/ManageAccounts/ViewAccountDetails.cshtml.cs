@@ -4,6 +4,7 @@ using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -46,6 +47,11 @@ public class ViewAccountDetails(
         var account = await accountService.GetByIdAsync(id);
         if (account is null) return NotFound();
         await createAccountJourneyService.SendInvitationEmailAsync(account);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = "An invitation to register has been resent";
+        TempData["NotificationMessage"] = $"A new invitation to register has been sent to {account.FullName}, {account.Email}";
+
         return Redirect(linkGenerator.ManageAccounts());
     }
 }
