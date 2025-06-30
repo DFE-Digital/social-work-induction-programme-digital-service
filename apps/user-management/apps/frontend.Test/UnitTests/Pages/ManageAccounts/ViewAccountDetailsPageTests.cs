@@ -150,4 +150,21 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
+
+    [Fact]
+    public async Task Get_WhenCalledAndNoAccountTypes_ReturnsPageResult()
+    {
+        // Arrange
+        var account = AccountBuilder.WithTypes(null).Build();
+
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+
+        // Act
+        var result = await Sut.OnGetAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
 }
