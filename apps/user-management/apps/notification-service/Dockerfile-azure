@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:1
-# Base image for the Azure Functions runtime for .NET 8
-FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8.0 AS notification-api
+FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0 AS notification-api
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
 
-ENV AzureWebJobsScriptRoot=/home/site/wwwroot
+ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
+    AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
+    FUNCTIONS_WORKER_RUNTIME=dotnet-isolated \
+    DOTNET_CMD="dotnet"
+
+ENTRYPOINT ["dotnet", "DfeSwwEcf.NotificationService.dll"]
 
 # Install SSH Server for Kudu
 # RUN apt-get update && apt-get install -y openssh-server sudo
