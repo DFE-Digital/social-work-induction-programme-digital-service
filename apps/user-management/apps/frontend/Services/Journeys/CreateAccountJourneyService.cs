@@ -254,9 +254,9 @@ public class CreateAccountJourneyService(
         return createAccountJourneyModel.SocialWorkerDetails;
     }
 
-    private async Task SendInvitationEmailAsync(Account account)
+    public async Task SendInvitationEmailAsync(Account account)
     {
-        var accountTypes = GetAccountTypes();
+        var accountTypes = account.Types;
 
         if (
             accountTypes is null

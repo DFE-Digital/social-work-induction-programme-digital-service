@@ -58,4 +58,6 @@ public interface ICreateAccountJourneyService
     AccountLabels? GetAccountLabels();
 
     AccountChangeLinks GetAccountChangeLinks();
+
+    Task SendInvitationEmailAsync(Account account);
 }

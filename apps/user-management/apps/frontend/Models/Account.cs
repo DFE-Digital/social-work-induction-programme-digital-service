@@ -53,7 +53,7 @@ public record Account
     /// Account status
     /// </summary>
     [Display(Name = "Status")]
-    public AccountStatus? Status { get; init; }
+    public AccountStatus? Status { get; set; }
 
     /// <summary>
     /// Account types
@@ -120,7 +120,7 @@ public record Account
     public bool IsStaff =>
         Types?.Any(t => t is AccountType.Coordinator or AccountType.Assessor) ?? false;
 
-    public Account() { }
+    public bool HasCompletedLoginAccountLinking { get; set; }
 
     public Account(Account account)
     {
@@ -158,5 +158,6 @@ public record Account
         SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear;
         RouteIntoSocialWork = account.RouteIntoSocialWork;
         OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
+        HasCompletedLoginAccountLinking = account.HasCompletedLoginAccountLinking;
     }
 }

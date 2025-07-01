@@ -50,6 +50,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.SocialWorkQualificationEndYear, f => f.Random.Number(1900, 2000));
         _faker.RuleFor(a => a.RouteIntoSocialWork, f => f.PickRandom<RouteIntoSocialWork>());
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, f => f.Random.Bool());
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -287,6 +288,13 @@ public class AccountBuilder
     public AccountBuilder WithOtherRouteIntoSocialWork(string otherRouteIntoSocialWork)
     {
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => otherRouteIntoSocialWork);
+
+        return this;
+    }
+
+    public AccountBuilder WithHasCompletedLoginAccountLinking(bool hasCompletedLoginAccountLinking)
+    {
+        _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, _ => hasCompletedLoginAccountLinking);
 
         return this;
     }
