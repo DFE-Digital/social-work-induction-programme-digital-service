@@ -24,7 +24,10 @@ public class ConfirmAccountDetails(
     public Guid Id { get; set; }
 
     [Display(Name = "Who do you want to add?")]
-    public string? SelectedAccountType { get; set; }
+    public string? UserType { get; set; }
+
+    [Display(Name = "Account type")]
+    public IList<AccountType>? AccountTypes { get; set; }
 
     [Display(Name = "Are they registered with Social Work England?")]
     public string? RegisteredWithSocialWorkEngland { get; set; }
@@ -91,7 +94,8 @@ public class ConfirmAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
 
-        SelectedAccountType = accountLabels?.IsStaffLabel;
+        UserType = accountLabels?.IsStaffLabel;
+        AccountTypes = createAccountJourneyService.GetAccountTypes();
         RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
         StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
         AgencyWorker = accountLabels?.IsAgencyWorkerLabel;

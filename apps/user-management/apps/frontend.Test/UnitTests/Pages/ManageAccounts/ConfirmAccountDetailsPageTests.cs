@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -33,14 +34,40 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
-        var expectedAccountDetails = AccountDetailsFaker.Generate();
+        var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
         var expectedChangeLinks = new AccountChangeLinks {};
+        var expectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
+        var expectedAccountLabels = new AccountLabels
+        {
+            IsStaffLabel = IsStaffLabels.IsStaffFalse,
+            IsRegisteredWithSocialWorkEnglandLabel = "Yes",
+            IsAgencyWorkerLabel = "No",
+            IsStatutoryWorkerLabel = "Yes",
+            IsRecentlyQualifiedLabel = "Yes"
+        };
+        var expectedStartDateDateOnly = DateOnly.FromDateTime(DateTime.Now);
+        var expectedEndDateDateOnly = DateOnly.FromDateTime(DateTime.Now.AddYears(2));
+        var expectedStartDate = expectedStartDateDateOnly.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        var expectedEndDate = expectedEndDateDateOnly.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountDetails())
             .Returns(expectedAccountDetails);
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountChangeLinks())
             .Returns(expectedChangeLinks);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountTypes())
+            .Returns(expectedAccountTypes);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountLabels())
+            .Returns(expectedAccountLabels);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetProgrammeStartDate())
+            .Returns(expectedStartDateDateOnly);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetProgrammeEndDate())
+            .Returns(expectedEndDateDateOnly);
 
         // Act
         var result = Sut.OnGet();
@@ -57,12 +84,22 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.IsUpdatingAccount.Should().BeFalse();
         Sut.BackLinkPath.Should().Be("/manage-accounts/social-worker-programme-dates");
         Sut.ChangeDetailsLinks.Should().BeEquivalentTo(expectedChangeLinks);
+        Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountTypes);
+        Sut.UserType.Should().Be(expectedAccountLabels.IsStaffLabel);
+        Sut.RegisteredWithSocialWorkEngland.Should().Be(expectedAccountLabels.IsRegisteredWithSocialWorkEnglandLabel);
+        Sut.StatutoryWorker.Should().Be(expectedAccountLabels.IsStatutoryWorkerLabel);
+        Sut.AgencyWorker.Should().Be(expectedAccountLabels.IsAgencyWorkerLabel);
+        Sut.Qualified.Should().Be(expectedAccountLabels.IsRecentlyQualifiedLabel);
+        Sut.IsStaff.Should().Be(expectedAccountDetails.IsStaff);
+        Sut.ProgrammeStartDate.Should().Be(expectedStartDate);
+        Sut.ProgrammeEndDate.Should().Be(expectedEndDate);
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

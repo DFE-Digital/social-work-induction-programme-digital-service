@@ -14,7 +14,8 @@ public class GetAccountChangeLinksShould : CreateAccountJourneyServiceTestBase
         // Arrange
         var expectedChangeLinks = new AccountChangeLinks
         {
-            SelectedAccountChangeLink = "/manage-accounts/select-account-type?handler=Change",
+            UserTypeChangeLink = "/manage-accounts/select-account-type?handler=Change",
+            AccountTypesChangeLink = "/manage-accounts/select-use-case?handler=Change",
             RegisteredWithSocialWorkEnglandChangeLink = "/manage-accounts/eligibility-social-work-england?handler=Change",
             StatutoryWorkerChangeLink = "/manage-accounts/eligibility-statutory-work?handler=Change",
             AgencyWorkerChangeLink = "/manage-accounts/eligibility-agency-worker?handler=Change",

@@ -202,7 +202,8 @@ public class CreateAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            SelectedAccountChangeLink = linkGenerator.SelectAccountTypeChange(),
+            UserTypeChangeLink = linkGenerator.SelectAccountTypeChange(),
+            AccountTypesChangeLink = linkGenerator.SelectUseCaseChange(),
             RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEnglandChange(),
             StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWorkChange(),
             AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorkerChange(),

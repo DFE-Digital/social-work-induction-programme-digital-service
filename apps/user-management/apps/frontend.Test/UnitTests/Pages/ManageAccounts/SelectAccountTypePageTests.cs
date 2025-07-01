@@ -82,11 +82,17 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task OnPostAsync_WhenCalledWithIsStaffTrue_RedirectsToSelectUseCase()
+    [Theory]
+    [InlineData(true, "/manage-accounts/select-use-case?handler=Change")]
+    [InlineData(false, "/manage-accounts/select-use-case")]
+    public async Task OnPostAsync_WhenCalledWithIsStaffTrue_RedirectsToRelevantPageBasedOnFromChangeLink(
+        bool fromChangeLink,
+        string redirectPath
+    )
     {
         // Arrange
         Sut.IsStaff = true;
+        Sut.FromChangeLink = fromChangeLink;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -95,7 +101,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/select-use-case");
+        redirectResult!.Url.Should().Be(redirectPath);
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(true), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
@@ -133,7 +139,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
     public async Task OnPostAsync_WhenCalledFromChangeLinkAndIsStaffFalse_RedirectsToRelevantPage(
         string? socialWorkEnglandRegistrationNumber,
         string? redirectPath
-        )
+    )
     {
         // Arrange
         Sut.IsStaff = false;
@@ -141,6 +147,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
             .WithSocialWorkEnglandNumber(socialWorkEnglandRegistrationNumber)
+            .WithIsStaff(false)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
@@ -192,6 +199,4 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         Sut.FromChangeLink.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
     }
-
-
 }

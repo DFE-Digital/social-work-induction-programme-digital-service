@@ -38,7 +38,7 @@ public class SelectAccountType(
 
         if (IsStaff == true)
         {
-            return linkGenerator.SelectUseCase();
+            return FromChangeLink ? linkGenerator.SelectUseCaseChange() : linkGenerator.SelectUseCase();
         }
 
         if (FromChangeLink)

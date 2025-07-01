@@ -39,7 +39,12 @@ public class SelectUseCase(
         }
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
+        return Redirect(FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails());
+    }
 
-        return Redirect(linkGenerator.AddAccountDetails());
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }
