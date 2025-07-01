@@ -27,6 +27,23 @@ public class EligibilityFundingAvailablePageTests : ManageAccountsPageTestBase<E
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-qualification");
+        Sut.NextPagePath.Should().Be("/manage-accounts/add-account-details");
+        Sut.FromChangeLink.Should().BeFalse();
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheViewWithNextPageConfirmAccountDetails()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.FromChangeLink.Should().BeTrue();
+        Sut.NextPagePath.Should().Be("/manage-accounts/confirm-account-details");
 
         VerifyAllNoOtherCalls();
     }

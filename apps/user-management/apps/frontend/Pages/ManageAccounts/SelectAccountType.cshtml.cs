@@ -23,36 +23,88 @@ public class SelectAccountType(
 
     public Guid? EditAccountId { get; set; }
 
+    public string? Handler { get; set; }
+
+    private void SetBackLinkPath()
+    {
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ConfirmAccountDetails()
+            : linkGenerator.ManageAccounts();
+    }
+
+    private string GetRedirectPath()
+    {
+        var details = createAccountJourneyService.GetAccountDetails();
+
+        if (IsStaff == true)
+        {
+            return linkGenerator.SelectUseCase();
+        }
+
+        if (FromChangeLink)
+        {
+            if (details?.SocialWorkEnglandNumber is null)
+            {
+                return linkGenerator.AddAccountDetailsChange();
+            }
+
+            return linkGenerator.ConfirmAccountDetails();
+        }
+
+        return linkGenerator.EligibilityInformation();
+    }
+
+    private void SetHandler()
+    {
+        Handler = EditAccountId is not null ? "edit" : (FromChangeLink ? "change" : "");
+    }
+
     public RedirectResult OnGetNew()
     {
+        SetHandler();
         createAccountJourneyService.ResetCreateAccountJourneyModel();
         return Redirect(linkGenerator.SelectAccountType());
     }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccounts();
+        SetHandler();
+        SetBackLinkPath();
         IsStaff = createAccountJourneyService.GetIsStaff();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        SetHandler();
         var validationResult = await validator.ValidateAsync(this);
         if (IsStaff is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccounts();
+            SetBackLinkPath();
             return Page();
         }
 
         createAccountJourneyService.SetIsStaff(IsStaff);
 
-        if (IsStaff is true)
+        if (IsStaff is false)
         {
-            return Redirect(linkGenerator.SelectUseCase());
+            createAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
         }
-        createAccountJourneyService.SetAccountTypes([AccountType.EarlyCareerSocialWorker]);
-        return Redirect(linkGenerator.EligibilityInformation());
+
+        return Redirect(GetRedirectPath());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath();
+        return await OnPostAsync();
     }
 }

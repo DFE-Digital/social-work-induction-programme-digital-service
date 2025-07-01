@@ -23,7 +23,7 @@ public class EligibilitySocialWorkEngland(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityInformation();
+        BackLinkPath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.EligibilityInformation();
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         return Page();
     }
@@ -39,9 +39,28 @@ public class EligibilitySocialWorkEngland(
         }
 
         createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
-
+        if (FromChangeLink)
+        {
+            if (IsRegisteredWithSocialWorkEngland == true)
+            {
+                return Redirect(linkGenerator.ConfirmAccountDetails());
+            }
+            return Redirect(linkGenerator.EligibilitySocialWorkEnglandDropoutChange());
+        }
         return Redirect(IsRegisteredWithSocialWorkEngland is false
             ? linkGenerator.EligibilitySocialWorkEnglandDropout()
             : linkGenerator.EligibilityStatutoryWork());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

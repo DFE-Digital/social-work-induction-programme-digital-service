@@ -23,7 +23,7 @@ public class EligibilityStatutoryWork(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
+        BackLinkPath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.EligibilitySocialWorkEngland();
         IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
         return Page();
     }
@@ -40,8 +40,28 @@ public class EligibilityStatutoryWork(
 
         createAccountJourneyService.SetIsStatutoryWorker(IsStatutoryWorker);
 
+        if (FromChangeLink)
+        {
+            if (IsStatutoryWorker == true)
+            {
+                return Redirect(linkGenerator.ConfirmAccountDetails());
+            }
+            return Redirect(linkGenerator.EligibilityStatutoryWorkDropoutChange());
+        }
         return Redirect(IsStatutoryWorker is false
             ? linkGenerator.EligibilityStatutoryWorkDropout()
             : linkGenerator.EligibilityAgencyWorker());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

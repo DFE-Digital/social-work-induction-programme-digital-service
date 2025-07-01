@@ -29,7 +29,21 @@ public class EligibilitySocialWorkEnglandDropoutPageTests : ManageAccountsPageTe
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        Sut.FromChangeLink.Should().BeFalse();
+        VerifyAllNoOtherCalls();
+    }
 
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england?handler=Change");
+        Sut.FromChangeLink.Should().BeTrue();
         VerifyAllNoOtherCalls();
     }
 }
