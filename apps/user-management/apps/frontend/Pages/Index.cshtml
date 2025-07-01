@@ -5,45 +5,42 @@
     Model.Title = "Social Work Induction Programme";
 }
 
-<div class="text-center">
-    <h1 class="govuk-heading-l">
-        <span class="govuk-label--l">Post qualifying pathway digital service</span>
-    </h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+            <span class="govuk-label--l">Social Work Induction Programme</span>
+        </h1>
 
-    <div class="govuk-body">
-        <p>This is the digital service for the post qualifying pathway, a programme that supports training and
-            development for early career social workers.</p>
+        <div class="govuk-body">
+            <p>This is the digital service for the social work induction programme, a programme that supports the learning, development and progression of early career social workers through the post qualifying standards.</p>
 
-        <p>
-            <b>For early career social workers</b>
-        </p>
-        <p>You can use this service to:</p>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>write and submit your assessments</li>
-            <li>check your progress towards the framework outcomes</li>
-            <li>view feedback from your assessor</li>
-        </ul>
-
-        <div>
-            <p>
-                <b>For coordinators and assessors</b>
-            </p>
+            <h2 class="govuk-heading-m">For early career social workers</h2>
             <p>You can use this service to:</p>
             <ul class="govuk-list govuk-list--bullet">
-                <li>view submissions from your early career social workers</li>
-                <li>give feedback on their development</li>
-                <li>track their progress towards the framework outcomes</li>
-                <li>manage users for your organisation</li>
+                <li>access learning resources</li>
+                <li>write and submit your assessments</li>
+                <li>view feedback on your assessments</li>
+                <li>track your progress against the post-qualifying standards</li>
             </ul>
+
+            <div>
+                <h2 class="govuk-heading-m">For coordinators and assessors</h2>
+                <p>You can use this service to:</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>review assessment submissions from your early career social workers</li>
+                    <li>give feedback on their submissions</li>
+                    <li>track their progress against the post-qualifying standards</li>
+                    <li>manage users for your organisation</li>
+                </ul>
+            </div>
+
+            <govuk-button-link href="@LinkGenerator.SignIn()" is-start-button="true">Sign in with GOV.UK One Login</govuk-button-link>
+
+            <h2 class="govuk-heading-m">Before you start</h2>
+            <p>If you are taking part in the social work induction programme, you should have received an email inviting you to create an account. If you have not received an invitation email, contact the programme coordinator at your organisation. You will not be able to access this service without an invitation.</p>
+            <p>
+                You will need a GOV.UK One Login account to sign in. You can create an account if you do not already have one. <a href="https://www.gov.uk/using-your-gov-uk-one-login" class="govuk-link">Find out more about GOV.UK One Login.</a>
+            </p>
         </div>
-
-        <govuk-button-link href="@LinkGenerator.SignIn()">Sign in with One Login</govuk-button-link>
-
-        <p>
-            <b>Before you starts</b>
-        </p>
-        <p>You will need a GOV.UK One Login account to sign in.</p>
-        <p>If you are taking part in the post qualifying pathway, you should have received an email inviting you to
-            create an account. If you have not received an invitation email, contact your programme coordinator.</p>
     </div>
 </div>
