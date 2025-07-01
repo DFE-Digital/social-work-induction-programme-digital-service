@@ -41,7 +41,14 @@ public record Account
     /// FullName
     /// </summary>
     [Display(Name = "Name")]
-    public string FullName => $"{FirstName} {LastName}".Trim();
+    public string FullName => string.Join(" ",
+        new[]
+            {
+                FirstName,
+                MiddleNames,
+                LastName
+            }
+            .Where(s => !string.IsNullOrWhiteSpace(s))).Trim();
 
     /// <summary>
     /// Email
