@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
 
@@ -39,11 +40,15 @@ public static class AccountDetailsFakerExtensions
             .Generate();
     }
 
-    public static AccountDetails GenerateWithSweId(
+    public static AccountDetails GenerateWithSweIdAndRelevantAccountType(
         this AccountDetailsFaker accountDetailsFaker,
-        string? sweId
+        string? sweId,
+        IList<AccountType> accountTypes
     )
     {
-        return accountDetailsFaker.RuleFor(a => a.SocialWorkEnglandNumber, _ => sweId).Generate();
+        return accountDetailsFaker
+            .RuleFor(a => a.SocialWorkEnglandNumber, _ => sweId)
+            .RuleFor(a => a.Types, _ => accountTypes)
+            .Generate();
     }
 }
