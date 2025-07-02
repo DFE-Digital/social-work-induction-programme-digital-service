@@ -34,6 +34,7 @@ builder.Services.AddGovUkFrontend(options =>
 {
     options.RegisterDateInputModelConverter(typeof(LocalDate), new LocalDateDateInputModelConverter());
     options.RegisterDateInputModelConverter(typeof(YearMonth), new YearMonthDateInputModelConverter());
+    options.ErrorSummaryGeneration = ErrorSummaryGenerationOptions.PrependToFormElements;
 });
 builder.Services.AddCsp(nonceByteAmount: 32);
 builder
