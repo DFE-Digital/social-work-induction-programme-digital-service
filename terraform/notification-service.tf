@@ -14,5 +14,5 @@ module "notification-service" {
   storage_account_access_key    = module.stack.storage_account_access_key
   appinsights_connection_string = module.stack.appinsights_connection_string
   health_check_path             = "/api/health"
-  subnet_functionapp_id         = subnet.stack.subnet_functionapp_id
+  subnet_functionapp_id         = module.stack.subnet_functionapp_id
 }
