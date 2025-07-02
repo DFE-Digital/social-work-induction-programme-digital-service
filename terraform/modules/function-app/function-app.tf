@@ -15,6 +15,7 @@ resource "azurerm_linux_function_app" "function_app" {
     always_on                         = true
     health_check_path                 = var.health_check_path
     health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
+    vnet_route_all_enabled            = true
   }
 
   app_settings = {
