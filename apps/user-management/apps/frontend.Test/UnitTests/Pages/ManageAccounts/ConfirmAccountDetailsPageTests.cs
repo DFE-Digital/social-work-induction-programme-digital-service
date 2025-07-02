@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
@@ -36,7 +37,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
         var expectedChangeLinks = new AccountChangeLinks {};
-        var expectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
+        var expectedAccountTypes = ImmutableList.Create(AccountType.EarlyCareerSocialWorker);
         var expectedAccountLabels = new AccountLabels
         {
             IsStaffLabel = IsStaffLabels.IsStaffFalse,
