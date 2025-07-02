@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
@@ -29,12 +30,12 @@ public class AccountDetailsValidatorTests()
     [InlineData("")]
     [InlineData(null)]
     [InlineData("     ")]
-    public void WhenAnyInputNotSupplied_WhenIsNotStaff_HasValidationErrors(string? value)
+    public void WhenAnyInputNotSupplied_WhenIsSocialWorkerOrAssessor_HasValidationErrors(string? value)
     {
         // Arrange
         var account = new AccountDetails
         {
-            IsStaff = false,
+            Types = ImmutableList.Create(AccountType.EarlyCareerSocialWorker),
             FirstName = value,
             LastName = value,
             Email = value,
@@ -63,12 +64,12 @@ public class AccountDetailsValidatorTests()
     [InlineData("")]
     [InlineData(null)]
     [InlineData("     ")]
-    public void WhenAnyInputNotSupplied_WhenIsStaff_HasValidationErrors(string? value)
+    public void WhenAnyInputNotSupplied_WhenIsCoordinator_HasValidationErrors(string? value)
     {
         // Arrange
         var account = new AccountDetails
         {
-            IsStaff = true,
+            Types = ImmutableList.Create(AccountType.Coordinator),
             FirstName = value,
             LastName = value,
             Email = value
@@ -98,7 +99,7 @@ public class AccountDetailsValidatorTests()
     public void WhenSocialWorkerNumberIsInvalid_HasValidationErrors(string? sweId)
     {
         // Arrange
-        var account = Faker.GenerateWithSweId(sweId);
+        var account = Faker.GenerateWithSweIdAndRelevantAccountType(sweId,ImmutableList.Create(AccountType.EarlyCareerSocialWorker));
 
         // Act
         var result = Sut.TestValidate(account);
