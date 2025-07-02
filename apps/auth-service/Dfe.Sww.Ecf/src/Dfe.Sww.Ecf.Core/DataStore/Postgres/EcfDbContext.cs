@@ -3,16 +3,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using OpenIddict.EntityFrameworkCore.Models;
-using Establishment = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisation;
 using User = Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.User;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
 public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(options)
 {
-    public static EcfDbContext Create(string connectionString, int? commandTimeout = null) =>
-        new(CreateOptions(connectionString, commandTimeout));
-
     public DbSet<Event> Events => Set<Event>();
 
     public DbSet<JourneyState> JourneyStates => Set<JourneyState>();
@@ -37,6 +33,11 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
 
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
 
+    public static EcfDbContext Create(string connectionString, int? commandTimeout = null)
+    {
+        return new EcfDbContext(CreateOptions(connectionString, commandTimeout));
+    }
+
     public static void ConfigureOptions(
         DbContextOptionsBuilder optionsBuilder,
         string connectionString,
@@ -47,10 +48,14 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
             .UseNpgsql(connectionString, Options)
             .UseSnakeCaseNamingConvention()
             .ReplaceService<IHistoryRepository, SnakeCaseNpgsqlHistoryRepository>()
-            .UseOpenIddict<Guid>();
+            .UseOpenIddict<Guid>()
+            .UseDatabaseSeeding();
         return;
 
-        void Options(NpgsqlDbContextOptionsBuilder o) => o.CommandTimeout(commandTimeout);
+        void Options(NpgsqlDbContextOptionsBuilder o)
+        {
+            o.CommandTimeout(commandTimeout);
+        }
     }
 
     public void AddEvent(EventBase @event, DateTime? inserted = null)
@@ -84,7 +89,7 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
                         nameof(OpenIddictEntityFrameworkCoreToken) => "oidc_tokens",
                         _ => throw new NotSupportedException(
                             $"Cannot configure table name for {clrType.Name}."
-                        ),
+                        )
                     }
                 );
             }
