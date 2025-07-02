@@ -25,6 +25,11 @@ resource "azurerm_linux_function_app" "function_app" {
     FUNCTIONS_WORKER_RUNTIME              = "dotnet-isolated"
     WEBSITES_ENABLE_APP_SERVICE_STORAGE   = false
     public_network_access_enabled         = false
+
+    app_service_logs = {
+      disk_quota_mb         = 25
+      retention_period_days = 1
+    }
   }
 
   lifecycle {
