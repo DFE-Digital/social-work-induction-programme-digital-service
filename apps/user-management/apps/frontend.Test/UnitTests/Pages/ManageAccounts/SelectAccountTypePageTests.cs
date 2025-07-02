@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -146,8 +147,8 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         Sut.FromChangeLink = true;
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
             .WithSocialWorkEnglandNumber(socialWorkEnglandRegistrationNumber)
-            .WithIsStaff(false)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
