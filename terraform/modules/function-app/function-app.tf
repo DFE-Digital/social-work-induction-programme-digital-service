@@ -18,12 +18,12 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 
   app_settings = {
-    docker_registry_url                     = "https://${var.acr_name}.azurecr.io"
-    docker_image_name                       = var.docker_image_name
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
-    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
-    "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
-    public_network_access_enabled           = false
+    docker_registry_url                   = "https://${var.acr_name}.azurecr.io"
+    docker_image_name                     = var.docker_image_name
+    APPLICATIONINSIGHTS_CONNECTION_STRING = var.appinsights_connection_string
+    FUNCTIONS_WORKER_RUNTIME              = "dotnet-isolated"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = false
+    public_network_access_enabled         = false
   }
 
   lifecycle {
