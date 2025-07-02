@@ -283,7 +283,6 @@ resource "azurerm_monitor_autoscale_setting" "asp_autoscale_services" {
   }
 }
 
-
 resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_services" {
   name             = "AllowServicesSubnet"
   server_id        = azurerm_postgresql_flexible_server.swipdb.id
@@ -294,6 +293,28 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_services" {
 #############################################################################
 # App Service Plan for notification service
 #############################################################################
+
+resource "azurerm_subnet" "sn_function_app" {
+  name                              = "${var.resource_name_prefix}-sn-funcapp"
+  resource_group_name               = azurerm_resource_group.rg_primary.name
+  virtual_network_name              = azurerm_virtual_network.vnet_stack.name
+  address_prefixes                  = ["10.0.6.0/24"]
+  private_endpoint_network_policies = "Disabled"
+  service_endpoints                 = ["Microsoft.Sql"]
+
+  delegation {
+    name = "delegation"
+
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [delegation]
+  }
+}
 
 resource "azurerm_service_plan" "asp_notification_service" {
   name                = "${var.resource_name_prefix}-asp-notification"

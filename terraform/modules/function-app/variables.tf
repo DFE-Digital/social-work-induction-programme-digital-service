@@ -75,3 +75,8 @@ variable "health_check_eviction_time_in_min" {
   type        = number
   default     = 2
 }
+
+variable "subnet_functionapp_id" {
+  description = "The ID of the function app subnet"
+  type        = string
+}

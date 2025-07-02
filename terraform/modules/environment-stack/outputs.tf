@@ -107,3 +107,8 @@ output "appinsights_connection_string" {
   description = "Connection string to Application Insights"
   value       = azurerm_application_insights.app_insights_web.connection_string
 }
+
+output "subnet_functionapp_id" {
+  description = "The ID of the function app subnet"
+  value       = azurerm_subnet.sn_function_app.id
+}
