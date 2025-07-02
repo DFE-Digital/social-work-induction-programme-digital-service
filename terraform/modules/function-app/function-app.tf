@@ -16,6 +16,11 @@ resource "azurerm_linux_function_app" "function_app" {
     health_check_path                 = var.health_check_path
     health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
     vnet_route_all_enabled            = true
+    app_service_logs {
+      disk_quota_mb         = 25
+      retention_period_days = 1
+    }
+
   }
 
   app_settings = {
@@ -25,13 +30,6 @@ resource "azurerm_linux_function_app" "function_app" {
     FUNCTIONS_WORKER_RUNTIME              = "dotnet-isolated"
     WEBSITES_ENABLE_APP_SERVICE_STORAGE   = false
     public_network_access_enabled         = false
-
-    application_stack = {
-      app_service_logs = {
-        disk_quota_mb         = 25
-        retention_period_days = 1
-      }
-    }
   }
 
 
