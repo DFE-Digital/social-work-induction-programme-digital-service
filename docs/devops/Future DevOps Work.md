@@ -20,6 +20,12 @@ This section outlines future DevOps work to be carried out. Items should be cros
    
 7. When a domain name has been established, introducing SSL certificates into Front Door for all environment domain names. Would be good to manage subdomains as per the environment name, e.g. `d01.swip.education.gov.uk` for the d01 dev environment and `swip.education.gov.uk` for the production domain name. 
 
+8. End user friendly deployments. I.e. take site down with unavailable banner, then bring back up. 
+
+9. Consider building cumulative release notes from commits.
+
+10. The workflows don't currently cope with redeploying the same image. (The app version is already correct, so doesn't wait for container restart.) Might want to implement an optional minimum wait time before checking the version endpoint.
+
 ## Pre-prod / Prod Work Items
 
 Issues to be addressed for pre-prod / production.
