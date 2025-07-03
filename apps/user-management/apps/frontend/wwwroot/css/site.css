@@ -36,3 +36,7 @@ body {
 .govuk-table__cell > p:last-child {
     margin-bottom: 0;
 }
+
+dd p {
+    margin-top: 0;
+}
