@@ -33,3 +33,13 @@ resource "azurerm_container_registry" "acr" {
 locals {
   acr_id = var.create_and_own_container_registry ? azurerm_container_registry.acr[0].id : data.azurerm_container_registry.acr_data[0].id
 }
+
+resource "azurerm_monitor_diagnostic_setting" "acr_diagnostics" {
+  name                       = "acr_diagnostics"
+  target_resource_id         = azurerm_container_registry.acr.id
+  log_analytics_workspace_id = module.environment_stack.log_analytics_workspace_id
+
+  enabled_log {
+    category = "ContainerRegistryLoginEvents"
+  }
+}
