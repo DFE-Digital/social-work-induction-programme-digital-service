@@ -24,7 +24,7 @@ public class AccountTypesTagHelper : TagHelper
         // Multiple account types are displayed a separate `p` tags
         var content = Types.Aggregate(
             "",
-            (current, accountType) => current + $"<p>{accountType.GetDisplayName()}</p>"
+            (current, accountType) => current + $"<p class=\"govuk-body\">{accountType.GetDisplayName()}</p>"
         );
         output.Content.SetHtmlContent(content);
     }
