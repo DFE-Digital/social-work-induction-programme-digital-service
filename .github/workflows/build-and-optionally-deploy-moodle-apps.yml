@@ -3,6 +3,21 @@ name: Build Moodle apps (optionally deploy to non-prod)
 on:
   workflow_dispatch:
     inputs:
+      moodle-version:
+        description: "Moodle branch version"
+        required: true
+        default: "405"
+        type: choice
+        options:
+          - "405"
+          - "500"
+      govuk-theme-version:
+        description: "Gov UK theme version"
+        required: true
+        default: "v0.0.3"
+        type: choice
+        options:
+          - "v0.0.3"
       instance:
         description: "Environment instance"
         required: true
@@ -30,7 +45,7 @@ jobs:
       working-dir: ./apps/moodle-apps-azure
       docker-image-name: wa-moodle
       base-image-version: "${{ vars.MOODLE_BRANCH_VERSION }}"
-      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ vars.MOODLE_BRANCH_VERSION }};MOODLE_GOV_UK_THEME_VERSION=${{ vars.MOODLE_GOV_UK_THEME_VERSION }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ github.event.inputs.moodle-version }};MOODLE_GOV_UK_THEME_VERSION=${{ github.event.inputs.govuk-theme-version }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: moodle-app
 
