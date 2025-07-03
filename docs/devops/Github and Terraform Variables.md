@@ -14,8 +14,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | -------- | ------- | 
 | AZURE_KUDU_SSH_USER | Global name of user required by Kudu to SSH to app service containers |
 | BASIC_AUTH_USER | Global name of user name required for basic auth on end user facing sites (e.g. for user research) |
-| MOODLE_BRANCH_VERSION | Global Moodle version used as a base when building Moodle images |
-| MOODLE_GOV_UK_THEME_VERSION | Global version of Gov UK theme to use when building Moodle images  |
 | MOODLE_OIDC_PLUGIN_RELEASE_URL | Global url of OIDC plugin to use when building Moodle images |
 
 ## Environment Scoped Variables
