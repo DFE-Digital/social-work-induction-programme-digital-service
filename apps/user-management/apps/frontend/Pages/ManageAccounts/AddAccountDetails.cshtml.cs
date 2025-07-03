@@ -58,6 +58,8 @@ public class AddAccountDetails(
 
     public bool IsStaff = createAccountJourneyService.GetIsStaff() ?? false;
 
+    public IList<AccountType> AccountTypes { get; set; } = createAccountJourneyService.GetAccountTypes() ?? new List<AccountType>();
+
     private void SetBackLinkPath(bool fromConfirmPage = false)
     {
         BackLinkPath ??= fromConfirmPage
@@ -98,6 +100,7 @@ public class AddAccountDetails(
             Email = Email,
             SocialWorkEnglandNumber = SocialWorkEnglandNumber,
             IsStaff = IsStaff,
+            Types = AccountTypes
         };
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)

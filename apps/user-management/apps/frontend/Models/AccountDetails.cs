@@ -77,6 +77,8 @@ public class AccountDetails
 
     public int? SocialWorkQualificationEndYear { get; set; }
 
+    public IList<AccountType>? Types { get; init; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
@@ -111,7 +113,8 @@ public class AccountDetails
             HighestQualification = account.HighestQualification,
             SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = account.RouteIntoSocialWork,
-            OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork
+            OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork,
+            Types = account.Types
         };
     }
 }

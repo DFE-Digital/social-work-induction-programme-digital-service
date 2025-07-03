@@ -22,7 +22,7 @@ public class AccountBuilder
         _faker.RuleFor(
             a => a.SocialWorkEnglandNumber,
             (f, current) =>
-                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
+                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true || current.Types?.Contains(AccountType.Assessor) == true
                     ? f.Random.Number(1, 1000).ToString()
                     : null
         );
@@ -83,6 +83,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => null);
         _faker.RuleFor(a => a.RouteIntoSocialWork, _ => null);
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => null);
+        _faker.RuleFor(a => a.Types, _ => null);
         return this;
     }
 
@@ -133,7 +134,7 @@ public class AccountBuilder
         _faker.RuleFor(
             x => x.SocialWorkEnglandNumber,
             (_, current) =>
-                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
+                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true || current.Types?.Contains(AccountType.Assessor) == true
                     ? socialWorkEnglandNumber
                     : null
         );
