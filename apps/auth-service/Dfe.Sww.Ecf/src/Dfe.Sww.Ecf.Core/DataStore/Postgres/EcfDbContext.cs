@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
@@ -41,15 +42,20 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
     public static void ConfigureOptions(
         DbContextOptionsBuilder optionsBuilder,
         string connectionString,
-        int? commandTimeout = null
+        int? commandTimeout = null,
+        DatabaseSeedOptions? seedOptions = null
     )
     {
         optionsBuilder
             .UseNpgsql(connectionString, Options)
             .UseSnakeCaseNamingConvention()
             .ReplaceService<IHistoryRepository, SnakeCaseNpgsqlHistoryRepository>()
-            .UseOpenIddict<Guid>()
-            .UseDatabaseSeeding();
+            .UseOpenIddict<Guid>();
+        if (seedOptions != null)
+        {
+            optionsBuilder.UseDatabaseSeeding(seedOptions);
+        }
+
         return;
 
         void Options(NpgsqlDbContextOptionsBuilder o)

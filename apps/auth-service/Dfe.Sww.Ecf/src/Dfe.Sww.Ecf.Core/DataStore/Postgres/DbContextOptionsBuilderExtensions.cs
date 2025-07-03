@@ -1,21 +1,19 @@
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
 public static class DbContextOptionsBuilderExtensions
 {
-    public static DbContextOptionsBuilder UseDatabaseSeeding(this DbContextOptionsBuilder builder)
+    public static DbContextOptionsBuilder UseDatabaseSeeding(this DbContextOptionsBuilder builder,
+        DatabaseSeedOptions seedOptions
+    )
     {
         builder.UseAsyncSeeding(async (db, _, ct) =>
         {
-            var orgId = new Guid("00000000-0000-0000-0000-000000000001");
-            var personId = new Guid("10000000-0000-0000-0000-000000000001");
-            const int roleId = (int)RoleType.Coordinator;
-
-            await DatabaseSeeder.SeedOrganisationAsync(db, orgId, ct);
-            await DatabaseSeeder.SeedPersonAsync(db, personId, ct);
-            await DatabaseSeeder.SeedPersonOrganisationAsync(db, orgId, personId, ct);
-            await DatabaseSeeder.SeedPersonRoleAsync(db, personId, roleId, ct);
+            await DatabaseSeeder.SeedOrganisationAsync(db, seedOptions.OrganisationId, ct);
+            await DatabaseSeeder.SeedPersonAsync(db, seedOptions.PersonId, ct);
+            await DatabaseSeeder.SeedPersonOrganisationAsync(db, seedOptions.OrganisationId, seedOptions.PersonId, ct);
+            await DatabaseSeeder.SeedPersonRoleAsync(db, seedOptions.PersonId, seedOptions.RoleId, ct);
 
             await db.SaveChangesAsync(ct);
         });
