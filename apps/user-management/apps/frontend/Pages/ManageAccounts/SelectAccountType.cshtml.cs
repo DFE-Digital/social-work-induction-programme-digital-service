@@ -43,11 +43,14 @@ public class SelectAccountType(
 
         if (FromChangeLink)
         {
+            if (createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland() is null)
+            {
+                return linkGenerator.EligibilityInformation();
+            }
             if (details?.SocialWorkEnglandNumber is null)
             {
                 return linkGenerator.AddAccountDetailsChange();
             }
-
             return linkGenerator.ConfirmAccountDetails();
         }
 

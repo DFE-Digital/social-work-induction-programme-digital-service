@@ -20,7 +20,8 @@ public class EligibilityFundingNotAvailable(
         BackLinkPath = createAccountJourneyService.GetIsAgencyWorker() == true
             ? linkGenerator.EligibilityAgencyWorker()
             : linkGenerator.EligibilityQualification();
-        NextPagePath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails();
+        var accountDetails = createAccountJourneyService.GetAccountDetails();
+        NextPagePath = FromChangeLink && accountDetails?.SocialWorkEnglandNumber is not null ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails();
         return Page();
     }
 
