@@ -31,7 +31,13 @@ moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
   "BASIC_AUTH_ENABLED"              = "true"
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"
 }
+moodle_max_data_storage_size_in_gb = 5
+storage_redundancy = "LRS"
+blob_storage_account_tier = "Standard"
+# Standard pay as you go HDD file share 
+file_storage_account_tier = "Standard"

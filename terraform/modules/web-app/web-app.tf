@@ -32,6 +32,21 @@ resource "azurerm_linux_web_app" "webapp" {
     }
   }
 
+  dynamic "storage_account" {
+    for_each = var.storage_mounts
+
+    content {
+      # storage_account.key is the map key (e.g., "moodledata")
+      # storage_account.value is the object with all the settings
+      name           = storage_account.key
+      type           = storage_account.value.type
+      mount_path     = storage_account.value.mount_path
+      account_name   = storage_account.value.account_name
+      share_name     = storage_account.value.share_name
+      access_key     = var.storage_access_key
+    }
+  }  
+
   logs {
     detailed_error_messages = true
     failed_request_tracing  = true

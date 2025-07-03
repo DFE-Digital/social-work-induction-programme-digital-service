@@ -105,13 +105,13 @@ ARG PHP_COMPOSER_VERSION=2.6.5
 
 WORKDIR /var/www/html/public
 
-# Mandatory tools for remote SSH + general mgmt
+# Mandatory tools for remote SSH + general mgmt and az for file sync
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
         postgresql-client \
-        cron \
         apache2-utils \
+        rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -137,6 +137,13 @@ RUN echo "$FULL_TAG" > version.txt
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
 
+# We use the moodledata_ref directory as a reference to seed the Azure file share if empty
+RUN mv /var/www/moodledata /var/www/moodledata_ref \
+    && mkdir -p /var/www/moodledata \
+    && chown www-data:www-data /var/www/moodledata \
+    && mkdir -p /var/www/moodledata_share \
+    && chown www-data:www-data /var/www/moodledata_share
+
 # Needs to run as root for various standard mount point permissions in Azure
 # Apache is configured to run as www-data
 USER root
@@ -160,14 +167,13 @@ COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
 COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
-RUN chmod +x /app/entry-point.sh /app/maintain-moodle.sh /app/save-env.sh /app/restore-env.sh
+RUN chmod +x /app/*.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
 # will override this with the cron config
 COPY apache-security.conf /etc/apache2/conf-enabled/security.conf
 COPY apache-config-moodle.conf /etc/apache2/sites-available/000-default.conf
 COPY apache-config-cron.conf /app/apache-config-cron.conf
-COPY moodle-cron /app/moodle-cron
 RUN a2enmod headers
 
 # Give the cron job some html to serve - the cron job service is still an app service
