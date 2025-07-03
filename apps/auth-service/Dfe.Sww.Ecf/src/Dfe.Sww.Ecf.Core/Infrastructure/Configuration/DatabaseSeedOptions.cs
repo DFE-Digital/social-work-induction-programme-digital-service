@@ -2,8 +2,10 @@ namespace Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 
 public class DatabaseSeedOptions
 {
-    public Guid OrganisationId { get; set; }
-    public string OrganisationName { get; set; } = string.Empty;
-    public Guid PersonId { get; set; }
-    public int RoleId { get; set; }
+    public Guid OrganisationId { get; init; }
+    public string OrganisationName { get; init; } = string.Empty;
+    public Guid PersonId { get; init; }
+    public int RoleId { get; init; }
+    public string OneLoginSubject { get; init; } = string.Empty;
+    public string OneLoginEmail { get; init; } = string.Empty;
 }

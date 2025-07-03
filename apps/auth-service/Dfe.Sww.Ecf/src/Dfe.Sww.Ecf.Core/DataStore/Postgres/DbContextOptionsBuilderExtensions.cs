@@ -14,6 +14,8 @@ public static class DbContextOptionsBuilderExtensions
             await DatabaseSeeder.SeedPersonAsync(db, seedOptions.PersonId, ct);
             await DatabaseSeeder.SeedPersonOrganisationAsync(db, seedOptions.OrganisationId, seedOptions.PersonId, ct);
             await DatabaseSeeder.SeedPersonRoleAsync(db, seedOptions.PersonId, seedOptions.RoleId, ct);
+            await DatabaseSeeder.SeedOneLoginUserAsync(db, seedOptions.OneLoginSubject, seedOptions.OneLoginEmail,
+                seedOptions.PersonId, ct);
 
             await db.SaveChangesAsync(ct);
         });
