@@ -7,6 +7,8 @@ module "stack" {
   resource_name_prefix                       = var.resource_name_prefix
   kv_purge_protection_enabled                = var.kv_purge_protection_enabled
   asp_sku_moodle                             = var.asp_sku_moodle
+  asp_sku_maintenance                        = var.asp_sku_maintenance
+  asp_sku_services                           = var.asp_sku_services
   admin_enabled                              = var.admin_enabled
   webapp_storage_account_name                = var.webapp_storage_account_name
   assign_delivery_team_key_vault_permissions = var.assign_delivery_team_key_vault_permissions
