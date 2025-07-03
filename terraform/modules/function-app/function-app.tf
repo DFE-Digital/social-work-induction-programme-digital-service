@@ -45,8 +45,7 @@ resource "azurerm_linux_function_app" "function_app" {
       # it back to null, removing the vnet / dbs integration. Then re-create it. 
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
-      virtual_network_subnet_id,
-      logs
+      virtual_network_subnet_id
     ]
   }
 
