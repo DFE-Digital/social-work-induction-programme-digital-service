@@ -38,14 +38,15 @@ resource "azurerm_linux_function_app" "function_app" {
       tags["Environment"],
       tags["Product"],
       tags["Service Offering"],
-      # The image tag will be updated by the CI/CD pipeline
-      app_settings["DOCKER_CUSTOM_IMAGE_NAME"],
+      # Ignore changes to the currently deployed image - CD will be changing this
+      site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
       # virtual_network_subnet_id is updated and the next time around, Terraform will reset
       # it back to null, removing the vnet / dbs integration. Then re-create it. 
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
       virtual_network_subnet_id,
+      logs
     ]
   }
 
