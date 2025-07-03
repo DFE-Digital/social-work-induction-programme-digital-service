@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0-appservice AS notification-api
 WORKDIR /home/site/wwwroot
-EXPOSE 8081
+EXPOSE 80
 
 COPY DfeSwwEcf.NotificationService/bin/Release/net8.0/publish/ .
 
