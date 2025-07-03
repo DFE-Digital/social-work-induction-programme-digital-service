@@ -2,7 +2,8 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class AccountChangeLinks
 {
-    public string? SelectedAccountChangeLink { get; set; }
+    public string? UserTypeChangeLink { get; set; }
+    public string? AccountTypesChangeLink { get; set; }
     public string? RegisteredWithSocialWorkEnglandChangeLink { get; set; }
     public string? StatutoryWorkerChangeLink { get; set; }
     public string? AgencyWorkerChangeLink { get; set; }

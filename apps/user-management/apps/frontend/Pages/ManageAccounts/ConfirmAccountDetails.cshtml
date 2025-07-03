@@ -16,15 +16,31 @@
 
             <govuk-summary-list>
                 <govuk-summary-list-row>
-                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SelectedAccountType)</govuk-summary-list-row-key>
-                    <govuk-summary-list-row-value>@Model.SelectedAccountType</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.UserType)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>@Model.UserType</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.SelectedAccountChangeLink"
-                                                       visually-hidden-text="@Html.DisplayNameFor(model => model.SelectedAccountType)">
+                        <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.UserTypeChangeLink"
+                                                       visually-hidden-text="@Html.DisplayNameFor(model => model.UserType)">
                             Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
+
+                @if (Model.AccountTypes is not null && Model.IsStaff is true)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.AccountTypes)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <account-types types="Model.AccountTypes"/>
+                        </govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.AccountTypesChangeLink"
+                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.AccountTypes)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
 
                 @if (Model.RegisteredWithSocialWorkEngland is not null && Model.IsStaff is false)
                 {

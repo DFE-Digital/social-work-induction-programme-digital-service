@@ -46,4 +46,12 @@ public static class AccountDetailsFakerExtensions
     {
         return accountDetailsFaker.RuleFor(a => a.SocialWorkEnglandNumber, _ => sweId).Generate();
     }
+
+    public static AccountDetails GenerateWithIsStaff(
+        this AccountDetailsFaker accountDetailsFaker,
+        bool? isStaff
+    )
+    {
+        return accountDetailsFaker.RuleFor(a => a.IsStaff, _ => isStaff).Generate();
+    }
 }

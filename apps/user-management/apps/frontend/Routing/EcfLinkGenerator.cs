@@ -103,6 +103,7 @@ public abstract class EcfLinkGenerator(
 
     public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
     public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
+    public string SelectUseCaseChange() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase", handler: "Change");
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
     public string EligibilityInformation() => GetRequiredPathByPage("/ManageAccounts/EligibilityInformation");
     public string EligibilitySocialWorkEngland() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland");
