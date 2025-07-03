@@ -83,6 +83,19 @@ resource "azurerm_postgresql_flexible_server_database" "moodle_db" {
   name      = each.value.db_name
 }
 
+resource "azurerm_storage_share" "moodle_content_share" {
+  name               = "${var.resource_name_prefix}-ss-moodle-content"
+  storage_account_id = module.stack.file_storage_account_id
+  quota              = var.moodle_max_data_storage_size_in_gb
+}
+
+resource "azurerm_role_assignment" "moodle_content_share" {
+  scope                = azurerm_storage_share.moodle_content_share.id
+  role_definition_name = "Storage File Data SMB Share Elevated Contributor"
+  principal_type       = "ServicePrincipal"
+  principal_id         = module.web_app_moodle["primary"].web_app_id
+}
+
 module "web_app_moodle" {
   for_each = local.moodle_instance_resource_naming
 
@@ -119,6 +132,17 @@ module "web_app_moodle" {
     "BASIC_AUTH_USER"                  = var.basic_auth_user
     "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
+
+  storage_mounts = {
+    "moodledata" = {
+      type          = "AzureFiles"
+      account_name  = module.stack.file_storage_account_name
+      share_name    = azurerm_storage_share.moodle_content_share.name
+      mount_path    = "/var/www/moodledata_share"
+      mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770" # Make www-data owner of the mount
+    }
+  }
+  storage_access_key = module.stack.file_storage_access_key
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db
