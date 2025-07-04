@@ -16,6 +16,13 @@ resource "azurerm_linux_function_app" "function_app" {
     health_check_path                 = var.health_check_path
     health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
     vnet_route_all_enabled            = true
+    application_stack {
+      docker {
+        image_name   = var.docker_image_name
+        image_tag    = "latest"
+        registry_url = "https://${var.acr_name}.azurecr.io"
+      }
+    }
     app_service_logs {
       disk_quota_mb         = 25
       retention_period_days = 1
@@ -24,12 +31,10 @@ resource "azurerm_linux_function_app" "function_app" {
   }
 
   app_settings = {
-    docker_registry_url                   = "https://${var.acr_name}.azurecr.io"
-    docker_image_name                     = var.docker_image_name
-    APPLICATIONINSIGHTS_CONNECTION_STRING = var.appinsights_connection_string
-    FUNCTIONS_WORKER_RUNTIME              = "dotnet-isolated"
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = false
-    public_network_access_enabled         = false
+    "DOCKER_REGISTRY_SERVER_URL"            = "https://${var.acr_name}.azurecr.io"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
+    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
   }
 
 
