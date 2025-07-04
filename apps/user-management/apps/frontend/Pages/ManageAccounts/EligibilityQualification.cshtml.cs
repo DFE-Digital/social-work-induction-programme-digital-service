@@ -42,12 +42,6 @@ public class EligibilityQualification(
         }
 
         createAccountJourneyService.SetIsRecentlyQualified(IsRecentlyQualified);
-        if (FromChangeLink)
-        {
-            return Redirect(IsRecentlyQualified is false
-                ? linkGenerator.EligibilityFundingNotAvailableChange()
-                : linkGenerator.EligibilityFundingAvailableChange());
-        }
 
         return Redirect(IsRecentlyQualified is false
             ? linkGenerator.EligibilityFundingNotAvailable()
@@ -58,11 +52,5 @@ public class EligibilityQualification(
     {
         FromChangeLink = true;
         return OnGet();
-    }
-
-    public async Task<IActionResult> OnPostChangeAsync()
-    {
-        FromChangeLink = true;
-        return await OnPostAsync();
     }
 }
