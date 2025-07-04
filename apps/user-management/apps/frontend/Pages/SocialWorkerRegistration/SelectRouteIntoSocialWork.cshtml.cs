@@ -48,4 +48,16 @@ public class SelectRouteIntoSocialWork(
 
         return Redirect(linkGenerator.SocialWorkerRegistrationCheckYourAnswers());
     }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
+    }
 }

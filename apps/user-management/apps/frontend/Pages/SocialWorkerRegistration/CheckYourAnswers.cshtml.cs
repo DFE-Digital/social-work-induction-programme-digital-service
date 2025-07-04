@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -17,8 +18,6 @@ public class CheckYourAnswers(
     IAuthServiceClient authServiceClient
 ) : BasePageModel
 {
-    public string ChangeDetailsLink { get; set; } = linkGenerator.SocialWorkerRegistration(); // TODO update this to relevant change link per row
-
     [Display(Name = "Date of birth")] public string? DateOfBirth { get; set; }
 
     [Display(Name = "What is your sex?")] public UserSex? UserSex { get; set; }
@@ -53,6 +52,8 @@ public class CheckYourAnswers(
     [Display(Name = "What entry route into social work did you take?")]
     public string? OtherRouteIntoSocialWork { get; set; }
 
+    public EscwRegisterChangeLinks ChangeDetailsLinks { get; set; } = null!;
+
     /// <summary>
     /// Action for confirming user details
     /// </summary>
@@ -64,6 +65,8 @@ public class CheckYourAnswers(
         var personId = authServiceClient.HttpContextService.GetPersonId();
 
         var registerModel = await registerSocialWorkerJourneyService.GetRegisterSocialWorkerJourneyModelAsync(personId);
+
+        ChangeDetailsLinks = registerSocialWorkerJourneyService.GetEscwRegisterChangeLinks(registerModel?.EthnicGroup);
 
         DateOfBirth = registerModel?.DateOfBirth?.ToString("d MMMM yyyy");
         UserSex = registerModel?.UserSex;

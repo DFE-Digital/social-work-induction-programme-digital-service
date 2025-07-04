@@ -96,4 +96,30 @@ public class SelectEthnicGroupIndexPageTests : SocialWorkerRegistrationPageTestB
 
         VerifyAllNoOtherCalls();
     }
+
+    [Fact]
+    public async Task OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
+
+        // Act
+        var result = await Sut.OnGetChangeAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-sex-and-gender-identity");
+        Sut.FromChangeLink.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
+    }
 }

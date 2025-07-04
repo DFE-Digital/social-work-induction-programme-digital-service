@@ -46,6 +46,20 @@ public class SelectEthnicGroupAsian(
         await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupAsianAsync(personId, SelectedEthnicGroupAsian);
         await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupAsianAsync(personId, OtherEthnicGroupAsian);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectDisability());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

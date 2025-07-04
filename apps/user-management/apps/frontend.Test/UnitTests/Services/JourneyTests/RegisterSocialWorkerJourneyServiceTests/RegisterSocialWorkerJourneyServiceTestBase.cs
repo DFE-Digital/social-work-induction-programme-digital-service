@@ -39,7 +39,7 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
         MockAccountService = new();
         MockEthnicGroupService = new();
 
-        Sut = new(httpContextAccessor, MockAccountService.Object);
+        Sut = new(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator());
     }
 
     private protected void VerifyAllNoOtherCall()

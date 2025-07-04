@@ -43,6 +43,20 @@ public class SelectHighestQualification(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetHighestQualificationAsync(personId, SelectedQualification);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYear());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }
