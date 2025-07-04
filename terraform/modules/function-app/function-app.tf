@@ -35,6 +35,8 @@ resource "azurerm_linux_function_app" "function_app" {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
+    "DOCKER_REGISTRY_SERVER_USERNAME"       = ""
+    "DOCKER_REGISTRY_SERVER_PASSWORD"       = ""
   }
 
 
