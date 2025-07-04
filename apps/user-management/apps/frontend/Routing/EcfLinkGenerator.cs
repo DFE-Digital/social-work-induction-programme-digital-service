@@ -119,9 +119,7 @@ public abstract class EcfLinkGenerator(
     public string EligibilityQualification() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification");
     public string EligibilityQualificationChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification", handler: "Change");
     public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
-    public string EligibilityFundingNotAvailableChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable", handler: "Change");
     public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
-    public string EligibilityFundingAvailableChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable", handler: "Change");
     public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
 
     // SWE registration links

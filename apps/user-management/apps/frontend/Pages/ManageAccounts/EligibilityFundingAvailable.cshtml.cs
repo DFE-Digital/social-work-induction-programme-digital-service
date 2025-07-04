@@ -13,20 +13,27 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class EligibilityFundingAvailable(
     EcfLinkGenerator linkGenerator,
     ICreateAccountJourneyService createAccountJourneyService
-    ) : BasePageModel
+) : BasePageModel
 {
     public string? NextPagePath { get; set; }
+
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.EligibilityQualification();
         var accountDetails = createAccountJourneyService.GetAccountDetails();
-        NextPagePath = FromChangeLink && accountDetails?.SocialWorkEnglandNumber is not null ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails();
-        return Page();
-    }
+        if (accountDetails?.SocialWorkEnglandNumber is null)
+        {
+            NextPagePath = linkGenerator.AddAccountDetails();
+        }
+        else if (createAccountJourneyService.GetProgrammeStartDate() is null)
+        {
+            NextPagePath = linkGenerator.SocialWorkerProgrammeDates();
+        }
+        else
+        {
+            NextPagePath = linkGenerator.ConfirmAccountDetails();
+        }
 
-    public PageResult OnGetChange()
-    {
-        FromChangeLink = true;
-        return OnGet();
+        return Page();
     }
 }

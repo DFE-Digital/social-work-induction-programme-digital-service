@@ -38,37 +38,20 @@ public class EligibilityAgencyWorker(
             return Page();
         }
 
-        var previousIsAgencyWorkerValue = createAccountJourneyService.GetIsAgencyWorker();
         createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
 
         if (IsAgencyWorker is true)
         {
             createAccountJourneyService.SetIsRecentlyQualified(null);
-            if (FromChangeLink)
-            {
-                if (previousIsAgencyWorkerValue == true)
-                {
-                    return Redirect(linkGenerator.ConfirmAccountDetails());
-                }
-                return Redirect(linkGenerator.EligibilityFundingNotAvailableChange());
-            }
             return Redirect(linkGenerator.EligibilityFundingNotAvailable());
         }
 
-        return Redirect(FromChangeLink
-            ? linkGenerator.EligibilityQualificationChange()
-            : linkGenerator.EligibilityQualification());
+        return Redirect(linkGenerator.EligibilityQualification());
     }
 
     public PageResult OnGetChange()
     {
         FromChangeLink = true;
         return OnGet();
-    }
-
-    public async Task<IActionResult> OnPostChangeAsync()
-    {
-        FromChangeLink = true;
-        return await OnPostAsync();
     }
 }
