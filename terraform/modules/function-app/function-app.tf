@@ -52,9 +52,9 @@ resource "azurerm_linux_function_app" "function_app" {
   tags = var.tags
 }
 
-# resource "azurerm_role_assignment" "acr_pull" {
-#   scope                = var.acr_id
-#   role_definition_name = "AcrPull"
-#   principal_type       = "ServicePrincipal"
-#   principal_id         = azurerm_linux_function_app.function_app.identity.0.principal_id
-# }
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                = var.acr_id
+  role_definition_name = "AcrPull"
+  principal_type       = "ServicePrincipal"
+  principal_id         = azurerm_linux_function_app.function_app.identity.0.principal_id
+}
