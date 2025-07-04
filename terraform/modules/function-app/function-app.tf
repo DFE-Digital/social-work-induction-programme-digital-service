@@ -37,6 +37,7 @@ resource "azurerm_linux_function_app" "function_app" {
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
     "DOCKER_REGISTRY_SERVER_USERNAME"       = ""
     "DOCKER_REGISTRY_SERVER_PASSWORD"       = ""
+    DOCKER_ENABLE_CI                        = "false" # Github will control CI, not Azure
   }
 
 
