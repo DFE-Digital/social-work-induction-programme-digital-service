@@ -21,7 +21,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.DateOfBirth)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.DateOfBirth</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.DateOfBirth)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.DateOfBirthChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.DateOfBirth)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -34,7 +34,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.UserSex)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.UserSex.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.UserSex)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.UserSexChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.UserSex)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -47,7 +47,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.GenderMatchesSexAtBirth)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.GenderMatchesSexAtBirth.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.GenderMatchesSexAtBirth)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.GenderIdentityChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.GenderMatchesSexAtBirth)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -60,7 +60,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherGenderIdentity)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.OtherGenderIdentity</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherGenderIdentity)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.GenderIdentityChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherGenderIdentity)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -73,7 +73,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.EthnicGroup)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.EthnicGroup.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.EthnicGroup)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.EthnicGroupChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.EthnicGroup)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -86,7 +86,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherEthnicGroup)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.OtherEthnicGroup</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherEthnicGroup)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.EthnicGroupingChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherEthnicGroup)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -99,7 +99,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Disability)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Disability.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.Disability)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.DisabilityChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.Disability)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -112,7 +112,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandRegistrationDate)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.SocialWorkEnglandRegistrationDate</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandRegistrationDate)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.SocialWorkEnglandRegistrationChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandRegistrationDate)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -125,7 +125,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.HighestQualification)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.HighestQualification.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.HighestQualification)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.HighestQualificationChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.HighestQualification)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -138,7 +138,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkQualificationEndYear)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.SocialWorkQualificationEndYear</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkQualificationEndYear)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.SocialWorkQualificationEndYearChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkQualificationEndYear)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -151,7 +151,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.RouteIntoSocialWork)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.RouteIntoSocialWork.GetDisplayName()</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.RouteIntoSocialWork)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.RouteIntoSocialWorkChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.RouteIntoSocialWork)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -164,7 +164,7 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.OtherRouteIntoSocialWork)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.OtherRouteIntoSocialWork</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherRouteIntoSocialWork)">
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.RouteIntoSocialWorkChangeLink" visually-hidden-text="@Html.DisplayNameFor(model => model.OtherRouteIntoSocialWork)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>

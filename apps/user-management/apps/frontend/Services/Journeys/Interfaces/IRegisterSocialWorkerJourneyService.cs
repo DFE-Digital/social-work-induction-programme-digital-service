@@ -29,6 +29,8 @@ public interface IRegisterSocialWorkerJourneyService
     Task SetRouteIntoSocialWorkAsync(Guid personId, RouteIntoSocialWork? routeIntoSocialWork);
     Task<string?> GetOtherRouteIntoSocialWorkAsync(Guid personId);
     Task SetOtherRouteIntoSocialWorkAsync(Guid personId, string? otherRouteIntoSocialWork);
+
+    EscwRegisterChangeLinks GetEscwRegisterChangeLinks(EthnicGroup? ethnicGroup);
     void ResetRegisterSocialWorkerJourneyModel(Guid personId);
     Task<Account> CompleteJourneyAsync(Guid personId);
 }

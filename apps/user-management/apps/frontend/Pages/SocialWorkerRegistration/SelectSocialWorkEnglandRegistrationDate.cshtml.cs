@@ -61,6 +61,20 @@ public class SelectSocialWorkEnglandRegistrationDate(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetSocialWorkEnglandRegistrationDateAsync(personId, socialWorkEnglandRegistrationDate);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectHighestQualification());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectHighestQualification());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

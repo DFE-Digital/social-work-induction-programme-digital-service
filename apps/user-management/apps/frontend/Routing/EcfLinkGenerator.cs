@@ -135,15 +135,28 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationEthnicGroupBlack() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish");
     public string SocialWorkerRegistrationEthnicGroupOther() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup");
     public string SocialWorkerRegistrationSelectDisability() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability");
-
-    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() =>
-        GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
-
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
     public string SocialWorkerRegistrationSelectHighestQualification() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification");
     public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYear() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear");
     public string SocialWorkerRegistrationSelectRouteIntoSocialWork() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork");
     public string SocialWorkerRegistrationCheckYourAnswers() => GetRequiredPathByPage("/SocialWorkerRegistration/CheckYourAnswers");
     public string SocialWorkerRegistrationRegistrationComplete() => GetRequiredPathByPage("/SocialWorkerRegistration/RegistrationComplete");
+
+    // SWE registration change links
+    public string SocialWorkerRegistrationDateOfBirthChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDateOfBirth", handler: "Change");
+    public string SocialWorkerRegistrationSexAndGenderIdentityChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSexAndGenderIdentity", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/Index", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupWhiteChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/White", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupMixedChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/MixedOrMultipleEthnicGroups", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupAsianChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/AsianOrAsianBritish", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupBlackChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish", handler: "Change");
+    public string SocialWorkerRegistrationEthnicGroupOtherChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup", handler: "Change");
+    public string SocialWorkerRegistrationSelectDisabilityChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability", handler: "Change");
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDateChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate", handler: "Change");
+    public string SocialWorkerRegistrationSelectHighestQualificationChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification", handler: "Change");
+    public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYearChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear", handler: "Change");
+    public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
+
 
     protected abstract string GetRequiredPathByPage(
         string page,

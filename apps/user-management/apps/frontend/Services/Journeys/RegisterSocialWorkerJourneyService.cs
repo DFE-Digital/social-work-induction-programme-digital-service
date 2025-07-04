@@ -1,6 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -10,14 +11,17 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAccountService _accountService;
+    private readonly EcfLinkGenerator _ecfLinkGenerator;
     public IEthnicGroupService EthnicGroups { get; init; }
 
     public RegisterSocialWorkerJourneyService(
         IHttpContextAccessor httpContextAccessor,
-        IAccountService accountService)
+        IAccountService accountService,
+        EcfLinkGenerator ecfLinkGenerator)
     {
         _httpContextAccessor = httpContextAccessor;
         _accountService = accountService;
+        _ecfLinkGenerator = ecfLinkGenerator;
         EthnicGroups = new EthnicGroupService(this);
     }
 
@@ -198,6 +202,32 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
             ?? throw AccountNotFoundException(personId);
         registerSocialWorkerJourneyModel.OtherRouteIntoSocialWork = otherRouteIntoSocialWorkAsync;
         SetRegisterSocialWorkerJourneyModel(personId, registerSocialWorkerJourneyModel);
+    }
+
+    public EscwRegisterChangeLinks GetEscwRegisterChangeLinks(EthnicGroup? ethnicGroup)
+    {
+        return new EscwRegisterChangeLinks
+        {
+            DateOfBirthChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationDateOfBirthChange(),
+            UserSexChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSexAndGenderIdentityChange(),
+            GenderIdentityChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSexAndGenderIdentityChange(),
+            EthnicGroupChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupChange(),
+            EthnicGroupingChangeLink = ethnicGroup switch
+            {
+                EthnicGroup.White => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupWhiteChange(),
+                EthnicGroup.MixedOrMultipleEthnicGroups => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupMixedChange(),
+                EthnicGroup.AsianOrAsianBritish => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupAsianChange(),
+                EthnicGroup.BlackAfricanCaribbeanOrBlackBritish => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupBlackChange(),
+                EthnicGroup.OtherEthnicGroup => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupOtherChange(),
+                EthnicGroup.PreferNotToSay => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupChange(),
+                _ => _ecfLinkGenerator.SocialWorkerRegistrationEthnicGroupChange()
+            },
+            DisabilityChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSelectDisabilityChange(),
+            SocialWorkEnglandRegistrationChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDateChange(),
+            HighestQualificationChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSelectHighestQualificationChange(),
+            SocialWorkQualificationEndYearChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSelectSocialWorkQualificationEndYearChange(),
+            RouteIntoSocialWorkChangeLink = _ecfLinkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWorkChange()
+        };
     }
 
     public void ResetRegisterSocialWorkerJourneyModel(Guid personId)

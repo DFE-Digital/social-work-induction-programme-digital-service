@@ -43,6 +43,11 @@ public class Index(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupAsync(personId, SelectedEthnicGroup);
 
+        if (FromChangeLink)
+        {
+            return Redirect(linkGenerator.SocialWorkerRegistrationCheckYourAnswers());
+        }
+
         return SelectedEthnicGroup switch
         {
             EthnicGroup.White => Redirect(linkGenerator.SocialWorkerRegistrationEthnicGroupWhite()),
@@ -53,5 +58,17 @@ public class Index(
             EthnicGroup.PreferNotToSay => Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability()),
             _ => Page()
         };
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

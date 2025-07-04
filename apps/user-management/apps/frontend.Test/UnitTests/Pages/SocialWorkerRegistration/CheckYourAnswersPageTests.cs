@@ -1,8 +1,7 @@
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Pages.SocialWorkerRegistration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
-using Dfe.Sww.Ecf.Frontend.Validation.RegisterSocialWorker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,9 +25,11 @@ public class CheckYourAnswersPageTests : SocialWorkerRegistrationPageTestBase
         // Arrange
         var account = AccountBuilder.Build();
         var journeyModel = new RegisterSocialWorkerJourneyModel(account);
+        var changeLinks = GetEscwRegisterChangeLinksFaker.Generate();
 
         MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
         MockRegisterSocialWorkerJourneyService.Setup(x => x.GetRegisterSocialWorkerJourneyModelAsync(PersonId)).ReturnsAsync(journeyModel);
+        MockRegisterSocialWorkerJourneyService.Setup(x => x.GetEscwRegisterChangeLinks(account.EthnicGroup)).Returns(changeLinks);
 
         // Act
         var result = await Sut.OnGetAsync();
@@ -53,6 +54,7 @@ public class CheckYourAnswersPageTests : SocialWorkerRegistrationPageTestBase
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.GetRegisterSocialWorkerJourneyModelAsync(PersonId), Times.Once);
+        MockRegisterSocialWorkerJourneyService.Verify(x => x.GetEscwRegisterChangeLinks(account.EthnicGroup), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
