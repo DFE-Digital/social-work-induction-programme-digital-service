@@ -2,7 +2,7 @@
 
 This section gives an overview of the Github and Terraform variables used within the DevOps processes.
 
-See the [Terraform best practices page](https://github.com/DFE-Digital/social-work-induction-programme-digital-service/tree/{branch}/docs/devops/Terraform%20Best%20Practices.md) for advice on when to use Github Actions or Terraform to store variables.
+See the [Terraform / Github Actions guidelines page](https://github.com/DFE-Digital/social-work-induction-programme-digital-service/blob/main/docs/devops/Terraform%20and%20GA%20Guidelines.md) for advice on when to use Github Actions or Terraform to store variables.
 
 ## Github Variables
 
