@@ -70,6 +70,8 @@ public class KeysController(
 
         cache.Set("OneLoginJWKS", jwks, TimeSpan.FromMinutes(60));
 
+        Response.Headers.Add("kid", toInclude.First().Thumbprint);
+
         return Ok(jwks);
     }
 
