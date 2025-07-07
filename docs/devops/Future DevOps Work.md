@@ -2,7 +2,9 @@
 
 This section outlines future DevOps work to be carried out. Items should be crossed out / removed as they are delivered.
 
-## General Work Items
+## DevOps
+
+### General Work Items
 
 1. Branching and releasing. A branching strategy needs to be decided upon (e.g. Gitflow, Github Flow, trunk-based etc). Once this has been decided, the following will need to be implemented:
    - Automatic creation of builds from candidate release branches on PR.
@@ -26,7 +28,11 @@ This section outlines future DevOps work to be carried out. Items should be cros
 
 10. The workflows don't currently cope with redeploying the same image. (The app version is already correct, so doesn't wait for container restart.) Might want to implement an optional minimum wait time before checking the version endpoint.
 
-## Pre-prod / Prod Work Items
+11. Secrets rotation.
+
+12. Investigate Microsoft Edge basic auth solutions, possibly involving subdomains and cookies.
+
+### Pre-prod / Prod Work Items
 
 Issues to be addressed for pre-prod / production.
 
