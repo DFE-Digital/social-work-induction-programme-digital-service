@@ -12,10 +12,11 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {
     # No application_stack needed, it's defined in the Docker image
-    always_on                         = true
-    health_check_path                 = var.health_check_path
-    health_check_eviction_time_in_min = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
-    vnet_route_all_enabled            = true
+    always_on                               = true
+    health_check_path                       = var.health_check_path
+    health_check_eviction_time_in_min       = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
+    vnet_route_all_enabled                  = true
+    container_registry_use_managed_identity = true
     application_stack {
       docker {
         image_name   = var.docker_image_name
