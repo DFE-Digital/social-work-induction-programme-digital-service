@@ -39,6 +39,7 @@ moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true" # Should be false for prod environment
   "MOODLE_SWITCH_OFF_OAUTH"         = "true" # Should be false for prod environment
   "BASIC_AUTH_ENABLED"              = "true" # Should be false for prod environment
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 
 user_management_app_settings = {
