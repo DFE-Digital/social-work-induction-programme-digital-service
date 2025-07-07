@@ -50,4 +50,3 @@ jobs:
       requires-container-registry-login: true
       function-app-name: ${{ needs.build-and-publish-notifications-api-image.outputs.dev-resource-name-prefix }}-fa-notification-service
       image-tag: ${{ needs.build-and-publish-notifications-api-image.outputs.docker-image-tag }}
-      #version-endpoint-path: /api/accounts/version
