@@ -1,6 +1,6 @@
-# Future DevOps Work
+# Future Work
 
-This section outlines future DevOps work to be carried out. Items should be crossed out / removed as they are delivered.
+This document outlines future work to be carried out. Items should be crossed out / removed as they are delivered.
 
 ## DevOps
 
