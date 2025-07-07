@@ -2,8 +2,8 @@
 
 ## Components Overview
 
-| Component | Description | Azure Application Service Plan | Workflows | Workflows |
-| -------- | ------- | --------- | ------- | ------ |
+| Component | Description | Azure Application Service Plan | Workflows |
+| -------- | ------- | --------- | ------- |
 | Infrastructure | Uses Terraform to provide the Azure infrastructure / resources for a specific environment | - | terraform.yaml / terraform-destroy.yaml |
 | Proxy service | Used as an SSH proxy to connect through to the database and perform migrations / updates | Maintenance service plan | build-and-optionally-deploy-proxy-service.yml / deploy-proxy-service.yml |
 | Auth service | Uses Onelogin to authenticate users in User Management | Services service plan | build-and-optionally-deploy-auth-service.yml / deploy-auth-service.yml |
