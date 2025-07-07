@@ -1,14 +1,29 @@
 @page "{id:Guid}"
 @using System.Globalization
 @using Dfe.Sww.Ecf.Frontend.Models
+@using GovUk.Frontend.AspNetCore
 @model ViewAccountDetails
 
 @{
     Model.Title = "View account details ";
+
+    var notificationType = (NotificationBannerType)(TempData["NotificationType"] ?? NotificationBannerType.Default);
+    var notificationHeader = TempData["NotificationHeader"]?.ToString();
+    var notificationMessage = TempData["NotificationMessage"]?.ToString();
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+
+        @if (!string.IsNullOrWhiteSpace(notificationHeader) || !string.IsNullOrWhiteSpace(notificationMessage))
+        {
+            <govuk-notification-banner type="@notificationType">
+                <p class="govuk-notification-banner__heading">
+                    @notificationHeader
+                </p>
+                <p class="govuk-body">@notificationMessage</p>
+            </govuk-notification-banner>
+        }
 
         <h1 class="govuk-heading-l">
             @Model.Account.FullName

@@ -16,8 +16,6 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
 public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAccountDetails>
 {
-    private ConfirmAccountDetails Sut { get; }
-
     public ConfirmAccountDetailsShould()
     {
         Sut = new ConfirmAccountDetails(
@@ -31,12 +29,14 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         };
     }
 
+    private ConfirmAccountDetails Sut { get; }
+
     [Fact]
     public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
         var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
-        var expectedChangeLinks = new AccountChangeLinks {};
+        var expectedChangeLinks = new AccountChangeLinks();
         var expectedAccountTypes = ImmutableList.Create(AccountType.EarlyCareerSocialWorker);
         var expectedAccountLabels = new AccountLabels
         {
@@ -129,8 +129,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         Sut.IsUpdatingAccount.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + account.Id);
-        Sut.ChangeDetailsLink.Should()
-            .Be("/manage-accounts/edit-account-details/" + account.Id + "?handler=Change");
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
@@ -175,14 +173,9 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         response.Should().NotBeNull();
         response!.Url.Should().Be("/manage-accounts");
 
-        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
-        notificationType.Should().Be(NotificationBannerType.Success);
-
-        var notificationHeader = TempData["NotificationHeader"]?.ToString();
-        notificationHeader.Should().Be("New user added");
-
-        var notificationMessage = TempData["NotificationMessage"]?.ToString();
-        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("New user added");
+        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
@@ -222,11 +215,11 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountBuilder.Build();
-
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
         MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(AccountDetails.FromAccount(account));
 
         // Act
         var result = await Sut.OnPostUpdateAsync(account.Id);
@@ -237,7 +230,12 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("User details updated");
+        TempData["NotificationMessage"].Should().Be($"An email has been sent to {account.FullName}, {account.Email}");
+
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }

@@ -26,8 +26,7 @@ public class ConfirmAccountDetails(
     [Display(Name = "Who do you want to add?")]
     public string? UserType { get; set; }
 
-    [Display(Name = "Account type")]
-    public IList<AccountType>? AccountTypes { get; set; }
+    [Display(Name = "Account type")] public IList<AccountType>? AccountTypes { get; set; }
 
     [Display(Name = "Are they registered with Social Work England?")]
     public string? RegisteredWithSocialWorkEngland { get; set; }
@@ -42,28 +41,27 @@ public class ConfirmAccountDetails(
     public string? Qualified { get; set; }
 
     /// <summary>
-    /// First Name
+    ///     First Name
     /// </summary>
     [Display(Name = "First name")]
     public string? FirstName { get; set; }
 
-    [Display(Name = "Middle names")]
-    public string? MiddleNames { get; set; }
+    [Display(Name = "Middle names")] public string? MiddleNames { get; set; }
 
     /// <summary>
-    /// Last Name
+    ///     Last Name
     /// </summary>
     [Display(Name = "Last name")]
     public string? LastName { get; set; }
 
     /// <summary>
-    /// Email
+    ///     Email
     /// </summary>
     [Display(Name = "Email address")]
     public string? Email { get; set; }
 
     /// <summary>
-    /// Social Work England number
+    ///     Social Work England number
     /// </summary>
     [Display(Name = "Social Work England registration number")]
     public string? SocialWorkEnglandNumber { get; set; }
@@ -74,16 +72,14 @@ public class ConfirmAccountDetails(
     [Display(Name = "What is their expected programme end date?")]
     public string? ProgrammeEndDate { get; set; }
 
-    public string? ChangeDetailsLink { get; set; }
-
-    public AccountChangeLinks ChangeDetailsLinks { get; set; } = null!;
+    public AccountChangeLinks ChangeDetailsLinks { get; set; } = new();
 
     public bool IsUpdatingAccount { get; set; }
 
     public bool? IsStaff { get; set; }
 
     /// <summary>
-    /// Action for confirming user details
+    ///     Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
@@ -117,13 +113,9 @@ public class ConfirmAccountDetails(
     public async Task<IActionResult> OnGetUpdateAsync(Guid id)
     {
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (updatedAccountDetails is null)
-        {
-            return NotFound();
-        }
+        if (updatedAccountDetails is null) return NotFound();
 
         BackLinkPath = linkGenerator.EditAccountDetails(id);
-        ChangeDetailsLink = linkGenerator.EditAccountDetailsChange(id);
 
         IsUpdatingAccount = true;
         Id = id;
@@ -137,16 +129,13 @@ public class ConfirmAccountDetails(
     }
 
     /// <summary>
-    /// Action for confirming user details
+    ///     Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public async Task<IActionResult> OnPostAsync()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
-        if (accountDetails is null)
-        {
-            return BadRequest();
-        }
+        if (accountDetails is null) return BadRequest();
 
         var moodleRequest = new CreateMoodleUserRequest
         {
@@ -156,10 +145,7 @@ public class ConfirmAccountDetails(
             LastName = accountDetails.LastName
         };
         var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-        if (response.Successful == false)
-        {
-            return BadRequest();
-        }
+        if (!response.Successful) return BadRequest();
 
         createAccountJourneyService.SetExternalUserId(response.Id);
 
@@ -174,12 +160,16 @@ public class ConfirmAccountDetails(
 
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
     {
-        if (!await editAccountJourneyService.IsAccountIdValidAsync(id))
-        {
-            return NotFound();
-        }
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id)) return NotFound();
+
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null) return BadRequest();
 
         await editAccountJourneyService.CompleteJourneyAsync(id);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = "User details updated";
+        TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
         return Redirect(linkGenerator.ViewAccountDetails(id));
     }
