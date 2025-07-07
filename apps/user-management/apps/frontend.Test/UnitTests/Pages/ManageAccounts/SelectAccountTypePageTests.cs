@@ -152,6 +152,7 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsRegisteredWithSocialWorkEngland()).Returns(true);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -165,6 +166,39 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
+            { AccountType.EarlyCareerSocialWorker }), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledFromChangeLinkAndIsStaffFalseAndRegisteredWithSocialWorkEnglandNotSet_RedirectsToEligibilityInformation()
+    {
+        // Arrange
+        Sut.IsStaff = false;
+        Sut.FromChangeLink = true;
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-information");
+        Sut.Handler.Should().Be("change");
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
             { AccountType.EarlyCareerSocialWorker }), Times.Once);
 
