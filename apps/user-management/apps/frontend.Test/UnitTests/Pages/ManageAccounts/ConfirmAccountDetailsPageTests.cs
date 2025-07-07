@@ -110,7 +110,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var account = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
-        var expectedChangeLinks = new AccountChangeLinks();
 
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
