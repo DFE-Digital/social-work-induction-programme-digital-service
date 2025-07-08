@@ -280,6 +280,7 @@ builder
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
+            options.AddSigningCertificate(signingCert);
             //options.AddSigningCertificate(signingCert);
             // --- Create a custom JsonWebKey for SIGNING ---
             // Extract RSA public key parameters
