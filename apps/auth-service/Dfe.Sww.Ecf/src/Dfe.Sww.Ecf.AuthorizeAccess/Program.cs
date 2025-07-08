@@ -284,9 +284,8 @@ builder
             // if anything other than kty, e, use, kid and n fields are present in the key.
             options.AddSigningCertificate(signingCert);
 
-            certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
             var encryptionCert = certificateClient
-                .GetX509CertificateAsync(certName)
+                .GetX509CertificateAsync(builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName"))
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
