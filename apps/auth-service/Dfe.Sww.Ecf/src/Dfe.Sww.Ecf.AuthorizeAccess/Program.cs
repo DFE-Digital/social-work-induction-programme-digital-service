@@ -284,6 +284,10 @@ builder
             // Onelogin gives this error: "Failed to fetch or parse JWKS to verify signature of private_key_jwt"
             // if anything other than kty, e, use, kid and n fields are present in the key.
             //options.AddSigningCertificate(signingCert);
+
+            var rsa = signingCert.GetRSAPrivateKey() ?? 
+              throw new InvalidOperationException("Signing certificate does not have RSA private key.");
+
             // Export both public and private parameters for the JsonWebKey
             var keyParameters = rsa.ExportParameters(true); // true = include private key
             var publicParameters = rsa.ExportParameters(false); // false = public only
