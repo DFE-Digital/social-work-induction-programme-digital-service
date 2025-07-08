@@ -483,6 +483,7 @@ app.UseCsp(csp =>
     }
 });
 
+app.UseMiddleware<JwksFilterMiddleware>();
 app.UseMiddleware<AppendSecurityResponseHeadersMiddleware>();
 
 app.UseStaticFiles();
