@@ -274,7 +274,7 @@ builder
 
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
-            var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
+            var certName = builder.Configuration.GetRequiredValue(oneLoginConfig.CertificateName);
             var signingCert = certificateClient
                 .GetX509CertificateAsync(certName)
                 .ConfigureAwait(false)
@@ -283,35 +283,8 @@ builder
 
             // Onelogin gives this error: "Failed to fetch or parse JWKS to verify signature of private_key_jwt"
             // if anything other than kty, e, use, kid and n fields are present in the key.
-            //options.AddSigningCertificate(signingCert);
+            options.AddSigningCertificate(signingCert);
 
-            var rsa = signingCert.GetRSAPrivateKey() ?? 
-              throw new InvalidOperationException("Signing certificate does not have RSA private key.");
-
-            // Export both public and private parameters for the JsonWebKey
-            var keyParameters = rsa.ExportParameters(true); // true = include private key
-            var publicParameters = rsa.ExportParameters(false); // false = public only
-            
-            // Create JsonWebKey with private key material for signing but only public fields for JWKS
-            var signingJwk = new JsonWebKey
-            {
-                Kid = signingCert.Thumbprint,
-                Kty = JsonWebAlgorithmsKeyTypes.RSA,
-                Use = JsonWebKeyUseNames.Sig,
-                N = Base64UrlEncoder.Encode(publicParameters.Modulus),
-                E = Base64UrlEncoder.Encode(publicParameters.Exponent),
-                // Add private key parameters for signing (these won't appear in JWKS)
-                D = Base64UrlEncoder.Encode(keyParameters.D),
-                P = Base64UrlEncoder.Encode(keyParameters.P),
-                Q = Base64UrlEncoder.Encode(keyParameters.Q),
-                DP = Base64UrlEncoder.Encode(keyParameters.DP),
-                DQ = Base64UrlEncoder.Encode(keyParameters.DQ),
-                QI = Base64UrlEncoder.Encode(keyParameters.InverseQ)
-            };
-            
-            // Add the JsonWebKey for signing operations
-            options.AddSigningKey(signingJwk); 
-                           
             certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
             var encryptionCert = certificateClient
                 .GetX509CertificateAsync(certName)
