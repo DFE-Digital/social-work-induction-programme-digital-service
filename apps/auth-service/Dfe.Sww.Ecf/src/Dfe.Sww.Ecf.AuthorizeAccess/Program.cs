@@ -269,6 +269,22 @@ builder
             .EnableUserinfoEndpointPassthrough()
             .EnableStatusCodePagesIntegration();
 
+        options.AddEventHandler<OpenIddictServerEvents.ProcessCryptographyRequestContext>(builder =>
+        {
+            builder.UseInlineHandler(context =>
+            {
+                // Onelogin gives this error: "Failed to fetch or parse JWKS to verify signature of private_key_jwt"
+                // if anything other than kty, e, use, kid and n fields are present in the key.
+                foreach (var jwk in context.Jwks.Keys)
+                {
+                    jwk.Alg = null;
+                    jwk.X5t = null;
+                    jwk.X5c = null;
+                }
+                return default;
+            });
+        });
+
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
             var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
