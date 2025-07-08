@@ -39,6 +39,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
+using OpenIddict.Server.AspNetCore;
+using Microsoft.IdentityModel.Tokens.Json
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -270,22 +272,6 @@ builder
             .EnableUserinfoEndpointPassthrough()
             .EnableStatusCodePagesIntegration();
 
-        options.AddEventHandler<OpenIddictServerEvents.ProcessCryptographyRequestContext>(builder =>
-        {
-            builder.UseInlineHandler(context =>
-            {
-                // Onelogin gives this error: "Failed to fetch or parse JWKS to verify signature of private_key_jwt"
-                // if anything other than kty, e, use, kid and n fields are present in the key.
-                foreach (var jwk in context.Jwks.Keys)
-                {
-                    jwk.Alg = null;
-                    jwk.X5t = null;
-                    jwk.X5c = null;
-                }
-                return default;
-            });
-        });
-
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
             var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
@@ -294,8 +280,32 @@ builder
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
-            options.AddSigningCertificate(signingCert);
+            //options.AddSigningCertificate(signingCert);
+            // --- Create a custom JsonWebKey for SIGNING ---
+            // Extract RSA public key parameters
+            var rsaSigningPublicKey = signingCert.GetRSAPublicKey() ??
+                                    throw new InvalidOperationException("Signing certificate is not RSA.");
+            var signingParameters = rsaSigningPublicKey.ExportParameters(false); // Export public parameters
 
+            // Onelogin gives this error: "Failed to fetch or parse JWKS to verify signature of private_key_jwt"
+            // if anything other than kty, e, use, kid and n fields are present in the key.
+            var signingJwk = new JsonWebKey
+            {
+                Kid = signingCert.Thumbprint, // Use thumbprint as Kid
+                Kty = JsonWebAlgorithmsKeyTypes.RSA,
+                Use = JsonWebKeyUseNames.Sig,
+                N = Base64UrlEncoder.Encode(signingParameters.Modulus),
+                E = Base64UrlEncoder.Encode(signingParameters.Exponent)
+                // IMPORTANT: DO NOT set Alg, X5t, X5c, KeyOps, Oth here.
+                // JsonWebKey by default will not serialize null properties.
+            };
+
+            // Add the signing certificate (private key) for signing operations
+            // AND specify the *public* JWK to be used in the JWKS endpoint.
+            options.AddSigningCertificate(signingCert)
+                .AddEphemeralSigningKey() // Use signingJwk for JWKS instead of full certificate details
+                .SetJsonWebKey(signingJwk); // This tells OpenIddict to use *this* JWK for the endpoint
+                
             certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
             var encryptionCert = certificateClient
                 .GetX509CertificateAsync(certName)
