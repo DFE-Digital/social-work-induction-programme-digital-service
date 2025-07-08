@@ -26,13 +26,25 @@ moodle_instances = {
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
+  "DATABASESEED__ORGANISATIONID"             = "00000000-0000-0000-0000-000000000001"
+  "DATABASESEED__ORGANISATIONNAME"             = "Test Organisation"
+  "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
+  "DATABASESEED__ROLEID"                       = 800
+  "DATABASESEED__ONELOGINSUBJECT"              = "urn:fdc:gov.uk:2022:KaCIMs1jlJNWz-TQ9Rq8McFXfBwy6JgYbsUNLIEpqKo"
+  "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
 one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
   "BASIC_AUTH_ENABLED"              = "true"
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"
 }
+moodle_max_data_storage_size_in_gb = 5
+storage_redundancy = "LRS"
+blob_storage_account_tier = "Standard"
+# Standard pay as you go HDD file share 
+file_storage_account_tier = "Standard"

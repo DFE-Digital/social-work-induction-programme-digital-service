@@ -64,10 +64,11 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenSelectedAccountTypesIsPopulated_RedirectsToAddAccountDetails()
+    public async Task OnPostAsync_WhenValidDataAndNotFromChangeLink_RedirectsToAddAccountDetails()
     {
         // Arrange
         Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+        Sut.FromChangeLink = false;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -81,5 +82,83 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(It.IsAny<List<AccountType>>()), Times.Once);
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenFromChangeLinkAndChangingFromAssessorToCoordinator_ClearSocialEnglandNumber()
+    {
+        // Arrange
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
+        Sut.FromChangeLink = true;
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes([AccountType.Assessor])
+            .WithSocialWorkEnglandNumber("12433")
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/confirm-account-details");
+        MockCreateAccountJourneyService.Verify(x =>
+                x.SetAccountDetails(
+                    It.Is<AccountDetails>(a =>
+                        a.FirstName == accountDetails.FirstName
+                        && a.LastName == accountDetails.LastName
+                        && a.Email == accountDetails.Email
+                        && a.SocialWorkEnglandNumber == null
+                        && a.IsStaff == accountDetails.IsStaff
+                        && a.Types == accountDetails.Types
+                    )
+                ),
+            Times.Once
+        );
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(It.IsAny<List<AccountType>>()), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenFromChangeLinkAndSelectedAccountTypeIncludesAssessor_FlagSocialEnglandNumberForCapture()
+    {
+        // Arrange
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+        Sut.FromChangeLink = true;
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes([AccountType.Coordinator])
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(It.IsAny<List<AccountType>>()), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

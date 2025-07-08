@@ -22,7 +22,7 @@ public class AccountBuilder
         _faker.RuleFor(
             a => a.SocialWorkEnglandNumber,
             (f, current) =>
-                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
+                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true || current.Types?.Contains(AccountType.Assessor) == true
                     ? f.Random.Number(1, 1000).ToString()
                     : null
         );
@@ -44,12 +44,13 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, f => f.Name.FirstName());
         _faker.RuleFor(a => a.EthnicGroupOther, f => f.PickRandom<EthnicGroupOther>());
         _faker.RuleFor(a => a.OtherEthnicGroupOther, f => f.Name.FirstName());
-        _faker.RuleFor(a => a.IsDisabled, f => f.PickRandom<Disability>());
+        _faker.RuleFor(a => a.Disability, f => f.PickRandom<Disability>());
         _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, f => DateOnly.FromDateTime(f.Date.Past()));
         _faker.RuleFor(a => a.HighestQualification, f => f.PickRandom<Qualification>());
         _faker.RuleFor(a => a.SocialWorkQualificationEndYear, f => f.Random.Number(1900, 2000));
         _faker.RuleFor(a => a.RouteIntoSocialWork, f => f.PickRandom<RouteIntoSocialWork>());
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, f => f.Random.Bool());
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
@@ -76,12 +77,13 @@ public class AccountBuilder
         _faker.RuleFor(a => a.OtherEthnicGroupBlack, _ => null);
         _faker.RuleFor(a => a.EthnicGroupOther, _ => null);
         _faker.RuleFor(a => a.OtherEthnicGroupOther, _ => null);
-        _faker.RuleFor(a => a.IsDisabled, _ => null);
+        _faker.RuleFor(a => a.Disability, _ => null);
         _faker.RuleFor(a => a.SocialWorkEnglandRegistrationDate, _ => null);
         _faker.RuleFor(a => a.HighestQualification, _ => null);
         _faker.RuleFor(a => a.SocialWorkQualificationEndYear, _ => null);
         _faker.RuleFor(a => a.RouteIntoSocialWork, _ => null);
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => null);
+        _faker.RuleFor(a => a.Types, _ => null);
         return this;
     }
 
@@ -132,7 +134,7 @@ public class AccountBuilder
         _faker.RuleFor(
             x => x.SocialWorkEnglandNumber,
             (_, current) =>
-                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true
+                current.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true || current.Types?.Contains(AccountType.Assessor) == true
                     ? socialWorkEnglandNumber
                     : null
         );
@@ -251,7 +253,7 @@ public class AccountBuilder
 
     public AccountBuilder WithIsDisabled(Disability isDisabled)
     {
-        _faker.RuleFor(a => a.IsDisabled, _ => isDisabled);
+        _faker.RuleFor(a => a.Disability, _ => isDisabled);
 
         return this;
     }
@@ -287,6 +289,13 @@ public class AccountBuilder
     public AccountBuilder WithOtherRouteIntoSocialWork(string otherRouteIntoSocialWork)
     {
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => otherRouteIntoSocialWork);
+
+        return this;
+    }
+
+    public AccountBuilder WithHasCompletedLoginAccountLinking(bool hasCompletedLoginAccountLinking)
+    {
+        _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, _ => hasCompletedLoginAccountLinking);
 
         return this;
     }

@@ -46,7 +46,18 @@ public class SelectRouteIntoSocialWork(
         await socialWorkerJourneyService.SetRouteIntoSocialWorkAsync(personId, SelectedRouteIntoSocialWork);
         await socialWorkerJourneyService.SetOtherRouteIntoSocialWorkAsync(personId, OtherRouteIntoSocialWork);
 
-        return Redirect(linkGenerator
-            .SocialWorkerRegistrationEthnicGroup()); // TODO update this check your answers page
+        return Redirect(linkGenerator.SocialWorkerRegistrationCheckYourAnswers());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

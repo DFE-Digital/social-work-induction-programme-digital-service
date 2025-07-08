@@ -11,7 +11,6 @@ using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -77,6 +76,10 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsStaff = isStaff;
+        if (createAccountJourneyModel.AccountDetails is not null && isStaff is not null)
+        {
+            createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
+        }
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -126,16 +129,17 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
-    public bool? GetIsQualifiedWithin3Years()
+    /// <inheritdoc />
+    public bool? GetIsRecentlyQualified()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        return createAccountJourneyModel.IsQualifiedWithin3Years;
+        return createAccountJourneyModel.IsRecentlyQualified;
     }
 
-    public void SetIsQualifiedWithin3Years(bool? isQualifiedWithin3Years)
+    public void SetIsRecentlyQualified(bool? isRecentlyQualified)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-        createAccountJourneyModel.IsQualifiedWithin3Years = isQualifiedWithin3Years;
+        createAccountJourneyModel.IsRecentlyQualified = isRecentlyQualified;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -165,7 +169,7 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
-    public AccountLabels? GetAccountLabels()
+    public AccountLabels GetAccountLabels()
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         var accountLabels = new AccountLabels
@@ -184,7 +188,7 @@ public class CreateAccountJourneyService(
             },
             IsStatutoryWorkerLabel =
                 createAccountJourneyModel.IsStatutoryWorker == true ? "Yes" : null,
-            IsQualifiedWithin3Years = createAccountJourneyModel.IsQualifiedWithin3Years switch
+            IsRecentlyQualifiedLabel = createAccountJourneyModel.IsRecentlyQualified switch
             {
                 true => "Yes",
                 false => "No",
@@ -192,6 +196,25 @@ public class CreateAccountJourneyService(
             }
         };
         return accountLabels;
+    }
+
+    public AccountChangeLinks GetAccountChangeLinks()
+    {
+        return new AccountChangeLinks
+        {
+            UserTypeChangeLink = linkGenerator.SelectAccountTypeChange(),
+            AccountTypesChangeLink = linkGenerator.SelectUseCaseChange(),
+            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEnglandChange(),
+            StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWorkChange(),
+            AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorkerChange(),
+            RecentlyQualifiedChangeLink = linkGenerator.EligibilityQualificationChange(),
+            FirstNameChangeLink = linkGenerator.AddAccountDetailsChangeFirstName(),
+            MiddleNamesChangeLink = linkGenerator.AddAccountDetailsChangeMiddleNames(),
+            LastNameChangeLink = linkGenerator.AddAccountDetailsChangeLastName(),
+            EmailChangeLink = linkGenerator.AddAccountDetailsChangeEmail(),
+            SocialWorkEnglandNumberChangeLink = linkGenerator.AddAccountDetailsChangeSocialWorkEnglandNumber(),
+            ProgrammeDatesChangeLink = linkGenerator.SocialWorkerProgrammeDates()
+        };
     }
 
     public void ResetCreateAccountJourneyModel()
@@ -232,9 +255,9 @@ public class CreateAccountJourneyService(
         return createAccountJourneyModel.SocialWorkerDetails;
     }
 
-    private async Task SendInvitationEmailAsync(Account account)
+    public async Task SendInvitationEmailAsync(Account account)
     {
-        var accountTypes = GetAccountTypes();
+        var accountTypes = account.Types;
 
         if (
             accountTypes is null

@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +16,16 @@ public static class Extensions
     {
         var pgConnectionString = GetPostgresConnectionString(builder.Configuration);
 
+        var databaseSeedOptions = builder.Configuration.GetSection("DatabaseSeed").Get<DatabaseSeedOptions>();
+
         builder.Services.AddDbContext<EcfDbContext>(
-            options => EcfDbContext.ConfigureOptions(options, pgConnectionString),
-            contextLifetime: ServiceLifetime.Scoped,
-            optionsLifetime: ServiceLifetime.Singleton
+            options => EcfDbContext.ConfigureOptions(options, pgConnectionString, null, databaseSeedOptions),
+            ServiceLifetime.Scoped,
+            ServiceLifetime.Singleton
         );
 
         builder.Services.AddDbContextFactory<EcfDbContext>(options =>
-            EcfDbContext.ConfigureOptions(options, pgConnectionString)
+            EcfDbContext.ConfigureOptions(options, pgConnectionString, null, databaseSeedOptions)
         );
 
         return builder;
@@ -53,12 +56,14 @@ public static class Extensions
         }
     }
 
-    public static string GetPostgresConnectionString(this IConfiguration configuration) =>
-        new NpgsqlConnectionStringBuilder(
+    public static string GetPostgresConnectionString(this IConfiguration configuration)
+    {
+        return new NpgsqlConnectionStringBuilder(
             configuration.GetRequiredValue("ConnectionStrings:DefaultConnection")
         )
         {
             // We rely on error details to get the offending duplicate key values in the TrsDataSyncHelper
-            IncludeErrorDetail = true,
+            IncludeErrorDetail = true
         }.ConnectionString;
+    }
 }

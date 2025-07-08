@@ -1,5 +1,3 @@
-data "azurerm_client_config" "az_config" {}
-
 locals {
   principal_certificate_permissions = [
     "Create",

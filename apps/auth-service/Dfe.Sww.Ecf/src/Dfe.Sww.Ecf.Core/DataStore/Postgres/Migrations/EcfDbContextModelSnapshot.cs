@@ -275,11 +275,39 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_on");
 
+                    b.Property<int?>("Disability")
+                        .HasColumnType("integer")
+                        .HasColumnName("disability");
+
                     b.Property<string>("EmailAddress")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("email_address")
                         .UseCollation("case_insensitive");
+
+                    b.Property<int?>("EthnicGroup")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group");
+
+                    b.Property<int?>("EthnicGroupAsian")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group_asian");
+
+                    b.Property<int?>("EthnicGroupBlack")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group_black");
+
+                    b.Property<int?>("EthnicGroupMixed")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group_mixed");
+
+                    b.Property<int?>("EthnicGroupOther")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group_other");
+
+                    b.Property<int?>("EthnicGroupWhite")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group_white");
 
                     b.Property<int?>("ExternalUserId")
                         .HasColumnType("integer")
@@ -291,6 +319,14 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("first_name")
                         .UseCollation("case_insensitive");
+
+                    b.Property<int?>("GenderMatchesSexAtBirth")
+                        .HasColumnType("integer")
+                        .HasColumnName("gender_matches_sex_at_birth");
+
+                    b.Property<int?>("HighestQualification")
+                        .HasColumnType("integer")
+                        .HasColumnName("highest_qualification");
 
                     b.Property<bool>("IsFunded")
                         .HasColumnType("boolean")
@@ -315,6 +351,48 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("national_insurance_number")
                         .IsFixedLength();
 
+                    b.Property<string>("OtherEthnicGroupAsian")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_ethnic_group_asian")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherEthnicGroupBlack")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_ethnic_group_black")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherEthnicGroupMixed")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_ethnic_group_mixed")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherEthnicGroupOther")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_ethnic_group_other")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherEthnicGroupWhite")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_ethnic_group_white")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherGenderIdentity")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_gender_identity")
+                        .UseCollation("case_insensitive");
+
+                    b.Property<string>("OtherRouteIntoSocialWork")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("other_route_into_social_work")
+                        .UseCollation("case_insensitive");
+
                     b.Property<DateOnly?>("ProgrammeEndDate")
                         .HasColumnType("date")
                         .HasColumnName("programme_end_date");
@@ -322,6 +400,18 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.Property<DateOnly?>("ProgrammeStartDate")
                         .HasColumnType("date")
                         .HasColumnName("programme_start_date");
+
+                    b.Property<int?>("RouteIntoSocialWork")
+                        .HasColumnType("integer")
+                        .HasColumnName("route_into_social_work");
+
+                    b.Property<DateOnly?>("SocialWorkEnglandRegistrationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("social_work_england_registration_date");
+
+                    b.Property<int?>("SocialWorkQualificationEndYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("social_work_qualification_end_year");
 
                     b.Property<int?>("Status")
                         .HasColumnType("integer")
@@ -336,6 +426,10 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_on");
+
+                    b.Property<int?>("UserSex")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_sex");
 
                     b.HasKey("PersonId")
                         .HasName("pk_persons");

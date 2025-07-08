@@ -41,7 +41,7 @@ public class AccountTypesTagHelperTests
         output
             .ToHtmlString(HtmlEncoder.Default)
             .Should()
-            .Be($"<p>{sut.Types[0].GetDisplayName()}</p><p>{sut.Types[1].GetDisplayName()}</p>");
+            .Be($"<p class=\"govuk-body\">{sut.Types[0].GetDisplayName()}</p><p class=\"govuk-body\">{sut.Types[1].GetDisplayName()}</p>");
     }
 
     [Fact]

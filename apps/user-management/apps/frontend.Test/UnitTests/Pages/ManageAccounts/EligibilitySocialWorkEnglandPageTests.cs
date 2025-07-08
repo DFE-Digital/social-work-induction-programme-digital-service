@@ -32,6 +32,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
+        Sut.FromChangeLink.Should().BeFalse();
         MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -122,5 +123,54 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(false), Times.Once);
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(true, "/manage-accounts/confirm-account-details")]
+    [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
+    public async Task
+        OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRegisteredWithSocialWorkEngland, string redirectPath)
+    {
+        // Arrange
+        Sut.FromChangeLink = true;
+        Sut.IsRegisteredWithSocialWorkEngland = isRegisteredWithSocialWorkEngland;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be(redirectPath);
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(isRegisteredWithSocialWorkEngland), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

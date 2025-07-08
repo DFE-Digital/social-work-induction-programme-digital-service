@@ -65,7 +65,7 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/social-worker-registration/select-ethnic-group"); // TODO update this check your answers page
+        redirectResult!.Url.Should().Be("/social-worker-registration/check-your-answers");
 
         MockAuthServiceClient.Verify(x => x.HttpContextService.GetPersonId(), Times.Once);
         MockRegisterSocialWorkerJourneyService.Verify(x => x.SetRouteIntoSocialWorkAsync(PersonId, entryRoute), Times.Once);
@@ -126,5 +126,31 @@ public class SelectRouteIntoSocialWorkPageTests : SocialWorkerRegistrationPageTe
         Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        MockAuthServiceClient.Setup(x => x.HttpContextService.GetPersonId()).Returns(PersonId);
+
+        // Act
+        var result = await Sut.OnGetChangeAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/social-worker-registration/select-social-work-qualification-end-year");
+        Sut.FromChangeLink.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasFromChangeLinkTrue()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

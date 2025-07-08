@@ -94,3 +94,25 @@ variable "support_action_group_id" {
   description = "ID of the support action group"
   type        = string
 }
+
+variable "storage_mounts" {
+  type = map(object({
+    type          = string
+    mount_path    = string
+    account_name  = string
+    share_name    = string
+    mount_options = string
+  }))
+  description = "A map of storage mounts to be configured for the App Service. The key of the map is used as the mount's configuration name. An empty map creates no mounts."
+  default     = {} # Default to an empty map, making it optional.
+}
+
+# Separate the access key from the above storage_mounts variable - you can't declare a for each
+# variable with a sensitive value
+variable "storage_access_key" {
+  description = "Storage access key for the storage mount"
+  default     = ""
+  type        = string
+  sensitive   = true
+}
+

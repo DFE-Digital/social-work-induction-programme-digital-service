@@ -1,8 +1,10 @@
+using System.Collections.Immutable;
 using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +16,6 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
 public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAccountDetails>
 {
-    private ConfirmAccountDetails Sut { get; }
-
     public ConfirmAccountDetailsShould()
     {
         Sut = new ConfirmAccountDetails(
@@ -29,15 +29,46 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         };
     }
 
+    private ConfirmAccountDetails Sut { get; }
+
     [Fact]
     public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
     {
         // Arrange
-        var expectedAccountDetails = AccountDetailsFaker.Generate();
+        var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
+        var expectedChangeLinks = new AccountChangeLinks();
+        var expectedAccountTypes = ImmutableList.Create(AccountType.EarlyCareerSocialWorker);
+        var expectedAccountLabels = new AccountLabels
+        {
+            IsStaffLabel = IsStaffLabels.IsStaffFalse,
+            IsRegisteredWithSocialWorkEnglandLabel = "Yes",
+            IsAgencyWorkerLabel = "No",
+            IsStatutoryWorkerLabel = "Yes",
+            IsRecentlyQualifiedLabel = "Yes"
+        };
+        var expectedStartDateDateOnly = DateOnly.FromDateTime(DateTime.Now);
+        var expectedEndDateDateOnly = DateOnly.FromDateTime(DateTime.Now.AddYears(2));
+        var expectedStartDate = expectedStartDateDateOnly.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        var expectedEndDate = expectedEndDateDateOnly.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountDetails())
             .Returns(expectedAccountDetails);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountChangeLinks())
+            .Returns(expectedChangeLinks);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountTypes())
+            .Returns(expectedAccountTypes);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountLabels())
+            .Returns(expectedAccountLabels);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetProgrammeStartDate())
+            .Returns(expectedStartDateDateOnly);
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetProgrammeEndDate())
+            .Returns(expectedEndDateDateOnly);
 
         // Act
         var result = Sut.OnGet();
@@ -50,15 +81,26 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.MiddleNames.Should().Be(expectedAccountDetails.MiddleNames);
         Sut.Email.Should().Be(expectedAccountDetails.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(expectedAccountDetails.SocialWorkEnglandNumber);
-
+        Sut.IsStaff.Should().Be(expectedAccountDetails.IsStaff);
         Sut.IsUpdatingAccount.Should().BeFalse();
         Sut.BackLinkPath.Should().Be("/manage-accounts/social-worker-programme-dates");
-        Sut.ChangeDetailsLink.Should().Be("/manage-accounts/add-account-details?handler=Change");
+        Sut.ChangeDetailsLinks.Should().BeEquivalentTo(expectedChangeLinks);
+        Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountTypes);
+        Sut.UserType.Should().Be(expectedAccountLabels.IsStaffLabel);
+        Sut.RegisteredWithSocialWorkEngland.Should().Be(expectedAccountLabels.IsRegisteredWithSocialWorkEnglandLabel);
+        Sut.StatutoryWorker.Should().Be(expectedAccountLabels.IsStatutoryWorkerLabel);
+        Sut.AgencyWorker.Should().Be(expectedAccountLabels.IsAgencyWorkerLabel);
+        Sut.Qualified.Should().Be(expectedAccountLabels.IsRecentlyQualifiedLabel);
+        Sut.IsStaff.Should().Be(expectedAccountDetails.IsStaff);
+        Sut.ProgrammeStartDate.Should().Be(expectedStartDate);
+        Sut.ProgrammeEndDate.Should().Be(expectedEndDate);
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -87,8 +129,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         Sut.IsUpdatingAccount.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + account.Id);
-        Sut.ChangeDetailsLink.Should()
-            .Be("/manage-accounts/edit-account-details/" + account.Id + "?handler=Change");
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
@@ -133,14 +173,9 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         response.Should().NotBeNull();
         response!.Url.Should().Be("/manage-accounts");
 
-        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
-        notificationType.Should().Be(NotificationBannerType.Success);
-
-        var notificationHeader = TempData["NotificationHeader"]?.ToString();
-        notificationHeader.Should().Be("New user added");
-
-        var notificationMessage = TempData["NotificationMessage"]?.ToString();
-        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("New user added");
+        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
@@ -180,11 +215,11 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountBuilder.Build();
-
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
         MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(AccountDetails.FromAccount(account));
 
         // Act
         var result = await Sut.OnPostUpdateAsync(account.Id);
@@ -195,7 +230,12 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("User details updated");
+        TempData["NotificationMessage"].Should().Be($"An email has been sent to {account.FullName}, {account.Email}");
+
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }

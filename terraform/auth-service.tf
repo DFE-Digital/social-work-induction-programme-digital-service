@@ -80,7 +80,7 @@ module "auth_service" {
     "ENVIRONMENT"                                      = var.environment
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"              = "false"
     "CONNECTIONSTRINGS__DEFAULTCONNECTION"             = "Host=${module.stack.postgres_db_host};Database=${azurerm_postgresql_flexible_server_database.auth_db.name};Username=${module.stack.postgres_username};Password=$[DB_REPLACE_PASSWORD];Ssl Mode=Require;Trust Server Certificate=false"
-    "STORAGECONNECTIONSTRING"                          = "https://${module.stack.storage_account_name}.blob.core.windows.net/${azurerm_storage_container.dpkeys.name}/dpkeys"
+    "STORAGECONNECTIONSTRING"                          = "https://${module.stack.blob_storage_account_name}.blob.core.windows.net/${azurerm_storage_container.dpkeys.name}/dpkeys"
     "DB_SERVER_NAME"                                   = module.stack.postgres_db_host
     "DB_DATABASE_NAME"                                 = azurerm_postgresql_flexible_server_database.auth_db.name
     "DB_USER_NAME"                                     = module.stack.postgres_username
@@ -108,7 +108,7 @@ module "auth_service" {
 
 resource "azurerm_storage_container" "dpkeys" {
   name               = "${var.resource_name_prefix}-sc-auth-service-dpkeys"
-  storage_account_id = module.stack.storage_account_id
+  storage_account_id = module.stack.blob_storage_account_id
 
   # Prevent any anonymous or public blob reads
   container_access_type = "private"

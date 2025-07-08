@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Repositories;
-using NodaTime;
+using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Models;
 
@@ -38,6 +37,48 @@ public class AccountDetails
 
     public DateOnly? DateOfBirth { get; set; }
 
+    public UserSex? UserSex { get; set; }
+
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
+
+    public string? OtherGenderIdentity { get; set; }
+
+    public EthnicGroup? EthnicGroup { get; set; }
+
+    public EthnicGroupWhite? EthnicGroupWhite { get; set; }
+
+    public string? OtherEthnicGroupWhite { get; set; }
+
+    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
+
+    public string? OtherEthnicGroupAsian { get; set; }
+
+    public EthnicGroupMixed? EthnicGroupMixed { get; set; }
+
+    public string? OtherEthnicGroupMixed { get; set; }
+
+    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
+
+    public string? OtherEthnicGroupBlack { get; set; }
+
+    public EthnicGroupOther? EthnicGroupOther { get; set; }
+
+    public string? OtherEthnicGroupOther { get; set; }
+
+    public Disability? Disability { get; set; }
+
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
+
+    public Qualification? HighestQualification { get; set; }
+
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
+
+    public string? OtherRouteIntoSocialWork { get; set; }
+
+    public int? SocialWorkQualificationEndYear { get; set; }
+
+    public IList<AccountType>? Types { get; init; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
@@ -52,7 +93,28 @@ public class AccountDetails
             ExternalUserId = account.ExternalUserId,
             IsFunded = account.IsFunded,
             IsStaff = account.IsStaff,
-            DateOfBirth = account.DateOfBirth
+            DateOfBirth = account.DateOfBirth,
+            UserSex = account.UserSex,
+            GenderMatchesSexAtBirth = account.GenderMatchesSexAtBirth,
+            OtherGenderIdentity = account.OtherGenderIdentity,
+            EthnicGroup = account.EthnicGroup,
+            EthnicGroupWhite = account.EthnicGroupWhite,
+            OtherEthnicGroupWhite = account.OtherEthnicGroupWhite,
+            EthnicGroupMixed = account.EthnicGroupMixed,
+            OtherEthnicGroupMixed = account.OtherEthnicGroupMixed,
+            EthnicGroupAsian = account.EthnicGroupAsian,
+            OtherEthnicGroupAsian = account.OtherEthnicGroupAsian,
+            EthnicGroupBlack = account.EthnicGroupBlack,
+            OtherEthnicGroupBlack = account.OtherEthnicGroupBlack,
+            EthnicGroupOther = account.EthnicGroupOther,
+            OtherEthnicGroupOther = account.OtherEthnicGroupOther,
+            Disability = account.Disability,
+            SocialWorkEnglandRegistrationDate = account.SocialWorkEnglandRegistrationDate,
+            HighestQualification = account.HighestQualification,
+            SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear,
+            RouteIntoSocialWork = account.RouteIntoSocialWork,
+            OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork,
+            Types = account.Types
         };
     }
 }

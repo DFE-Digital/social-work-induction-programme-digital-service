@@ -49,7 +49,20 @@ public class SelectSexAndGenderIdentity(
         await socialWorkerJourneyService.SetUserGenderMatchesSexAtBirthAsync(personId, GenderMatchesSexAtBirth);
         await socialWorkerJourneyService.SetOtherGenderIdentityAsync(personId, OtherGenderIdentity);
 
-        return Redirect(linkGenerator
-            .SocialWorkerRegistrationEthnicGroup());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationEthnicGroup());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

@@ -78,14 +78,30 @@ output "services_service_plan_id" {
   value       = azurerm_service_plan.asp_service_apps.id
 }
 
-output "storage_account_id" {
-  description = "ID of the shared storage account"
-  value       = azurerm_storage_account.sa.id
+output "blob_storage_account_id" {
+  description = "ID of the shared blob storage account"
+  value       = azurerm_storage_account.sa_app_blob_storage.id
 }
 
-output "storage_account_name" {
-  description = "Name of the shared storage account"
-  value       = azurerm_storage_account.sa.name
+output "blob_storage_account_name" {
+  description = "Name of the shared blob storage account"
+  value       = azurerm_storage_account.sa_app_blob_storage.name
+}
+
+output "file_storage_account_id" {
+  description = "ID of the shared file storage account"
+  value       = azurerm_storage_account.sa_app_file_storage.id
+}
+
+output "file_storage_account_name" {
+  description = "Name of the shared file storage account"
+  value       = azurerm_storage_account.sa_app_file_storage.name
+}
+
+output "file_storage_access_key" {
+  description = "Primary access key for the shared file storage account"
+  value       = azurerm_storage_account.sa_app_file_storage.primary_access_key
+  sensitive   = true
 }
 
 output "support_action_group_id" {

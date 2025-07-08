@@ -21,7 +21,10 @@ public class CreateAccountJourneyModel
 
     public bool? IsAgencyWorker { get; set; }
 
-    public bool? IsQualifiedWithin3Years { get; set; }
+    /// <summary>
+    /// Property capturing whether the user has completed their social work qualification within the last 3 years.
+    /// </summary>
+    public bool? IsRecentlyQualified { get; set; }
 
     public DateOnly? ProgrammeStartDate { get; set; }
 
@@ -55,6 +58,6 @@ public class CreateAccountJourneyModel
             && IsRegisteredWithSocialWorkEngland == true
             && IsStatutoryWorker == true
             && IsAgencyWorker == false
-            && IsQualifiedWithin3Years == true;
+            && IsRecentlyQualified == true;
     }
 }

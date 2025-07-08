@@ -19,29 +19,38 @@ public class EligibilityQualification(
     IValidator<EligibilityQualification> validator)
     : BasePageModel
 {
-    [BindProperty] public bool? IsQualifiedWithin3Years { get; set; }
+    /// <summary>
+    /// Property capturing whether the user has completed their social work qualification within the last 3 years.
+    /// </summary>
+    [BindProperty] public bool? IsRecentlyQualified { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityAgencyWorker();
-        IsQualifiedWithin3Years = createAccountJourneyService.GetIsQualifiedWithin3Years();
+        BackLinkPath = FromChangeLink ? linkGenerator.EligibilityAgencyWorkerChange() : linkGenerator.EligibilityAgencyWorker();
+        IsRecentlyQualified = createAccountJourneyService.GetIsRecentlyQualified();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (IsQualifiedWithin3Years is null || !validationResult.IsValid)
+        if (IsRecentlyQualified is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
             BackLinkPath = linkGenerator.EligibilityAgencyWorker();
             return Page();
         }
 
-        createAccountJourneyService.SetIsQualifiedWithin3Years(IsQualifiedWithin3Years);
+        createAccountJourneyService.SetIsRecentlyQualified(IsRecentlyQualified);
 
-        return Redirect(IsQualifiedWithin3Years is false
+        return Redirect(IsRecentlyQualified is false
             ? linkGenerator.EligibilityFundingNotAvailable()
             : linkGenerator.EligibilityFundingAvailable());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
     }
 }

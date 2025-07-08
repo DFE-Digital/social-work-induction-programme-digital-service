@@ -23,7 +23,7 @@ public class GetIsDisabledShould : RegisterSocialWorkerJourneyServiceTestBase
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(expected.IsDisabled);
+        response.Should().Be(expected.Disability);
 
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
         VerifyAllNoOtherCall();

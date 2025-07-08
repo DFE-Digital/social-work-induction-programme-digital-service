@@ -46,6 +46,20 @@ public class SelectSocialWorkQualificationEndYear(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetSocialWorkQualificationEndYearAsync(personId, SocialWorkQualificationEndYear);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWork());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectRouteIntoSocialWork());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

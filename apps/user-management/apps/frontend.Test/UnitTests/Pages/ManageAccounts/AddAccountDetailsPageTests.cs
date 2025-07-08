@@ -60,6 +60,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -83,18 +84,24 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task Post_WhenCalledWithValidData_RedirectsToConfirmAccountDetails()
+    [Theory]
+    [InlineData(AccountType.EarlyCareerSocialWorker, "/manage-accounts/social-worker-programme-dates")]
+    [InlineData(AccountType.Assessor, "/manage-accounts/confirm-account-details")]
+    [InlineData(AccountType.Coordinator, "/manage-accounts/confirm-account-details")]
+    public async Task Post_WhenCalledWithValidData_RedirectsToCorrectPage(AccountType accountType, string redirectUrl)
     {
         // Arrange
         var sweId = "1";
+        var isStaff = accountType != AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
             .WithSocialWorkEnglandNumber(sweId)
-            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithTypes(ImmutableList.Create(accountType))
+            .WithIsStaff(isStaff)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
@@ -102,9 +109,11 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.MiddleNames = accountDetails.MiddleNames;
         Sut.LastName = accountDetails.LastName;
         Sut.Email = accountDetails.Email;
-        Sut.SocialWorkEnglandNumber = sweId;
+        Sut.SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber;
+        Sut.IsStaff = accountDetails.IsStaff;
+        Sut.AccountTypes = ImmutableList.Create(accountType);
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(isStaff);
         MockCreateAccountJourneyService.Setup(x =>
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
@@ -117,27 +126,31 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/social-worker-programme-dates");
+        redirectResult!.Url.Should().Be(redirectUrl);
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(
             x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task Post_WhenCalledWithInvalidDataAndIsNotStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    [Theory]
+    [InlineData(AccountType.EarlyCareerSocialWorker)]
+    [InlineData(AccountType.Assessor)]
+    public async Task Post_WhenCalledWithInvalidDataAndRequiresSocialWorkEnglandNumber_ReturnsErrorsAndRedirectsToAddAccountDetails(AccountType accountType)
     {
         // Arrange
-        Sut.IsStaff = false;
+        Sut.IsStaff = accountType != AccountType.EarlyCareerSocialWorker;
         Sut.FirstName = string.Empty;
         Sut.LastName = string.Empty;
         Sut.Email = string.Empty;
         Sut.SocialWorkEnglandNumber = string.Empty;
+        Sut.AccountTypes = ImmutableList.Create(accountType);
 
-        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(Sut.IsStaff);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -165,14 +178,16 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         modelState["SocialWorkEnglandNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a Social Work England registration number");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidDataAndIsStaff_ReturnsErrorsAndRedirectsToAddAccountDetails()
+    public async Task Post_WhenCalledWithInvalidDataAndDoesNotRequireSocialWorkEnglandNumber_ReturnsErrorsAndRedirectsToAddAccountDetails()
     {
         // Arrange
         Sut.IsStaff = true;
+        Sut.AccountTypes = ImmutableList.Create(AccountType.Coordinator);
         Sut.FirstName = string.Empty;
         Sut.LastName = string.Empty;
         Sut.Email = string.Empty;
@@ -202,6 +217,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -233,5 +249,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         // Assert
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.FromChangeLink.Should().BeTrue();
     }
 }

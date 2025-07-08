@@ -32,36 +32,36 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
-        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRecentlyQualified(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void OnGet_WhenCalledWithIsQualifiedWithin3Years_LoadsTheViewWithPrepopulatedValue(bool? isQualifiedWithin3Years)
+    public void OnGet_WhenCalledWithIsRecentlyQualified_LoadsTheViewWithPrepopulatedValue(bool? isRecentlyQualified)
     {
         // Arrange
-        MockCreateAccountJourneyService.Setup(x => x.GetIsQualifiedWithin3Years())
-            .Returns(isQualifiedWithin3Years);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsRecentlyQualified())
+            .Returns(isRecentlyQualified);
 
         // Act
         var result = Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.IsQualifiedWithin3Years.Should().Be(isQualifiedWithin3Years);
+        Sut.IsRecentlyQualified.Should().Be(isRecentlyQualified);
 
-        MockCreateAccountJourneyService.Verify(x => x.GetIsQualifiedWithin3Years(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRecentlyQualified(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public async Task
-        OnPostAsync_WhenCalledWithNullIsQualifiedWithin3Years_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
+        OnPostAsync_WhenCalledWithNullIsRecentlyQualified_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
     {
         // Arrange
-        Sut.IsQualifiedWithin3Years = null;
+        Sut.IsRecentlyQualified = null;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -72,9 +72,9 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
         modelStateKeys.Count.Should().Be(1);
-        modelStateKeys.Should().Contain("IsQualifiedWithin3Years");
-        modelState["IsQualifiedWithin3Years"]!.Errors.Count.Should().Be(1);
-        modelState["IsQualifiedWithin3Years"]!.Errors[0].ErrorMessage.Should()
+        modelStateKeys.Should().Contain("IsRecentlyQualified");
+        modelState["IsRecentlyQualified"]!.Errors.Count.Should().Be(1);
+        modelState["IsRecentlyQualified"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user completed their social work qualification within the last 3 years");
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
@@ -84,10 +84,10 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
 
     [Fact]
     public async Task
-        OnPostAsync_WhenCalledWithIsQualifiedWithin3YearsTrue_RedirectsToEligibilityFundingAvailable()
+        OnPostAsync_WhenCalledWithIsRecentlyQualifiedTrue_RedirectsToEligibilityFundingAvailable()
     {
         // Arrange
-        Sut.IsQualifiedWithin3Years = true;
+        Sut.IsRecentlyQualified = true;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -98,16 +98,16 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-funding-available");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(true), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(true), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalledWithIsQualifiedWithin3YearsFalse_RedirectsToEligibilityFundingNotAvailable()
+    public async Task OnPostAsync_WhenCalledWithIsRecentlyQualifiedFalse_RedirectsToEligibilityFundingNotAvailable()
     {
         // Arrange
-        Sut.IsQualifiedWithin3Years = false;
+        Sut.IsRecentlyQualified = false;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -118,8 +118,23 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-funding-not-available");
 
-        MockCreateAccountJourneyService.Verify(x => x.SetIsQualifiedWithin3Years(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsRecentlyQualified(false), Times.Once);
 
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker?handler=Change");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRecentlyQualified(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

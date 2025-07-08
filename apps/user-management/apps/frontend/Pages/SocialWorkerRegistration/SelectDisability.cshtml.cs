@@ -43,7 +43,20 @@ public class SelectDisability(
         var personId = authServiceClient.HttpContextService.GetPersonId();
         await socialWorkerJourneyService.SetIsDisabledAsync(personId, IsDisabled);
 
-        return Redirect(linkGenerator
-            .SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

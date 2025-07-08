@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -35,6 +36,8 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         Sut.IsStaff.Should().BeNull();
         Sut.EditAccountId.Should().BeNull();
         Sut.BackLinkPath.Should().Be("/manage-accounts");
+        Sut.Handler.Should().Be("");
+        Sut.FromChangeLink.Should().BeFalse();
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         VerifyAllNoOtherCalls();
@@ -49,6 +52,8 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         // Assert
         result.Should().BeOfType<RedirectResult>();
         result.Url.Should().Be("/manage-accounts/select-account-type");
+        Sut.Handler.Should().Be("");
+        Sut.FromChangeLink.Should().BeFalse();
 
         MockCreateAccountJourneyService.Verify(x => x.ResetCreateAccountJourneyModel(), Times.Once);
         VerifyAllNoOtherCalls();
@@ -78,11 +83,17 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task OnPostAsync_WhenCalledWithIsStaffTrue_RedirectsToSelectUseCase()
+    [Theory]
+    [InlineData(true, "/manage-accounts/select-use-case?handler=Change")]
+    [InlineData(false, "/manage-accounts/select-use-case")]
+    public async Task OnPostAsync_WhenCalledWithIsStaffTrue_RedirectsToRelevantPageBasedOnFromChangeLink(
+        bool fromChangeLink,
+        string redirectPath
+    )
     {
         // Arrange
         Sut.IsStaff = true;
+        Sut.FromChangeLink = fromChangeLink;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -91,9 +102,10 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/select-use-case");
+        redirectResult!.Url.Should().Be(redirectPath);
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(true), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -117,6 +129,109 @@ public class SelectAccountTypePageTests : ManageAccountsPageTestBase<SelectAccou
         MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
             { AccountType.EarlyCareerSocialWorker }), Times.Once);
 
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+
         VerifyAllNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(null, "/manage-accounts/add-account-details?handler=Change")]
+    [InlineData("12345", "/manage-accounts/confirm-account-details")]
+    public async Task OnPostAsync_WhenCalledFromChangeLinkAndIsStaffFalse_RedirectsToRelevantPage(
+        string? socialWorkEnglandRegistrationNumber,
+        string? redirectPath
+    )
+    {
+        // Arrange
+        Sut.IsStaff = false;
+        Sut.FromChangeLink = true;
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .WithSocialWorkEnglandNumber(socialWorkEnglandRegistrationNumber)
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateAccountJourneyService.Setup(x => x.GetIsRegisteredWithSocialWorkEngland()).Returns(true);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be(redirectPath);
+        Sut.Handler.Should().Be("change");
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
+            { AccountType.EarlyCareerSocialWorker }), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledFromChangeLinkAndIsStaffFalseAndRegisteredWithSocialWorkEnglandNotSet_RedirectsToEligibilityInformation()
+    {
+        // Arrange
+        Sut.IsStaff = false;
+        Sut.FromChangeLink = true;
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes(ImmutableList.Create(AccountType.EarlyCareerSocialWorker))
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-information");
+        Sut.Handler.Should().Be("change");
+
+        MockCreateAccountJourneyService.Verify(x => x.SetIsStaff(false), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(new List<AccountType>
+            { AccountType.EarlyCareerSocialWorker }), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
+
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
+        Sut.Handler.Should().Be("change");
+        Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalled_HasCorrectBackLink()
+    {
+        // Act
+        _ = await Sut.OnPostChangeAsync();
+
+        // Assert
+        Sut.FromChangeLink.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
     }
 }

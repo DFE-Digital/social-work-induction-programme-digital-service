@@ -16,6 +16,12 @@ $CFG->dboptions = [
   'dbport' => 5432,
   'dbsocket' => '',
 ];
+# Store sessions in the database - the file session handler doesn't like the default Azure File
+# Share permissions and gives: 
+# Warning: session_start(): Session data file is not created by your uid in /var/www/html/public/lib/classes/session/handler.php on line 39
+# Warning: session_start(): Failed to read session data: files (path: /var/www/moodledata/sessions) in /var/www/html/public/lib/classes/session/handler.php on line 39
+$CFG->session_handler_class = '\core\session\database';
+$CFG->session_database_acquire_lock_timeout = 120;
 
 # Get host name from Front Door forward header first, then fallback
 $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? getenv('MOODLE_DOCKER_WEB_HOST') ?? 'localhost';

@@ -37,7 +37,7 @@ public class GetAccountLabelsShould : CreateAccountJourneyServiceTestBase
             IsRegisteredWithSocialWorkEngland = isRegistered,
             IsAgencyWorker = isAgency,
             IsStatutoryWorker = isStatutory,
-            IsQualifiedWithin3Years = isQualified
+            IsRecentlyQualified = isQualified
         };
         HttpContext.Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
 
@@ -50,7 +50,7 @@ public class GetAccountLabelsShould : CreateAccountJourneyServiceTestBase
         accountLabels.IsRegisteredWithSocialWorkEnglandLabel.Should().Be(expectedRegisteredLabel);
         accountLabels.IsAgencyWorkerLabel.Should().Be(expectedAgencyLabel);
         accountLabels.IsStatutoryWorkerLabel.Should().Be(expectedStatutoryLabel);
-        accountLabels.IsQualifiedWithin3Years.Should().Be(expectedQualifiedLabel);
+        accountLabels.IsRecentlyQualifiedLabel.Should().Be(expectedQualifiedLabel);
 
         VerifyAllNoOtherCall();
     }

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.RegisterSocialWorker;
 using Hangfire.Annotations;
 
 namespace Dfe.Sww.Ecf.Core.Services.Accounts;
@@ -21,6 +22,49 @@ public class PersonDto
     public bool IsFunded { get; set; }
     public DateOnly? ProgrammeStartDate { get; set; }
     public DateOnly? ProgrammeEndDate { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
+
+    public UserSex? UserSex { get; set; }
+
+    public GenderMatchesSexAtBirth? GenderMatchesSexAtBirth { get; set; }
+
+    public string? OtherGenderIdentity { get; set; }
+
+    public EthnicGroup? EthnicGroup { get; set; }
+
+    public EthnicGroupWhite? EthnicGroupWhite { get; set; }
+
+    public string? OtherEthnicGroupWhite { get; set; }
+
+    public EthnicGroupAsian? EthnicGroupAsian { get; set; }
+
+    public string? OtherEthnicGroupAsian { get; set; }
+
+    public EthnicGroupMixed? EthnicGroupMixed { get; set; }
+
+    public string? OtherEthnicGroupMixed { get; set; }
+
+    public EthnicGroupBlack? EthnicGroupBlack { get; set; }
+
+    public string? OtherEthnicGroupBlack { get; set; }
+
+    public EthnicGroupOther? EthnicGroupOther { get; set; }
+
+    public string? OtherEthnicGroupOther { get; set; }
+
+    public Disability? Disability { get; set; }
+
+    public DateOnly? SocialWorkEnglandRegistrationDate { get; set; }
+
+    public Qualification? HighestQualification { get; set; }
+
+    public RouteIntoSocialWork? RouteIntoSocialWork { get; set; }
+
+    public string? OtherRouteIntoSocialWork { get; set; }
+
+    public int? SocialWorkQualificationEndYear { get; set; }
+
+    public bool HasCompletedLoginAccountLinking  { get; set; }
 }
 
 public static class PersonDtoExtensions

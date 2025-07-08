@@ -160,7 +160,7 @@ resource "azurerm_service_plan" "asp_maintenance_apps" {
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
   os_type             = "Linux"
-  sku_name            = var.asp_sku_moodle
+  sku_name            = var.asp_sku_maintenance
   tags                = var.tags
 
   lifecycle {
@@ -209,7 +209,7 @@ resource "azurerm_service_plan" "asp_service_apps" {
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
   os_type             = "Linux"
-  sku_name            = var.asp_sku_moodle
+  sku_name            = var.asp_sku_services
   tags                = var.tags
 
   lifecycle {

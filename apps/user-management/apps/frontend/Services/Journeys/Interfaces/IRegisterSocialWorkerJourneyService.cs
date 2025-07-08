@@ -7,26 +7,30 @@ public interface IRegisterSocialWorkerJourneyService
 {
     public IEthnicGroupService EthnicGroups { get; init; }
 
-    Task<DateOnly?> GetDateOfBirthAsync(Guid accountId);
-    Task SetDateOfBirthAsync(Guid accountId, DateOnly? dateOfBirth);
-    Task<UserSex?> GetUserSexAsync(Guid accountId);
-    Task SetUserSexAsync(Guid accountId, UserSex? userSex);
-    Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid accountId);
-    Task SetUserGenderMatchesSexAtBirthAsync(Guid accountId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
-    Task<string?> GetOtherGenderIdentityAsync(Guid accountId);
-    Task SetOtherGenderIdentityAsync(Guid accountId, string? otherGenderIdentity);
-    Task<Disability?> GetIsDisabledAsync(Guid accountId);
-    Task SetIsDisabledAsync(Guid accountId, Disability? isDisabled);
-    Task<DateOnly?> GetSocialWorkEnglandRegistrationDateAsync(Guid accountId);
-    Task SetSocialWorkEnglandRegistrationDateAsync(Guid accountId, DateOnly? socialWorkEnglandRegistrationDate);
-    Task<Qualification?> GetHighestQualificationAsync(Guid accountId);
-    Task SetHighestQualificationAsync(Guid accountId, Qualification? userSex);
-    Task<int?> GetSocialWorkQualificationEndYearAsync(Guid accountId);
-    Task SetSocialWorkQualificationEndYearAsync(Guid accountId, int? socialWorkEnglandQualificationEndYear);
-    Task<RouteIntoSocialWork?> GetRouteIntoSocialWorkAsync(Guid accountId);
-    Task SetRouteIntoSocialWorkAsync(Guid accountId, RouteIntoSocialWork? routeIntoSocialWork);
-    Task<string?> GetOtherRouteIntoSocialWorkAsync(Guid accountId);
-    Task SetOtherRouteIntoSocialWorkAsync(Guid accountId, string? otherRouteIntoSocialWork);
-    void ResetRegisterSocialWorkerJourneyModel(Guid accountId);
-    Task<Account> CompleteJourneyAsync(Guid accountId);
+    public Task<RegisterSocialWorkerJourneyModel?> GetRegisterSocialWorkerJourneyModelAsync(Guid personId);
+
+    Task<DateOnly?> GetDateOfBirthAsync(Guid personId);
+    Task SetDateOfBirthAsync(Guid personId, DateOnly? dateOfBirth);
+    Task<UserSex?> GetUserSexAsync(Guid personId);
+    Task SetUserSexAsync(Guid personId, UserSex? userSex);
+    Task<GenderMatchesSexAtBirth?> GetUserGenderMatchesSexAtBirthAsync(Guid personId);
+    Task SetUserGenderMatchesSexAtBirthAsync(Guid personId, GenderMatchesSexAtBirth? genderMatchesSexAtBirth);
+    Task<string?> GetOtherGenderIdentityAsync(Guid personId);
+    Task SetOtherGenderIdentityAsync(Guid personId, string? otherGenderIdentity);
+    Task<Disability?> GetIsDisabledAsync(Guid personId);
+    Task SetIsDisabledAsync(Guid personId, Disability? isDisabled);
+    Task<DateOnly?> GetSocialWorkEnglandRegistrationDateAsync(Guid personId);
+    Task SetSocialWorkEnglandRegistrationDateAsync(Guid personId, DateOnly? socialWorkEnglandRegistrationDate);
+    Task<Qualification?> GetHighestQualificationAsync(Guid personId);
+    Task SetHighestQualificationAsync(Guid personId, Qualification? userSex);
+    Task<int?> GetSocialWorkQualificationEndYearAsync(Guid personId);
+    Task SetSocialWorkQualificationEndYearAsync(Guid personId, int? socialWorkEnglandQualificationEndYear);
+    Task<RouteIntoSocialWork?> GetRouteIntoSocialWorkAsync(Guid personId);
+    Task SetRouteIntoSocialWorkAsync(Guid personId, RouteIntoSocialWork? routeIntoSocialWork);
+    Task<string?> GetOtherRouteIntoSocialWorkAsync(Guid personId);
+    Task SetOtherRouteIntoSocialWorkAsync(Guid personId, string? otherRouteIntoSocialWork);
+
+    EscwRegisterChangeLinks GetEscwRegisterChangeLinks(EthnicGroup? ethnicGroup);
+    void ResetRegisterSocialWorkerJourneyModel(Guid personId);
+    Task<Account> CompleteJourneyAsync(Guid personId);
 }

@@ -46,6 +46,20 @@ public class SelectEthnicGroupWhite(
         await socialWorkerJourneyService.EthnicGroups.SetEthnicGroupWhiteAsync(personId, SelectedEthnicGroupWhite);
         await socialWorkerJourneyService.EthnicGroups.SetOtherEthnicGroupWhiteAsync(personId, OtherEthnicGroupWhite);
 
-        return Redirect(linkGenerator.SocialWorkerRegistrationSelectDisability());
+        return Redirect(FromChangeLink
+            ? linkGenerator.SocialWorkerRegistrationCheckYourAnswers()
+            : linkGenerator.SocialWorkerRegistrationSelectDisability());
+    }
+
+    public Task<PageResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }

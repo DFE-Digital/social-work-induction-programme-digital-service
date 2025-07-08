@@ -25,7 +25,19 @@ variable "tags" {
 
 variable "asp_sku_moodle" {
   type        = string
-  description = "The app service plan SKU"
+  description = "The Moodle app service plan SKU"
+  default     = "S3"
+}
+
+variable "asp_sku_services" {
+  type        = string
+  description = "The services app service plan SKU"
+  default     = "S3"
+}
+
+variable "asp_sku_maintenance" {
+  type        = string
+  description = "The maintenance app service plan SKU"
   default     = "S3"
 }
 
@@ -100,4 +112,55 @@ variable "email_support_address" {
 variable "asp_sku_notification" {
   description = "The app service plan SKU"
   type        = string
+}
+
+variable "moodle_max_data_storage_size_in_gb" {
+  type        = number
+  description = "The provisioned size (quota) in GiB for the Moodle data file share. This directly impacts performance and cost for Premium shares."
+  default     = 5
+
+  validation {
+    condition     = var.moodle_max_data_storage_size_in_gb > 0
+    error_message = "The storage size must be a positive number greater than 0."
+  }
+}
+
+variable "storage_redundancy" {
+  type        = string
+  description = "The redundancy type for the storage accounts. Allowed values are LRS, ZRS, GRS, GZRS, RA-GRS, RA-GZRS."
+  default     = "LRS"
+
+  validation {
+    condition = contains([
+      "LRS",
+      "ZRS",
+      "GRS",
+      "GZRS",
+      "RA-GRS",
+      "RA-GZRS"
+    ], var.storage_redundancy)
+    error_message = "Allowed values for storage_redundancy are LRS, ZRS, GRS, GZRS, RA-GRS, or RA-GZRS."
+  }
+}
+
+variable "blob_storage_account_tier" {
+  type        = string
+  description = "The account tier for the general-purpose blob storage account. Allowed values are Standard or Premium."
+  default     = "Standard"
+
+  validation {
+    condition     = contains(["Standard", "Premium"], var.blob_storage_account_tier)
+    error_message = "Allowed values for blob_storage_account_tier are Standard or Premium."
+  }
+}
+
+variable "file_storage_account_tier" {
+  type        = string
+  description = "The account tier for the dedicated Moodle file storage account. Allowed values are Standard or Premium."
+  default     = "Standard"
+
+  validation {
+    condition     = contains(["Standard", "Premium"], var.file_storage_account_tier)
+    error_message = "Allowed values for file_storage_account_tier are Standard or Premium."
+  }
 }

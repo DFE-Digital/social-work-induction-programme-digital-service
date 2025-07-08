@@ -18,6 +18,7 @@ asp_sku_services            = "B1"
 asp_sku_notification        = "B1"
 days_to_expire              = "365"
 kv_purge_protection_enabled = false
+moodle_max_data_storage_size_in_gb = 5
 moodle_instances = {
   # Capability to add multiple instances in the future (secondary = {} etc.)
   # They will each have their own dedicated DB
@@ -27,13 +28,19 @@ moodle_instances = {
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
+  "DATABASESEED__ORGANISATIONID"             = "00000000-0000-0000-0000-000000000001"
+  "DATABASESEED__ORGANISATIONNAME"             = "Test Organisation"
+  "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
+  "DATABASESEED__ROLEID"                       = 800
+  "DATABASESEED__ONELOGINSUBJECT"              = "urn:fdc:gov.uk:2022:KaCIMs1jlJNWz-TQ9Rq8McFXfBwy6JgYbsUNLIEpqKo"
+  "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
-# Needs wiring up
 one_login_client_id = "xCtiHWNyTayG6HcaeYMxBNP4t8U"
 moodle_app_settings = {
-  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true"
-  "MOODLE_SWITCH_OFF_OAUTH"         = "true"
-  "BASIC_AUTH_ENABLED"              = "true"
+  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true" # Should be false for prod environment
+  "MOODLE_SWITCH_OFF_OAUTH"         = "true" # Should be false for prod environment
+  "BASIC_AUTH_ENABLED"              = "true" # Should be false for prod environment
+  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 
 user_management_app_settings = {

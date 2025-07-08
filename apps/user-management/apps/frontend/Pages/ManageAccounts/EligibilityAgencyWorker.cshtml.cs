@@ -23,7 +23,7 @@ public class EligibilityAgencyWorker(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EligibilityStatutoryWork();
+        BackLinkPath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.EligibilityStatutoryWork();
         IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
         return Page();
     }
@@ -40,8 +40,18 @@ public class EligibilityAgencyWorker(
 
         createAccountJourneyService.SetIsAgencyWorker(IsAgencyWorker);
 
-        return Redirect(IsAgencyWorker is false
-            ? linkGenerator.EligibilityQualification()
-            : linkGenerator.EligibilityFundingNotAvailable());
+        if (IsAgencyWorker is true)
+        {
+            createAccountJourneyService.SetIsRecentlyQualified(null);
+            return Redirect(linkGenerator.EligibilityFundingNotAvailable());
+        }
+
+        return Redirect(linkGenerator.EligibilityQualification());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        return OnGet();
     }
 }
