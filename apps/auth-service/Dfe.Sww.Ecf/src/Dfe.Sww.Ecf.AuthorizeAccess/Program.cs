@@ -302,9 +302,7 @@ builder
 
             // Add the signing certificate (private key) for signing operations
             // AND specify the *public* JWK to be used in the JWKS endpoint.
-            options.AddSigningCertificate(signingCert)
-                .AddEphemeralSigningKey() // Use signingJwk for JWKS instead of full certificate details
-                .SetJsonWebKey(signingJwk); // This tells OpenIddict to use *this* JWK for the endpoint
+            options.AddSigningKey(signingJwk);
                 
             certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
             var encryptionCert = certificateClient
