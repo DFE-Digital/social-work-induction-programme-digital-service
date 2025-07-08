@@ -40,7 +40,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
-using Microsoft.IdentityModel.Tokens.Json
+using Microsoft.IdentityModel.Tokens.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
