@@ -15,7 +15,8 @@ public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<SelectUseCase> validator,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IEditAccountJourneyService editAccountJourneyService
 ) : BasePageModel
 {
     [BindProperty] public IList<AccountType>? SelectedAccountTypes { get; set; }
@@ -38,7 +39,21 @@ public class SelectUseCase(
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnGetEditAsync(Guid id)
+    {
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null)
+        {
+            return NotFound();
+        }
+
+        BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
+        SelectedAccountTypes = accountDetails.Types;
+        Id = id;
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync(Guid? id)
     {
         var validationResult = await validator.ValidateAsync(this);
         var captureSocialWorkEnglandNumber = false;
@@ -51,7 +66,7 @@ public class SelectUseCase(
 
         if (FromChangeLink)
         {
-            SocialWorkEnglandNumberClearOrMarkForCapture(out captureSocialWorkEnglandNumber);
+            captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(id);
         }
 
         if (Id.HasValue)
@@ -81,35 +96,48 @@ public class SelectUseCase(
     public async Task<IActionResult> OnPostChangeAsync()
     {
         FromChangeLink = true;
-        return await OnPostAsync();
+        return await OnPostAsync(id);
     }
 
-    private void SocialWorkEnglandNumberClearOrMarkForCapture(out bool captureSocialWorkEnglandNumber)
+    private async Task<bool> ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Guid? id)
     {
-        var accountDetails = createAccountJourneyService.GetAccountDetails();
-        captureSocialWorkEnglandNumber = false;
-        if (SelectedAccountTypes?.Count == 1 && SelectedAccountTypes[0] == AccountType.Coordinator)
+        var accountDetails = new AccountDetails();
+        if (id is null)
         {
-            if (accountDetails is not null && accountDetails.SocialWorkEnglandNumber is not null)
+            accountDetails = createAccountJourneyService.GetAccountDetails();
+        }
+        else
+        {
+            accountDetails = await editAccountJourneyService.GetAccountDetailsAsync((Guid)id);
+        }
+
+        if (SelectedAccountTypes?.Count == 1 && SelectedAccountTypes[0] == AccountType.Coordinator
+                                             && accountDetails is not null && accountDetails.SocialWorkEnglandNumber is not null)
+        {
+            var updatedAccountDetails = new AccountDetails
             {
-                var updatedAccountDetails = new AccountDetails
-                {
-                    FirstName = accountDetails.FirstName,
-                    LastName = accountDetails.LastName,
-                    MiddleNames = accountDetails.MiddleNames,
-                    Email = accountDetails.Email,
-                    SocialWorkEnglandNumber = null,
-                    IsStaff = accountDetails.IsStaff,
-                    Types = accountDetails.Types
-                };
+                FirstName = accountDetails.FirstName,
+                LastName = accountDetails.LastName,
+                MiddleNames = accountDetails.MiddleNames,
+                Email = accountDetails.Email,
+                SocialWorkEnglandNumber = null,
+                IsStaff = accountDetails.IsStaff,
+                Types = accountDetails.Types
+            };
+
+            if (id is null)
+            {
                 createAccountJourneyService.SetAccountDetails(updatedAccountDetails);
             }
-        } else if (SelectedAccountTypes?.Contains(AccountType.Assessor) == true)
-        {
-            if (accountDetails is not null && accountDetails.SocialWorkEnglandNumber is null)
+            else
             {
-                captureSocialWorkEnglandNumber = true;
+                await editAccountJourneyService.SetAccountDetailsAsync((Guid)id, updatedAccountDetails);
             }
+
+            return false;
         }
+
+        return SelectedAccountTypes?.Contains(AccountType.Assessor) == true
+               && accountDetails is not null && accountDetails.SocialWorkEnglandNumber is null;
     }
 }

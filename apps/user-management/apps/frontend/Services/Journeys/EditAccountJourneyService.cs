@@ -60,6 +60,7 @@ public class EditAccountJourneyService(
     public async Task<AccountDetails?> GetAccountDetailsAsync(Guid accountId)
     {
         var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
+        SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
         return editAccountJourneyModel?.AccountDetails;
     }
 
