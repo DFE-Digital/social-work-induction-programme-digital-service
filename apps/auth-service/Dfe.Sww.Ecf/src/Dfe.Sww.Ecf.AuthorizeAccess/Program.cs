@@ -38,6 +38,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using OpenIddict.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
