@@ -275,7 +275,7 @@ builder
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
             var signingCert = certificateClient
-                .GetX509CertificateAsync(oneLoginConfig!.CertificateName)
+                .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
