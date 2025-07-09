@@ -35,6 +35,7 @@ builder.Services.AddGovUkFrontend(options =>
     options.RegisterDateInputModelConverter(typeof(LocalDate), new LocalDateDateInputModelConverter());
     options.RegisterDateInputModelConverter(typeof(YearMonth), new YearMonthDateInputModelConverter());
     options.ErrorSummaryGeneration = ErrorSummaryGenerationOptions.PrependToFormElements;
+    options.Rebrand = true;
 });
 builder.Services.AddCsp(nonceByteAmount: 32);
 builder
@@ -113,6 +114,8 @@ if (featureFlags.EnableForwardedHeaders)
 {
     app.UseForwardedHeaders();
 }
+
+app.UseGovUkFrontend();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
