@@ -6,6 +6,5 @@ public class DatabaseSeedOptions
     public string OrganisationName { get; init; } = string.Empty;
     public Guid PersonId { get; init; }
     public int RoleId { get; init; }
-    public string OneLoginSubject { get; init; } = string.Empty;
     public string OneLoginEmail { get; init; } = string.Empty;
 }

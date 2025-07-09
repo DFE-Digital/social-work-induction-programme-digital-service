@@ -60,23 +60,4 @@ public static class DatabaseSeeder
             ct
         );
     }
-
-    public static async Task SeedOneLoginUserAsync(DbContext db, string oneLoginSubject, string oneLoginEmail,
-        Guid personId, CancellationToken ct)
-    {
-        await db.Set<OneLoginUser>().AddIfNotExistsAsync(
-            oneLoginUser => oneLoginUser.Subject == oneLoginSubject,
-            () =>
-                new OneLoginUser
-                {
-                    Subject = oneLoginSubject,
-                    PersonId = personId,
-                    Email = oneLoginEmail,
-                    MatchRoute = OneLoginUserMatchRoute.Automatic,
-                    FirstOneLoginSignIn = DateTime.UtcNow,
-                    LastOneLoginSignIn = DateTime.UtcNow
-                },
-            ct
-        );
-    }
 }
