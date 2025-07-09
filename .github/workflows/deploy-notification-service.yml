@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-user-anageent:
+  deploy-notification-service:
     if: ${{ github.event.inputs.instance != 'None' }}
     name: Deploy Notification Service
     uses: ./.github/workflows/deploy-function-app.yml
