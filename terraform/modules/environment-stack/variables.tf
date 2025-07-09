@@ -24,57 +24,57 @@ variable "tags" {
 }
 
 variable "asp_sku_moodle" {
-  type = string
+  type        = string
   description = "The Moodle app service plan SKU"
-  default = "S3"
+  default     = "S3"
 }
 
 variable "asp_sku_services" {
-  type = string
+  type        = string
   description = "The services app service plan SKU"
-  default = "S3"
+  default     = "S3"
 }
 
 variable "asp_sku_maintenance" {
-  type = string
+  type        = string
   description = "The maintenance app service plan SKU"
-  default = "S3"
+  default     = "S3"
 }
 
 variable "moodle_default_instances" {
-  type = number
+  type        = number
   description = "The default number of instances for the Moodle app service"
-  default = 1
+  default     = 1
 }
 
 variable "moodle_minimum_instances" {
-  type = number
+  type        = number
   description = "The minimum number of instances for the Moodle app service"
-  default = 1
+  default     = 1
 }
 
 variable "moodle_maximum_instances" {
-  type = number
+  type        = number
   description = "The maximum number of instances for the Moodle app service"
-  default = 1
+  default     = 1
 }
 
 variable "service_apps_default_instances" {
-  type = number
+  type        = number
   description = "The default number of instances for the service apps app service"
-  default = 1
+  default     = 1
 }
 
 variable "service_apps_minimum_instances" {
-  type = number
+  type        = number
   description = "The minimum number of instances for the service apps app service"
-  default = 1
+  default     = 1
 }
 
 variable "service_apps_maximum_instances" {
-  type = number
+  type        = number
   description = "The maximum number of instances for the service apps app service"
-  default = 1
+  default     = 1
 }
 
 variable "admin_enabled" {
@@ -107,6 +107,11 @@ variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string
   sensitive   = true
+}
+
+variable "asp_sku_notification" {
+  description = "The app service plan SKU"
+  type        = string
 }
 
 variable "moodle_max_data_storage_size_in_gb" {

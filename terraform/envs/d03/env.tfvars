@@ -1,21 +1,22 @@
 # Enforced by central policy, so matching the correct tag means eliminating false change plans
 # This is most likely fixed at the subscription level, rather than a virtual environment within
 # subscription.
-environment_tag = "Dev"
-azure_region = "westeurope"
-environment = "development"
-resource_name_prefix = "${project_code}d03"
+environment_tag        = "Dev"
+azure_region           = "westeurope"
+environment            = "development"
+resource_name_prefix   = "${project_code}d03"
 primary_resource_group = "${project_code}d03-swip-rg"
-environment_audience = "user"
-acr_name = "${project_code}d01acr"
+environment_audience   = "user"
+acr_name               = "${project_code}d01acr"
 # The container registry is shared from the d01 instance
-acr_resource_group = "${project_code}d01-swip-rg"
-acr_sku = "Basic"
-admin_enabled = false
-asp_sku_moodle = "B2"
-asp_sku_maintenance = "B2"
-asp_sku_services = "B1"
-days_to_expire = "365"
+acr_resource_group          = "${project_code}d01-swip-rg"
+acr_sku                     = "Basic"
+admin_enabled               = false
+asp_sku_moodle              = "B2"
+asp_sku_maintenance         = "B2"
+asp_sku_services            = "B1"
+asp_sku_notification        = "B1"
+days_to_expire              = "365"
 kv_purge_protection_enabled = false
 moodle_max_data_storage_size_in_gb = 5
 moodle_instances = {

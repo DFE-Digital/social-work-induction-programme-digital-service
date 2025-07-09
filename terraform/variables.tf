@@ -231,6 +231,11 @@ variable "email_support_address" {
   sensitive   = true
 }
 
+variable "asp_sku_notification" {
+  description = "The app service SKU"
+  type        = string
+}
+
 variable "environment_audience" {
   type        = string
   description = "The type of environment. Must be one of: team, user."
