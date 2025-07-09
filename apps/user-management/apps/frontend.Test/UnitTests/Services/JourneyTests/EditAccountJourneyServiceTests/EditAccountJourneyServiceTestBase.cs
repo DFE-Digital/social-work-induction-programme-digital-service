@@ -37,7 +37,7 @@ public abstract class EditAccountJourneyServiceTestBase
 
         MockAccountService = new();
 
-        Sut = new(httpContextAccessor, MockAccountService.Object);
+        Sut = new(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator());
     }
 
     private protected void VerifyAllNoOtherCall()

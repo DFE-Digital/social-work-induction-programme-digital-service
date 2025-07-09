@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -32,6 +33,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         // Arrange
         var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
+        var expectedShowSweInput = (account.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (account.Types?.Contains(AccountType.Assessor) ?? false);
 
         var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
         var socialWorkerId = isSwe ? swe?.GetNumber().ToString() : null;
@@ -40,7 +42,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(accountDetails);
 
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountTypesAsync(account.Id)).ReturnsAsync(accountDetails.Types?.ToImmutableList());
 
         // Act
         var result = await Sut.OnGetAsync(account.Id);
@@ -53,11 +55,11 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(socialWorkerId);
-        Sut.IsStaff.Should().Be(false);
+        Sut.ShowSweInput.Should().Be(expectedShowSweInput);
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -81,58 +83,6 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     }
 
     [Fact]
-    public async Task GetChange_WhenCalled_LoadsTheView()
-    {
-        // Arrange
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
-
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(account.Id))
-            .ReturnsAsync(accountDetails);
-
-        MockEditAccountJourneyService.Setup(x => x.GetIsStaffAsync(account.Id)).ReturnsAsync(false);
-
-        // Act
-        var result = await Sut.OnGetChangeAsync(account.Id);
-
-        // Assert
-        result.Should().BeOfType<PageResult>();
-
-        Sut.Id.Should().Be(account.Id);
-        Sut.FirstName.Should().Be(account.FirstName);
-        Sut.LastName.Should().Be(account.LastName);
-        Sut.Email.Should().Be(account.Email);
-        Sut.SocialWorkEnglandNumber.Should().Be(account.SocialWorkEnglandNumber);
-        Sut.IsStaff.Should().Be(false);
-        Sut.BackLinkPath.Should()
-            .Be("/manage-accounts/confirm-account-details/" + account.Id + "?handler=Update");
-
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetIsStaffAsync(account.Id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task GetChange_WhenCalledWithInvalidId_ReturnsNotFound()
-    {
-        var id = Guid.NewGuid();
-
-        MockEditAccountJourneyService
-            .Setup(x => x.GetAccountDetailsAsync(id))
-            .ReturnsAsync((AccountDetails?)null);
-
-        // Act
-        var result = await Sut.OnGetChangeAsync(id);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-
-        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
     public async Task Post_WhenCalled_RedirectsToConfirmAccountDetails()
     {
         // Arrange
@@ -147,13 +97,14 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Setup(x =>
             x.SetAccountDetailsAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
 
         Sut.FirstName = account.FirstName;
         Sut.MiddlesNames = account.MiddleNames;
         Sut.LastName = account.LastName;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
-        Sut.IsStaff = account.IsStaff;
+        Sut.ShowSweInput = account.IsStaff;
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -176,6 +127,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
                 ),
             Times.Once
         );
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -184,16 +136,18 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     {
         // Arrange
         var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
 
         Sut.FirstName = account.FirstName;
         Sut.LastName = account.LastName;
         Sut.Email = string.Empty;
-        Sut.IsStaff = false;
+        Sut.ShowSweInput = false;
         Sut.SocialWorkEnglandNumber = "123";
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -210,6 +164,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -228,46 +183,6 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         result.Should().BeOfType<NotFoundResult>();
 
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task PostChange_WhenCalled_HasCorrectBackLink()
-    {
-        // Arrange
-        var account = AccountBuilder.WithAddOrEditAccountDetailsData().Build();
-        var accountDetails = AccountDetails.FromAccount(account);
-
-        Sut.FirstName = account.FirstName;
-        Sut.LastName = account.LastName;
-        Sut.MiddlesNames = account.MiddleNames;
-        Sut.Email = account.Email;
-        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
-        Sut.IsStaff = account.IsStaff;
-
-        MockEditAccountJourneyService
-            .Setup(x => x.IsAccountIdValidAsync(account.Id))
-            .ReturnsAsync(true);
-        MockEditAccountJourneyService.Setup(x =>
-            x.SetAccountDetailsAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails))
-        );
-
-        // Act
-        _ = await Sut.OnPostChangeAsync(account.Id);
-
-        // Assert
-        Sut.BackLinkPath.Should()
-            .Be($"/manage-accounts/confirm-account-details/{account.Id}?handler=Update");
-
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(
-            x =>
-                x.SetAccountDetailsAsync(
-                    account.Id,
-                    MoqHelpers.ShouldBeEquivalentTo(accountDetails)
-                ),
-            Times.Once
-        );
         VerifyAllNoOtherCalls();
     }
 }

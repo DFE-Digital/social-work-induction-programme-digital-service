@@ -13,16 +13,27 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
+    IEditAccountJourneyService editAccountJourneyService,
     IValidator<SelectUseCase> validator,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
-    [BindProperty]
-    public IList<AccountType>? SelectedAccountTypes { get; set; }
+    [BindProperty] public IList<AccountType>? SelectedAccountTypes { get; set; }
+    [BindProperty] public Guid? Id { get; set; }
 
-    public PageResult OnGet()
+    public async Task<PageResult> OnGetAsync(Guid? id = null)
     {
         BackLinkPath = linkGenerator.SelectAccountType();
+
+        if (id.HasValue)
+        {
+            BackLinkPath = linkGenerator.ViewAccountDetails(id.Value);
+            Id = id.Value;
+            var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id.Value);
+            SelectedAccountTypes = accountDetails?.Types;
+            return Page();
+        }
+
         SelectedAccountTypes = createAccountJourneyService.GetAccountTypes();
         return Page();
     }
@@ -43,8 +54,28 @@ public class SelectUseCase(
             SocialWorkEnglandNumberClearOrMarkForCapture(out captureSocialWorkEnglandNumber);
         }
 
+        if (Id.HasValue)
+        {
+            return await OnPostUpdateAsync(Id.Value);
+        }
+
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
         return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails());
+    }
+
+    private async Task<IActionResult> OnPostUpdateAsync(Guid id)
+    {
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (Id.HasValue == false || accountDetails == null || SelectedAccountTypes == null)
+        {
+            return Page();
+        }
+
+        accountDetails.Types = SelectedAccountTypes;
+
+        await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
+
+        return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

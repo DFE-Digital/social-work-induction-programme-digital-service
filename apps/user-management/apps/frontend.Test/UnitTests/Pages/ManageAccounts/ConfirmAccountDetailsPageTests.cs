@@ -36,7 +36,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
-        var expectedChangeLinks = new AccountChangeLinks();
+        var expectedChangeLinks = new AccountChangeLinks {};
         var expectedAccountTypes = ImmutableList.Create(AccountType.EarlyCareerSocialWorker);
         var expectedAccountLabels = new AccountLabels
         {
@@ -110,10 +110,21 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var account = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
+        var expectedChangeLinks = new AccountChangeLinks
+        {
+            FirstNameChangeLink = "/manage-accounts/add-account-details?handler=Change#FirstName",
+            MiddleNamesChangeLink = "/manage-accounts/add-account-details?handler=Change#MiddleNames",
+            LastNameChangeLink = "/manage-accounts/add-account-details?handler=Change#Lastname",
+            EmailChangeLink ="/manage-accounts/add-account-details?handler=Change#Email",
+            SocialWorkEnglandNumberChangeLink = "/manage-accounts/add-account-details?handler=Change#SocialWorkEnglandNumber",
+            ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates"
+        };
 
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(updatedAccountDetails);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks()).Returns(expectedChangeLinks);
 
         // Act
         var result = await Sut.OnGetUpdateAsync(account.Id);
@@ -129,8 +140,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         Sut.IsUpdatingAccount.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + account.Id);
+        Sut.ChangeDetailsLinks.Should().Be(expectedChangeLinks);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -173,9 +186,14 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         response.Should().NotBeNull();
         response!.Url.Should().Be("/manage-accounts");
 
-        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
-        TempData["NotificationHeader"].Should().Be("New user added");
-        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
+        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
+        notificationType.Should().Be(NotificationBannerType.Success);
+
+        var notificationHeader = TempData["NotificationHeader"]?.ToString();
+        notificationHeader.Should().Be("New user added");
+
+        var notificationMessage = TempData["NotificationMessage"]?.ToString();
+        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
@@ -215,6 +233,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountBuilder.Build();
+
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
@@ -234,25 +253,8 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         TempData["NotificationHeader"].Should().Be("User details updated");
         TempData["NotificationMessage"].Should().Be($"An email has been sent to {account.FullName}, {account.Email}");
 
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task PostUpdate_WhenCalledWithInvalidId_ReturnsNotFound()
-    {
-        var id = Guid.NewGuid();
-        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValidAsync(id)).ReturnsAsync(false);
-
-        // Act
-        var result = await Sut.OnPostUpdateAsync(id);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

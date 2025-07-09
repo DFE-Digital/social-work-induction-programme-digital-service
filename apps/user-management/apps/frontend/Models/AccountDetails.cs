@@ -5,11 +5,11 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class AccountDetails
 {
-    [Display(Name = "First name")] public string? FirstName { get; init; }
+    [Display(Name = "First name")] public string? FirstName { get; set; }
 
-    [Display(Name = "Middle names")] public string? MiddleNames { get; init; }
+    [Display(Name = "Middle names")] public string? MiddleNames { get; set; }
 
-    [Display(Name = "Last name")] public string? LastName { get; init; }
+    [Display(Name = "Last name")] public string? LastName { get; set; }
 
     [Display(Name = "Full name")]
     public string FullName => string.Join(" ",
@@ -21,9 +21,9 @@ public class AccountDetails
             }
             .Where(s => !string.IsNullOrWhiteSpace(s)));
 
-    [Display(Name = "Email address")] public string? Email { get; init; }
+    [Display(Name = "Email address")] public string? Email { get; set; }
 
-    public string? SocialWorkEnglandNumber { get; init; }
+    public string? SocialWorkEnglandNumber { get; set; }
 
     public DateOnly? ProgrammeStartDate { get; set; }
 
@@ -77,7 +77,7 @@ public class AccountDetails
 
     public int? SocialWorkQualificationEndYear { get; set; }
 
-    public IList<AccountType>? Types { get; init; }
+    public IList<AccountType>? Types { get; set; }
 
     public static AccountDetails FromAccount(Account account)
     {

@@ -101,7 +101,7 @@ public class FakeLinkGenerator()
                     current
                     + prop.Name switch
                     {
-                        "id" => "/" + prop.GetValue(routeValues),
+                        "id" => prop.GetValue(routeValues) != null ? "/" + prop.GetValue(routeValues) : string.Empty,
                         "linkingToken"
                             => QueryHelpers.AddQueryString(
                                 link,

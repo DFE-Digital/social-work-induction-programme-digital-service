@@ -20,13 +20,14 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     {
         Sut = new SocialWorkerProgrammeDates(
             MockCreateAccountJourneyService.Object,
+            MockEditAccountJourneyService.Object,
             new FakeLinkGenerator(),
             new SocialWorkerProgrammeDatesValidator()
         );
     }
 
     [Fact]
-    public void OnGet_WhenCalled_LoadsTheView()
+    public async Task OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
         var account = AccountBuilder.Build();
@@ -44,7 +45,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
             );
 
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -54,6 +55,58 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
 
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetUpdate_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+        var expectedProgrammeStartDate = new YearMonth(
+            accountDetails.ProgrammeStartDate!.Value.Year,
+            accountDetails.ProgrammeStartDate.Value.Month
+        );
+        var expectedProgrammeEndDate = new YearMonth(
+            accountDetails.ProgrammeEndDate!.Value.Year,
+            accountDetails.ProgrammeEndDate.Value.Month
+        );
+
+        // Act
+        var result = await Sut.OnGetAsync(id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.ProgrammeStartDate.Should().Be(expectedProgrammeStartDate);
+        Sut.ProgrammeEndDate.Should().Be(expectedProgrammeEndDate);
+        Sut.Id.Should().Be(id);
+        Sut.BackLinkPath.Should().Be($"/manage-accounts/view-account-details/{id}");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetUpdate_WhenCalledWithInvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync((AccountDetails?)null);
+
+        // Act
+        var result = await Sut.OnGetAsync(id);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+        Sut.Id.Should().Be(id);
+        Sut.BackLinkPath.Should().Be($"/manage-accounts/view-account-details/{id}");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -83,6 +136,42 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
 
         MockCreateAccountJourneyService.Verify(x => x.SetProgrammeStartDate(expectedStartDate), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetProgrammeEndDate(expectedEndDate), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostUpdateAsync_WhenCalledWithValidDates_RedirectsToConfirmUserDetails()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        Sut.Id = id;
+        Sut.ProgrammeStartDate = new YearMonth(2020, 1);
+        Sut.ProgrammeEndDate = new YearMonth(2050, 12);
+        var expectedStartDate = new DateOnly(
+            Sut.ProgrammeStartDate.Value.Year,
+            Sut.ProgrammeStartDate.Value.Month,
+            1);
+        var expectedEndDate = new DateOnly(
+            Sut.ProgrammeEndDate.Value.Year,
+            Sut.ProgrammeEndDate.Value.Month,
+            1);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=Update");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(id, MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

@@ -12,12 +12,15 @@ public class EditAccountJourneyModel(Account account)
     public AccountDetails AccountDetails { get; set; } =
         new()
         {
+            Types = account.Types,
             FirstName = account.FirstName,
             LastName = account.LastName,
             MiddleNames = account.MiddleNames,
             Email = account.Email,
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
-            IsStaff = account.IsStaff
+            IsStaff = account.IsStaff,
+            ProgrammeStartDate = account.ProgrammeStartDate,
+            ProgrammeEndDate = account.ProgrammeEndDate
         };
 
     public bool? IsStaff { get; set; } = account.IsStaff;
@@ -31,8 +34,10 @@ public class EditAccountJourneyModel(Account account)
             MiddleNames = AccountDetails.MiddleNames,
             LastName = AccountDetails.LastName,
             SocialWorkEnglandNumber = AccountDetails.SocialWorkEnglandNumber,
-            Types = AccountTypes,
-            Status = AccountStatus
+            Types = AccountDetails.Types?.ToImmutableList(),
+            Status = AccountStatus,
+            ProgrammeStartDate = AccountDetails.ProgrammeStartDate,
+            ProgrammeEndDate = AccountDetails.ProgrammeEndDate
         };
     }
 }
