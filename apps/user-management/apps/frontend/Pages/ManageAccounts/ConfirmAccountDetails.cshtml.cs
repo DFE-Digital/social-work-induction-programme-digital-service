@@ -123,7 +123,7 @@ public class ConfirmAccountDetails(
         }
 
         BackLinkPath = linkGenerator.EditAccountDetails(id);
-        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks();
+        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
 
         IsUpdatingAccount = true;
         Id = id;
