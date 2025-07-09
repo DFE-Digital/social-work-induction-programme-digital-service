@@ -30,7 +30,6 @@ auth_service_app_settings = {
   "DATABASESEED__ORGANISATIONNAME"             = "Test Organisation"
   "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
   "DATABASESEED__ROLEID"                       = 800
-  "DATABASESEED__ONELOGINSUBJECT"              = "urn:fdc:gov.uk:2022:KaCIMs1jlJNWz-TQ9Rq8McFXfBwy6JgYbsUNLIEpqKo"
   "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
 # Needs wiring up
