@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
@@ -20,7 +21,8 @@ public class SignInJourneyHelper(
     AuthorizeAccessLinkGenerator linkGenerator,
     IOptions<AuthorizeAccessOptions> optionsAccessor,
     IUserInstanceStateProvider userInstanceStateProvider,
-    IClock clock
+    IClock clock,
+    IOptions<DatabaseSeedOptions> databaseSeedOptionsAccessor
 )
 {
     public const string AuthenticationOnlyVtr = """["Cl.Cm"]""";
@@ -113,6 +115,12 @@ public class SignInJourneyHelper(
             oneLoginUser.FirstSignIn = clock.UtcNow;
             oneLoginUser.LastSignIn = clock.UtcNow;
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.LinkingToken;
+        }
+
+        if (oneLoginUser.PersonId is null && email == databaseSeedOptionsAccessor.Value.OneLoginEmail)
+        {
+            oneLoginUser.PersonId = databaseSeedOptionsAccessor.Value.PersonId;
+            oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Automatic;
         }
 
         await dbContext.SaveChangesAsync();
