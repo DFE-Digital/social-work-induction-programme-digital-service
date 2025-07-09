@@ -36,7 +36,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var expectedAccountDetails = AccountDetailsFaker.GenerateWithIsStaff(false);
-        var expectedChangeLinks = new AccountChangeLinks {};
+        var expectedChangeLinks = new AccountChangeLinks();
         var expectedAccountTypes = ImmutableList.Create(AccountType.EarlyCareerSocialWorker);
         var expectedAccountLabels = new AccountLabels
         {
@@ -124,7 +124,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(updatedAccountDetails);
 
-        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks()).Returns(expectedChangeLinks);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks(account.Id)).Returns(expectedChangeLinks);
 
         // Act
         var result = await Sut.OnGetUpdateAsync(account.Id);
@@ -143,7 +143,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.ChangeDetailsLinks.Should().Be(expectedChangeLinks);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
