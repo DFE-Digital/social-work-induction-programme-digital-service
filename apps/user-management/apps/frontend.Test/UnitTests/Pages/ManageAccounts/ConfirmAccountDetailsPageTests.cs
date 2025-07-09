@@ -187,14 +187,9 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         response.Should().NotBeNull();
         response!.Url.Should().Be("/manage-accounts");
 
-        var notificationType = (NotificationBannerType?)TempData["NotificationType"];
-        notificationType.Should().Be(NotificationBannerType.Success);
-
-        var notificationHeader = TempData["NotificationHeader"]?.ToString();
-        notificationHeader.Should().Be("New user added");
-
-        var notificationMessage = TempData["NotificationMessage"]?.ToString();
-        notificationMessage.Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("New user added");
+        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
