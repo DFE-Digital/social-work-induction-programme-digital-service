@@ -11,5 +11,6 @@ public static class InstallServices
     public static void AddServices(this IServiceCollection services)
     {
         services.AddTransient<INotificationCommand, EmailNotificationCommand>();
+        services.AddTransient<HealthCheckFunction>();
     }
 }

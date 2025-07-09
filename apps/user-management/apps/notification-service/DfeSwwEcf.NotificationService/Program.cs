@@ -16,6 +16,7 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
+        services.AddHealthChecks();
 
         // Register Dependencies
         services.AddValidators();

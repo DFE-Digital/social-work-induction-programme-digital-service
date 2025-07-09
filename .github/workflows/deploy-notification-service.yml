@@ -1,0 +1,38 @@
+name: Deploy Notification Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+          - d03
+          - d04
+      version-tag:
+        description: Version tag to deploy, e.g. 20250506.118df8a.dev
+        type: string
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-notification-service:
+    if: ${{ github.event.inputs.instance != 'None' }}
+    name: Deploy Notification Service
+    uses: ./.github/workflows/deploy-function-app.yml
+    secrets: inherit
+    with:
+      environment: Dev
+      environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
+      working-dir: ./apps/user-management/apps/notification-service
+      app-service-resource-group: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-swip-rg
+      web-app-name: s205${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-fa-notification-service
+      image-tag: dfe-digital-swip-digital-service/notification-service:${{ github.event.inputs.version-tag }}
