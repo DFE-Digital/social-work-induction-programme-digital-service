@@ -74,7 +74,7 @@ public class ConfirmAccountDetails(
     [Display(Name = "What is their expected programme end date?")]
     public string? ProgrammeEndDate { get; set; }
 
-    public AccountChangeLinks ChangeDetailsLinks { get; set; } = null!;
+    public AccountChangeLinks ChangeDetailsLinks { get; set; } = new();
 
     public bool IsUpdatingAccount { get; set; }
 
