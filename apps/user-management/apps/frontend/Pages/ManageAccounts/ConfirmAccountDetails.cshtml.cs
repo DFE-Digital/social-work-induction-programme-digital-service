@@ -117,10 +117,7 @@ public class ConfirmAccountDetails(
     public async Task<IActionResult> OnGetUpdateAsync(Guid id)
     {
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (updatedAccountDetails is null)
-        {
-            return NotFound();
-        }
+        if (updatedAccountDetails is null) return NotFound();
 
         BackLinkPath = linkGenerator.EditAccountDetails(id);
         ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
@@ -150,10 +147,7 @@ public class ConfirmAccountDetails(
     public async Task<IActionResult> OnPostAsync()
     {
         var accountDetails = createAccountJourneyService.GetAccountDetails();
-        if (accountDetails is null)
-        {
-            return BadRequest();
-        }
+        if (accountDetails is null) return BadRequest();
 
         var moodleRequest = new CreateMoodleUserRequest
         {
@@ -163,10 +157,7 @@ public class ConfirmAccountDetails(
             LastName = accountDetails.LastName
         };
         var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-        if (response.Successful == false)
-        {
-            return BadRequest();
-        }
+        if (response.Successful == false) return BadRequest();
 
         createAccountJourneyService.SetExternalUserId(response.Id);
 
@@ -182,10 +173,7 @@ public class ConfirmAccountDetails(
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
     {
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (accountDetails is null)
-        {
-            return BadRequest();
-        }
+        if (accountDetails is null) return BadRequest();
 
         await editAccountJourneyService.CompleteJourneyAsync(id);
 
