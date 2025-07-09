@@ -112,10 +112,11 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
         var expectedChangeLinks = new AccountChangeLinks
         {
+            AccountTypesChangeLink = "/manage-accounts/select-use-case?handler=Change",
             FirstNameChangeLink = "/manage-accounts/add-account-details?handler=Change#FirstName",
             MiddleNamesChangeLink = "/manage-accounts/add-account-details?handler=Change#MiddleNames",
             LastNameChangeLink = "/manage-accounts/add-account-details?handler=Change#Lastname",
-            EmailChangeLink ="/manage-accounts/add-account-details?handler=Change#Email",
+            EmailChangeLink = "/manage-accounts/add-account-details?handler=Change#Email",
             SocialWorkEnglandNumberChangeLink = "/manage-accounts/add-account-details?handler=Change#SocialWorkEnglandNumber",
             ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates"
         };
