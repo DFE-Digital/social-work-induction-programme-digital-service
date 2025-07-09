@@ -10,6 +10,7 @@ public record UpdatePersonRequest
 {
     public required Guid PersonId { get; set; }
     public required string FirstName { get; init; }
+    public string? MiddleNames { get; set; }
     public required string LastName { get; init; }
     public required string? EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
@@ -69,6 +70,7 @@ public static class UpdatePersonRequestExtensions
         {
             PersonId = request.PersonId,
             FirstName = request.FirstName,
+            MiddleName = request.MiddleNames,
             LastName = request.LastName,
             EmailAddress = request.EmailAddress,
             Trn = request.SocialWorkEnglandNumber,

@@ -81,6 +81,7 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         }
 
         account.FirstName = updatedAccount.FirstName;
+        account.MiddleName = updatedAccount.MiddleName;
         account.LastName = updatedAccount.LastName;
         account.EmailAddress = updatedAccount.EmailAddress;
         account.Trn = updatedAccount.Trn;
