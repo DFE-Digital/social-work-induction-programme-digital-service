@@ -4,6 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -16,17 +17,19 @@ public static class Extensions
     {
         var pgConnectionString = GetPostgresConnectionString(builder.Configuration);
 
-        var databaseSeedOptions = builder.Configuration.GetSection("DatabaseSeed").Get<DatabaseSeedOptions>();
+        builder.Services.AddOptions<DatabaseSeedOptions>().Bind(builder.Configuration.GetSection("DatabaseSeed"));
 
-        builder.Services.AddDbContext<EcfDbContext>(
-            options => EcfDbContext.ConfigureOptions(options, pgConnectionString, null, databaseSeedOptions),
-            ServiceLifetime.Scoped,
-            ServiceLifetime.Singleton
-        );
+        builder.Services.AddDbContext<EcfDbContext>((serviceProvider, options) =>
+        {
+            var opts = serviceProvider.GetRequiredService<IOptions<DatabaseSeedOptions>>().Value;
+            EcfDbContext.ConfigureOptions(options, pgConnectionString, null, opts);
+        }, ServiceLifetime.Scoped, ServiceLifetime.Singleton);
 
-        builder.Services.AddDbContextFactory<EcfDbContext>(options =>
-            EcfDbContext.ConfigureOptions(options, pgConnectionString, null, databaseSeedOptions)
-        );
+        builder.Services.AddDbContextFactory<EcfDbContext>((serviceProvider, options) =>
+        {
+            var opts = serviceProvider.GetRequiredService<IOptions<DatabaseSeedOptions>>().Value;
+            EcfDbContext.ConfigureOptions(options, pgConnectionString, null, opts);
+        });
 
         return builder;
     }
