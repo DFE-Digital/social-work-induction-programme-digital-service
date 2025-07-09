@@ -109,11 +109,6 @@ output "support_action_group_id" {
   value       = azurerm_monitor_action_group.stack_action_group.id
 }
 
-output "storage_account_access_key" {
-  description = "Access key to the storage account"
-  value       = azurerm_storage_account.sa.primary_access_key
-}
-
 output "notification_service_plan_id" {
   description = "ID of the notification app service plan"
   value       = azurerm_service_plan.asp_notification_service.id
