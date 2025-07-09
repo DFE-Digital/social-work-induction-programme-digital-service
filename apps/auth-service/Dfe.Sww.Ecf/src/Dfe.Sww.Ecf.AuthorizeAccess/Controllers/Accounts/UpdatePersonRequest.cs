@@ -15,9 +15,7 @@ public record UpdatePersonRequest
     public string? SocialWorkEnglandNumber { get; init; }
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
-
     public DateOnly? ProgrammeStartDate { get; init; }
-
     public DateOnly? ProgrammeEndDate { get; init; }
 
     // ECSW Registration Questions
