@@ -86,6 +86,8 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         account.Trn = updatedAccount.Trn;
         account.UpdatedOn = clock.UtcNow;
         account.Status = updatedAccount.Status;
+        account.ProgrammeStartDate = updatedAccount.ProgrammeStartDate;
+        account.ProgrammeEndDate = updatedAccount.ProgrammeEndDate;
 
         account.DateOfBirth = updatedAccount.DateOfBirth;
         account.UserSex = updatedAccount.UserSex;

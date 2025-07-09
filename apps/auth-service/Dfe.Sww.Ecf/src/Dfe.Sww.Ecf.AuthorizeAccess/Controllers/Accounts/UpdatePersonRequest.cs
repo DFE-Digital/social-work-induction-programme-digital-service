@@ -16,6 +16,10 @@ public record UpdatePersonRequest
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
 
+    public DateOnly? ProgrammeStartDate { get; init; }
+
+    public DateOnly? ProgrammeEndDate { get; init; }
+
     // ECSW Registration Questions
     public DateOnly? DateOfBirth { get; init; }
 
@@ -74,6 +78,8 @@ public static class UpdatePersonRequestExtensions
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
                 .ToList(),
             Status = request.Status,
+            ProgrammeStartDate = request.ProgrammeStartDate,
+            ProgrammeEndDate = request.ProgrammeEndDate,
             DateOfBirth = request.DateOfBirth,
             UserSex = request.UserSex,
             GenderMatchesSexAtBirth = request.GenderMatchesSexAtBirth,
