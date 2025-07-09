@@ -10,11 +10,14 @@ public record UpdatePersonRequest
 {
     public required Guid PersonId { get; set; }
     public required string FirstName { get; init; }
+    public string? MiddleNames { get; set; }
     public required string LastName { get; init; }
     public required string? EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
+    public DateOnly? ProgrammeStartDate { get; init; }
+    public DateOnly? ProgrammeEndDate { get; init; }
 
     // ECSW Registration Questions
     public DateOnly? DateOfBirth { get; init; }
@@ -67,6 +70,7 @@ public static class UpdatePersonRequestExtensions
         {
             PersonId = request.PersonId,
             FirstName = request.FirstName,
+            MiddleName = request.MiddleNames,
             LastName = request.LastName,
             EmailAddress = request.EmailAddress,
             Trn = request.SocialWorkEnglandNumber,
@@ -74,6 +78,8 @@ public static class UpdatePersonRequestExtensions
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })
                 .ToList(),
             Status = request.Status,
+            ProgrammeStartDate = request.ProgrammeStartDate,
+            ProgrammeEndDate = request.ProgrammeEndDate,
             DateOfBirth = request.DateOfBirth,
             UserSex = request.UserSex,
             GenderMatchesSexAtBirth = request.GenderMatchesSexAtBirth,
