@@ -43,7 +43,7 @@ jobs:
 
   optional-deploy-user-anageent:
     needs: build-and-publish-user-management-image
-    if: ${{ github.event.inputs.instance != 'None' }}
+    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
     name: Deploy User Management (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit

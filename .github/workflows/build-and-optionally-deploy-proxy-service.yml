@@ -41,7 +41,7 @@ jobs:
 
   optional-deploy-proxy-service:
     needs: build-and-publish-proxy-image
-    if: ${{ github.event.inputs.instance != 'None' }}
+    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
     name: Deploy Proxy Service (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit

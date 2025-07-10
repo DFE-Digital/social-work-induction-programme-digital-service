@@ -38,7 +38,7 @@ jobs:
 
   optional-deploy-auth-service:
     needs: build-and-publish-auth-service-image
-    if: ${{ github.event.inputs.instance != 'None' }}
+    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
     name: Deploy Auth Service (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
