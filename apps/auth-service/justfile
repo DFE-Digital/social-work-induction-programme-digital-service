@@ -45,7 +45,7 @@ test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  @true
+  @true 
 
 # Format the .NET solution and Terraform code
 format:
