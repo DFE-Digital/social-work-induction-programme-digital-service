@@ -14,6 +14,11 @@ on:
           - d02
           - d03
           - d04
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/user-management/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
@@ -34,6 +39,7 @@ jobs:
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: user-management
+      publish-image: ${{ github.event_name != 'pull_request' }}
 
   optional-deploy-user-anageent:
     needs: build-and-publish-user-management-image

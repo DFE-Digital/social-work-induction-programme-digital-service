@@ -29,6 +29,13 @@ on:
           - d02
           - d03
           - d04
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/moodle-apps-azure/**'
+      - 'apps/moodle-ddev/**'
+      - 'apps/moodle-docker/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
@@ -48,6 +55,7 @@ jobs:
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ github.event.inputs.moodle-version }};MOODLE_GOV_UK_THEME_VERSION=${{ github.event.inputs.govuk-theme-version }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: moodle-app
+      publish-image: ${{ github.event_name != 'pull_request' }}
 
   optional-deploy-moodle-app:
     needs: build-and-publish-moodle-image

@@ -14,6 +14,11 @@ on:
           - d02
           - d03
           - d04
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/proxy-app-azure/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
@@ -32,6 +37,7 @@ jobs:
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: proxy-service
+      publish-image: ${{ github.event_name != 'pull_request' }}
 
   optional-deploy-proxy-service:
     needs: build-and-publish-proxy-image

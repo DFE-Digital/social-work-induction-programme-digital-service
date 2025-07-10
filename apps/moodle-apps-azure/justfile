@@ -15,6 +15,9 @@ install-tools:
       -p 5432:5432 \
       postgres:17.4
 
+ci-install-tools:
+  @just install-tools
+
 restore:
   #!/bin/bash
   # The Moodle image build process requires these additional files to be sourced from the repo
@@ -54,13 +57,29 @@ restore:
   cp "$WEB_SERVICE_SETUP_FILE" "$DESTINATION_DIR"
   cp "$MOODLE_SCRIPTS_DIR"/* "$DESTINATION_DIR"
 
+ci-restore:
+  @just restore
+
 build:
   # No specific build steps
   @true
 
+ci-build:
+  @just build
+
+test:
+  # No specific test steps
+  @true
+
+ci-test:
+  @just test
+
 package-component:
   # No specific package steps
   @true
+
+ci-package-component:
+  @just package-component
 
 database-updates resource-group web-app-name full-image-tag:
   #!/bin/bash

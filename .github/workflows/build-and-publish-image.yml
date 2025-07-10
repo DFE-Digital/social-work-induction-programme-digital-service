@@ -33,6 +33,10 @@ on:
         type: string
         description: Dockerfile build target
         required: true
+      publish-image:
+        required: true
+        type: boolean
+        description: Whether to publish the Docker image to the registry
 
     outputs:
       docker-image-tag:
@@ -104,22 +108,27 @@ jobs:
       - name: Restore tools
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just install-tools
+        run: just ci-install-tools
 
       - name: Restore packages / files
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just restore
+        run: just ci-restore
 
       - name: Build component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just build
+        run: just ci-build
+
+      - name: Test component
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just ci-test
 
       - name: Package component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just package-component
+        run: just ci-package-component
 
       - name: Azure Container Registry login
         shell: bash
@@ -162,6 +171,7 @@ jobs:
         run: docker image inspect ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
 
       - name: Docker push
+        if: inputs.publish-image == true
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: docker push "${{ steps.get-docker-image-tag.outputs.standard-image-tag }}"
