@@ -178,9 +178,7 @@ RUN a2enmod headers
 
 # Give the cron job some html to serve - the cron job service is still an app service
 # and needs to serve something
-RUN mkdir -p /var/www/html/cron
-COPY index.html /var/www/html/cron/index.html
-RUN chown -R www-data:www-data /var/www/html/cron
+COPY --chown=www-data:www-data index.html /var/www/html/public/index.html
 
 CMD ["/app/entry-point.sh"]
 

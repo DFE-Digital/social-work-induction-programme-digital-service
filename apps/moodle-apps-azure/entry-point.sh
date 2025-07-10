@@ -23,7 +23,6 @@ log "Cron configuration, IS_CRON_JOB_ONLY: $IS_CRON_JOB_ONLY"
 if [[ "$IS_CRON_JOB_ONLY" == 'true' ]]; then
     log "Switching to cron-only mode..."
     cp /app/apache-config-cron.conf /etc/apache2/sites-available/000-default.conf
-    mv /var/www/html/public/version.txt /var/www/html/cron/version.txt
 
     # It was too involved to get cron to inherit all of the environment variables for
     # Moodle and php, so create a simple background process here. All of the necessary
