@@ -5,4 +5,5 @@ public enum RoleType
     EarlyCareerSocialWorker = 400,
     Assessor = 600,
     Coordinator = 800,
+    Administrator = 1000
 }

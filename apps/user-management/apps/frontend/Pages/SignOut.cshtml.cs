@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages;
 
-[AuthorizeRoles(RoleType.Coordinator, RoleType.Assessor, RoleType.EarlyCareerSocialWorker)]
+[AuthorizeRoles(RoleType.Coordinator, RoleType.Assessor, RoleType.EarlyCareerSocialWorker, RoleType.Administrator)]
 public class SignOut(EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public async Task<IActionResult> OnGetAsync()
