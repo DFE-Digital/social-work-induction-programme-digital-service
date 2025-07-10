@@ -11,21 +11,38 @@ install-tools:
   # We need to copy the bin folder, the .dockerignore makes it inaccessible
   @rm .dockerignore
 
+ci-install-tools:
+  @just install-tools
+
 # Restore dependencies
 restore:
   @cd {{solution-root}} && dotnet restore
   
+ci-restore:
+  @just restore
+
 # Build the .NET solution
 build:
   @cd {{solution-root}} && dotnet build --no-restore
+
+ci-build:
+  @just build
 
 # Test the .NET solution
 test:
   @cd {{solution-root}} && dotnet test
 
+ci-test:
+  pwd
+  echo {{solution-root}}
+  @cd {{solution-root}}/../frontend.Test && dotnet test
+
 # Publish the project
 package-component:
   @dotnet publish {{solution-root}} -c Release --no-restore
+
+ci-package-component:
+  @just package-component
 
 database-updates resource-group web-app-name full-image-tag:
   # None to do for user management!

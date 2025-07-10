@@ -16,7 +16,8 @@ on:
           - d04
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  # Unique group for workflow_dispatch AND unique group for each PR
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
   cancel-in-progress: true
 
 jobs:
@@ -34,10 +35,11 @@ jobs:
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: auth-service
+      publish-image: ${{ github.event_name != 'pull_request' }}
 
   optional-deploy-auth-service:
     needs: build-and-publish-auth-service-image
-    if: ${{ github.event.inputs.instance != 'None' }}
+    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
     name: Deploy Auth Service (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit

@@ -7,17 +7,36 @@ install-tools:
   # No specific install tools
   @true
 
+ci-install-tools:
+  @just install-tools
+
 restore:
   # No specific restore
   @true
+
+ci-restore:
+  @just restore
 
 build:
   # No specific build steps
   @true
 
+ci-build:
+  @just build
+
+test:
+  # No specific test steps
+  @true
+
+ci-test:
+  @just test
+
 package-component:
   # No specific package steps
   @true
+
+ci-package-component:
+  @just package-component
 
 database-updates:
   @true
