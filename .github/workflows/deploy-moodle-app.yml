@@ -44,6 +44,7 @@ jobs:
 
   deploy-moodle-cron-app:
     if: ${{ github.event.inputs.instance != 'None' }}
+    needs: deploy-moodle-app
     name: Deploy Moodle Cron App
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
