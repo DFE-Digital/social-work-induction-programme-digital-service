@@ -21,7 +21,8 @@ on:
       - 'apps/proxy-app-azure/**'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.instance }}
+  # Unique group for workflow_dispatch AND unique group for each PR
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
   cancel-in-progress: true
 
 jobs:
