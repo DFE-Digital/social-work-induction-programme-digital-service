@@ -34,6 +34,7 @@ jobs:
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: auth-service
+      publish-image: ${{ github.event_name != 'pull_request' }}
 
   optional-deploy-auth-service:
     needs: build-and-publish-auth-service-image
