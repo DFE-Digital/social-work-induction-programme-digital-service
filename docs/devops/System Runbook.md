@@ -12,11 +12,13 @@
 
 ### Upgrading
 
-1. Upgrading Moodle: The Moodle build workflow supports building from Moodle branches `405` and `500`. Select the branch you want to build from, or edit the workflow to support new branches. The resulting image can be deployed to any environment instance, though attempting to downgrade versions will result in deployment failure.
-   
-2. Upgrading GovUK Moodle theme: The Moodle build workflow currently supports theme version `v0.0.3`. More versions can be added to the drop-down as they are released. The selected theme will be built into the Moodle image and can then be deployed to an environment instance.
+1. Custom Moodle build versions: The available custom Moodle image builds can be viewed by going to the Azure portal, selecting the Azure Container Registry (currently in d01 environment) and then selecting Services -> Repositories -> dfe-digital-swip-digital-service/wa-moodle. Example image labels: 405-20250709.198d868.dev, 500-20250710.2dce568. No `.dev` means the image was built from the `main` branch.
 
-3. Downgrading: If you deploy a higher version to a Moodle environment then attempt to redeploy a lower version, the Moodle website will fail. If data loss is not an issue, simply delete the Moodle database from the PostrgeSQL flexible server in the Azure portal. (Settings -> Database, then for example `s205d01_db_moodle_primary` dependent on the environment.) Once this is done, rerun the Terraform with Plan & Apply selected. An empty Moodle database will be rebuilt and then the lower version Moodle image can be redeployed to the environment.
+2. Upgrading Moodle: The Moodle build workflow supports building from Moodle branches `405` and `500`. Select the branch you want to build from, or edit the workflow to support new branches. The resulting image can be deployed to any environment instance, though attempting to downgrade versions will result in deployment failure.
+   
+3. Upgrading GovUK Moodle theme: The Moodle build workflow currently supports theme version `v0.0.3`. More versions can be added to the drop-down as they are released. The selected theme will be built into the Moodle image and can then be deployed to an environment instance.
+
+4. Downgrading: If you deploy a higher version to a Moodle environment then attempt to redeploy a lower version, the Moodle website will fail. If data loss is not an issue, simply delete the Moodle database from the PostrgeSQL flexible server in the Azure portal. (Settings -> Database, then for example `s205d01_db_moodle_primary` dependent on the environment.) Once this is done, rerun the Terraform Deploy workflow with Plan & Apply selected. An empty Moodle database will be rebuilt and then the lower version Moodle image can be redeployed to the environment.
 
 ## Current Issues
 
