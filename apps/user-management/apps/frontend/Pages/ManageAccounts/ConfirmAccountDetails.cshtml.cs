@@ -172,6 +172,8 @@ public class ConfirmAccountDetails(
 
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
     {
+        if (!await editAccountJourneyService.IsAccountIdValidAsync(id)) return NotFound();
+
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (accountDetails is null) return BadRequest();
 

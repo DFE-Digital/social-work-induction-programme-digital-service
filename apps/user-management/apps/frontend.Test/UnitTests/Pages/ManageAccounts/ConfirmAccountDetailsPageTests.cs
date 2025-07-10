@@ -249,6 +249,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         TempData["NotificationHeader"].Should().Be("User details updated");
         TempData["NotificationMessage"].Should().Be($"An email has been sent to {account.FullName}, {account.Email}");
 
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
