@@ -39,7 +39,7 @@ public class EditAccountDetails(
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
-    public bool IsStaff { get; set; }
+    public bool ShowSweInput { get; set; }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
@@ -53,7 +53,7 @@ public class EditAccountDetails(
         Id = id;
 
         FirstName = accountDetails.FirstName;
-        MiddlesNames = accountDetails.MiddleNames;
+        MiddlesNames = accountDetails.MiddleNames ?? string.Empty;
         LastName = accountDetails.LastName;
         Email = accountDetails.Email;
 
@@ -62,16 +62,11 @@ public class EditAccountDetails(
             out var swe
         );
         SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
-        IsStaff = await editAccountJourneyService.GetIsStaffAsync(id) ?? false;
+
+        var accountTypes = await editAccountJourneyService.GetAccountTypesAsync(id);
+        ShowSweInput = (accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountTypes?.Contains(AccountType.Assessor) ?? false);
 
         return Page();
-    }
-
-    public async Task<IActionResult> OnGetChangeAsync(Guid id)
-    {
-        BackLinkPath = linkGenerator.ConfirmAccountDetailsUpdate(id);
-
-        return await OnGetAsync(id);
     }
 
     public async Task<IActionResult> OnPostAsync(Guid id)
@@ -81,16 +76,18 @@ public class EditAccountDetails(
             return NotFound();
         }
 
-        Id = id;
-        var accountDetails = new AccountDetails
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails is null)
         {
-            FirstName = FirstName,
-            LastName = LastName,
-            MiddleNames = MiddlesNames,
-            Email = Email,
-            SocialWorkEnglandNumber = SocialWorkEnglandNumber,
-            IsStaff = IsStaff
-        };
+            return BadRequest();
+        }
+
+        accountDetails.FirstName = FirstName;
+        accountDetails.MiddleNames = MiddlesNames;
+        accountDetails.LastName = LastName;
+        accountDetails.Email = Email;
+        accountDetails.SocialWorkEnglandNumber = SocialWorkEnglandNumber;
+
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)
         {
@@ -102,11 +99,5 @@ public class EditAccountDetails(
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
         return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(id));
-    }
-
-    public async Task<IActionResult> OnPostChangeAsync(Guid id)
-    {
-        BackLinkPath = linkGenerator.ConfirmAccountDetailsUpdate(id);
-        return await OnPostAsync(id);
     }
 }

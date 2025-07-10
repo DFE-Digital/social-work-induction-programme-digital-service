@@ -42,7 +42,8 @@
                     @if (!Model.IsSocialWorker)
                     {
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="#" visually-hidden-text="account details">Change
+                            <govuk-summary-list-row-action href="@LinkGenerator.SelectUseCaseChange(Model.Account.Id)" visually-hidden-text="account details">
+                                Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     }
@@ -52,7 +53,8 @@
                     <govuk-summary-list-row-value>@Html.DisplayFor(model => model.Account.FirstName)</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
                         <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                       visually-hidden-text="account details">Change
+                                                       visually-hidden-text="account details">
+                            Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
@@ -63,7 +65,8 @@
                         <govuk-summary-list-row-value>@Model.Account.MiddleNames</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
                             <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                           visually-hidden-text="account details">Change
+                                                           visually-hidden-text="account details">
+                                Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>
@@ -73,7 +76,8 @@
                     <govuk-summary-list-row-value>@Model.Account.LastName</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
                         <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                       visually-hidden-text="account details">Change
+                                                       visually-hidden-text="account details">
+                            Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
@@ -82,7 +86,8 @@
                     <govuk-summary-list-row-value>@Model.Account.Email</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
                         <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                       visually-hidden-text="account details">Change
+                                                       visually-hidden-text="account details">
+                            Change
                         </govuk-summary-list-row-action>
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
@@ -93,8 +98,8 @@
                         <govuk-summary-list-row-key>SWE registration number</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.SocialWorkEnglandNumber</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                           visually-hidden-text="account details">Change
+                            <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)" visually-hidden-text="account details">
+                                Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>
@@ -105,8 +110,8 @@
                         <govuk-summary-list-row-key>Programme start date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeStartDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                           visually-hidden-text="account details">Change
+                            <govuk-summary-list-row-action href="@LinkGenerator.SocialWorkerProgrammeDatesChange(Model.Account.Id)" visually-hidden-text="account details">
+                                Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>
@@ -114,8 +119,8 @@
                         <govuk-summary-list-row-key>Expected programme end date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeEndDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.EditAccountDetails(Model.Account.Id)"
-                                                           visually-hidden-text="account details">Change
+                            <govuk-summary-list-row-action href="@LinkGenerator.SocialWorkerProgrammeDatesChange(Model.Account.Id)" visually-hidden-text="account details">
+                                Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
                     </govuk-summary-list-row>

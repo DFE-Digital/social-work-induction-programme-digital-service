@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -8,11 +9,13 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    IAccountService accountService
+    IAccountService accountService,
+    EcfLinkGenerator linkGenerator
 ) : IEditAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IAccountService _accountService = accountService;
+    private readonly EcfLinkGenerator _linkGenerator = linkGenerator;
 
     private static string EditAccountSessionKey(Guid id) => "_editAccount-" + id;
 
@@ -132,5 +135,19 @@ public class EditAccountJourneyService(
 
         await ResetEditAccountJourneyModelAsync(accountId);
         return updatedAccount;
+    }
+
+    public AccountChangeLinks GetAccountChangeLinks(Guid id)
+    {
+        return new AccountChangeLinks
+        {
+            AccountTypesChangeLink = _linkGenerator.SelectUseCaseChange(id),
+            FirstNameChangeLink = _linkGenerator.EditAccountDetails(id),
+            MiddleNamesChangeLink = _linkGenerator.EditAccountDetails(id),
+            LastNameChangeLink = _linkGenerator.EditAccountDetails(id),
+            EmailChangeLink = _linkGenerator.EditAccountDetails(id),
+            SocialWorkEnglandNumberChangeLink = _linkGenerator.EditAccountDetails(id),
+            ProgrammeDatesChangeLink = _linkGenerator.SocialWorkerProgrammeDatesChange(id)
+        };
     }
 }

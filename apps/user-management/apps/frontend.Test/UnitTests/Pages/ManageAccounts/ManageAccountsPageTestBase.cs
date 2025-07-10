@@ -14,10 +14,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
 {
     private protected AccountBuilder AccountBuilder { get; }
     private protected AccountDetailsFaker AccountDetailsFaker { get; }
-
     private protected SocialWorkerFaker SocialWorkerFaker { get; }
-
-    private protected CreateMoodleUserRequestFaker CreateMoodleUserRequestFaker { get; }
 
     private protected Mock<ICreateAccountJourneyService> MockCreateAccountJourneyService { get; }
 

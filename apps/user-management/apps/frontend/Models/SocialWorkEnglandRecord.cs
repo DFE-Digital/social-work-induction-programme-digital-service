@@ -96,7 +96,7 @@ public sealed class SocialWorkEnglandRecord
             return false;
         }
 
-        var isCorrectLength = sweId.Length <= 6;
+        var isCorrectLength = sweId.Trim().Length <= 6;
         if (isCorrectLength == false)
         {
             socialWorkEnglandNumber = null;

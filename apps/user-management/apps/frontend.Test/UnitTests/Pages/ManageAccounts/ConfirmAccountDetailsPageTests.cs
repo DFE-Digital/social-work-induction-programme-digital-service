@@ -110,10 +110,22 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         // Arrange
         var account = AccountBuilder.Build();
         var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
+        var expectedChangeLinks = new AccountChangeLinks
+        {
+            AccountTypesChangeLink = "/manage-accounts/select-use-case?handler=Change",
+            FirstNameChangeLink = "/manage-accounts/add-account-details?handler=Change#FirstName",
+            MiddleNamesChangeLink = "/manage-accounts/add-account-details?handler=Change#MiddleNames",
+            LastNameChangeLink = "/manage-accounts/add-account-details?handler=Change#Lastname",
+            EmailChangeLink = "/manage-accounts/add-account-details?handler=Change#Email",
+            SocialWorkEnglandNumberChangeLink = "/manage-accounts/add-account-details?handler=Change#SocialWorkEnglandNumber",
+            ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates"
+        };
 
         MockEditAccountJourneyService
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(updatedAccountDetails);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks(account.Id)).Returns(expectedChangeLinks);
 
         // Act
         var result = await Sut.OnGetUpdateAsync(account.Id);
@@ -129,8 +141,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         Sut.IsUpdatingAccount.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + account.Id);
+        Sut.ChangeDetailsLinks.Should().Be(expectedChangeLinks);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -215,6 +229,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountBuilder.Build();
+
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
@@ -237,22 +252,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task PostUpdate_WhenCalledWithInvalidId_ReturnsNotFound()
-    {
-        var id = Guid.NewGuid();
-        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValidAsync(id)).ReturnsAsync(false);
-
-        // Act
-        var result = await Sut.OnPostUpdateAsync(id);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-
-        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

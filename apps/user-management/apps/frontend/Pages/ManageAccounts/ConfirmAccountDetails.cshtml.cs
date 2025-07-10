@@ -26,7 +26,8 @@ public class ConfirmAccountDetails(
     [Display(Name = "Who do you want to add?")]
     public string? UserType { get; set; }
 
-    [Display(Name = "Account type")] public IList<AccountType>? AccountTypes { get; set; }
+    [Display(Name = "Account type")]
+    public IList<AccountType>? AccountTypes { get; set; }
 
     [Display(Name = "Are they registered with Social Work England?")]
     public string? RegisteredWithSocialWorkEngland { get; set; }
@@ -41,27 +42,28 @@ public class ConfirmAccountDetails(
     public string? Qualified { get; set; }
 
     /// <summary>
-    ///     First Name
+    /// First Name
     /// </summary>
     [Display(Name = "First name")]
     public string? FirstName { get; set; }
 
-    [Display(Name = "Middle names")] public string? MiddleNames { get; set; }
+    [Display(Name = "Middle names")]
+    public string? MiddleNames { get; set; }
 
     /// <summary>
-    ///     Last Name
+    /// Last Name
     /// </summary>
     [Display(Name = "Last name")]
     public string? LastName { get; set; }
 
     /// <summary>
-    ///     Email
+    /// Email
     /// </summary>
     [Display(Name = "Email address")]
     public string? Email { get; set; }
 
     /// <summary>
-    ///     Social Work England number
+    /// Social Work England number
     /// </summary>
     [Display(Name = "Social Work England registration number")]
     public string? SocialWorkEnglandNumber { get; set; }
@@ -77,9 +79,10 @@ public class ConfirmAccountDetails(
     public bool IsUpdatingAccount { get; set; }
 
     public bool? IsStaff { get; set; }
+    public bool IsSocialWorker { get; set; }
 
     /// <summary>
-    ///     Action for confirming user details
+    /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
@@ -106,6 +109,7 @@ public class ConfirmAccountDetails(
         ProgrammeEndDate = createAccountJourneyService.GetProgrammeEndDate()?
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
         IsStaff = accountDetails?.IsStaff;
+        IsSocialWorker = AccountTypes != null && (AccountTypes.Contains(AccountType.Assessor) || AccountTypes.Contains(AccountType.EarlyCareerSocialWorker));
 
         return Page();
     }
@@ -116,20 +120,28 @@ public class ConfirmAccountDetails(
         if (updatedAccountDetails is null) return NotFound();
 
         BackLinkPath = linkGenerator.EditAccountDetails(id);
+        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
 
         IsUpdatingAccount = true;
         Id = id;
 
+        IsStaff = updatedAccountDetails.IsStaff;
+        AccountTypes = updatedAccountDetails.Types;
         FirstName = updatedAccountDetails.FirstName;
+        MiddleNames = updatedAccountDetails.MiddleNames;
         LastName = updatedAccountDetails.LastName;
         Email = updatedAccountDetails.Email;
         SocialWorkEnglandNumber = updatedAccountDetails.SocialWorkEnglandNumber;
+        ProgrammeStartDate = updatedAccountDetails.ProgrammeStartDate?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+        ProgrammeEndDate = updatedAccountDetails.ProgrammeEndDate?
+            .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         return Page();
     }
 
     /// <summary>
-    ///     Action for confirming user details
+    /// Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public async Task<IActionResult> OnPostAsync()
@@ -145,7 +157,7 @@ public class ConfirmAccountDetails(
             LastName = accountDetails.LastName
         };
         var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-        if (!response.Successful) return BadRequest();
+        if (response.Successful == false) return BadRequest();
 
         createAccountJourneyService.SetExternalUserId(response.Id);
 

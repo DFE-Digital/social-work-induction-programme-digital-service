@@ -10,11 +10,16 @@ public record UpdatePersonRequest
 {
     public required Guid PersonId { get; set; }
     public required string FirstName { get; init; }
+    public string? MiddleNames { get; init; }
     public required string LastName { get; init; }
     public required string EmailAddress { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
     public AccountStatus? Status { get; init; }
     public ImmutableList<AccountType> Roles { get; init; } = [];
+
+    public DateOnly? ProgrammeStartDate { get; init; }
+
+    public DateOnly? ProgrammeEndDate { get; init; }
 
     // ECSW Registration Questions
     public DateOnly? DateOfBirth { get; init; }

@@ -78,13 +78,6 @@ public abstract class EcfLinkGenerator(
 
     public string EditAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/EditAccountDetails", routeValues: new { id });
 
-    public string EditAccountDetailsChange(Guid id) =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/EditAccountDetails",
-            handler: "Change",
-            routeValues: new { id }
-        );
-
     public string ConfirmAccountDetails() =>
         GetRequiredPathByPage("/ManageAccounts/ConfirmAccountDetails");
 
@@ -97,13 +90,11 @@ public abstract class EcfLinkGenerator(
 
     public string ViewAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
     public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
-
-    public string SelectAccountTypeChange() =>
-        GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "Change");
+    public string SelectAccountTypeChange() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "Change");
 
     public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
     public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
-    public string SelectUseCaseChange() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase", handler: "Change");
+    public string SelectUseCaseChange(Guid? id = null) => GetRequiredPathByPage("/ManageAccounts/SelectUseCase", handler: "Change", routeValues: new { id });
     public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
     public string EligibilityInformation() => GetRequiredPathByPage("/ManageAccounts/EligibilityInformation");
     public string EligibilitySocialWorkEngland() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland");
@@ -121,6 +112,9 @@ public abstract class EcfLinkGenerator(
     public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
     public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
     public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
+
+    public string SocialWorkerProgrammeDatesChange(Guid? id = null) =>
+        GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates", handler: "Change", routeValues: new { id });
 
     // SWE registration links
     public string SocialWorkerRegistration() => GetRequiredPathByPage("/SocialWorkerRegistration/Index");

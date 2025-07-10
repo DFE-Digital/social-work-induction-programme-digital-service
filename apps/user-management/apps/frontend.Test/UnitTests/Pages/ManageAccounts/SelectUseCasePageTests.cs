@@ -18,16 +18,17 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     {
         Sut = new SelectUseCase(
             MockCreateAccountJourneyService.Object,
+            MockEditAccountJourneyService.Object,
             new SelectUseCaseValidator(),
             new FakeLinkGenerator()
         );
     }
 
     [Fact]
-    public void OnGet_WhenCalled_LoadsTheView()
+    public async Task OnGet_WhenCalled_LoadsTheView()
     {
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -36,6 +37,30 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         Sut.BackLinkPath.Should().Be("/manage-accounts/select-account-type");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGet_WhenCalledWithId_LoadsTheView()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnGetAsync(id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.SelectedAccountTypes.Should().BeEquivalentTo(accountDetails.Types);
+        Sut.BackLinkPath.Should().Be($"/manage-accounts/view-account-details/{id}");
+        Sut.Id.Should().Be(id);
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -148,6 +173,34 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         redirectResult!.Url.Should().Be("/manage-accounts/add-account-details");
         MockCreateAccountJourneyService.Verify(x => x.SetAccountTypes(It.IsAny<List<AccountType>>()), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithId_RedirectsToPage()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+
+        Sut.Id = id;
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=Update");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(id, MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

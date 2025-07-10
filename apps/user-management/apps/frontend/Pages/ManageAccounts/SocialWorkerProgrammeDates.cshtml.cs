@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -8,7 +7,6 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using FluentValidation;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -19,6 +17,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 [AuthorizeRoles(RoleType.Coordinator)]
 public class SocialWorkerProgrammeDates(
     ICreateAccountJourneyService createAccountJourneyService,
+    IEditAccountJourneyService editAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<SocialWorkerProgrammeDates> validator) : BasePageModel
 {
@@ -32,21 +31,50 @@ public class SocialWorkerProgrammeDates(
     [Required(ErrorMessage = "Enter an expected programme end date")]
     public YearMonth? ProgrammeEndDate { get; set; }
 
-    public PageResult OnGet()
+    [BindProperty]
+    public Guid? Id { get; set; }
+
+    public async Task<IActionResult> OnGetAsync([FromQuery] Guid? id = null)
     {
+        if (id.HasValue)
+        {
+            return await OnGetUpdateAsync(id.Value);
+        }
+
         BackLinkPath = linkGenerator.AddAccountDetails();
 
-        DateOnly? retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
-
+        var retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
         ProgrammeStartDate = retrievedStartDate.HasValue
             ? new YearMonth(retrievedStartDate.Value.Year, retrievedStartDate.Value.Month)
-            : (YearMonth?)null;
+            : null;
 
-        DateOnly? retrievedEndDate = createAccountJourneyService.GetProgrammeEndDate();
-
+        var retrievedEndDate = createAccountJourneyService.GetProgrammeEndDate();
         ProgrammeEndDate = retrievedEndDate.HasValue
             ? new YearMonth(retrievedEndDate.Value.Year, retrievedEndDate.Value.Month)
-            : (YearMonth?)null;
+            : null;
+
+        return Page();
+    }
+
+    private async Task<IActionResult> OnGetUpdateAsync(Guid id)
+    {
+        Id = id;
+        BackLinkPath = linkGenerator.ViewAccountDetails(id);
+
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (accountDetails?.ProgrammeStartDate is null || accountDetails.ProgrammeEndDate is null)
+        {
+            return NotFound();
+        }
+
+        ProgrammeStartDate = new YearMonth(
+            accountDetails.ProgrammeStartDate.Value.Year,
+            accountDetails.ProgrammeStartDate.Value.Month
+        );
+        ProgrammeEndDate = new YearMonth(
+            accountDetails.ProgrammeEndDate.Value.Year,
+            accountDetails.ProgrammeEndDate.Value.Month
+        );
 
         return Page();
     }
@@ -61,8 +89,13 @@ public class SocialWorkerProgrammeDates(
 
         if (!ModelState.IsValid || !result.IsValid)
         {
-            BackLinkPath = linkGenerator.AddAccountDetails();
+            BackLinkPath = Id.HasValue ? linkGenerator.ViewAccountDetails(Id.Value) : linkGenerator.AddAccountDetails();
             return Page();
+        }
+
+        if (Id.HasValue)
+        {
+            return await OnPostUpdateAsync(Id.Value);
         }
 
         if (ProgrammeStartDate.HasValue && ProgrammeEndDate.HasValue)
@@ -75,5 +108,24 @@ public class SocialWorkerProgrammeDates(
         }
 
         return Redirect(linkGenerator.ConfirmAccountDetails());
+    }
+
+    private async Task<IActionResult> OnPostUpdateAsync(Guid id)
+    {
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (Id.HasValue == false || accountDetails is null || !ProgrammeStartDate.HasValue || !ProgrammeEndDate.HasValue)
+        {
+            return Page();
+        }
+
+        var dateOnlyStartDate = new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
+        var dateOnlyEndDate = new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
+
+        accountDetails.ProgrammeStartDate = dateOnlyStartDate;
+        accountDetails.ProgrammeEndDate = dateOnlyEndDate;
+
+        await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
+
+        return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
     }
 }
