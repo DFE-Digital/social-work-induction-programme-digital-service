@@ -86,13 +86,6 @@
                                     Home
                                 </a>
                             </li>
-                            @{
-                                if (Context.User.Identity?.IsAuthenticated == true)
-                                {
-                                    <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage users" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
-                                    <header-link is-active-class="@Html.IsActive("/ManageLearnerRecord")" href="#" text="Manage learner records"></header-link>
-                                }
-                            }
                         </ul>
                     </nav>
                 </div>

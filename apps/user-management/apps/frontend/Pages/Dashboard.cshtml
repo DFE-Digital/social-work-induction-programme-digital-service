@@ -1,0 +1,16 @@
+@page
+@model Dashboard
+
+@{
+    Model.Title = "Dashboard";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <govuk-cards
+            heading="Dashboard"
+            items="Model.Items"
+            columns="0">
+        </govuk-cards>
+    </div>
+</div>

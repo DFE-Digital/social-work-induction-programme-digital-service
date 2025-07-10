@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -37,7 +38,7 @@ public class IndexTests : PageModelTestBase<Index>
     {
         // Arrange
         HttpContext.User = new ClaimsPrincipalBuilder().WithName(UserConstants.UserName)
-            .WithEmail(UserConstants.UserEmail).WithRole(AccountType.EarlyCareerSocialWorker).Build();
+            .WithEmail(UserConstants.UserEmail).WithRole(RoleType.EarlyCareerSocialWorker).Build();
 
         // Act
         var result = Sut.OnGet();

@@ -34,6 +34,8 @@ public abstract class EcfLinkGenerator(
 
     public string Welcome() => GetRequiredPathByPage("/Welcome");
 
+    public string Dashboard() => GetRequiredPathByPage("/Dashboard");
+
     public string ManageAccounts(int? offset = 0, int? pageSize = 10) =>
         GetRequiredPathByPage("/ManageAccounts/Index", routeValues: new { offset, pageSize });
 

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -8,13 +9,13 @@ public class ClaimsPrincipalBuilder
     private const string AuthenticationType = "TestAuthType";
     private readonly List<Claim> _claims = [];
 
-    public ClaimsPrincipalBuilder WithRole(AccountType role)
+    public ClaimsPrincipalBuilder WithRole(RoleType role)
     {
         _claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
         return this;
     }
 
-    public ClaimsPrincipalBuilder WithRoles(IEnumerable<AccountType> roles)
+    public ClaimsPrincipalBuilder WithRoles(IEnumerable<RoleType> roles)
     {
         foreach (var role in roles) WithRole(role);
         return this;
