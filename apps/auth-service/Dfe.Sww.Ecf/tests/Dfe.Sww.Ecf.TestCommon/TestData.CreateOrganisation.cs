@@ -32,4 +32,17 @@ public partial class TestData
 
         return organisation;
     }
+
+     public async Task<List<Organisation>> CreateOrganisations(int count)
+        {
+            var results = new List<Organisation>();
+
+            for (var i = 0; i < count; i++)
+            {
+                var name = Faker.Name.First();
+                results[i] = await CreateOrganisation(name);
+            }
+
+            return results;
+        }
 }

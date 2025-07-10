@@ -1,3 +1,5 @@
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisations;
+
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 
 public class Organisation
@@ -9,5 +11,7 @@ public class Organisation
     public required Int64 ExternalOrganisationId { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime? UpdatedOn { get; set; }
+    public int? LocalAuthorityCode { get; set; }
+    public OrganisationType? Type { get; set; }
     public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
 }
