@@ -78,7 +78,9 @@ jobs:
       version-endpoint-path: /version.txt
 
   optional-deploy-moodle-cron-app:
-    needs: build-and-publish-moodle-image
+    needs: 
+      - build-and-publish-moodle-image
+      - optional-deploy-moodle-app
     if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
     name: Deploy Moodle Cron App (optional)
     uses: ./.github/workflows/deploy-app-service.yml
