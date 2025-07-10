@@ -51,8 +51,8 @@ jobs:
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
       working-dir: ./apps/moodle-apps-azure
       docker-image-name: wa-moodle
-      base-image-version: "${{ github.event.inputs.moodle-version }}"
-      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ github.event.inputs.moodle-version }};MOODLE_GOV_UK_THEME_VERSION=${{ github.event.inputs.govuk-theme-version }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
+      base-image-version: "${{ github.event.inputs.moodle-version || '405' }}"
+      build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }};MOODLE_BRANCH_VERSION=${{ github.event.inputs.moodle-version || '405' }};MOODLE_GOV_UK_THEME_VERSION=${{ github.event.inputs.govuk-theme-version || 'v0.0.3' }};MOODLE_OIDC_PLUGIN_RELEASE_URL=${{ vars.MOODLE_OIDC_PLUGIN_RELEASE_URL }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"
       build-target: moodle-app
       publish-image: ${{ github.event_name != 'pull_request' }}
