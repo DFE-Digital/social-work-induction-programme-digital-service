@@ -182,10 +182,6 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
     {
         // Arrange
         var id = Guid.NewGuid();
-        var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
-
-        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
 
         Sut.Id = id;
         Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
@@ -199,8 +195,77 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=Update");
 
+        MockEditAccountJourneyService.Verify(x => x.SetAccountTypesAsync(id, MoqHelpers.ShouldBeEquivalentTo(Sut.SelectedAccountTypes)), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithIdFromChangeSwitchFromCoordinatorToAssessor_RedirectsToEditAccountDetails()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes([AccountType.Coordinator])
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+
+        Sut.FromChangeLink = true;
+        Sut.Id = id;
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-accounts/edit-account-details/{id}");
+
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(id, MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountTypesAsync(id, MoqHelpers.ShouldBeEquivalentTo(Sut.SelectedAccountTypes)), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithIdFromChangeSwitchFromAssessorToCoordinator_RedirectsToConfirmDetails()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithTypes([AccountType.Assessor])
+            .WithSocialWorkEnglandNumber()
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
+
+
+        Sut.FromChangeLink = true;
+        Sut.Id = id;
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
+
+        var updatedAccountDetails = accountDetails;
+        updatedAccountDetails.SocialWorkEnglandNumber = null;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=Update");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountTypesAsync(id, MoqHelpers.ShouldBeEquivalentTo(Sut.SelectedAccountTypes)), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(id, MoqHelpers.ShouldBeEquivalentTo(updatedAccountDetails)), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
