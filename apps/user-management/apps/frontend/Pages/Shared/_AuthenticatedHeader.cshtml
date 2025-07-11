@@ -119,16 +119,13 @@
                     </button>
                     <nav aria-label="Social work induction programme service menu">
                         <ul class="service-header__nav-list service-header__nav" id="service-header__nav" data-open-class="service-header__nav--open">
-                            <li class="service-header__nav-list-item @Html.IsActive("/Index")">
-                                <a class="service-header__nav-list-item-link" href="@LinkGenerator.Home()">
-                                    Home
-                                </a>
-                            </li>
                             @{
                                 if (Context.User.Identity?.IsAuthenticated == true)
                                 {
+                                    <header-link is-active-class="@Html.IsActive("/Dashboard")" href="@LinkGenerator.Dashboard()" text="Dashboard" is-visible="@User.IsInRole(RoleType.Administrator.ToString())"></header-link>
+                                    <header-link is-active-class="@Html.IsActive("/ManageOrganisations")" href="@LinkGenerator.Dashboard()" text="Manage organisations" is-visible="@User.IsInRole(RoleType.Administrator.ToString())"></header-link> // TODO update href with correct method once page is built
+                                    <header-link is-active-class="@Html.IsActive("/Index")" href="@LinkGenerator.Home()" text="Home" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
                                     <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage users" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
-                                    <header-link is-active-class="@Html.IsActive("/ManageLearnerRecord")" href="#" text="Manage learner records"></header-link>
                                 }
                             }
                         </ul>

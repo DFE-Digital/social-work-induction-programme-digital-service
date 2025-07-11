@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -15,6 +16,11 @@ public class SignIn(EcfLinkGenerator linkGenerator, IAuthServiceClient authServi
         if (isEcswRegistered == false)
         {
             return Redirect(linkGenerator.SocialWorkerRegistration());
+        }
+
+        if (HttpContext.User.Identity?.IsAuthenticated == true && User.IsInRole(RoleType.Administrator.ToString()))
+        {
+            return Redirect(linkGenerator.Dashboard());
         }
 
         return Redirect(linkGenerator.Home());
