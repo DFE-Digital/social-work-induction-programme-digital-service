@@ -3,5 +3,5 @@
 public enum OrganisationType
 {
     Unknown = 0,
-    Leeds = 1
+    LocalAuthority = 1
 }
