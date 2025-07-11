@@ -18,6 +18,7 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.TagHelpers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
+using Dfe.Sww.Ecf.Core.Services.Organisations;
 using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Filters;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
@@ -421,6 +422,7 @@ builder.Services
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()
+    .AddScoped<IOrganisationService, OrganisationService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
     .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value)
     .AddSingleton(sp => sp.GetRequiredService<IOptions<OneLoginConfiguration>>().Value);
