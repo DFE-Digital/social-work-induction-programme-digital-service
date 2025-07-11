@@ -33,7 +33,7 @@ public class OrganisationsOperationsTests
     {
         // Arrange
         var route = "/api/Organisations";
-        var organisations = new List<Organisation>
+        var organisations = new List<OrganisationDto>
         {
             new()
             {
@@ -48,7 +48,7 @@ public class OrganisationsOperationsTests
         };
 
         var paginationRequest = new PaginationRequest(0, 10);
-        var paginationResponse = new PaginationResult<Organisation>
+        var paginationResponse = new PaginationResult<OrganisationDto>
         {
             Records = organisations,
             MetaData = new PaginationMetaData
