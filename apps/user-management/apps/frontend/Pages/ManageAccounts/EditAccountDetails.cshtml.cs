@@ -63,9 +63,8 @@ public class EditAccountDetails(
         );
         SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
 
-        var accountTypes = await editAccountJourneyService.GetAccountTypesAsync(id);
+        var accountTypes = accountDetails.Types;
         ShowSweInput = (accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountTypes?.Contains(AccountType.Assessor) ?? false);
-
         return Page();
     }
 
@@ -87,6 +86,9 @@ public class EditAccountDetails(
         accountDetails.LastName = LastName;
         accountDetails.Email = Email;
         accountDetails.SocialWorkEnglandNumber = SocialWorkEnglandNumber;
+
+        var accountTypes = accountDetails.Types;
+        ShowSweInput = (accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountTypes?.Contains(AccountType.Assessor) ?? false);
 
         var result = await validator.ValidateAsync(accountDetails);
         if (!result.IsValid)

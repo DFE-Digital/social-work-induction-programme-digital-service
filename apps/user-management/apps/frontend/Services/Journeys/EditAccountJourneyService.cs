@@ -43,6 +43,7 @@ public class EditAccountJourneyService(
         }
 
         editAccountJourneyModel = new EditAccountJourneyModel(account);
+        SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
         return editAccountJourneyModel;
     }
 
@@ -51,16 +52,15 @@ public class EditAccountJourneyService(
         return await GetEditAccountJourneyModelAsync(accountId) is not null;
     }
 
-    public async Task<ImmutableList<AccountType>?> GetAccountTypesAsync(Guid accountId)
+    public async Task<IList<AccountType>?> GetAccountTypesAsync(Guid accountId)
     {
         var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
-        return editAccountJourneyModel?.AccountTypes;
+        return editAccountJourneyModel?.AccountDetails.Types;
     }
 
     public async Task<AccountDetails?> GetAccountDetailsAsync(Guid accountId)
     {
         var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
-        SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
         return editAccountJourneyModel?.AccountDetails;
     }
 
@@ -84,7 +84,7 @@ public class EditAccountJourneyService(
         var editAccountJourneyModel =
             await GetEditAccountJourneyModelAsync(accountId)
             ?? throw AccountNotFoundException(accountId);
-        editAccountJourneyModel.AccountTypes = accountTypes.ToImmutableList();
+        editAccountJourneyModel.AccountDetails.Types = accountTypes.ToImmutableList();
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
     }
 

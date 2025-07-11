@@ -6,7 +6,6 @@ public class EditAccountJourneyModel(Account account)
 {
     public Account Account { get; } = account;
 
-    public ImmutableList<AccountType>? AccountTypes { get; set; } = account.Types;
     public AccountStatus? AccountStatus { get; set; } = account.Status;
 
     public AccountDetails AccountDetails { get; set; } =

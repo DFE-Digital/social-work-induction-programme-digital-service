@@ -15,8 +15,7 @@ public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<SelectUseCase> validator,
-    EcfLinkGenerator linkGenerator,
-    IEditAccountJourneyService editAccountJourneyService
+    EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty] public IList<AccountType>? SelectedAccountTypes { get; set; }
@@ -39,21 +38,7 @@ public class SelectUseCase(
         return Page();
     }
 
-    public async Task<IActionResult> OnGetEditAsync(Guid id)
-    {
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (accountDetails is null)
-        {
-            return NotFound();
-        }
-
-        BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
-        SelectedAccountTypes = accountDetails.Types;
-        Id = id;
-        return Page();
-    }
-
-    public async Task<IActionResult> OnPostAsync(Guid? id)
+    public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
         var captureSocialWorkEnglandNumber = false;
@@ -66,37 +51,34 @@ public class SelectUseCase(
 
         if (FromChangeLink)
         {
-            captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(id);
+            captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Id);
         }
 
         if (Id.HasValue)
         {
-            return await OnPostUpdateAsync(Id.Value);
+            return await OnPostUpdateAsync(captureSocialWorkEnglandNumber);
         }
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
         return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails());
     }
 
-    private async Task<IActionResult> OnPostUpdateAsync(Guid id)
+    private async Task<IActionResult> OnPostUpdateAsync(bool captureSocialWorkEnglandNumber)
     {
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (Id.HasValue == false || accountDetails == null || SelectedAccountTypes == null)
+        if (Id.HasValue == false || SelectedAccountTypes == null)
         {
             return Page();
         }
 
-        accountDetails.Types = SelectedAccountTypes;
+        await editAccountJourneyService.SetAccountTypesAsync(Id.Value, SelectedAccountTypes);
 
-        await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
-
-        return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
+        return Redirect(captureSocialWorkEnglandNumber ? linkGenerator.EditAccountDetails(Id.Value) : linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
     }
 
     public async Task<IActionResult> OnPostChangeAsync()
     {
         FromChangeLink = true;
-        return await OnPostAsync(id);
+        return await OnPostAsync();
     }
 
     private async Task<bool> ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Guid? id)
