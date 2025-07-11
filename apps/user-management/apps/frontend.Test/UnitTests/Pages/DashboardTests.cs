@@ -33,7 +33,7 @@ public class DashboardTests : PageModelTestBase<Dashboard>
     public void OnGet_WhenCalledWithItemForManageOrganisations_IncludesItem()
     {
         // Act
-        var result = Sut.OnGet();
+        Sut.OnGet();
 
         // Assert
         Assert.NotNull(Sut.Items);
