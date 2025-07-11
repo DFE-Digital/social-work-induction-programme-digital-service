@@ -20,7 +20,8 @@ public class SignIn(EcfLinkGenerator linkGenerator, IAuthServiceClient authServi
 
         if (HttpContext.User.Identity?.IsAuthenticated == true && User.IsInRole(RoleType.Administrator.ToString()))
         {
-            return Redirect(linkGenerator.Dashboard()); }
+            return Redirect(linkGenerator.Dashboard());
+        }
 
         return Redirect(linkGenerator.Home());
     }
