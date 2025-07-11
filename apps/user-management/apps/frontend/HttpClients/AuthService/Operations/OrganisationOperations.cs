@@ -26,16 +26,16 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
-        var persons = JsonSerializer.Deserialize<PaginationResult<OrganisationDto>>(
+        var organisations = JsonSerializer.Deserialize<PaginationResult<OrganisationDto>>(
             response,
             SerializerOptions
         );
 
-        if (persons is null)
+        if (organisations is null)
         {
             throw new InvalidOperationException("Failed to get organisations.");
         }
 
-        return persons;
+        return organisations;
     }
 }

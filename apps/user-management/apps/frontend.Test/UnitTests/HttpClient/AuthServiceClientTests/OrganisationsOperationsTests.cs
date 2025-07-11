@@ -1,13 +1,11 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
-using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
-using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AuthServiceClientTests;
 
