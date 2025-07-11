@@ -56,14 +56,14 @@ public class SelectUseCase(
 
         if (Id.HasValue)
         {
-            return await OnPostUpdateAsync(captureSocialWorkEnglandNumber);
+            return await OnPostUpdateAsync(Id.Value, captureSocialWorkEnglandNumber);
         }
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
         return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails());
     }
 
-    private async Task<IActionResult> OnPostUpdateAsync(bool captureSocialWorkEnglandNumber)
+    private async Task<IActionResult> OnPostUpdateAsync(Guid id, bool captureSocialWorkEnglandNumber)
     {
         if (Id.HasValue == false || SelectedAccountTypes == null)
         {
