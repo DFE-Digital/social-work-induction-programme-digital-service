@@ -33,7 +33,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         // Arrange
         var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        var expectedShowSweInput = (account.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (account.Types?.Contains(AccountType.Assessor) ?? false);
+        var expectedShowSweInput = (accountDetails.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountDetails.Types?.Contains(AccountType.Assessor) ?? false);
 
         var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
         var socialWorkerId = isSwe ? swe?.GetNumber().ToString() : null;
@@ -59,7 +59,6 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetAccountTypesAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -90,6 +89,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
             .WithAddOrEditAccountDetailsData()
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
+        var expectedShowSweInput = (accountDetails.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountDetails.Types?.Contains(AccountType.Assessor) ?? false);
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
@@ -104,7 +104,6 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName = account.LastName;
         Sut.Email = account.Email;
         Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
-        Sut.ShowSweInput = account.IsStaff;
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -117,7 +116,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         redirectResult!
             .Url.Should()
             .Be("/manage-accounts/confirm-account-details/" + account.Id + "?handler=Update");
-
+        Sut.ShowSweInput.Should().Be(expectedShowSweInput);
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(
             x =>

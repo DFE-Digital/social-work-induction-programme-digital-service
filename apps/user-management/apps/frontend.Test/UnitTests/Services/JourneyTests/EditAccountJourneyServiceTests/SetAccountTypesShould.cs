@@ -15,7 +15,7 @@ public class SetAccountTypesShould : EditAccountJourneyServiceTestBase
         var originalAccount = AccountBuilder.Build();
 
         var updatedAccount = AccountBuilder.Build();
-        var editedAccountTypes = new EditAccountJourneyModel(updatedAccount).AccountTypes!;
+        var editedAccountTypes = new EditAccountJourneyModel(updatedAccount).AccountDetails.Types ?? new List<AccountType>();
 
         MockAccountService
             .Setup(x => x.GetByIdAsync(originalAccount.Id))
@@ -31,7 +31,7 @@ public class SetAccountTypesShould : EditAccountJourneyServiceTestBase
         );
 
         editAccountJourneyModel.Should().NotBeNull();
-        editAccountJourneyModel!.AccountTypes.Should().BeEquivalentTo(editedAccountTypes);
+        editAccountJourneyModel!.AccountDetails.Types.Should().BeEquivalentTo(editedAccountTypes);
 
         MockAccountService.Verify(x => x.GetByIdAsync(originalAccount.Id), Times.Once);
         VerifyAllNoOtherCall();

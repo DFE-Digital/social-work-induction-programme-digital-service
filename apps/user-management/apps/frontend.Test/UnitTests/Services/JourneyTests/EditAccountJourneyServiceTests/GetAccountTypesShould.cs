@@ -24,7 +24,7 @@ public class GetAccountTypesShould : EditAccountJourneyServiceTestBase
         // Assert
         response.Should().NotBeNull();
         response.Should().BeOfType<ImmutableList<AccountType>?>();
-        response.Should().BeEquivalentTo(expected.AccountTypes);
+        response.Should().BeEquivalentTo(expected.AccountDetails.Types);
 
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         VerifyAllNoOtherCall();
