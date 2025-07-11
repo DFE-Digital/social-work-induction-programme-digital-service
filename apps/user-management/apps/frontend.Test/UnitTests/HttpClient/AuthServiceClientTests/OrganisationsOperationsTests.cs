@@ -37,8 +37,6 @@ public class OrganisationsOperationsTests
                 OrganisationId = Guid.NewGuid(),
                 OrganisationName = "test org",
                 ExternalOrganisationId = 2,
-                CreatedOn = DateTime.UtcNow,
-                UpdatedOn = DateTime.UtcNow,
                 LocalAuthorityCode = 123,
                 Type = OrganisationType.LocalAuthority
             }
