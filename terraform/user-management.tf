@@ -32,9 +32,10 @@ module "user_management" {
     "OIDC__AUTHORITYURL"                      = module.auth_service.front_door_app_url
     "OIDC__CLIENTID"                          = var.auth_service_client_id
     "OIDC__CLIENTSECRET"                      = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.auth_service_client_secret.name})"
-    "SOCIALWORKENGLANDCLIENTOPTIONS__BASEURL" = "TBD" # TODO: SWE API usage deprioritised
+    "SOCIALWORKENGLANDCLIENTOPTIONS__BASEURL" = "https://temp.placeholder.url.com" # TODO: SWE API usage deprioritised
     "AUTHCLIENTOPTIONS__BASEURL"              = module.auth_service.front_door_app_url
     "MOODLECLIENTOPTIONS__BASEURL"            = "${module.web_app_moodle["primary"].front_door_app_url}/webservice/rest/server.php"
+    "NOTIFICATIONCLIENTOPTIONS__BASEURL"      = "https://temp.placeholder.url.com" # TODO: Notifications service deployment
     "BASIC_AUTH_USER"                         = var.basic_auth_user
     "BASIC_AUTH_PASSWORD"                     = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
     DOCKER_ENABLE_CI                          = "false" # Github will control CI, not Azure
