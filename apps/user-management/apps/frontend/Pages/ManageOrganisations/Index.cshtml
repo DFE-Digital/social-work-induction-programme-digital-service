@@ -13,7 +13,7 @@
 
         <h1 class="govuk-heading-l">Manage organisations</h1>
 
-        @if (Model.Organisation?.Any() == false)
+        @if (Model.Organisations?.Any() == false)
         {
             <p class="govuk-body">On this page, you can add and manage organisations.</p>
             <p class="govuk-body">You have not added any organisations yet.</p>
@@ -22,29 +22,29 @@
         @* TODO update href when page is added *@
         <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new organisation</govuk-button-link>
 
-        @if (Model.Organisation?.Any() == true)
+        @if (Model.Organisations?.Any() == true)
         {
             <table class="govuk-table">
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
-                        <label asp-for="@Model.Organisation[0].OrganisationName"></label>
+                        <label asp-for="@Model.Organisations[0].OrganisationName"></label>
                     </th>
                     <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
-                        <label asp-for="@Model.Organisation[0].LocalAuthorityCode"></label>
+                        <label asp-for="@Model.Organisations[0].LocalAuthorityCode"></label>
                     </th>
                     <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
-                        <label asp-for="@Model.Organisation[0].Type"></label>
+                        <label asp-for="@Model.Organisations[0].Type"></label>
                     </th>
                     <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
                     </th>
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                @foreach (var account in Model.Organisation)
+                @foreach (var account in Model.Organisations)
                 {
                     <tr class="govuk-table__row">
-                        <td class="govuk-table__cell" data-test-class="account-name">
+                        <td class="govuk-table__cell" data-test-class="organisation-name">
                             @* TODO update asp-page when page is added *@
                             <a title="View details of @account.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@account.OrganisationId">@account.OrganisationName</a>
                         </td>

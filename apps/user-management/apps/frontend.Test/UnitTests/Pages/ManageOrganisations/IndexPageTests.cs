@@ -49,8 +49,8 @@ public class IndexPageTests : ManageOrganisationsPageTestBase<ManageOrganisation
 
         // Assert
         result.Should().BeOfType<PageResult>();
-        Sut.Organisation.Should().NotBeEmpty();
-        Sut.Organisation.Should().BeEquivalentTo(expectedOrganisations);
+        Sut.Organisations.Should().NotBeEmpty();
+        Sut.Organisations.Should().BeEquivalentTo(expectedOrganisations);
         Sut.Pagination.Should().BeEquivalentTo(paginationResponse.MetaData);
 
         MockOrganisationService.Verify(x => x.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)), Times.Once);

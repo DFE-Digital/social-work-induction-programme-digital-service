@@ -17,7 +17,7 @@ public class Index(IOrganisationService organisationService) : BasePageModel
     [FromQuery]
     public int PageSize { get; set; } = 10;
 
-    public IList<Organisation>? Organisation { get; set; }
+    public IList<Organisation>? Organisations { get; set; }
 
     public PaginationMetaData? Pagination { get; set; }
 
@@ -27,7 +27,7 @@ public class Index(IOrganisationService organisationService) : BasePageModel
             new PaginationRequest(Offset, PageSize)
         );
 
-        Organisation = paginatedResults.Records.ToList();
+        Organisations = paginatedResults.Records.ToList();
         Pagination = paginatedResults.MetaData;
 
         return Page();

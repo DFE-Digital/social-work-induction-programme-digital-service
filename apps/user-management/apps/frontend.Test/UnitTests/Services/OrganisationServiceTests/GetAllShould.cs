@@ -1,9 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.AccountServiceTests;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -13,7 +11,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.OrganisationServiceTests;
 public class GetAllShould : OrganisationAccountServiceTestBase
 {
     [Fact]
-    public async Task WhenCalled_ReturnAllOrgnisations()
+    public async Task WhenCalled_ReturnsAllOrganisations()
     {
         // Arrange
         var organisations = OrganisationBuilder.BuildMany(10);
