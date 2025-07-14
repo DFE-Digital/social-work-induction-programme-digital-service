@@ -21,5 +21,6 @@ public static class InstallServices
         services.AddTransient<IAccountService, AccountService>();
         services.AddTransient<ISocialWorkEnglandService, SocialWorkEnglandService>();
         services.AddTransient<ISocialWorkerValidatorService, SocialWorkerValidatorService>();
+        services.AddTransient<IOrganisationService, OrganisationService>();
     }
 }

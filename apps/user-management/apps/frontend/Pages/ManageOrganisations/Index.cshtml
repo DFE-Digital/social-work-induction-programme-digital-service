@@ -1,0 +1,96 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@model Index
+
+@{
+    Model.Title = "Manage Organisations";
+
+    var paging = Model.Pagination;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        <h1 class="govuk-heading-l">Manage organisations</h1>
+
+        @if (Model.Organisation?.Any() == false)
+        {
+            <p class="govuk-body">On this page, you can add and manage organisations.</p>
+            <p class="govuk-body">You have not added any organisations yet.</p>
+        }
+
+        @* TODO update href when page is added *@
+        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new organisation</govuk-button-link>
+
+        @if (Model.Organisation?.Any() == true)
+        {
+            <table class="govuk-table">
+                <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                        <label asp-for="@Model.Organisation[0].OrganisationName"></label>
+                    </th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                        <label asp-for="@Model.Organisation[0].LocalAuthorityCode"></label>
+                    </th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                        <label asp-for="@Model.Organisation[0].Type"></label>
+                    </th>
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                @foreach (var account in Model.Organisation)
+                {
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell" data-test-class="account-name">
+                            @* TODO update asp-page when page is added *@
+                            <a title="View details of @account.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@account.OrganisationId">@account.OrganisationName</a>
+                        </td>
+                        <td class="govuk-table__cell">
+                            <p class="govuk-body">@account.LocalAuthorityCode</p>
+                        </td>
+                        <td class="govuk-table__cell">
+                            <p class="govuk-body">@account.Type?.GetDisplayName()</p>
+                        </td>
+                        <td class="govuk-table__cell">
+                            @* TODO update asp-page when page is added *@
+                            <a title="Manage Users" class="govuk-link govuk-link--no-visited-state" asp-page="index">Manage users</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            @if (paging?.PageCount > 1)
+            {
+                <govuk-pagination>
+                    @if (paging.Links?["previous"] != null && paging.Page != 1)
+                    {
+                        var prev = paging.Links["previous"];
+                        <govuk-pagination-previous href="@LinkGenerator.ManageOrganisations(prev.Offset, prev.PageSize)"/>
+                    }
+
+                    @for (var i = 1; i < paging?.PageCount + 1; i++)
+                    {
+                        var pageNo = i;
+                        var currentPage = paging?.Page ?? 0;
+
+                        <govuk-pagination-item
+                            current=@(currentPage == pageNo)
+                            href=@LinkGenerator.ManageOrganisations((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                            @pageNo
+                        </govuk-pagination-item>
+                    }
+
+                    @if (paging?.Links?["next"] != null && paging.PageCount != paging.Page)
+                    {
+                        var next = paging.Links["next"];
+                        <govuk-pagination-next href="@LinkGenerator.ManageOrganisations(next.Offset, next.PageSize)"/>
+                    }
+                </govuk-pagination>
+            }
+        }
+    </div>
+</div>
