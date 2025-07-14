@@ -251,7 +251,7 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         Sut.Id = id;
         Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Coordinator };
 
-        var updatedAccountDetails = accountDetails;
+        var updatedAccountDetails = AccountDetails.FromAccount(account);
         updatedAccountDetails.SocialWorkEnglandNumber = null;
 
         // Act

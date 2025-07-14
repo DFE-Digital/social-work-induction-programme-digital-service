@@ -83,18 +83,11 @@ public class SelectUseCase(
 
     private async Task<bool> ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Guid? id)
     {
-        var accountDetails = new AccountDetails();
-        if (id is null)
-        {
-            accountDetails = createAccountJourneyService.GetAccountDetails();
-        }
-        else
-        {
-            accountDetails = await editAccountJourneyService.GetAccountDetailsAsync((Guid)id);
-        }
+        var accountDetails = id is null
+            ? createAccountJourneyService.GetAccountDetails()
+            : await editAccountJourneyService.GetAccountDetailsAsync(id.Value);
 
-        if (SelectedAccountTypes?.Count == 1 && SelectedAccountTypes[0] == AccountType.Coordinator
-                                             && accountDetails is not null && accountDetails.SocialWorkEnglandNumber is not null)
+        if (SelectedAccountTypes is [AccountType.Coordinator] && accountDetails?.SocialWorkEnglandNumber is not null)
         {
             var updatedAccountDetails = new AccountDetails
             {
@@ -113,13 +106,13 @@ public class SelectUseCase(
             }
             else
             {
-                await editAccountJourneyService.SetAccountDetailsAsync((Guid)id, updatedAccountDetails);
+                await editAccountJourneyService.SetAccountDetailsAsync(id.Value, updatedAccountDetails);
             }
 
             return false;
         }
 
         return SelectedAccountTypes?.Contains(AccountType.Assessor) == true
-               && accountDetails is not null && accountDetails.SocialWorkEnglandNumber is null;
+               && accountDetails?.SocialWorkEnglandNumber is null;
     }
 }
