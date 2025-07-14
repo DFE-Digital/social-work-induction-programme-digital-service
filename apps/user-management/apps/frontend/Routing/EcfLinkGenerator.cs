@@ -151,6 +151,8 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYearChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear", handler: "Change");
     public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
 
+    // Manage organisations links
+    public string ManageOrganisations(int? offset = 0, int? pageSize = 10) => GetRequiredPathByPage("/ManageOrganisations/Index", routeValues: new { offset, pageSize });
 
     protected abstract string GetRequiredPathByPage(
         string page,

@@ -1,7 +1,10 @@
-﻿namespace Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 
 public enum OrganisationType
 {
-    Unknown = 0,
-    LocalAuthority = 1
+    [Display(Name = "Unknown")] Unknown = 0,
+
+    [Display(Name = "Local Authority")] LocalAuthority = 1
 }
