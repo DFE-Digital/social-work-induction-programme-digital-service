@@ -66,18 +66,18 @@
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                @foreach (var account in Model.Organisations)
+                @foreach (var Organisation in Model.Organisations)
                 {
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="organisation-name">
                             @* TODO update asp-page when page is added *@
-                            <a title="View details of @account.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@account.OrganisationId">@account.OrganisationName</a>
+                            <a title="View details of @Organisation.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@Organisation.OrganisationId">@Organisation.OrganisationName</a>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@account.LocalAuthorityCode</p>
+                            <p class="govuk-body">@Organisation.LocalAuthorityCode</p>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@account.Type?.GetDisplayName()</p>
+                            <p class="govuk-body">@Organisation.Type?.GetDisplayName()</p>
                         </td>
                         <td class="govuk-table__cell">
                             @* TODO update asp-page when page is added *@
