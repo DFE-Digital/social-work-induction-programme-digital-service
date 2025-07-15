@@ -66,7 +66,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
         // TODO update error message once design is ready
         modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
-            .Be("Enter the local authority code (LA code) in full. (error message TBC)");
+            .Be("Enter the local authority code in full. (error message TBC)");
 
         Sut.BackLinkPath.Should().Be("/manage-organisations");
 
