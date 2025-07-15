@@ -6,7 +6,7 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 public interface IEditAccountJourneyService
 {
     Task<bool> IsAccountIdValidAsync(Guid accountId);
-    Task<ImmutableList<AccountType>?> GetAccountTypesAsync(Guid accountId);
+    Task<IList<AccountType>?> GetAccountTypesAsync(Guid accountId);
     Task<AccountDetails?> GetAccountDetailsAsync(Guid accountId);
     Task<bool?> GetIsStaffAsync(Guid accountId);
     Task SetAccountDetailsAsync(Guid accountId, AccountDetails accountDetails);
