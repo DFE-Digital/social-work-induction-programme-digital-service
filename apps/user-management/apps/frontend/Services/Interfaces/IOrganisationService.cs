@@ -6,4 +6,5 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 public interface IOrganisationService
 {
     public Task<PaginationResult<Organisation>> GetAllAsync(PaginationRequest request);
+    public Organisation GetByLocalAuthorityCode(int? localAuthorityCode);
 }

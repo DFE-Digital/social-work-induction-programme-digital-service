@@ -93,7 +93,6 @@ public abstract class EcfLinkGenerator(
     public string ViewAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
     public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
     public string SelectAccountTypeChange() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "Change");
-
     public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
     public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
     public string SelectUseCaseChange(Guid? id = null) => GetRequiredPathByPage("/ManageAccounts/SelectUseCase", handler: "Change", routeValues: new { id });
@@ -153,6 +152,7 @@ public abstract class EcfLinkGenerator(
 
     // Manage organisations links
     public string ManageOrganisations(int? offset = 0, int? pageSize = 10) => GetRequiredPathByPage("/ManageOrganisations/Index", routeValues: new { offset, pageSize });
+    public string EnterLocalAuthorityCode() => GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode");
 
     protected abstract string GetRequiredPathByPage(
         string page,

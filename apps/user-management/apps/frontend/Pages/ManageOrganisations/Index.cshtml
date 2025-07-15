@@ -44,8 +44,7 @@
             <p class="govuk-body">You have not added any organisations yet.</p>
         }
 
-        @* TODO update href when page is added *@
-        <govuk-button-link href="@LinkGenerator.AddSomeoneNew()">Add new organisation</govuk-button-link>
+        <govuk-button-link href="@LinkGenerator.EnterLocalAuthorityCode()">Add new organisation</govuk-button-link>
 
         @if (Model.Organisations?.Any() == true)
         {
@@ -80,8 +79,7 @@
                             <p class="govuk-body">@Organisation.Type?.GetDisplayName()</p>
                         </td>
                         <td class="govuk-table__cell">
-                            @* TODO update asp-page when page is added *@
-                            <a title="Manage Users" class="govuk-link govuk-link--no-visited-state" asp-page="index">Manage users</a>
+                            <a title="Manage Users" class="govuk-link govuk-link--no-visited-state" asp-page="EnterLocalAuthorityCode">Manage users</a>
                         </td>
                     </tr>
                 }

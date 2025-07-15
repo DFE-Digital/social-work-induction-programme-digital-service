@@ -1,12 +1,13 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages;
 
 [AuthorizeRoles(RoleType.Administrator)]
-public class Dashboard : BasePageModel
+public class Dashboard(EcfLinkGenerator linkGenerator) : BasePageModel
 {
     public IEnumerable<CardItem>? Items { get; set; }
 
@@ -19,7 +20,7 @@ public class Dashboard : BasePageModel
                 Link = new CardLink
                 {
                     Text = "Manage organisations",
-                    Path = "/manage-organisations", // TODO replace with path to manage organisations page when built via link generator
+                    Path = linkGenerator.ManageOrganisations()
                 },
                 Description = "Add or edit organisations and manage users."
             }
