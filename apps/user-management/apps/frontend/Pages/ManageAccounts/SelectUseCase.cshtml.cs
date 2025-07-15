@@ -89,24 +89,15 @@ public class SelectUseCase(
 
         if (SelectedAccountTypes is [AccountType.Coordinator] && accountDetails?.SocialWorkEnglandNumber is not null)
         {
-            var updatedAccountDetails = new AccountDetails
-            {
-                FirstName = accountDetails.FirstName,
-                LastName = accountDetails.LastName,
-                MiddleNames = accountDetails.MiddleNames,
-                Email = accountDetails.Email,
-                SocialWorkEnglandNumber = null,
-                IsStaff = accountDetails.IsStaff,
-                Types = accountDetails.Types
-            };
+            accountDetails.SocialWorkEnglandNumber = null;
 
             if (id is null)
             {
-                createAccountJourneyService.SetAccountDetails(updatedAccountDetails);
+                createAccountJourneyService.SetAccountDetails(accountDetails);
             }
             else
             {
-                await editAccountJourneyService.SetAccountDetailsAsync(id.Value, updatedAccountDetails);
+                await editAccountJourneyService.SetAccountDetailsAsync(id.Value, accountDetails);
             }
 
             return false;
