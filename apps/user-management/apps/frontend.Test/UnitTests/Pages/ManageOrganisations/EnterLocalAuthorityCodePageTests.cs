@@ -1,0 +1,105 @@
+using Bogus;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
+using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
+using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Moq;
+using Xunit;
+
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageOrganisations;
+
+public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<EnterLocalAuthorityCode>
+{
+    private EnterLocalAuthorityCode Sut { get; }
+
+    public EnterLocalAuthorityCodePageTests()
+    {
+        Sut = new EnterLocalAuthorityCode(
+            MockCreateOrganisationJourneyService.Object,
+            MockOrganisationService.Object,
+            new FakeLinkGenerator(),
+            new EnterLocalAuthorityCodeValidator()
+            );
+    }
+
+    [Fact]
+    public void OnGet_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var localAuthorityCodeInJourney = new Faker().Random.Int();
+        MockCreateOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
+
+        // Act
+        var result = Sut.OnGet();
+
+        // Assert
+        Sut.LocalAuthorityCode.Should().Be(localAuthorityCodeInJourney);
+        Sut.BackLinkPath.Should().Be("/manage-organisations");
+        result.Should().BeOfType<PageResult>();
+
+        MockCreateOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithEmptyLACode_ReturnsValidationErrors()
+    {
+        // Arrange
+        Sut.LocalAuthorityCode = null;
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+
+        modelStateKeys.Should().Contain("LocalAuthorityCode");
+        modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
+        // TODO update error message once design is ready
+        modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
+            .Be("Enter the local authority code (LA code) in full. (error message TBC)");
+
+        Sut.BackLinkPath.Should().Be("/manage-organisations");
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithLACode_SavesLACodeAndRedirectsUser()
+    {
+        // Arrange
+        var localAuthorityCode =  new Faker().Random.Int();
+        Sut.LocalAuthorityCode = localAuthorityCode;
+
+        var organisation = OrganisationBuilder.Build();
+
+        MockOrganisationService
+            .Setup(x => x.GetByLocalAuthorityCode(localAuthorityCode))
+            .Returns(organisation);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        // TODO update link with confirm details page path once page is built
+        redirectResult!.Url.Should().Be("/manage-organisations");
+
+        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+}

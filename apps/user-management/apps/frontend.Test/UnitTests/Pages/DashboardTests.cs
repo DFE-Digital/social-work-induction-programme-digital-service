@@ -17,7 +17,7 @@ public class DashboardTests : PageModelTestBase<Dashboard>
         Sut.PageContext.HttpContext = HttpContext;
     }
 
-    private Dashboard Sut { get; } = new();
+    private Dashboard Sut { get; } = new(new FakeLinkGenerator());
 
     [Fact]
     public void OnGet_WhenCalled_LoadsPage()

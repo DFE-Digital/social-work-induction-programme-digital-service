@@ -6,5 +6,6 @@ public interface ICreateOrganisationJourneyService
 {
     int? GetLocalAuthorityCode();
     void SetLocalAuthorityCode(int? localAuthorityCode);
+    void SetOrganisation(Organisation organisation);
     void ResetCreateOrganisationJourneyModel();
 }

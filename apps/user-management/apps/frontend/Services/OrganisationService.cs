@@ -24,4 +24,17 @@ public class OrganisationService(
 
         return organisations;
     }
+
+    // TODO Get from database when data is available
+    public Organisation GetByLocalAuthorityCode(int? localAuthorityCode)
+    {
+        return new Organisation
+        {
+            OrganisationId = new Guid(),
+            LocalAuthorityCode = localAuthorityCode,
+            OrganisationName = "Test Organisation",
+            Type = OrganisationType.LocalAuthority,
+            Region = "Test Region"
+        };
+    }
 }
