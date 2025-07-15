@@ -79,6 +79,8 @@ public class AccountDetails
 
     public IList<AccountType>? Types { get; set; }
 
+    public string? PhoneNumber { get; set; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
