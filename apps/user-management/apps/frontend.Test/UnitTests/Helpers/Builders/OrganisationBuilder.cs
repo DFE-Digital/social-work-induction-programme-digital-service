@@ -19,6 +19,12 @@ public class OrganisationBuilder
         _faker.RuleFor(a => a.Type, f => f.PickRandom<OrganisationType>());
     }
 
+    public OrganisationBuilder WithRegion()
+    {
+        _faker.RuleFor(a => a.Region, f => f.Name.FirstName());
+        return this;
+    }
+
     public Organisation Build()
     {
         return _faker.Generate();

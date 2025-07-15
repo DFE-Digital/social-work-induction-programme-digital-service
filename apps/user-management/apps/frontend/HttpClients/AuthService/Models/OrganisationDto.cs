@@ -5,8 +5,8 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 public class OrganisationDto
 {
     public Guid OrganisationId { get; init; }
-    public required string OrganisationName { get; set; }
-    public required int ExternalOrganisationId { get; set; }
+    public string? OrganisationName { get; set; }
+    public int? ExternalOrganisationId { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
 }
