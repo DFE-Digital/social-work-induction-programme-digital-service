@@ -1,5 +1,4 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;

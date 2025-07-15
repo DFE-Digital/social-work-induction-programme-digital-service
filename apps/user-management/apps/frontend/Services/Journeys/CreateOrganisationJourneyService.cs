@@ -40,6 +40,13 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
+    public void SetOrganisation(Organisation organisation)
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        createOrganisationJourneyModel.Organisation = organisation;
+        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+    }
+
     public void ResetCreateOrganisationJourneyModel()
     {
         Session.Remove(CreateOrganisationSessionKey);
