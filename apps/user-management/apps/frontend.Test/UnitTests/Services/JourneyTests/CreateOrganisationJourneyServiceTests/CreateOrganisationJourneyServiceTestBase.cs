@@ -17,10 +17,13 @@ public abstract class CreateOrganisationJourneyServiceTestBase
     private protected const string CreateOrganisationSessionKey = "_createOrganisation";
     private protected HttpContext HttpContext { get; }
 
-    private protected CreateOrganisationJourneyService Sut;
+    private protected readonly CreateOrganisationJourneyService Sut;
+
+    private protected OrganisationBuilder OrganisationBuilder { get; }
 
     protected CreateOrganisationJourneyServiceTestBase()
     {
+        OrganisationBuilder = new OrganisationBuilder();
         HttpContext = new DefaultHttpContext
         {
             Request = { Headers = { Referer = "test-referer" } },

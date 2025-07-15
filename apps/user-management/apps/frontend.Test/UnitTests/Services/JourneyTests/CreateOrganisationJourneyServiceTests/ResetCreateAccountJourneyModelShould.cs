@@ -12,13 +12,8 @@ public class ResetCreateOrganisationJourneyModelShould : CreateOrganisationJourn
     public void WhenCalled_ResetsJourney()
     {
         // Arrange
-        var organisation = new Organisation
-        {
-            LocalAuthorityCode = 12,
-            OrganisationName = "Test Organisation",
-            Region = "Test Region",
-            Type = OrganisationType.LocalAuthority
-        };
+        var organisation = OrganisationBuilder.WithRegion().Build();
+
         HttpContext.Session.Set(
             CreateOrganisationSessionKey,
             new CreateOrganisationJourneyModel
