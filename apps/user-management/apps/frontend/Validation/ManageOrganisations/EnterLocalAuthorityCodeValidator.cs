@@ -10,6 +10,6 @@ public class EnterLocalAuthorityCodeValidator : AbstractValidator<EnterLocalAuth
         // TODO update error message once design is revisited, and unit test for the page
         RuleFor(model => model.LocalAuthorityCode)
             .NotEmpty()
-            .WithMessage("Enter the local authority code (LA code) in full. (error message TBC)");
+            .WithMessage("Enter the local authority code in full. (error message TBC)");
     }
 }
