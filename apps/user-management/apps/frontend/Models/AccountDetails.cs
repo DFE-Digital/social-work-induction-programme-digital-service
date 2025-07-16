@@ -84,7 +84,7 @@ public class AccountDetails
     /// <summary>
     /// Set to true on pages where a phone number is needed
     /// </summary>
-    public bool PhoneNumberRequired { get; set; } = false;
+    public bool? PhoneNumberRequired { get; set; }
 
     public static AccountDetails FromAccount(Account account)
     {
@@ -121,7 +121,9 @@ public class AccountDetails
             SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = account.RouteIntoSocialWork,
             OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork,
-            Types = account.Types
+            Types = account.Types,
+            PhoneNumber = account.PhoneNumber,
+            PhoneNumberRequired = account.PhoneNumberRequired
         };
     }
 }

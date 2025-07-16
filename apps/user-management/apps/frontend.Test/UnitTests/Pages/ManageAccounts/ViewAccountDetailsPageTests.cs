@@ -18,7 +18,8 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         Sut = new ViewAccountDetails(
             MockAccountService.Object,
             new FakeLinkGenerator(),
-            MockCreateAccountJourneyService.Object
+            MockCreateAccountJourneyService.Object,
+            MockEditAccountJourneyService.Object
         )
         {
             TempData = TempData
@@ -96,6 +97,24 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     }
 
     [Fact]
+    public async Task OnGetNewAsync_WhenCalled_ResetsModelAndRedirectsToViewDetails()
+    {
+        // Arrange
+        var id = Guid.Empty;
+
+        // Act
+        var result = await Sut.OnGetNewAsync(id);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        result.Should().NotBeNull();
+        result.Url.Should().Be($"/manage-accounts/view-account-details/{id}");
+
+        MockEditAccountJourneyService.Verify(x => x.ResetEditAccountJourneyModelAsync(id), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task Post_WhenCalledWithAccountFound_ResendsInvitationEmailAndRedirectsToManageAccountsPage()
     {
         // Arrange
@@ -123,7 +142,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
 
         var notificationMessage = TempData["NotificationMessage"]?.ToString();
         notificationMessage.Should().Be($"A new invitation to register has been sent to {account.FullName}, {account.Email}");
-        
+
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SendInvitationEmailAsync(account), Times.Once);
         VerifyAllNoOtherCalls();

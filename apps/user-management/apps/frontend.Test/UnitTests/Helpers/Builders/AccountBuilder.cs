@@ -84,6 +84,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.RouteIntoSocialWork, _ => null);
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, _ => null);
         _faker.RuleFor(a => a.Types, _ => null);
+        _faker.RuleFor(a => a.PhoneNumber, _ => null);
         return this;
     }
 
@@ -296,6 +297,20 @@ public class AccountBuilder
     public AccountBuilder WithHasCompletedLoginAccountLinking(bool hasCompletedLoginAccountLinking)
     {
         _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, _ => hasCompletedLoginAccountLinking);
+
+        return this;
+    }
+
+    public AccountBuilder WithPhoneNumber()
+    {
+        _faker.RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber());
+
+        return this;
+    }
+
+    public AccountBuilder WithPhoneNumberRequired(bool phoneNumberRequired)
+    {
+        _faker.RuleFor(a => a.PhoneNumberRequired, _ => phoneNumberRequired);
 
         return this;
     }

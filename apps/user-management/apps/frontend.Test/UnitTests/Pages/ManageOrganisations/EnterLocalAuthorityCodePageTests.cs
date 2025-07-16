@@ -47,6 +47,21 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     }
 
     [Fact]
+    public void OnGetNew_WhenCalled_ResetsModelAndRedirectsToEnterLocalAuthorityCode()
+    {
+        // Act
+        var result = Sut.OnGetNew();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        result.Should().NotBeNull();
+        result.Url.Should().Be("/manage-organisations/enter-local-authority-code");
+
+        MockCreateOrganisationJourneyService.Verify(x => x.ResetCreateOrganisationJourneyModel(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task OnPostAsync_WhenCalledWithEmptyLACode_ReturnsValidationErrors()
     {
         // Arrange

@@ -126,4 +126,38 @@ public class AccountDetailsValidatorTests()
                 "Enter an email address in the correct format, like name@example.com"
             );
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    [InlineData("     ")]
+    public void WhenAnyInputNotSupplied_WhenRequiresPhoneNumber_HasValidationErrors(string? value)
+    {
+        // Arrange
+        var account = new AccountDetails
+        {
+            FirstName = value,
+            LastName = value,
+            Email = value,
+            PhoneNumber = value,
+            PhoneNumberRequired = true
+        };
+
+        // Act
+        var result = Sut.TestValidate(account);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(person => person.FirstName)
+            .WithErrorMessage("Enter a first name");
+        result
+            .ShouldHaveValidationErrorFor(person => person.LastName)
+            .WithErrorMessage("Enter a last name");
+        result
+            .ShouldHaveValidationErrorFor(person => person.Email)
+            .WithErrorMessage("Enter an email address");
+        result
+            .ShouldHaveValidationErrorFor(person => person.PhoneNumber)
+            .WithErrorMessage("Enter a phone number");
+    }
 }

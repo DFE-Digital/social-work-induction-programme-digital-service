@@ -129,6 +129,10 @@ public record Account
 
     public bool HasCompletedLoginAccountLinking { get; set; }
 
+    public string? PhoneNumber { get; set; }
+
+    public bool? PhoneNumberRequired { get; set; }
+
     public Account(Account account)
     {
         Id = account.Id;
@@ -166,5 +170,6 @@ public record Account
         RouteIntoSocialWork = account.RouteIntoSocialWork;
         OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
         HasCompletedLoginAccountLinking = account.HasCompletedLoginAccountLinking;
+        PhoneNumber = account.PhoneNumber;
     }
 }
