@@ -81,6 +81,11 @@ public class AccountDetails
 
     public string? PhoneNumber { get; set; }
 
+    /// <summary>
+    /// Set to true on pages where a phone number is needed
+    /// </summary>
+    public bool PhoneNumberRequired { get; set; } = false;
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails

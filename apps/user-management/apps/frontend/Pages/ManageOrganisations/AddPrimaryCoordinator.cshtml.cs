@@ -58,15 +58,42 @@ public class AddPrimaryCoordinator(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+        BackLinkPath = linkGenerator.ConfirmOrganisationDetails();
         var accountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
 
         FirstName = accountDetails?.FirstName;
         MiddleNames = accountDetails?.MiddleNames;
         LastName = accountDetails?.LastName;
         Email = accountDetails?.Email;
-        PhoneNumber = accountDetails?.SocialWorkEnglandNumber;
+        PhoneNumber = accountDetails?.PhoneNumber;
 
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var accountDetails = new AccountDetails
+        {
+            FirstName = FirstName,
+            LastName = LastName,
+            MiddleNames = MiddleNames,
+            Email = Email,
+            PhoneNumber = PhoneNumber,
+            PhoneNumberRequired = true
+        };
+        var result = await validator.ValidateAsync(accountDetails);
+        if (!result.IsValid)
+        {
+            result.AddToModelState(ModelState);
+            BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+            return Page();
+        }
+
+        createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(accountDetails);
+
+        // TODO replace with confirm details including coordinator if using a different page to confirm details for organisation only
+        return Redirect(linkGenerator.ConfirmOrganisationDetails());
+    }
+
+
 }

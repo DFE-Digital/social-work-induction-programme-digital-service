@@ -27,7 +27,6 @@ public class ConfirmOrganisationDetails(
 
     public IActionResult OnPost()
     {
-        // TODO Redirect the user to the primary coordinator page here
-        return Redirect(linkGenerator.ManageOrganisations());
+        return Redirect(linkGenerator.AddPrimaryCoordinator());
     }
 }

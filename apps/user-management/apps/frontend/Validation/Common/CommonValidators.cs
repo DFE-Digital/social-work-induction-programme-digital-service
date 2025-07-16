@@ -26,6 +26,11 @@ public static class CommonValidators
             .WithMessage("Enter an email address in the correct format, like name@example.com");
     }
 
+    public static void PhoneNumberValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        ruleBuilder.NotEmpty().WithMessage("Enter a phone number");
+    }
+
     public static void PastYearMonthDateValidation<T>(this IRuleBuilder<T, YearMonth?> ruleBuilder, string errorMessage)
     {
         ruleBuilder.Must(CommonExtensions.BeInThePast).WithMessage(errorMessage);

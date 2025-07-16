@@ -16,6 +16,8 @@ public class AccountDetailsValidator : AbstractValidator<AccountDetails>
         RuleFor(y => y.FirstName).FirstNameValidation();
         RuleFor(y => y.LastName).LastNameValidation();
         RuleFor(y => y.Email).EmailValidation();
+        When(x => x.PhoneNumberRequired, () => { RuleFor(y => y.PhoneNumber).PhoneNumberValidation(); }
+        );
         When(
             x => x.Types?.Contains(AccountType.Assessor) == true || x.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true,
             () => { RuleFor(y => y.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation(); }
