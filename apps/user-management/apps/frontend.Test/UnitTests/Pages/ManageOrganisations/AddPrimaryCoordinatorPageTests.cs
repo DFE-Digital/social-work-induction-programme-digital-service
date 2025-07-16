@@ -119,7 +119,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         modelStateKeys.Should().Contain("PhoneNumber");
         modelState["PhoneNumber"]!.Errors.Count.Should().Be(1);
-        modelState["PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number");
+        modelState["PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a UK phone number");
 
         VerifyAllNoOtherCalls();
     }
