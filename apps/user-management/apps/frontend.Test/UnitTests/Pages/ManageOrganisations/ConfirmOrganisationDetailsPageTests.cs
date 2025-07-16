@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageOrganisations;
 
-public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBase<EnterLocalAuthorityCode>
+public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBase<ConfirmOrganisationDetails>
 {
     private ConfirmOrganisationDetails Sut { get; }
 
