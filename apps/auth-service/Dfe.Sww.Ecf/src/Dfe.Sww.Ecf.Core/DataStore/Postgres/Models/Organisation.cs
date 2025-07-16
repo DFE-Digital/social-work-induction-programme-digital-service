@@ -13,5 +13,9 @@ public class Organisation
     public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
+    public Guid? PrimaryCoordinatorId { get; set; }
+
+    // EF Navigation Properties
     public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
+    public Person? PrimaryCoordinator { get; set; }
 }
