@@ -14,6 +14,7 @@ public class OrganisationDto
     public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
+    public int? PrimaryCoordinatorId { get; set; }
 }
 
 public static class OrganisationDtoExtensions
@@ -27,6 +28,7 @@ public static class OrganisationDtoExtensions
             CreatedOn = organisation.CreatedOn,
             UpdatedOn = organisation.UpdatedOn,
             LocalAuthorityCode = organisation.LocalAuthorityCode,
-            Type = organisation.Type
+            Type = organisation.Type,
+            PrimaryCoordinatorId = organisation.PrimaryCoordinatorId
         };
 }

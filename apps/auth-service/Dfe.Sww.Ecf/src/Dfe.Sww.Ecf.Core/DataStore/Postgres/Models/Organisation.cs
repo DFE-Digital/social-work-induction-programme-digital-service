@@ -13,5 +13,6 @@ public class Organisation
     public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
+    public int? PrimaryCoordinatorId { get; set; }
     public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
 }
