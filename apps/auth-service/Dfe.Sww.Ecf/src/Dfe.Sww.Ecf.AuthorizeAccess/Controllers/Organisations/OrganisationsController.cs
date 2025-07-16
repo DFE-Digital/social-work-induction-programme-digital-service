@@ -47,12 +47,12 @@ public class OrganisationsController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateOrganisationRequest createOrganisationRequest)
     {
-        var createdAccount = await organisationService.CreateAsync(createOrganisationRequest.ToOrganisation());
+        var createdOrganisation = await organisationService.CreateAsync(createOrganisationRequest.ToOrganisation());
 
         return CreatedAtAction(
             nameof(GetByIdAsync),
-            new { id = createdAccount.OrganisationId },
-            createdAccount
+            new { id = createdOrganisation.OrganisationId },
+            createdOrganisation
         );
     }
 }
