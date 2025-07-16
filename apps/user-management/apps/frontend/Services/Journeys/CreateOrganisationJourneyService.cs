@@ -27,23 +27,29 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
         Session.Set(CreateOrganisationSessionKey, createOrganisationJourneyModel);
     }
 
-    public int? GetLocalAuthorityCode()
+    public Organisation? GetOrganisation()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel?.LocalAuthorityCode;
-    }
-
-    public void SetLocalAuthorityCode(int? localAuthorityCode)
-    {
-        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        createOrganisationJourneyModel.LocalAuthorityCode = localAuthorityCode;
-        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+        return createOrganisationJourneyModel.Organisation;
     }
 
     public void SetOrganisation(Organisation organisation)
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
         createOrganisationJourneyModel.Organisation = organisation;
+        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+    }
+
+    public int? GetLocalAuthorityCode()
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        return createOrganisationJourneyModel.LocalAuthorityCode;
+    }
+
+    public void SetLocalAuthorityCode(int? localAuthorityCode)
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        createOrganisationJourneyModel.LocalAuthorityCode = localAuthorityCode;
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 

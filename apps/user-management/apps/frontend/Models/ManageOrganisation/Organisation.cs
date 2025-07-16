@@ -8,13 +8,15 @@ public class Organisation
 
     [Display(Name = "Organisation name")]
     public string? OrganisationName { get; set; }
+
     public int? ExternalOrganisationId { get; set; }
 
-    [Display(Name = "LA code")]
+    [Display(Name = "Local authority code")]
     public int? LocalAuthorityCode { get; set; }
 
     [Display(Name = "Type")]
     public OrganisationType? Type { get; set; }
 
+    [Display(Name = "Local authority region")]
     public string? Region { get; set; }
 }
