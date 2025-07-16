@@ -8,7 +8,7 @@ public class Organisation
 
     public Guid OrganisationId { get; init; }
     public required string OrganisationName { get; set; }
-    public required Int64 ExternalOrganisationId { get; set; }
+    public required int ExternalOrganisationId { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }

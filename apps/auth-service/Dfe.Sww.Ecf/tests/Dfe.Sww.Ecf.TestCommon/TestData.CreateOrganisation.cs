@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisations;
 
 namespace Dfe.Sww.Ecf.TestCommon;
 
@@ -21,7 +22,10 @@ public partial class TestData
                 OrganisationName = organisationName,
                 ExternalOrganisationId = externalOrganisationId,
                 CreatedOn = Clock.UtcNow,
-                UpdatedOn = Clock.UtcNow
+                UpdatedOn = Clock.UtcNow,
+                Type = OrganisationType.LocalAuthority,
+                LocalAuthorityCode = Faker.RandomNumber.Next(1, 1000),
+                PrimaryCoordinatorId = Guid.NewGuid()
             };
 
             dbContext.Organisations.Add(organisation);
