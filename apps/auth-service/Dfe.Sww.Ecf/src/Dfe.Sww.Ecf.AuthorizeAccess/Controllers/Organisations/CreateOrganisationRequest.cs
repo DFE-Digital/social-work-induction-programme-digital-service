@@ -8,7 +8,7 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
 public record CreateOrganisationRequest
 {
     public required string OrganisationName { get; set; }
-    public int? ExternalOrganisationId { get; set; }
+    public Int64? ExternalOrganisationId { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
