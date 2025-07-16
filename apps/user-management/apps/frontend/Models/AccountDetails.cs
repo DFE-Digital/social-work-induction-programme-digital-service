@@ -79,6 +79,7 @@ public class AccountDetails
 
     public IList<AccountType>? Types { get; set; }
 
+    [Display(Name = "UK phone number")]
     public string? PhoneNumber { get; set; }
 
     /// <summary>

@@ -171,5 +171,6 @@ public record Account
         OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork;
         HasCompletedLoginAccountLinking = account.HasCompletedLoginAccountLinking;
         PhoneNumber = account.PhoneNumber;
+        PhoneNumberRequired = account.PhoneNumberRequired;
     }
 }

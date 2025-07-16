@@ -301,9 +301,9 @@ public class AccountBuilder
         return this;
     }
 
-    public AccountBuilder WithPhoneNumber()
+    public AccountBuilder WithPhoneNumber(string phoneNumber)
     {
-        _faker.RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber());
+        _faker.RuleFor(a => a.PhoneNumber, _ => phoneNumber);
 
         return this;
     }

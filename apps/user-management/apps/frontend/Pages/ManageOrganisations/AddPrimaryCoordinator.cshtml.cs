@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Authorisation;
+﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -11,9 +10,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
-/// <summary>
-/// Add Primary Coordinator View Model
-/// </summary>
 [AuthorizeRoles(RoleType.Administrator)]
 public class AddPrimaryCoordinator(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
@@ -21,75 +17,32 @@ public class AddPrimaryCoordinator(
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
-    /// <summary>
-    /// First Name
-    /// </summary>
     [BindProperty]
-    [Display(Name = "First name")]
-    public string? FirstName { get; set; }
-
-    /// <summary>
-    /// Middle Names
-    /// </summary>
-    [BindProperty]
-    [Display(Name = "Middle names")]
-    public string? MiddleNames { get; set; }
-
-    /// <summary>
-    /// Last Name
-    /// </summary>
-    [BindProperty]
-    [Display(Name = "Last name")]
-    public string? LastName { get; set; }
-
-    /// <summary>
-    /// Email
-    /// </summary>
-    [BindProperty]
-    [Display(Name = "Email address")]
-    public string? Email { get; set; }
-
-    /// <summary>
-    /// Phone number
-    /// </summary>
-    [BindProperty]
-    [Display(Name = "UK phone number")]
-    public string? PhoneNumber { get; set; }
+    public AccountDetails AccountDetails { get; set; } = null!;
 
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ConfirmOrganisationDetails();
         var accountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
 
-        FirstName = accountDetails?.FirstName;
-        MiddleNames = accountDetails?.MiddleNames;
-        LastName = accountDetails?.LastName;
-        Email = accountDetails?.Email;
-        PhoneNumber = accountDetails?.PhoneNumber;
+        if (accountDetails == null) return Page();
 
+        AccountDetails = accountDetails;
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var accountDetails = new AccountDetails
-        {
-            FirstName = FirstName,
-            LastName = LastName,
-            MiddleNames = MiddleNames,
-            Email = Email,
-            PhoneNumber = PhoneNumber,
-            PhoneNumberRequired = true
-        };
-        var result = await validator.ValidateAsync(accountDetails);
+        AccountDetails.PhoneNumberRequired = true;
+        var result = await validator.ValidateAsync(AccountDetails);
         if (!result.IsValid)
         {
-            result.AddToModelState(ModelState);
+            result.AddToModelState(ModelState, nameof(AccountDetails));
             BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
             return Page();
         }
 
-        createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(accountDetails);
+        createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
         // TODO replace with confirm details including coordinator if using a different page to confirm details for organisation only
         return Redirect(linkGenerator.ConfirmOrganisationDetails());

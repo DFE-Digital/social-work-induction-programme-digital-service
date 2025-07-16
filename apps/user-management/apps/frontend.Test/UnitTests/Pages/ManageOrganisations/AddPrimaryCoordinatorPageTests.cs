@@ -33,7 +33,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber().Build();
+        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
@@ -41,11 +41,24 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         var result = Sut.OnGet();
 
         // Assert
-        Sut.FirstName.Should().Be(account.FirstName);
-        Sut.MiddleNames.Should().Be(account.MiddleNames);
-        Sut.LastName.Should().Be(account.LastName);
-        Sut.Email.Should().Be(account.Email);
-        Sut.PhoneNumber.Should().Be(account.PhoneNumber);
+        Sut.AccountDetails.Should().BeEquivalentTo(accountDetails);
+        Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
+        result.Should().BeOfType<PageResult>();
+
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGet_WhenCalledWithNullAccount_LoadsTheView()
+    {
+        // Arrange
+        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns((AccountDetails?)null);
+
+        // Act
+        var result = Sut.OnGet();
+
+        // Assert
         Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
         result.Should().BeOfType<PageResult>();
 
@@ -59,16 +72,12 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber()
+            .WithPhoneNumber("07123123123")
             .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
-        Sut.FirstName = accountDetails.FirstName;
-        Sut.MiddleNames = accountDetails.MiddleNames;
-        Sut.LastName = accountDetails.LastName;
-        Sut.Email = accountDetails.Email;
-        Sut.PhoneNumber = accountDetails.PhoneNumber;
+        Sut.AccountDetails = accountDetails;
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -91,10 +100,13 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
     {
         // Arrange
-        Sut.FirstName = string.Empty;
-        Sut.LastName = string.Empty;
-        Sut.Email = string.Empty;
-        Sut.PhoneNumber = string.Empty;
+        Sut.AccountDetails = new AccountDetails
+        {
+            FirstName = string.Empty,
+            LastName = string.Empty,
+            Email = string.Empty,
+            PhoneNumber = string.Empty
+        };
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -105,21 +117,21 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
         modelStateKeys.Count.Should().Be(4);
-        modelStateKeys.Should().Contain("FirstName");
-        modelState["FirstName"]!.Errors.Count.Should().Be(1);
-        modelState["FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
+        modelStateKeys.Should().Contain("AccountDetails.FirstName");
+        modelState["AccountDetails.FirstName"]!.Errors.Count.Should().Be(1);
+        modelState["AccountDetails.FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
 
-        modelStateKeys.Should().Contain("LastName");
-        modelState["LastName"]!.Errors.Count.Should().Be(1);
-        modelState["LastName"]!.Errors[0].ErrorMessage.Should().Be("Enter a last name");
+        modelStateKeys.Should().Contain("AccountDetails.LastName");
+        modelState["AccountDetails.LastName"]!.Errors.Count.Should().Be(1);
+        modelState["AccountDetails.LastName"]!.Errors[0].ErrorMessage.Should().Be("Enter a last name");
 
-        modelStateKeys.Should().Contain("Email");
-        modelState["Email"]!.Errors.Count.Should().Be(1);
-        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
+        modelStateKeys.Should().Contain("AccountDetails.Email");
+        modelState["AccountDetails.Email"]!.Errors.Count.Should().Be(1);
+        modelState["AccountDetails.Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
-        modelStateKeys.Should().Contain("PhoneNumber");
-        modelState["PhoneNumber"]!.Errors.Count.Should().Be(1);
-        modelState["PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a UK phone number");
+        modelStateKeys.Should().Contain("AccountDetails.PhoneNumber");
+        modelState["AccountDetails.PhoneNumber"]!.Errors.Count.Should().Be(1);
+        modelState["AccountDetails.PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
 
         VerifyAllNoOtherCalls();
     }

@@ -158,6 +158,6 @@ public class AccountDetailsValidatorTests()
             .WithErrorMessage("Enter an email address");
         result
             .ShouldHaveValidationErrorFor(person => person.PhoneNumber)
-            .WithErrorMessage("Enter a UK phone number");
+            .WithErrorMessage("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
     }
 }
