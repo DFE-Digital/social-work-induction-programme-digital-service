@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
-    [Migration("20250716105221_AddOrganisationPrimaryCoordinator")]
+    [Migration("20250716112525_AddOrganisationPrimaryCoordinator")]
     partial class AddOrganisationPrimaryCoordinator
     {
         /// <inheritdoc />
@@ -250,8 +250,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("organisation_name");
 
-                    b.Property<int?>("PrimaryCoordinatorId")
-                        .HasColumnType("integer")
+                    b.Property<Guid?>("PrimaryCoordinatorId")
+                        .HasColumnType("uuid")
                         .HasColumnName("primary_coordinator_id");
 
                     b.Property<int?>("Type")
@@ -1022,6 +1022,16 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasConstraintName("fk_one_login_users_persons_person_id");
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisation", b =>
+                {
+                    b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", "PrimaryCoordinator")
+                        .WithMany()
+                        .HasForeignKey("PrimaryCoordinatorId")
+                        .HasConstraintName("fk_organisations_persons_primary_coordinator_id");
+
+                    b.Navigation("PrimaryCoordinator");
                 });
 
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.PersonOrganisation", b =>
