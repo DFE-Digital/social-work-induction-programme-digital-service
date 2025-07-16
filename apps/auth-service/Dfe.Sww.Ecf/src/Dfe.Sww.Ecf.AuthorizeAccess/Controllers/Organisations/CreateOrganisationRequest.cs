@@ -9,8 +9,6 @@ public record CreateOrganisationRequest
 {
     public required string OrganisationName { get; set; }
     public required int ExternalOrganisationId { get; set; }
-    public DateTime CreatedOn { get; set; }
-    public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
@@ -23,8 +21,6 @@ public static class CreateOrganisationRequestExtensions
         {
             OrganisationName = request.OrganisationName,
             ExternalOrganisationId = request.ExternalOrganisationId,
-            CreatedOn = request.CreatedOn,
-            UpdatedOn = request.UpdatedOn,
             LocalAuthorityCode = request.LocalAuthorityCode,
             Type = request.Type,
             PrimaryCoordinatorId = request.PrimaryCoordinatorId
