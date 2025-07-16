@@ -53,7 +53,7 @@ public class AddPrimaryCoordinator(
     /// Phone number
     /// </summary>
     [BindProperty]
-    [Display(Name = "Phone number")]
+    [Display(Name = "UK phone number")]
     public string? PhoneNumber { get; set; }
 
     public PageResult OnGet()

@@ -158,6 +158,6 @@ public class AccountDetailsValidatorTests()
             .WithErrorMessage("Enter an email address");
         result
             .ShouldHaveValidationErrorFor(person => person.PhoneNumber)
-            .WithErrorMessage("Enter a phone number");
+            .WithErrorMessage("Enter a UK phone number");
     }
 }

@@ -28,7 +28,7 @@ public static class CommonValidators
 
     public static void PhoneNumberValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
-        ruleBuilder.NotEmpty().WithMessage("Enter a phone number");
+        ruleBuilder.NotEmpty().WithMessage("Enter a UK phone number");
     }
 
     public static void PastYearMonthDateValidation<T>(this IRuleBuilder<T, YearMonth?> ruleBuilder, string errorMessage)
