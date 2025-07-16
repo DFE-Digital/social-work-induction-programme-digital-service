@@ -44,7 +44,7 @@
             <p class="govuk-body">You have not added any organisations yet.</p>
         }
 
-        <govuk-button-link href="@LinkGenerator.EnterLocalAuthorityCode()">Add new organisation</govuk-button-link>
+        <govuk-button-link href="@LinkGenerator.AddNewOrganisation()">Add new organisation</govuk-button-link>
 
         @if (Model.Organisations?.Any() == true)
         {
@@ -65,18 +65,18 @@
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                @foreach (var account in Model.Organisations)
+                @foreach (var organisation in Model.Organisations)
                 {
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="organisation-name">
                             @* TODO update asp-page when page is added *@
-                            <a title="View details of @account.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@account.OrganisationId">@account.OrganisationName</a>
+                            <a title="View details of @organisation.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@organisation.OrganisationId">@organisation.OrganisationName</a>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@account.LocalAuthorityCode</p>
+                            <p class="govuk-body">@organisation.LocalAuthorityCode</p>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@account.Type?.GetDisplayName()</p>
+                            <p class="govuk-body">@organisation.Type?.GetDisplayName()</p>
                         </td>
                         <td class="govuk-table__cell">
                             <a title="Manage Users" class="govuk-link govuk-link--no-visited-state" asp-page="EnterLocalAuthorityCode">Manage users</a>

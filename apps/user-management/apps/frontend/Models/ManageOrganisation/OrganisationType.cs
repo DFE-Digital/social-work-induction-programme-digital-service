@@ -6,5 +6,5 @@ public enum OrganisationType
 {
     [Display(Name = "Unknown")] Unknown = 0,
 
-    [Display(Name = "Local Authority")] LocalAuthority = 1
+    [Display(Name = "Local authority")] LocalAuthority = 1
 }

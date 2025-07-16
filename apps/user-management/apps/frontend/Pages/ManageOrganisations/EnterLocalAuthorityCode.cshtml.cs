@@ -35,6 +35,12 @@ public class EnterLocalAuthorityCode(
         return Page();
     }
 
+    public RedirectResult OnGetNew()
+    {
+        createOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
+        return Redirect(linkGenerator.EnterLocalAuthorityCode());
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         var result = await validator.ValidateAsync(this);
@@ -51,7 +57,6 @@ public class EnterLocalAuthorityCode(
         // TODO show error if organisation not found once validation and error message designs are available
         createOrganisationJourneyService.SetOrganisation(organisation);
 
-        // TODO redirect to confirm page once built
-        return Redirect(linkGenerator.ManageOrganisations());
+        return Redirect(linkGenerator.ConfirmOrganisationDetails());
     }
 }

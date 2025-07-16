@@ -93,8 +93,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        // TODO update link with confirm details page path once page is built
-        redirectResult!.Url.Should().Be("/manage-organisations");
+        redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
 
         MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
