@@ -44,7 +44,7 @@
             <p class="govuk-body">You have not added any organisations yet.</p>
         }
 
-        <govuk-button-link href="@LinkGenerator.EnterLocalAuthorityCode()">Add new organisation</govuk-button-link>
+        <govuk-button-link href="@LinkGenerator.AddNewOrganisation()">Add new organisation</govuk-button-link>
 
         @if (Model.Organisations?.Any() == true)
         {

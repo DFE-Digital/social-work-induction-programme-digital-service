@@ -19,18 +19,8 @@ public class ConfirmOrganisationDetails(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
+        BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
         Organisation = createOrganisationJourneyService.GetOrganisation();
-
-        Organisation = new Organisation
-        {
-            OrganisationId = Guid.NewGuid(),
-            OrganisationName = "Test Org",
-            ExternalOrganisationId = 123,
-            LocalAuthorityCode = 321,
-            Type = OrganisationType.LocalAuthority,
-            Region = "Yorkshire and The Humber",
-        };
 
         return Page();
     }
@@ -38,6 +28,6 @@ public class ConfirmOrganisationDetails(
     public IActionResult OnPost()
     {
         // TODO Redirect the user to the primary coordinator page here
-        return Redirect(linkGenerator.ManageAccounts());
+        return Redirect(linkGenerator.ManageOrganisations());
     }
 }

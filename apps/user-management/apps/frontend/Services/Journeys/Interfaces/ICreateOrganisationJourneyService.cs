@@ -4,7 +4,7 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 public interface ICreateOrganisationJourneyService
 {
-    public Organisation GetOrganisation();
+    public Organisation? GetOrganisation();
     int? GetLocalAuthorityCode();
     void SetLocalAuthorityCode(int? localAuthorityCode);
     void SetOrganisation(Organisation organisation);
