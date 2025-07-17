@@ -6,7 +6,10 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAccessor, IOrganisationService organisationService) : ICreateOrganisationJourneyService
+public class CreateOrganisationJourneyService(
+    IHttpContextAccessor httpContextAccessor,
+    IOrganisationService organisationService,
+    IAccountService accountService) : ICreateOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -58,7 +61,7 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel?.PrimaryCoordinatorAccountDetails;
+        return createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails;
     }
 
     public void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails)
@@ -73,13 +76,24 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
         Session.Remove(CreateOrganisationSessionKey);
     }
 
-    public async Task<Organisation> CompleteJourneyAsync()
+    public async Task<Organisation?> CompleteJourneyAsync()
     {
         var createAccountJourneyModel = GetOrganisationJourneyModel();
 
-        var organisation = createAccountJourneyModel.ToOrganisation();
+        var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
+        var account = (Account?)null;
+        if (primaryCoordinator is not null)
+        {
+            account = AccountDetails.ToAccount(primaryCoordinator);
+            account = await accountService.CreateAsync(account);
+        }
 
-        organisation = await organisationService.CreateAsync(organisation);
+        var organisation = createAccountJourneyModel.Organisation;
+        if (organisation is not null && account is not null)
+        {
+            organisation.PrimaryCoordinatorId = account.Id;
+            organisation = await organisationService.CreateAsync(organisation);
+        }
 
         ResetCreateOrganisationJourneyModel();
 
