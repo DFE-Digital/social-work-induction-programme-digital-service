@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
 using Microsoft.AspNetCore.Authorization;
@@ -24,5 +25,34 @@ public class OrganisationsController(
         }
 
         return Ok(organisations);
+    }
+
+    [HttpGet("{id:guid}")]
+    [ActionName(nameof(GetByIdAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        var organisation = await organisationService.GetByIdAsync(id);
+        if (organisation == null)
+        {
+            return NoContent();
+        }
+
+        return Ok(organisation);
+    }
+
+    [HttpPost("Create")]
+    [ActionName(nameof(CreateAsync))]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> CreateAsync([FromBody] CreateOrganisationRequest createOrganisationRequest)
+    {
+        var createdOrganisation = await organisationService.CreateAsync(createOrganisationRequest.ToOrganisation());
+
+        return CreatedAtAction(
+            nameof(GetByIdAsync),
+            new { id = createdOrganisation.OrganisationId },
+            createdOrganisation
+        );
     }
 }

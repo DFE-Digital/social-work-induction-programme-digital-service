@@ -13,6 +13,7 @@ public class Person
     public string? MiddleName { get; set; }
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
+    public string? PhoneNumber { get; set; }
     public string? NationalInsuranceNumber { get; set; }
     public PersonStatus? Status { get; set; }
     public int? ExternalUserId { get; set; }

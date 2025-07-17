@@ -1,23 +1,16 @@
-using System.Collections.Immutable;
-using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
-using Dfe.Sww.Ecf.Core.Services.Accounts;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
-using FakeXrmEasy.Extensions;
+using Faker;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
 public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(hostFixture)
 {
-    private readonly AppInfo _appInfo = new();
-
     [Fact]
-    public async Task GetAllAsync_ReturnsOkResult_WhenAccountsExist()
+    public async Task GetAllAsync_ReturnsOkResult_WhenOrganisationsExist()
     {
         await WithDbContext(async dbContext =>
         {
@@ -36,12 +29,12 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultAccounts = okResult
+            var resultOrganisations = okResult
                 .Value.Should()
-                .BeOfType<PaginationResult<PersonDto>>()
+                .BeOfType<PaginationResult<OrganisationDto>>()
                 .Subject.Records;
 
-            resultAccounts.Should().BeEquivalentTo(expectedOrganisations);
+            resultOrganisations.Should().BeEquivalentTo(expectedOrganisations);
         });
     }
 
@@ -62,6 +55,82 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
+        });
+    }
+
+    [Fact]
+    public async Task GetOrganisationByIdAsync_ReturnsOkResult_WhenOrganisationExists()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var createdOrganisation = (await TestData.CreateOrganisation("test org")).ToDto();
+            var organisationService = new OrganisationService(dbContext);
+
+            var controller = new OrganisationsController(organisationService);
+
+            // Act
+            var result = await controller.GetByIdAsync(createdOrganisation.OrganisationId);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultOrganisations = okResult.Value.Should().BeOfType<OrganisationDto>().Subject;
+
+            resultOrganisations.Should().BeEquivalentTo(createdOrganisation);
+        });
+    }
+
+    [Fact]
+    public async Task GetOrganisationByIdAsync_ReturnsNotFoundResult_WhenUserDoesNotExistWhenOrganisationExists()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var organisationService = new OrganisationService(dbContext);
+
+            var controller = new OrganisationsController(organisationService);
+
+            // Act
+            var result = await controller.GetByIdAsync(Guid.NewGuid());
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+        });
+    }
+
+     [Fact]
+    public async Task CreateAsync_ReturnsCreatedResult_WhenOrganisationIsCreated()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var organisationName = Address.City();
+            var organisation = await TestData.CreateOrganisation(organisationName);
+
+            var organisationService = new OrganisationService(dbContext);
+
+            var controller = new OrganisationsController(organisationService);
+
+            // Act
+            var result = await controller.CreateAsync(
+                new CreateOrganisationRequest
+                {
+                    OrganisationName = organisationName,
+                    ExternalOrganisationId = organisation.ExternalOrganisationId,
+                    Type = organisation.Type,
+                    LocalAuthorityCode = organisation.LocalAuthorityCode,
+                    PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+                    Region = organisation.Region
+                }
+            );
+
+            // Assert
+            result.Should().BeOfType<CreatedAtActionResult>();
+            var createdResult = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+            createdResult.Value.Should().BeOfType<OrganisationDto>();
+            createdResult
+                .Value.Should()
+                .BeEquivalentTo(organisation, p => p.Excluding(x => x.OrganisationId));
         });
     }
 }

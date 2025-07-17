@@ -14,5 +14,6 @@ public class OrganisationMapping : IEntityTypeConfiguration<Organisation>
         builder.Property(o => o.ExternalOrganisationId).IsRequired();
         builder.Property(o => o.OrganisationName).HasMaxLength(255).IsRequired();
         builder.Property(o => o.CreatedOn).HasDefaultValueSql("now()");
+        builder.Property(o => o.Region).HasMaxLength(255);
     }
 }

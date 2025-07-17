@@ -9,12 +9,13 @@ public class OrganisationDto
 {
     public Guid OrganisationId { get; init; }
     public required string OrganisationName { get; set; }
-    public required Int64 ExternalOrganisationId { get; set; }
+    public Int64? ExternalOrganisationId { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime? UpdatedOn { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
+    public string? Region { get; set; }
 }
 
 public static class OrganisationDtoExtensions
@@ -29,6 +30,7 @@ public static class OrganisationDtoExtensions
             UpdatedOn = organisation.UpdatedOn,
             LocalAuthorityCode = organisation.LocalAuthorityCode,
             Type = organisation.Type,
-            PrimaryCoordinatorId = organisation.PrimaryCoordinatorId
+            PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+            Region = organisation.Region
         };
 }
