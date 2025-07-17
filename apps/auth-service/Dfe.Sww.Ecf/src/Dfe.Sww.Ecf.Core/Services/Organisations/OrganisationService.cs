@@ -38,7 +38,6 @@ public class OrganisationService(EcfDbContext dbContext, IClock clock) : IOrgani
 
     public async Task<OrganisationDto> CreateAsync(Organisation organisation)
     {
-        organisation.CreatedOn = clock.UtcNow;
         await dbContext.Organisations.AddAsync(organisation);
         await dbContext.SaveChangesAsync();
 
