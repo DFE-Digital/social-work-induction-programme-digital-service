@@ -59,4 +59,15 @@ public static class AccountDetailsFakerExtensions
     {
         return accountDetailsFaker.RuleFor(a => a.IsStaff, _ => isStaff).Generate();
     }
+
+    public static AccountDetails GenerateWithPhoneNumber(
+        this AccountDetailsFaker accountDetailsFaker,
+        string? phoneNumber
+    )
+    {
+        return accountDetailsFaker
+            .RuleFor(a => a.PhoneNumber, _ => phoneNumber)
+            .RuleFor(a => a.PhoneNumberRequired, _ => true)
+            .Generate();
+    }
 }
