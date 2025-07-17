@@ -119,7 +119,8 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                     ExternalOrganisationId = organisation.ExternalOrganisationId,
                     Type = organisation.Type,
                     LocalAuthorityCode = organisation.LocalAuthorityCode,
-                    PrimaryCoordinatorId = organisation.PrimaryCoordinatorId
+                    PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+                    Region = organisation.Region
                 }
             );
 

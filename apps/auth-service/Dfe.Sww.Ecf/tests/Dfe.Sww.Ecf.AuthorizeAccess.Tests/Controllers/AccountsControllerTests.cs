@@ -217,6 +217,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                     MiddleName = expectedNewUser.MiddleName,
                     LastName = expectedNewUser.LastName,
                     EmailAddress = expectedNewUser.EmailAddress,
+                    PhoneNumber = expectedNewUser.PhoneNumber,
                     SocialWorkEnglandNumber = expectedNewUser.SocialWorkEnglandNumber,
                     Roles = expectedNewUser.Roles,
                     Status = expectedNewUser.Status,

@@ -25,7 +25,8 @@ public partial class TestData
                 UpdatedOn = Clock.UtcNow,
                 Type = OrganisationType.LocalAuthority,
                 LocalAuthorityCode = Faker.RandomNumber.Next(1, 1000),
-                PrimaryCoordinatorId = Guid.NewGuid()
+                PrimaryCoordinatorId = Guid.NewGuid(),
+                Region = Faker.Name.First()
             };
 
             dbContext.Organisations.Add(organisation);
