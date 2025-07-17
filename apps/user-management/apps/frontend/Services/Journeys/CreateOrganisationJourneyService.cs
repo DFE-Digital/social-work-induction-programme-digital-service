@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -50,6 +51,19 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
         createOrganisationJourneyModel.LocalAuthorityCode = localAuthorityCode;
+        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+    }
+
+    public AccountDetails? GetPrimaryCoordinatorAccountDetails()
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        return createOrganisationJourneyModel?.PrimaryCoordinatorAccountDetails;
+    }
+
+    public void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails)
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails = accountDetails;
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 

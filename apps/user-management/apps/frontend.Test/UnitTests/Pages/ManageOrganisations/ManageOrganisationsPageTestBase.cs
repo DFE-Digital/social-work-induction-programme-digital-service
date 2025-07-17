@@ -12,6 +12,8 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
 {
     private protected OrganisationBuilder OrganisationBuilder { get; }
 
+    private protected AccountBuilder AccountBuilder { get; }
+
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
 
     private protected Mock<ICreateOrganisationJourneyService> MockCreateOrganisationJourneyService { get; }
@@ -19,6 +21,8 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
     protected ManageOrganisationsPageTestBase()
     {
         OrganisationBuilder = new();
+
+        AccountBuilder = new();
 
         MockOrganisationService = new();
 

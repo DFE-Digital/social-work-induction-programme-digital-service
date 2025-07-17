@@ -45,7 +45,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
     }
 
     [Fact]
-    public void OnPostAsync_WhenCalled_RedirectsUser()
+    public void OnPost_WhenCalled_RedirectsUser()
     {
         // Act
         var result = Sut.OnPost();
@@ -54,7 +54,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations"); // TODO update this to primary coordinator
+        redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator");
 
         VerifyAllNoOtherCalls();
     }
