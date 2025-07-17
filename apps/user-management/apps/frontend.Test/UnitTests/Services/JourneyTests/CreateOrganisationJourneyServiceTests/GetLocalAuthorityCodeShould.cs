@@ -2,7 +2,6 @@ using Bogus;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
-using OpenIddict.Client.WebIntegration;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;

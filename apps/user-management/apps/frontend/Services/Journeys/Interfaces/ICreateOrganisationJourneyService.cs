@@ -9,8 +9,8 @@ public interface ICreateOrganisationJourneyService
     void SetOrganisation(Organisation organisation);
     int? GetLocalAuthorityCode();
     void SetLocalAuthorityCode(int? localAuthorityCode);
-    AccountDetails? GetPrimaryCoordinator();
-    void SetPrimaryCoordinator(AccountDetails? primaryCoordinator);
+    AccountDetails? GetPrimaryCoordinatorAccountDetails();
+    void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails);
     void ResetCreateOrganisationJourneyModel();
     Task<Organisation> CompleteJourneyAsync();
 }

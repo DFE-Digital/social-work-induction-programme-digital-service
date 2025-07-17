@@ -45,7 +45,7 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public int? GetLocalAuthorityCode()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel?.LocalAuthorityCode;
+        return createOrganisationJourneyModel.LocalAuthorityCode;
     }
 
     public void SetLocalAuthorityCode(int? localAuthorityCode)
@@ -55,17 +55,16 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
-    public AccountDetails? GetPrimaryCoordinator()
+    public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        // return createOrganisationJourneyModel.PrimaryCoordinator;
-        return new AccountDetails();
+        return createOrganisationJourneyModel?.PrimaryCoordinatorAccountDetails;
     }
 
-    public void SetPrimaryCoordinator(AccountDetails? primaryCoordinator)
+    public void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails)
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        // createOrganisationJourneyModel.PrimaryCoordinator = primaryCoordinator;
+        createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails = accountDetails;
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 

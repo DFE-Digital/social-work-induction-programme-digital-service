@@ -13,7 +13,8 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class ViewAccountDetails(
     IAccountService accountService,
     EcfLinkGenerator linkGenerator,
-    ICreateAccountJourneyService createAccountJourneyService
+    ICreateAccountJourneyService createAccountJourneyService,
+    IEditAccountJourneyService editAccountJourneyService
 )
     : BasePageModel
 {
@@ -24,6 +25,12 @@ public class ViewAccountDetails(
     public bool IsAssessor { get; set; }
 
     public bool HasCompletedLoginAccountLinking { get; set; }
+
+    public async Task<RedirectResult> OnGetNewAsync(Guid id)
+    {
+        await editAccountJourneyService.ResetEditAccountJourneyModelAsync(id);
+        return Redirect(linkGenerator.ViewAccountDetails(id));
+    }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {

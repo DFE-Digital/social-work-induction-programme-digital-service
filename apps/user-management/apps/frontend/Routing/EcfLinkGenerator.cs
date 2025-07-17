@@ -173,6 +173,9 @@ public abstract class EcfLinkGenerator
 
     public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
 
+    // Manage organisations links
+    public string AddPrimaryCoordinator() => GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator");
+
     protected internal abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,

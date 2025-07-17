@@ -7,8 +7,6 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Configuration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
@@ -19,13 +17,16 @@ public abstract class CreateOrganisationJourneyServiceTestBase
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
 
-    private protected readonly CreateOrganisationJourneyService Sut;
-
     private protected OrganisationBuilder OrganisationBuilder { get; }
+
+    private protected AccountBuilder AccountBuilder { get; }
+
+    private protected readonly CreateOrganisationJourneyService Sut;
 
     protected CreateOrganisationJourneyServiceTestBase()
     {
         OrganisationBuilder = new OrganisationBuilder();
+        AccountBuilder = new AccountBuilder();
         MockOrganisationService = new();
         HttpContext = new DefaultHttpContext
         {

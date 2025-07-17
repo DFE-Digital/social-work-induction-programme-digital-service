@@ -25,9 +25,8 @@ public class ConfirmOrganisationDetails(
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public IActionResult OnPost()
     {
-        // TODO update this to add primary coordinator page
-        return Redirect(linkGenerator.ManageOrganisations.Index());
+        return Redirect(linkGenerator.ManageOrganisations.AddPrimaryCoordinator());
     }
 }
