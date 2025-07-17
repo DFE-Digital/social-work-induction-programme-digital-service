@@ -4,7 +4,7 @@ using Dfe.Sww.Ecf.Core.Models.Pagination;
 
 namespace Dfe.Sww.Ecf.Core.Services.Organisations;
 
-public class OrganisationService(EcfDbContext dbContext, IClock clock) : IOrganisationService
+public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
 {
     public async Task<PaginationResult<OrganisationDto>> GetAllAsync(PaginationRequest request)
     {
