@@ -40,10 +40,10 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalled_RedirectsUser()
+    public void OnPostAsync_WhenCalled_RedirectsUser()
     {
         // Act
-        var result = await Sut.OnPostAsync();
+        var result = Sut.OnPost();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();

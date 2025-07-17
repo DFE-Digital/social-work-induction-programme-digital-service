@@ -7,6 +7,7 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     public string EnterLocalAuthorityCode() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode");
     public string ConfirmOrganisationDetails() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/ConfirmOrganisationDetails");
     public string CheckYourAnswers() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers");
+    public string AddPrimaryCoordinator() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator");
 
     // Change Links
     public string EnterLocalAuthorityCodeChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode", handler: "Change");

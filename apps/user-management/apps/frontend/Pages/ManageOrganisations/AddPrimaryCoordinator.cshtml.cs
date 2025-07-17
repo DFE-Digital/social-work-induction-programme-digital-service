@@ -24,7 +24,7 @@ public class AddPrimaryCoordinator(
     {
         AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
 
-        BackLinkPath = linkGenerator.ConfirmOrganisationDetails();
+        BackLinkPath = linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
 
         return Page();
     }
@@ -36,14 +36,14 @@ public class AddPrimaryCoordinator(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState, nameof(AccountDetails));
-            BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+            BackLinkPath = linkGenerator.ManageOrganisations.EnterLocalAuthorityCode();
             return Page();
         }
 
         createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
         // TODO replace with confirm details including coordinator if using a different page to confirm details for organisation only
-        return Redirect(linkGenerator.ConfirmOrganisationDetails());
+        return Redirect(linkGenerator.ManageOrganisations.ConfirmOrganisationDetails());
     }
 
 

@@ -100,6 +100,7 @@ public abstract class EcfLinkGenerator
         );
 
     public string ViewAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
+    public string ViewAccountDetailsNew(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", handler: "new", routeValues: new { id });
     public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
     public string SelectAccountTypeChange() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "Change");
     public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
@@ -137,7 +138,10 @@ public abstract class EcfLinkGenerator
     public string SocialWorkerRegistrationEthnicGroupBlack() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish");
     public string SocialWorkerRegistrationEthnicGroupOther() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup");
     public string SocialWorkerRegistrationSelectDisability() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability");
-    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
+
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
+
     public string SocialWorkerRegistrationSelectHighestQualification() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification");
     public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYear() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear");
     public string SocialWorkerRegistrationSelectRouteIntoSocialWork() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork");
@@ -172,9 +176,6 @@ public abstract class EcfLinkGenerator
         GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear", handler: "Change");
 
     public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
-
-    // Manage organisations links
-    public string AddPrimaryCoordinator() => GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator");
 
     protected internal abstract string GetRequiredPathByPage(
         string page,

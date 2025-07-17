@@ -27,7 +27,7 @@ public class CheckYourAnswers(
     {
         BackLinkPath = linkGenerator.ManageOrganisations.Index(); // TODO update to add primary coordinator page
         Organisation = createOrganisationJourneyService.GetOrganisation();
-        PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinator();
+        PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         ChangeLocalAuthorityCodeLink = linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
 
         return Page();
@@ -36,7 +36,7 @@ public class CheckYourAnswers(
     public async Task<IActionResult> OnPostAsync()
     {
         var organisation = createOrganisationJourneyService.GetOrganisation();
-        var primaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinator();
+        var primaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         if (organisation is null || primaryCoordinator is null) return BadRequest();
 
         await createOrganisationJourneyService.CompleteJourneyAsync();
