@@ -81,8 +81,6 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
 
         organisation = await organisationService.CreateAsync(organisation);
 
-        // await SendInvitationEmailAsync(account);
-
         ResetCreateOrganisationJourneyModel();
 
         return organisation;

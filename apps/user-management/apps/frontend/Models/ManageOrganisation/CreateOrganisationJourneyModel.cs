@@ -14,7 +14,8 @@ public class CreateOrganisationJourneyModel
             OrganisationName = Organisation?.OrganisationName,
             Type = Organisation?.Type,
             Region = Organisation?.Region,
-            LocalAuthorityCode = LocalAuthorityCode
+            LocalAuthorityCode = LocalAuthorityCode,
+            // PrimaryCoordinatorId = PrimaryCoordinatorAccountDetails?.Id
         };
     }
 }

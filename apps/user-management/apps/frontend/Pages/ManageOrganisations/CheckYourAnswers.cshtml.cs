@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -19,13 +20,13 @@ public class CheckYourAnswers(
     public Organisation? Organisation { get; set; }
 
     [BindProperty]
-    public object? PrimaryCoordinator { get; set; }
+    public AccountDetails? PrimaryCoordinator { get; set; }
 
     public string? ChangeLocalAuthorityCodeLink { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageOrganisations.Index(); // TODO update to add primary coordinator page
+        BackLinkPath = linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
         Organisation = createOrganisationJourneyService.GetOrganisation();
         PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         ChangeLocalAuthorityCodeLink = linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();

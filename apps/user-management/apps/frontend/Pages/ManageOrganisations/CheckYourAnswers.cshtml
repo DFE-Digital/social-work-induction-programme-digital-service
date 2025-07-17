@@ -64,50 +64,32 @@
                 }
             </govuk-summary-list>
 
-            @* <govuk-summary-card> *@
-            @*     <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title> *@
-            @*     <govuk-summary-card-actions> *@
-            @*         $1$ TODO update href to primary coordinator change link #1# *@
-            @*         <govuk-summary-card-action href="#">Change</govuk-summary-card-action> *@
-            @*     </govuk-summary-card-actions> *@
-            @*     <govuk-summary-list> *@
-            @*         <govuk-summary-list-row> *@
-            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Name)</govuk-summary-list-row-key> #1# *@
-            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Name</govuk-summary-list-row-value> #1# *@
-            @*         </govuk-summary-list-row> *@
-            @*         <govuk-summary-list-row> *@
-            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key> #1# *@
-            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value> #1# *@
-            @*         </govuk-summary-list-row> *@
-            @*         <govuk-summary-list-row> *@
-            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.PhoneNumber)</govuk-summary-list-row-key> #1# *@
-            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.PhoneNumber</govuk-summary-list-row-value> #1# *@
-            @*         </govuk-summary-list-row> *@
-            @*     </govuk-summary-list> *@
-            @* </govuk-summary-card> *@
+            @if (Model.PrimaryCoordinator != null)
+            {
+                <govuk-summary-card>
+                    <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
+                    <govuk-summary-card-actions>
+                        @* TODO update href to primary coordinator change link *@
+                        <govuk-summary-card-action href="@Model.ChangeLocalAuthorityCodeLink">Change</govuk-summary-card-action>
+                    </govuk-summary-card-actions>
+                    <govuk-summary-list>
+                        <govuk-summary-list-row>
+                            <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.FullName)</govuk-summary-list-row-key>
+                            <govuk-summary-list-row-value>@Model.PrimaryCoordinator.FullName</govuk-summary-list-row-value>
+                        </govuk-summary-list-row>
+                        <govuk-summary-list-row>
+                            <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key>
+                            <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value>
+                        </govuk-summary-list-row>
+                        <govuk-summary-list-row>
+                            <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.PhoneNumber)</govuk-summary-list-row-key>
+                            <govuk-summary-list-row-value>@Model.PrimaryCoordinator.PhoneNumber</govuk-summary-list-row-value>
+                        </govuk-summary-list-row>
+                    </govuk-summary-list>
+                </govuk-summary-card>
+            }
 
-            <govuk-summary-card>
-                <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
-                <govuk-summary-card-actions>
-                    <govuk-summary-card-action href="#" visually-hidden-text="from University of Gloucestershire">Change</govuk-summary-card-action>
-                </govuk-summary-card-actions>
-                <govuk-summary-list>
-                    <govuk-summary-list-row>
-                        <govuk-summary-list-row-key>Name</govuk-summary-list-row-key>
-                        <govuk-summary-list-row-value>David Smith</govuk-summary-list-row-value>
-                    </govuk-summary-list-row>
-                    <govuk-summary-list-row>
-                        <govuk-summary-list-row-key>Email Address</govuk-summary-list-row-key>
-                        <govuk-summary-list-row-value>david.smith@newtownscouncil.co.uk</govuk-summary-list-row-value>
-                    </govuk-summary-list-row>
-                    <govuk-summary-list-row>
-                        <govuk-summary-list-row-key>Phone numbers</govuk-summary-list-row-key>
-                        <govuk-summary-list-row-value>07786246245</govuk-summary-list-row-value>
-                    </govuk-summary-list-row>
-                </govuk-summary-list>
-            </govuk-summary-card>
-
-            <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK  One Login. You should inform them to expect this email.</p>
+            <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One Login. You should inform them to expect this email.</p>
 
             <govuk-button type="submit">Save new organisation</govuk-button>
         </form>

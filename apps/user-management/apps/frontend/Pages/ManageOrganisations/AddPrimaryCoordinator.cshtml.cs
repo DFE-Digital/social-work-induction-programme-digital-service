@@ -42,8 +42,7 @@ public class AddPrimaryCoordinator(
 
         createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
-        // TODO replace with confirm details including coordinator if using a different page to confirm details for organisation only
-        return Redirect(linkGenerator.ManageOrganisations.ConfirmOrganisationDetails());
+        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
     }
 
 

@@ -49,7 +49,7 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations"); // TODO update this to primary coordinator
+        redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator");
 
         VerifyAllNoOtherCalls();
     }
