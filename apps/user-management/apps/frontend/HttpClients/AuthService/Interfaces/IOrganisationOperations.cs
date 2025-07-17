@@ -6,4 +6,5 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 public interface IOrganisationOperations
 {
     Task<PaginationResult<OrganisationDto>> GetAllAsync(PaginationRequest request);
+    Task<OrganisationDto> CreateAsync(CreateOrganisationRequest createPersonRequest);
 }

@@ -37,4 +37,30 @@ public class OrganisationService(
             Region = "Test Region"
         };
     }
+
+    public async Task<Organisation> CreateAsync(Organisation organisation)
+    {
+        if (
+            string.IsNullOrWhiteSpace(organisation.OrganisationName)
+            || organisation.Type is null
+            || organisation.LocalAuthorityCode is null
+            || string.IsNullOrWhiteSpace(organisation.Region)
+        )
+        {
+            throw new ArgumentException("Organisation name, Type, Local Authority Code and Region are required");
+        }
+
+        var createdOrganisationDto = await authServiceClient.Organisations.CreateAsync(
+            new CreateOrganisationRequest
+            {
+                OrganisationName = organisation.OrganisationName,
+                ExternalOrganisationId = organisation.ExternalOrganisationId,
+                LocalAuthorityCode = organisation.LocalAuthorityCode,
+                Type = organisation.Type,
+                PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+            }
+        );
+
+        return mapper.MapToBo(createdOrganisationDto);
+    }
 }

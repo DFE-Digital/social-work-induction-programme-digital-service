@@ -123,7 +123,7 @@
                                 if (Context.User.Identity?.IsAuthenticated == true)
                                 {
                                     <header-link is-active-class="@Html.IsActive("/Dashboard")" href="@LinkGenerator.Dashboard()" text="Dashboard" is-visible="@User.IsInRole(RoleType.Administrator.ToString())"></header-link>
-                                    <header-link is-active-class="@Html.IsActive("/ManageOrganisations")" href="@LinkGenerator.ManageOrganisations()" text="Manage organisations" is-visible="@User.IsInRole(RoleType.Administrator.ToString())"></header-link>
+                                    <header-link is-active-class="@Html.IsActive("/ManageOrganisations")" href="@LinkGenerator.ManageOrganisations.Index()" text="Manage organisations" is-visible="@User.IsInRole(RoleType.Administrator.ToString())"></header-link>
                                     <header-link is-active-class="@Html.IsActive("/Index")" href="@LinkGenerator.Home()" text="Home" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
                                     <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage users" is-visible="@User.IsInRole(RoleType.Coordinator.ToString())"></header-link>
                                 }

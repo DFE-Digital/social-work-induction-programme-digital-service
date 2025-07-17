@@ -1,0 +1,115 @@
+﻿@page "{id:Guid?}"
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@model CheckYourAnswers
+
+@{
+    Model.Title = "Check the organisation details";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <form method="post" data-test-id="confirm-organisation-details">
+            <h1 class="govuk-heading-l">
+                Check your answers
+            </h1>
+
+            <h2 class="govuk-heading-m">
+                Organisation details
+            </h2>
+
+            <govuk-summary-list>
+                @if (Model.Organisation?.LocalAuthorityCode is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.LocalAuthorityCode)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <p class="govuk-body">@Model.Organisation.LocalAuthorityCode</p>
+                        </govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeLocalAuthorityCodeLink">
+                                Change code
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.Organisation?.OrganisationName is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.OrganisationName)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <p class="govuk-body">@Model.Organisation.OrganisationName</p>
+                        </govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.Organisation?.Type is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.Type)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <p class="govuk-body">@Model.Organisation.Type.GetDisplayName()</p>
+                        </govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.Organisation?.Region is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.Region)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <p class="govuk-body">@Model.Organisation.Region</p>
+                        </govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                }
+            </govuk-summary-list>
+
+            @* <govuk-summary-card> *@
+            @*     <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title> *@
+            @*     <govuk-summary-card-actions> *@
+            @*         $1$ TODO update href to primary coordinator change link #1# *@
+            @*         <govuk-summary-card-action href="#">Change</govuk-summary-card-action> *@
+            @*     </govuk-summary-card-actions> *@
+            @*     <govuk-summary-list> *@
+            @*         <govuk-summary-list-row> *@
+            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Name)</govuk-summary-list-row-key> #1# *@
+            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Name</govuk-summary-list-row-value> #1# *@
+            @*         </govuk-summary-list-row> *@
+            @*         <govuk-summary-list-row> *@
+            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key> #1# *@
+            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value> #1# *@
+            @*         </govuk-summary-list-row> *@
+            @*         <govuk-summary-list-row> *@
+            @*             $1$ <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.PhoneNumber)</govuk-summary-list-row-key> #1# *@
+            @*             $1$ <govuk-summary-list-row-value>@Model.PrimaryCoordinator.PhoneNumber</govuk-summary-list-row-value> #1# *@
+            @*         </govuk-summary-list-row> *@
+            @*     </govuk-summary-list> *@
+            @* </govuk-summary-card> *@
+
+            <govuk-summary-card>
+                <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
+                <govuk-summary-card-actions>
+                    <govuk-summary-card-action href="#" visually-hidden-text="from University of Gloucestershire">Change</govuk-summary-card-action>
+                </govuk-summary-card-actions>
+                <govuk-summary-list>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>Name</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>David Smith</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>Email Address</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>david.smith@newtownscouncil.co.uk</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>Phone numbers</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>07786246245</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                </govuk-summary-list>
+            </govuk-summary-card>
+
+            <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK  One Login. You should inform them to expect this email.</p>
+
+            <govuk-button type="submit">Save new organisation</govuk-button>
+        </form>
+    </div>
+</div>

@@ -1,10 +1,12 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAccessor) : ICreateOrganisationJourneyService
+public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAccessor, IOrganisationService organisationService) : ICreateOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -43,7 +45,7 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public int? GetLocalAuthorityCode()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel.LocalAuthorityCode;
+        return createOrganisationJourneyModel?.LocalAuthorityCode;
     }
 
     public void SetLocalAuthorityCode(int? localAuthorityCode)
@@ -53,8 +55,37 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
+    public AccountDetails? GetPrimaryCoordinator()
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        // return createOrganisationJourneyModel.PrimaryCoordinator;
+        return new AccountDetails();
+    }
+
+    public void SetPrimaryCoordinator(AccountDetails? primaryCoordinator)
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        // createOrganisationJourneyModel.PrimaryCoordinator = primaryCoordinator;
+        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+    }
+
     public void ResetCreateOrganisationJourneyModel()
     {
         Session.Remove(CreateOrganisationSessionKey);
+    }
+
+    public async Task<Organisation> CompleteJourneyAsync()
+    {
+        var createAccountJourneyModel = GetOrganisationJourneyModel();
+
+        var organisation = createAccountJourneyModel.ToOrganisation();
+
+        organisation = await organisationService.CreateAsync(organisation);
+
+        // await SendInvitationEmailAsync(account);
+
+        ResetCreateOrganisationJourneyModel();
+
+        return organisation;
     }
 }

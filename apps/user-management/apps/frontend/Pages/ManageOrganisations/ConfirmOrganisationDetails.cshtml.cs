@@ -19,15 +19,15 @@ public class ConfirmOrganisationDetails(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+        BackLinkPath = linkGenerator.ManageOrganisations.EnterLocalAuthorityCode();
         Organisation = createOrganisationJourneyService.GetOrganisation();
 
         return Page();
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
-        // TODO Redirect the user to the primary coordinator page here
-        return Redirect(linkGenerator.ManageOrganisations());
+        // TODO update this to add primary coordinator page
+        return Redirect(linkGenerator.ManageOrganisations.Index());
     }
 }

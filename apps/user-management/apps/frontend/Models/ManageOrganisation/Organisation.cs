@@ -19,4 +19,6 @@ public class Organisation
 
     [Display(Name = "Local authority region")]
     public string? Region { get; set; }
+
+    public Guid PrimaryCoordinatorId { get; set; }
 }

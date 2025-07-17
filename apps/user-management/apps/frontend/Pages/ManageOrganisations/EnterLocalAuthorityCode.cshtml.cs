@@ -31,14 +31,14 @@ public class EnterLocalAuthorityCode(
             LocalAuthorityCode = localAuthorityCode;
         }
 
-        BackLinkPath = linkGenerator.ManageOrganisations();
+        BackLinkPath = linkGenerator.ManageOrganisations.Index();
         return Page();
     }
 
     public RedirectResult OnGetNew()
     {
         createOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
-        return Redirect(linkGenerator.EnterLocalAuthorityCode());
+        return Redirect(linkGenerator.ManageOrganisations.EnterLocalAuthorityCode());
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -47,7 +47,7 @@ public class EnterLocalAuthorityCode(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageOrganisations();
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
             return Page();
         }
 
@@ -57,6 +57,6 @@ public class EnterLocalAuthorityCode(
         // TODO show error if organisation not found once validation and error message designs are available
         createOrganisationJourneyService.SetOrganisation(organisation);
 
-        return Redirect(linkGenerator.ConfirmOrganisationDetails());
+        return Redirect(linkGenerator.ManageOrganisations.ConfirmOrganisationDetails());
     }
 }

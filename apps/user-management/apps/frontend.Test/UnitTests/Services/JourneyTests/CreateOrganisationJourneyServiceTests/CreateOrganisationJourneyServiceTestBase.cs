@@ -17,6 +17,8 @@ public abstract class CreateOrganisationJourneyServiceTestBase
     private protected const string CreateOrganisationSessionKey = "_createOrganisation";
     private protected HttpContext HttpContext { get; }
 
+    private protected Mock<IOrganisationService> MockOrganisationService { get; }
+
     private protected readonly CreateOrganisationJourneyService Sut;
 
     private protected OrganisationBuilder OrganisationBuilder { get; }
@@ -24,6 +26,7 @@ public abstract class CreateOrganisationJourneyServiceTestBase
     protected CreateOrganisationJourneyServiceTestBase()
     {
         OrganisationBuilder = new OrganisationBuilder();
+        MockOrganisationService = new();
         HttpContext = new DefaultHttpContext
         {
             Request = { Headers = { Referer = "test-referer" } },
@@ -33,7 +36,8 @@ public abstract class CreateOrganisationJourneyServiceTestBase
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
         Sut = new CreateOrganisationJourneyService(
-            httpContextAccessor
+            httpContextAccessor,
+            MockOrganisationService.Object
         );
     }
 }
