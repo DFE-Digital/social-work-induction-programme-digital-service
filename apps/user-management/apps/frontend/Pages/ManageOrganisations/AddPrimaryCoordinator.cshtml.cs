@@ -22,12 +22,10 @@ public class AddPrimaryCoordinator(
 
     public PageResult OnGet()
     {
+        AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
+
         BackLinkPath = linkGenerator.ConfirmOrganisationDetails();
-        var accountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
 
-        if (accountDetails == null) return Page();
-
-        AccountDetails = accountDetails;
         return Page();
     }
 

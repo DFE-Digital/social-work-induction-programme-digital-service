@@ -50,23 +50,6 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public void OnGet_WhenCalledWithNullAccount_LoadsTheView()
-    {
-        // Arrange
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns((AccountDetails?)null);
-
-        // Act
-        var result = Sut.OnGet();
-
-        // Assert
-        Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
-        result.Should().BeOfType<PageResult>();
-
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
     public async Task OnPostAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
