@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
@@ -125,6 +126,25 @@ public class AccountDetails
             Types = account.Types,
             PhoneNumber = account.PhoneNumber,
             PhoneNumberRequired = account.PhoneNumberRequired
+        };
+    }
+
+    public static Account ToAccount(AccountDetails accountDetails)
+    {
+        return new Account
+        {
+            FirstName = accountDetails.FirstName,
+            MiddleNames = accountDetails.MiddleNames,
+            LastName = accountDetails.LastName,
+            Email = accountDetails.Email,
+            PhoneNumber = accountDetails.PhoneNumber,
+            Status = AccountStatus.Active,
+            Types = accountDetails.Types?.ToImmutableList(),
+            SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber,
+            ProgrammeStartDate = accountDetails.ProgrammeStartDate,
+            ProgrammeEndDate = accountDetails.ProgrammeEndDate,
+            ExternalUserId = accountDetails.ExternalUserId,
+            IsFunded = accountDetails.IsFunded
         };
     }
 }
