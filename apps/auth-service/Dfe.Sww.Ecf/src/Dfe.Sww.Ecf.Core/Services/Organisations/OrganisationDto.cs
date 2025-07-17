@@ -15,6 +15,7 @@ public class OrganisationDto
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
+    public string? Region { get; set; }
 }
 
 public static class OrganisationDtoExtensions
@@ -29,6 +30,7 @@ public static class OrganisationDtoExtensions
             UpdatedOn = organisation.UpdatedOn,
             LocalAuthorityCode = organisation.LocalAuthorityCode,
             Type = organisation.Type,
-            PrimaryCoordinatorId = organisation.PrimaryCoordinatorId
+            PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+            Region = organisation.Region
         };
 }

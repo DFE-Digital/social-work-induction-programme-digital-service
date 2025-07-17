@@ -12,6 +12,7 @@ public record CreateOrganisationRequest
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
+    public string? Region { get; set; }
 }
 
 public static class CreateOrganisationRequestExtensions
@@ -23,6 +24,7 @@ public static class CreateOrganisationRequestExtensions
             ExternalOrganisationId = request.ExternalOrganisationId,
             LocalAuthorityCode = request.LocalAuthorityCode,
             Type = request.Type,
-            PrimaryCoordinatorId = request.PrimaryCoordinatorId
+            PrimaryCoordinatorId = request.PrimaryCoordinatorId,
+            Region = request.Region
         };
 }

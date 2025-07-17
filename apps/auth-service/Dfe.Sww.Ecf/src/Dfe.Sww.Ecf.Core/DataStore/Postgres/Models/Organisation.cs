@@ -14,6 +14,7 @@ public class Organisation
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
+    public string? Region { get; set; }
 
     // EF Navigation Properties
     public ICollection<PersonOrganisation> PersonOrganisations { get; set; } = new List<PersonOrganisation>();
