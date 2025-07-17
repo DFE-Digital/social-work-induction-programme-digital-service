@@ -20,7 +20,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
 
             var request = new PaginationRequest(0, expectedCount);
 
-            var organisationService = new OrganisationService(dbContext, Clock);
+            var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
@@ -46,7 +46,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
             // Arrange
             var request = new PaginationRequest(0, 1);
 
-            var organisationService = new OrganisationService(dbContext, Clock);
+            var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
@@ -65,7 +65,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
         {
             // Arrange
             var createdOrganisation = (await TestData.CreateOrganisation("test org")).ToDto();
-            var organisationService = new OrganisationService(dbContext, Clock);
+            var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
@@ -86,7 +86,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var organisationService = new OrganisationService(dbContext, Clock);
+            var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
@@ -107,7 +107,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
             var organisationName = Address.City();
             var organisation = await TestData.CreateOrganisation(organisationName);
 
-            var organisationService = new OrganisationService(dbContext, Clock);
+            var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
@@ -117,11 +117,10 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                 {
                     OrganisationName = organisationName,
                     ExternalOrganisationId = organisation.ExternalOrganisationId,
-                    CreatedOn = organisation.CreatedOn,
-                    UpdatedOn = organisation.UpdatedOn,
                     Type = organisation.Type,
                     LocalAuthorityCode = organisation.LocalAuthorityCode,
-                    PrimaryCoordinatorId = organisation.PrimaryCoordinatorId
+                    PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+                    Region = organisation.Region
                 }
             );
 
