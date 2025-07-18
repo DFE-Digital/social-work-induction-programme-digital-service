@@ -31,18 +31,16 @@ public static class CommonValidators
     {
         const string errorMessage = "Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192";
 
-        const string internationalMobileRegex = @"^\+44\s?7\d{3}\s?\d{3}\s?\d{3}$";
-
-        const string mobileRegex = @"^07\d{3}\s?\d{3}\s?\d{3}$";
-
-        const string landlineRegex = @"^0[12]\d{1,3}\s?\d{3}\s?\d{3,4}$";
-
         ruleBuilder
             .NotEmpty().WithMessage(errorMessage)
             .Must(phoneNumber =>
-                phoneNumber is not null && new[] { internationalMobileRegex, mobileRegex, landlineRegex }
-                    .Any(pattern => Regex.IsMatch(phoneNumber, pattern))
-            )
+            {
+                if (string.IsNullOrWhiteSpace(phoneNumber))
+                    return false;
+
+                var phoneNumberNoSpaces = Regex.Replace(phoneNumber, @"\s+", "");
+                return Regex.IsMatch(phoneNumberNoSpaces, @"^(?:\+447\d{9}|07\d{9}|0[12]\d{8,9})$");
+            })
             .WithMessage(errorMessage);
     }
 
