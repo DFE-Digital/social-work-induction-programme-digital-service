@@ -58,6 +58,7 @@ public class OrganisationService(
                 LocalAuthorityCode = organisation.LocalAuthorityCode,
                 Type = organisation.Type,
                 PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
+                Region = organisation.Region
             }
         );
 

@@ -13,6 +13,7 @@ public abstract class CreateOrganisationJourneyServiceTestBase
     private protected HttpContext HttpContext { get; }
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
+    private protected Mock<IAccountService> MockAccountService { get; }
 
     private protected OrganisationBuilder OrganisationBuilder { get; }
 
@@ -25,6 +26,7 @@ public abstract class CreateOrganisationJourneyServiceTestBase
         OrganisationBuilder = new OrganisationBuilder();
         AccountBuilder = new AccountBuilder();
         MockOrganisationService = new();
+        MockAccountService = new();
         HttpContext = new DefaultHttpContext
         {
             Request = { Headers = { Referer = "test-referer" } },
@@ -35,7 +37,8 @@ public abstract class CreateOrganisationJourneyServiceTestBase
 
         Sut = new CreateOrganisationJourneyService(
             httpContextAccessor,
-            MockOrganisationService.Object
+            MockOrganisationService.Object,
+            MockAccountService.Object
         );
     }
 }

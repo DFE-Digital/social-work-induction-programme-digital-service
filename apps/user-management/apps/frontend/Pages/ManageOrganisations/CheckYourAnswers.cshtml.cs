@@ -36,15 +36,14 @@ public class CheckYourAnswers(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var organisation = createOrganisationJourneyService.GetOrganisation();
-        var primaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
-        if (organisation is null || primaryCoordinator is null) return BadRequest();
+        if (Organisation is null || PrimaryCoordinator is null)
+            return BadRequest();
 
         await createOrganisationJourneyService.CompleteJourneyAsync();
 
         TempData["NotificationType"] = NotificationBannerType.Success;
-        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been added";
-        TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
+        TempData["NotificationHeader"] = $"{Organisation.OrganisationName} has been added";
+        TempData["NotificationMessage"] = $"An invitation email has been sent to {PrimaryCoordinator.FullName}, {PrimaryCoordinator.Email}";
 
         return Redirect(linkGenerator.ManageOrganisations.Index());
     }

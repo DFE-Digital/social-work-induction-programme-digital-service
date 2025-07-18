@@ -11,4 +11,5 @@ public record CreateOrganisationRequest
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
+    public string? Region { get; set; }
 }

@@ -3,6 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -80,20 +81,23 @@ public class CreateOrganisationJourneyService(
     {
         var createAccountJourneyModel = GetOrganisationJourneyModel();
 
+        var organisation = createAccountJourneyModel.Organisation;
         var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
-        var account = (Account?)null;
-        if (primaryCoordinator is not null)
+
+        if (organisation is null || primaryCoordinator is null)
         {
-            account = AccountDetails.ToAccount(primaryCoordinator);
-            account = await accountService.CreateAsync(account);
+            throw new ArgumentNullException();
         }
 
-        var organisation = createAccountJourneyModel.Organisation;
-        if (organisation is not null && account is not null)
-        {
-            organisation.PrimaryCoordinatorId = account.Id;
-            organisation = await organisationService.CreateAsync(organisation);
-        }
+        // TODO implement call to Moodle for creating a person and organisation here, then set the ids
+        organisation.ExternalOrganisationId = 123;
+        primaryCoordinator.ExternalUserId = 123;
+
+        var account = AccountDetails.ToAccount(primaryCoordinator);
+        account = await accountService.CreateAsync(account);
+
+        organisation.PrimaryCoordinatorId = account.Id;
+        organisation = await organisationService.CreateAsync(organisation);
 
         ResetCreateOrganisationJourneyModel();
 
