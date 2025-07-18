@@ -70,7 +70,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
+        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
 
         MockCreateOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),

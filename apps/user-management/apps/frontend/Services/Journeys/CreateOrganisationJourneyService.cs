@@ -1,11 +1,16 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAccessor) : ICreateOrganisationJourneyService
+public class CreateOrganisationJourneyService(
+    IHttpContextAccessor httpContextAccessor,
+    IOrganisationService organisationService,
+    IAccountService accountService) : ICreateOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -57,7 +62,7 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel?.PrimaryCoordinatorAccountDetails;
+        return createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails;
     }
 
     public void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails)
@@ -70,5 +75,32 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public void ResetCreateOrganisationJourneyModel()
     {
         Session.Remove(CreateOrganisationSessionKey);
+    }
+
+    public async Task<Organisation?> CompleteJourneyAsync()
+    {
+        var createAccountJourneyModel = GetOrganisationJourneyModel();
+
+        var organisation = createAccountJourneyModel.Organisation;
+        var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
+
+        if (organisation is null || primaryCoordinator is null)
+        {
+            throw new ArgumentNullException();
+        }
+
+        // TODO implement call to Moodle for creating a person and organisation here, then set the ids
+        organisation.ExternalOrganisationId = 123;
+        primaryCoordinator.ExternalUserId = 123;
+
+        var account = AccountDetails.ToAccount(primaryCoordinator);
+        account = await accountService.CreateAsync(account);
+
+        organisation.PrimaryCoordinatorId = account.Id;
+        organisation = await organisationService.CreateAsync(organisation);
+
+        ResetCreateOrganisationJourneyModel();
+
+        return organisation;
     }
 }

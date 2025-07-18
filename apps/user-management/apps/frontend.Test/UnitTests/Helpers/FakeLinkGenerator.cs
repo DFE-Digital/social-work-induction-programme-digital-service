@@ -13,7 +13,6 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 //       Examples of such can be found on Microsoft's [ASP.NET Core Integration tests](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0) page.
 public class FakeLinkGenerator()
     : EcfLinkGenerator(
-        new Mock<IWebHostEnvironment>().Object,
         Options.Create(
             new OidcConfiguration()
             {
@@ -28,7 +27,7 @@ public class FakeLinkGenerator()
         )
     )
 {
-    protected override string GetRequiredPathByPage(
+    protected internal override string GetRequiredPathByPage(
         string page,
         string? handler = null,
         object? routeValues = null,

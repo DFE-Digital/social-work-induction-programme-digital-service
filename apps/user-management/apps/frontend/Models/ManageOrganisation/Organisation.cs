@@ -4,7 +4,7 @@ namespace Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 
 public class Organisation
 {
-    public Guid OrganisationId { get; init; }
+    public Guid? OrganisationId { get; init; }
 
     [Display(Name = "Organisation name")]
     public string? OrganisationName { get; set; }
@@ -19,4 +19,6 @@ public class Organisation
 
     [Display(Name = "Local authority region")]
     public string? Region { get; set; }
+
+    public Guid? PrimaryCoordinatorId { get; set; }
 }

@@ -13,10 +13,11 @@ public class OrganisationBuilder
     public OrganisationBuilder()
     {
         _faker.RuleFor(a => a.OrganisationId, f => f.Random.Guid());
-        _faker.RuleFor(a => a.OrganisationName, f => f.Name.FirstName());
+        _faker.RuleFor(a => a.OrganisationName, f => f.Address.City());
         _faker.RuleFor(a => a.ExternalOrganisationId, f => f.Random.Number(1, 1000));
         _faker.RuleFor(a => a.LocalAuthorityCode, f => f.Random.Number(1, 1000));
         _faker.RuleFor(a => a.Type, f => f.PickRandom<OrganisationType>());
+        _faker.RuleFor(a => a.Region, f => f.Address.County());
     }
 
     public OrganisationBuilder WithRegion()

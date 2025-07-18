@@ -12,4 +12,5 @@ public interface ICreateOrganisationJourneyService
     AccountDetails? GetPrimaryCoordinatorAccountDetails();
     void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails);
     void ResetCreateOrganisationJourneyModel();
+    Task<Organisation?> CompleteJourneyAsync();
 }

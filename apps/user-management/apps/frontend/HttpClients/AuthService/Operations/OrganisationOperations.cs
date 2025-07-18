@@ -1,10 +1,8 @@
-﻿using System.Security.Claims;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Operations;
 
@@ -37,5 +35,26 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
         }
 
         return organisations;
+    }
+
+    public async Task<OrganisationDto> CreateAsync(CreateOrganisationRequest createOrganisationRequest)
+    {
+        var httpResponse = await authServiceClient.HttpClient.PostAsJsonAsync(
+            "/api/Organisations/Create",
+            createOrganisationRequest
+        );
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException("Failed to create organisation.");
+        }
+
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        var createdOrganisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
+        if (createdOrganisation is null)
+        {
+            throw new InvalidOperationException("Failed to create organisation.");
+        }
+        return createdOrganisation;
     }
 }
