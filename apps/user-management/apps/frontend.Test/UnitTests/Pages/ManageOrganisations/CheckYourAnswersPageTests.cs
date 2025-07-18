@@ -96,7 +96,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         // Assert
         result.Should().BeOfType<BadRequestResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
