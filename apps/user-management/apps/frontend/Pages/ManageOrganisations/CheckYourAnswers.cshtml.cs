@@ -36,7 +36,9 @@ public class CheckYourAnswers(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (Organisation is null || PrimaryCoordinator is null)
+        var organisation = createOrganisationJourneyService.GetOrganisation();
+        var primaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
+        if (organisation is null || primaryCoordinator is null)
             return BadRequest();
 
         await createOrganisationJourneyService.CompleteJourneyAsync();

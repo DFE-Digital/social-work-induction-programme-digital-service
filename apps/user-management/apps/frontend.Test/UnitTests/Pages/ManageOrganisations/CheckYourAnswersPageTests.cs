@@ -57,6 +57,9 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         var account = AccountBuilder.Build();
         var primaryCoordinator = AccountDetails.FromAccount(account);
 
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
+        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(primaryCoordinator);
+
         Sut.Organisation = organisation;
         Sut.PrimaryCoordinator = primaryCoordinator;
 
@@ -73,6 +76,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         TempData["NotificationHeader"].Should().Be($"{organisation.OrganisationName} has been added");
         TempData["NotificationMessage"].Should().Be($"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}");
 
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
 
         VerifyAllNoOtherCalls();
@@ -90,6 +95,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
 
         // Assert
         result.Should().BeOfType<BadRequestResult>();
+
+        MockCreateOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
