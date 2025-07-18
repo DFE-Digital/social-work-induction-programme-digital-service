@@ -6,16 +6,4 @@ public class CreateOrganisationJourneyModel
     public int? LocalAuthorityCode { get; set; }
 
     public AccountDetails? PrimaryCoordinatorAccountDetails { get; set; }
-
-    public Organisation ToOrganisation()
-    {
-        return new Organisation
-        {
-            OrganisationName = Organisation?.OrganisationName,
-            Type = Organisation?.Type,
-            Region = Organisation?.Region,
-            LocalAuthorityCode = LocalAuthorityCode,
-            // PrimaryCoordinatorId = PrimaryCoordinatorAccountDetails?.Id
-        };
-    }
 }
