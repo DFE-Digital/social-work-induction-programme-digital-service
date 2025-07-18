@@ -18,10 +18,9 @@ public class EnterLocalAuthorityCode(
     IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
     IValidator<EnterLocalAuthorityCode> validator
-    ) : BasePageModel
+) : BasePageModel
 {
-    [BindProperty]
-    public int? LocalAuthorityCode { get; set; }
+    [BindProperty] public int? LocalAuthorityCode { get; set; }
 
     public PageResult OnGet()
     {
@@ -31,7 +30,7 @@ public class EnterLocalAuthorityCode(
             LocalAuthorityCode = localAuthorityCode;
         }
 
-        BackLinkPath = linkGenerator.ManageOrganisations.Index();
+        SetBackLinkPath();
         return Page();
     }
 
@@ -39,6 +38,12 @@ public class EnterLocalAuthorityCode(
     {
         createOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
         return Redirect(linkGenerator.ManageOrganisations.EnterLocalAuthorityCode());
+    }
+
+    public PageResult OnGetChange()
+    {
+        SetBackLinkPath(true);
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -57,6 +62,24 @@ public class EnterLocalAuthorityCode(
         // TODO show error if organisation not found once validation and error message designs are available
         createOrganisationJourneyService.SetOrganisation(organisation);
 
-        return Redirect(linkGenerator.ManageOrganisations.ConfirmOrganisationDetails());
+        return Redirect(
+            FromChangeLink
+                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails()
+        );
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath(true);
+        return await OnPostAsync();
+    }
+
+    private void SetBackLinkPath(bool fromCheckYourAnswersPage = false)
+    {
+        BackLinkPath ??= fromCheckYourAnswersPage
+            ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+            : linkGenerator.ManageOrganisations.Index();
     }
 }
