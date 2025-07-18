@@ -88,4 +88,11 @@ public class OrganisationService(
 
         return mapper.MapToBo(createdOrganisationDto);
     }
+    
+    public async Task<Organisation?> GetByIdAsync(Guid id)
+    {
+        var organisation = await authServiceClient.Organisations.GetByIdAsync(id);
+
+        return organisation is null ? null : mapper.MapToBo(organisation);
+    }
 }

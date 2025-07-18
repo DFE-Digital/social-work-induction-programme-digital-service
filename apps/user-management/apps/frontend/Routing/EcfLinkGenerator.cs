@@ -177,6 +177,8 @@ public abstract class EcfLinkGenerator
 
     public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
 
+    public string ViewOrganisationDetails(Guid id) => GetRequiredPathByPage("/ManageOrganisations/OrganisationDetails",routeValues: new { id });
+
     protected internal abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,
