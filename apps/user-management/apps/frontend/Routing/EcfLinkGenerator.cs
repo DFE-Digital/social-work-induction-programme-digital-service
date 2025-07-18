@@ -157,6 +157,7 @@ public abstract class EcfLinkGenerator(
     public string EnterLocalAuthorityCode() => GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode");
     public string ConfirmOrganisationDetails() => GetRequiredPathByPage("/ManageOrganisations/ConfirmOrganisationDetails");
     public string AddPrimaryCoordinator() => GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator");
+    public string ViewOrganisationDetails(Guid id) => GetRequiredPathByPage("/ManageOrganisations/OrganisationDetails",routeValues: new { id });
 
     protected abstract string GetRequiredPathByPage(
         string page,

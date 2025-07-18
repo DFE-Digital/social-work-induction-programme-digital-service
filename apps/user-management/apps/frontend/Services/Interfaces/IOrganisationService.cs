@@ -7,4 +7,6 @@ public interface IOrganisationService
 {
     public Task<PaginationResult<Organisation>> GetAllAsync(PaginationRequest request);
     public Organisation GetByLocalAuthorityCode(int? localAuthorityCode);
+
+    public Task<Organisation?> GetByIdAsync(Guid id);
 }
