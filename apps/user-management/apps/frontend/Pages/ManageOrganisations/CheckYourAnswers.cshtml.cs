@@ -44,8 +44,8 @@ public class CheckYourAnswers(
         await createOrganisationJourneyService.CompleteJourneyAsync();
 
         TempData["NotificationType"] = NotificationBannerType.Success;
-        TempData["NotificationHeader"] = $"{Organisation.OrganisationName} has been added";
-        TempData["NotificationMessage"] = $"An invitation email has been sent to {PrimaryCoordinator.FullName}, {PrimaryCoordinator.Email}";
+        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been added";
+        TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
 
         return Redirect(linkGenerator.ManageOrganisations.Index());
     }
