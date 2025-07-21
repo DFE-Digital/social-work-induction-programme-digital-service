@@ -1,7 +1,9 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -14,6 +16,7 @@ public class CreateShould : OrganisationAccountServiceTestBase
     public async Task WhenCalled_ReturnsCreatedOrganisation()
     {
         // Arrange
+        var primaryCoordinator = AccountBuilder.Build();
         var organisation = OrganisationBuilder.Build();
         var organisationDto = Mapper.MapFromBo(organisation);
 
@@ -24,7 +27,21 @@ public class CreateShould : OrganisationAccountServiceTestBase
             LocalAuthorityCode = organisation.LocalAuthorityCode,
             Type = organisation.Type,
             PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
-            Region = organisation.Region
+            Region = organisation.Region,
+            CreatePersonRequest = new CreatePersonRequest
+            {
+                FirstName = primaryCoordinator.FirstName!,
+                LastName = primaryCoordinator.LastName!,
+                MiddleName = primaryCoordinator.MiddleNames,
+                EmailAddress = primaryCoordinator.Email!,
+                SocialWorkEnglandNumber = primaryCoordinator.SocialWorkEnglandNumber,
+                Roles = primaryCoordinator.Types ?? [],
+                Status = primaryCoordinator.Status,
+                ExternalUserId = primaryCoordinator.ExternalUserId,
+                IsFunded = primaryCoordinator.IsFunded,
+                ProgrammeStartDate = primaryCoordinator.ProgrammeStartDate,
+                ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate
+            }
         };
 
         MockClient
@@ -32,7 +49,7 @@ public class CreateShould : OrganisationAccountServiceTestBase
             .ReturnsAsync(organisationDto);
 
         // Act
-        var response = await Sut.CreateAsync(organisation);
+        var response = await Sut.CreateAsync(organisation, primaryCoordinator);
 
         // Assert
         response.Should().NotBeNull();
@@ -51,9 +68,10 @@ public class CreateShould : OrganisationAccountServiceTestBase
     {
         // Arrange
         var organisation = new Organisation();
+        var account = new Account();
 
         // Act & Assert
-        await FluentActions.Awaiting(() => Sut.CreateAsync(organisation))
+        await FluentActions.Awaiting(() => Sut.CreateAsync(organisation, account))
             .Should().ThrowAsync<ArgumentException>();
     }
 }
