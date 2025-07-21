@@ -1,4 +1,7 @@
+using System.Collections.Immutable;
+using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
 using Faker;
@@ -120,7 +123,22 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                     Type = organisation.Type,
                     LocalAuthorityCode = organisation.LocalAuthorityCode,
                     PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
-                    Region = organisation.Region
+                    Region = organisation.Region,
+                    CreatePersonRequest = new CreatePersonRequest
+                    {
+                        FirstName = organisation.PrimaryCoordinator!.FirstName,
+                        LastName = organisation.PrimaryCoordinator.LastName,
+                        MiddleName = organisation.PrimaryCoordinator.MiddleName,
+                        EmailAddress = organisation.PrimaryCoordinator.EmailAddress,
+                        PhoneNumber = organisation.PrimaryCoordinator.PhoneNumber,
+                        SocialWorkEnglandNumber = organisation.PrimaryCoordinator.Trn,
+                        Roles = organisation.PrimaryCoordinator.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList(),
+                        Status = organisation.PrimaryCoordinator.Status,
+                        ExternalUserId = organisation.PrimaryCoordinator.ExternalUserId,
+                        IsFunded = organisation.PrimaryCoordinator.IsFunded,
+                        ProgrammeStartDate = organisation.PrimaryCoordinator.ProgrammeStartDate,
+                        ProgrammeEndDate = organisation.PrimaryCoordinator.ProgrammeEndDate
+                    }
                 }
             );
 
