@@ -39,7 +39,7 @@ public static class CommonValidators
                     return false;
 
                 var phoneNumberNoSpaces = Regex.Replace(phoneNumber, @"\s+", "");
-                return Regex.IsMatch(phoneNumberNoSpaces, @"^(?:\+447\d{9}|07\d{9}|0[12]\d{8,9})$");
+                return Regex.IsMatch(phoneNumberNoSpaces, @"^(?:\+447\d{9}|07\d{9}|0[12]\d{8,9}|\+44[12]\d{8,9})$");
             })
             .WithMessage(errorMessage);
     }
