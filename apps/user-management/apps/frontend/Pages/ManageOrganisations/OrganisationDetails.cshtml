@@ -1,4 +1,5 @@
 @page
+@using Dfe.Sww.Ecf.Frontend.Extensions
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations.OrganisationDetails
 
 @{
@@ -7,7 +8,10 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-        <span class="govuk-caption-l">govuk-caption-l</span>
+        @if (Model.Organisation?.Region is not null)
+        {
+            <span class="govuk-caption-l">@Model.Organisation.OrganisationName</span>
+        }
         <h1 class="govuk-heading-l">
             @Model.Title
         </h1>
@@ -39,6 +43,9 @@
             {
                 <govuk-summary-list-row>
                     <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.Type)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.Type.GetDisplayName()</p>
+                    </govuk-summary-list-row-value>
                 </govuk-summary-list-row>
             }
 

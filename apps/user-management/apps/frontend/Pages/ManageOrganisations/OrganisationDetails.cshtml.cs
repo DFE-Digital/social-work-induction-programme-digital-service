@@ -4,7 +4,6 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +13,15 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 public class OrganisationDetails(
     IEditOrganisationJourneyService editOrganisationJourneyService,
     IOrganisationService organisationService,
+    IAccountService accountService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
     [BindProperty]
-    public Organisation Organisation { get; set; } = null!;
+    public Organisation? Organisation { get; set; }
 
     [BindProperty]
-    public AccountDetails PrimaryCoordinator { get; set; } = null!;
+    public Account? PrimaryCoordinator { get; set; }
 
     public RedirectResult OnGetNew(Guid id)
     {
@@ -34,11 +34,15 @@ public class OrganisationDetails(
         var organisation = await organisationService.GetByIdAsync(id);
         if (organisation is null) return NotFound();
 
-        BackLinkPath = linkGenerator.ManageOrganisations();
+        if (organisation.PrimaryCoordinatorId is null) return NotFound();
+
+        var primaryCoordinator = await accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
+        if (primaryCoordinator is null) return NotFound();
+
         Organisation = organisation;
+        PrimaryCoordinator = primaryCoordinator;
 
-        // TODO get coordinator
-
+        BackLinkPath = linkGenerator.ManageOrganisations();
         return Page();
     }
 }

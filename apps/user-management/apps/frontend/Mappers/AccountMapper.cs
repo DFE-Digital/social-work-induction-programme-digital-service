@@ -41,7 +41,8 @@ public class AccountMapper : IModelMapper<Person, Account>
             SocialWorkQualificationEndYear = person.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = person.RouteIntoSocialWork,
             OtherRouteIntoSocialWork = person.OtherRouteIntoSocialWork,
-            HasCompletedLoginAccountLinking = person.HasCompletedLoginAccountLinking
+            HasCompletedLoginAccountLinking = person.HasCompletedLoginAccountLinking,
+            PhoneNumber = person.PhoneNumber
         };
     }
 

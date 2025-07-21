@@ -64,4 +64,6 @@ public class Person
     public int? SocialWorkQualificationEndYear { get; set; }
 
     public bool HasCompletedLoginAccountLinking { get; set; }
+
+    public string? PhoneNumber { get; set; }
 }
