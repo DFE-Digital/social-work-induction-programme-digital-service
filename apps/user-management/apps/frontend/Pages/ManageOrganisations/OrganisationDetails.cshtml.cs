@@ -26,7 +26,7 @@ public class OrganisationDetails(
     public RedirectResult OnGetNew(Guid id)
     {
         editOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
-        return Redirect(linkGenerator.ViewOrganisationDetails(id));
+        return Redirect(linkGenerator.ManageOrganisations.ViewOrganisationDetails(id));
     }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
@@ -42,7 +42,7 @@ public class OrganisationDetails(
         Organisation = organisation;
         PrimaryCoordinator = primaryCoordinator;
 
-        BackLinkPath = linkGenerator.ManageOrganisations();
+        BackLinkPath = linkGenerator.ManageOrganisations.Index();
         return Page();
     }
 }

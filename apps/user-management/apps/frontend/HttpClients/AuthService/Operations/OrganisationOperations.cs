@@ -69,9 +69,9 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
 
         var response = await httpResponse.Content.ReadAsStringAsync();
         var organisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
-        if (organisations is null)
+        if (organisation is null)
         {
-            throw new InvalidOperationException("Failed to get organisations.");
+            throw new InvalidOperationException("Failed to get organisation.");
         }
         return organisation;
     }
