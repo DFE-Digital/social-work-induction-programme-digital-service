@@ -38,6 +38,19 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
 
     public async Task<OrganisationDto> CreateAsync(Organisation organisation)
     {
+        if (organisation.PrimaryCoordinator is null)
+        {
+            throw new ArgumentNullException(nameof(organisation.PrimaryCoordinator));
+        }
+
+        var personOrganisation = new PersonOrganisation
+        {
+            Person = organisation.PrimaryCoordinator,
+            Organisation = organisation
+        };
+
+        organisation.PersonOrganisations = new List<PersonOrganisation> { personOrganisation };
+
         await dbContext.Organisations.AddAsync(organisation);
         await dbContext.SaveChangesAsync();
 
