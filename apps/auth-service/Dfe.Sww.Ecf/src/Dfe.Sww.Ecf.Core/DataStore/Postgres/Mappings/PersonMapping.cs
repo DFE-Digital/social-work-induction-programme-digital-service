@@ -9,6 +9,7 @@ public class PersonMapping : IEntityTypeConfiguration<Person>
     {
         builder.ToTable("persons");
         builder.HasKey(p => p.PersonId);
+        builder.Property(o => o.CreatedOn).HasDefaultValueSql("now()");
         builder.HasIndex(p => p.Trn).HasFilter("trn is not null").IsUnique();
         builder.Property(p => p.Trn).HasMaxLength(7).IsFixedLength();
         builder.Property(p => p.FirstName).HasMaxLength(100).UseCollation("case_insensitive");
@@ -25,6 +26,5 @@ public class PersonMapping : IEntityTypeConfiguration<Person>
         builder.Property(p => p.OtherGenderIdentity).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(p => p.OtherEthnicGroupOther).HasMaxLength(100).UseCollation("case_insensitive");
         builder.Property(p => p.OtherRouteIntoSocialWork).HasMaxLength(100).UseCollation("case_insensitive");
-
     }
 }
