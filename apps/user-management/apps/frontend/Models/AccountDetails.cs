@@ -79,6 +79,14 @@ public class AccountDetails
 
     public IList<AccountType>? Types { get; set; }
 
+    [Display(Name = "UK phone number")]
+    public string? PhoneNumber { get; set; }
+
+    /// <summary>
+    /// Set to true on pages where a phone number is needed
+    /// </summary>
+    public bool? PhoneNumberRequired { get; set; }
+
     public static AccountDetails FromAccount(Account account)
     {
         return new AccountDetails
@@ -114,7 +122,9 @@ public class AccountDetails
             SocialWorkQualificationEndYear = account.SocialWorkQualificationEndYear,
             RouteIntoSocialWork = account.RouteIntoSocialWork,
             OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork,
-            Types = account.Types
+            Types = account.Types,
+            PhoneNumber = account.PhoneNumber,
+            PhoneNumberRequired = account.PhoneNumberRequired
         };
     }
 }

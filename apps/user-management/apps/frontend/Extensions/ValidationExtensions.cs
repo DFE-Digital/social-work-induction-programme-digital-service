@@ -12,14 +12,20 @@ public static class ValidationExtensions
     /// </summary>
     /// <param name="result"></param>
     /// <param name="modelState"></param>
+    /// <param name="prefix"></param>
     public static void AddToModelState(
         this ValidationResult result,
-        ModelStateDictionary modelState
+        ModelStateDictionary modelState,
+        string? prefix = null
     )
     {
         foreach (var error in result.Errors)
         {
-            modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            var key = string.IsNullOrEmpty(prefix)
+                ? error.PropertyName
+                : $"{prefix}.{error.PropertyName}";
+
+            modelState.AddModelError(key, error.ErrorMessage);
         }
     }
 }

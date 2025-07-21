@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿using System.Text.RegularExpressions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using FluentValidation;
 using FluentValidation.Results;
 using NodaTime;
@@ -24,6 +25,23 @@ public static class CommonValidators
             .WithMessage("Enter an email address")
             .EmailAddress()
             .WithMessage("Enter an email address in the correct format, like name@example.com");
+    }
+
+    public static void PhoneNumberValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        const string errorMessage = "Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192";
+
+        ruleBuilder
+            .NotEmpty().WithMessage(errorMessage)
+            .Must(phoneNumber =>
+            {
+                if (string.IsNullOrWhiteSpace(phoneNumber))
+                    return false;
+
+                var phoneNumberNoSpaces = Regex.Replace(phoneNumber, @"\s+", "");
+                return Regex.IsMatch(phoneNumberNoSpaces, @"^(?:\+447\d{9}|07\d{9}|0[12]\d{8,9})$");
+            })
+            .WithMessage(errorMessage);
     }
 
     public static void PastYearMonthDateValidation<T>(this IRuleBuilder<T, YearMonth?> ruleBuilder, string errorMessage)

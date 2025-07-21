@@ -57,7 +57,7 @@
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="account-name">
                             <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state"
-                               asp-page="ViewAccountDetails" asp-route-id="@account.Id">@account.FullName</a>
+                               href="@LinkGenerator.ViewAccountDetailsNew(@account.Id)">@account.FullName</a>
                         </td>
                         <td class="govuk-table__cell">
                             <account-types types="account.Types"/>
