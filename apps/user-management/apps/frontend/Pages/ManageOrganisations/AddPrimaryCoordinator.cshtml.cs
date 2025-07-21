@@ -40,6 +40,7 @@ public class AddPrimaryCoordinator(
             return Page();
         }
 
+        AccountDetails.Types = new List<AccountType> { AccountType.Coordinator };
         createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
         return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
