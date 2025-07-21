@@ -62,6 +62,25 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     }
 
     [Fact]
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var localAuthorityCodeInJourney = new Faker().Random.Int();
+        MockCreateOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
+
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        Sut.LocalAuthorityCode.Should().Be(localAuthorityCodeInJourney);
+        Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
+        result.Should().BeOfType<PageResult>();
+
+        MockCreateOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task OnPostAsync_WhenCalledWithEmptyLACode_ReturnsValidationErrors()
     {
         // Arrange
@@ -109,6 +128,38 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
+
+        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalledWithLACode_SavesLACodeAndRedirectsUser()
+    {
+        // Arrange
+        var localAuthorityCode =  new Faker().Random.Int();
+        Sut.LocalAuthorityCode = localAuthorityCode;
+
+        var organisation = OrganisationBuilder.Build();
+
+        MockOrganisationService
+            .Setup(x => x.GetByLocalAuthorityCode(localAuthorityCode))
+            .Returns(organisation);
+
+        // Act
+        var result = await Sut.OnPostChangeAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
+
+        Sut.FromChangeLink.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
         MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);

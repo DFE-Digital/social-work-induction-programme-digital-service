@@ -23,6 +23,7 @@ public class CheckYourAnswers(
     public AccountDetails? PrimaryCoordinator { get; set; }
 
     public string? ChangeLocalAuthorityCodeLink { get; set; }
+    public string? ChangePrimaryCoordinatorLink { get; set; }
 
     public PageResult OnGet()
     {
@@ -30,6 +31,7 @@ public class CheckYourAnswers(
         Organisation = createOrganisationJourneyService.GetOrganisation();
         PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         ChangeLocalAuthorityCodeLink = linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
+        ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.AddPrimaryCoordinatorChange();
 
         return Page();
     }

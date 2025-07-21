@@ -11,4 +11,5 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
 
     // Change Links
     public string EnterLocalAuthorityCodeChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode", handler: "Change");
+    public string AddPrimaryCoordinatorChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator", handler: "Change");
 }

@@ -23,10 +23,15 @@ public class AddPrimaryCoordinator(
     public PageResult OnGet()
     {
         AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
-
-        BackLinkPath = linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
+        SetBackLinkPath();
 
         return Page();
+    }
+
+    public PageResult OnGetChange()
+    {
+        SetBackLinkPath(true);
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -46,5 +51,17 @@ public class AddPrimaryCoordinator(
         return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
     }
 
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath(true);
+        return await OnPostAsync();
+    }
 
+    private void SetBackLinkPath(bool fromCheckYourAnswersPage = false)
+    {
+        BackLinkPath ??= fromCheckYourAnswersPage
+            ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+            : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
+    }
 }
