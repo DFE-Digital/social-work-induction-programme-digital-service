@@ -44,7 +44,7 @@
             <p class="govuk-body">You have not added any organisations yet.</p>
         }
 
-        <govuk-button-link href="@LinkGenerator.AddNewOrganisation()">Add new organisation</govuk-button-link>
+        <govuk-button-link href="@LinkGenerator.ManageOrganisations.AddNew()">Add new organisation</govuk-button-link>
 
         @if (Model.Organisations?.Any() == true)
         {
@@ -65,18 +65,18 @@
                 </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                @foreach (var organisation in Model.Organisations)
+                @foreach (var organisations in Model.Organisations)
                 {
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="organisation-name">
                             @* TODO update asp-page when page is added *@
-                            <a title="View details of @organisation.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@organisation.OrganisationId">@organisation.OrganisationName</a>
+                            <a title="View details of @organisations.OrganisationId" class="govuk-link govuk-link--no-visited-state" asp-page="index" asp-route-id="@organisations.OrganisationId">@organisations.OrganisationName</a>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@organisation.LocalAuthorityCode</p>
+                            <p class="govuk-body">@organisations.LocalAuthorityCode</p>
                         </td>
                         <td class="govuk-table__cell">
-                            <p class="govuk-body">@organisation.Type?.GetDisplayName()</p>
+                            <p class="govuk-body">@organisations.Type?.GetDisplayName()</p>
                         </td>
                         <td class="govuk-table__cell">
                             <a title="Manage Users" class="govuk-link govuk-link--no-visited-state" asp-page="EnterLocalAuthorityCode">Manage users</a>
@@ -92,7 +92,7 @@
                     @if (paging.Links?["previous"] != null && paging.Page != 1)
                     {
                         var prev = paging.Links["previous"];
-                        <govuk-pagination-previous href="@LinkGenerator.ManageOrganisations(prev.Offset, prev.PageSize)"/>
+                        <govuk-pagination-previous href="@LinkGenerator.ManageOrganisations.Index(prev.Offset, prev.PageSize)"/>
                     }
 
                     @for (var i = 1; i < paging?.PageCount + 1; i++)
@@ -102,7 +102,7 @@
 
                         <govuk-pagination-item
                             current=@(currentPage == pageNo)
-                            href=@LinkGenerator.ManageOrganisations((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                            href=@LinkGenerator.ManageOrganisations.Index((pageNo - 1) * paging?.PageSize, paging?.PageSize)>
                             @pageNo
                         </govuk-pagination-item>
                     }
@@ -110,7 +110,7 @@
                     @if (paging?.Links?["next"] != null && paging.PageCount != paging.Page)
                     {
                         var next = paging.Links["next"];
-                        <govuk-pagination-next href="@LinkGenerator.ManageOrganisations(next.Offset, next.PageSize)"/>
+                        <govuk-pagination-next href="@LinkGenerator.ManageOrganisations.Index(next.Offset, next.PageSize)"/>
                     }
                 </govuk-pagination>
             }

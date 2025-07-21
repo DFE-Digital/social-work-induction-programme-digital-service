@@ -50,7 +50,27 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public async Task OnPostAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    public void OnGetChange_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
+
+        // Act
+        var result = Sut.OnGetChange();
+
+        // Assert
+        Sut.AccountDetails.Should().BeEquivalentTo(accountDetails);
+        Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
+        result.Should().BeOfType<PageResult>();
+
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPost_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
         var account = AccountBuilder
@@ -70,7 +90,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
+        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
 
         MockCreateOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
@@ -80,7 +100,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
+    public async Task OnPost_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
     {
         // Arrange
         Sut.AccountDetails = new AccountDetails
@@ -116,6 +136,38 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         modelState["AccountDetails.PhoneNumber"]!.Errors.Count.Should().Be(1);
         modelState["AccountDetails.PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
 
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChange_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    {
+        // Arrange
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithPhoneNumber("07123123123")
+            .WithPhoneNumberRequired(true)
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        Sut.AccountDetails = accountDetails;
+
+        // Act
+        var result = await Sut.OnPostChangeAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
+
+        Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
+
+        MockCreateOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            Times.Once
+        );
         VerifyAllNoOtherCalls();
     }
 }

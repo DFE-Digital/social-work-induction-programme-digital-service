@@ -13,7 +13,9 @@ public class OrganisationMapper : IModelMapper<OrganisationDto, Organisation>
             OrganisationName = organisationDto.OrganisationName,
             ExternalOrganisationId = organisationDto.ExternalOrganisationId,
             LocalAuthorityCode = organisationDto.LocalAuthorityCode,
-            Type = organisationDto.Type
+            Type = organisationDto.Type,
+            Region = organisationDto.Region
+
         };
     }
 
@@ -25,7 +27,8 @@ public class OrganisationMapper : IModelMapper<OrganisationDto, Organisation>
             OrganisationName = organisation.OrganisationName,
             ExternalOrganisationId = organisation.ExternalOrganisationId,
             LocalAuthorityCode = organisation.LocalAuthorityCode,
-            Type = organisation.Type
+            Type = organisation.Type,
+            Region = organisation.Region
         };
     }
 }

@@ -3,12 +3,21 @@ using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Routing;
 
-public abstract class EcfLinkGenerator(
-    IWebHostEnvironment environment,
-    IOptions<OidcConfiguration> oidcConfiguration
-)
+public abstract class EcfLinkGenerator
 {
-    private bool IsBackdoorEnabled => oidcConfiguration.Value.EnableDevelopmentBackdoor;
+    private readonly OidcConfiguration _oidcConfiguration;
+
+    protected EcfLinkGenerator(
+        IOptions<OidcConfiguration> oidcConfiguration
+    )
+    {
+        _oidcConfiguration = oidcConfiguration.Value;
+        ManageOrganisations = new(this);
+    }
+
+    public ManageOrganisationLinks ManageOrganisations { get; set; }
+
+    private bool IsBackdoorEnabled => _oidcConfiguration.EnableDevelopmentBackdoor;
 
     public string SignIn() =>
         IsBackdoorEnabled
@@ -129,7 +138,10 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationEthnicGroupBlack() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish");
     public string SocialWorkerRegistrationEthnicGroupOther() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup");
     public string SocialWorkerRegistrationSelectDisability() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability");
-    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
+
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDate() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate");
+
     public string SocialWorkerRegistrationSelectHighestQualification() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification");
     public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYear() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear");
     public string SocialWorkerRegistrationSelectRouteIntoSocialWork() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork");
@@ -141,24 +153,31 @@ public abstract class EcfLinkGenerator(
     public string SocialWorkerRegistrationSexAndGenderIdentityChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSexAndGenderIdentity", handler: "Change");
     public string SocialWorkerRegistrationEthnicGroupChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/Index", handler: "Change");
     public string SocialWorkerRegistrationEthnicGroupWhiteChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/White", handler: "Change");
-    public string SocialWorkerRegistrationEthnicGroupMixedChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/MixedOrMultipleEthnicGroups", handler: "Change");
-    public string SocialWorkerRegistrationEthnicGroupAsianChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/AsianOrAsianBritish", handler: "Change");
-    public string SocialWorkerRegistrationEthnicGroupBlackChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish", handler: "Change");
+
+    public string SocialWorkerRegistrationEthnicGroupMixedChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/MixedOrMultipleEthnicGroups", handler: "Change");
+
+    public string SocialWorkerRegistrationEthnicGroupAsianChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/AsianOrAsianBritish", handler: "Change");
+
+    public string SocialWorkerRegistrationEthnicGroupBlackChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/BlackAfricanCaribbeanOrBlackBritish", handler: "Change");
+
     public string SocialWorkerRegistrationEthnicGroupOtherChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectEthnicGroup/OtherEthnicGroup", handler: "Change");
     public string SocialWorkerRegistrationSelectDisabilityChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectDisability", handler: "Change");
-    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDateChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate", handler: "Change");
-    public string SocialWorkerRegistrationSelectHighestQualificationChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification", handler: "Change");
-    public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYearChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear", handler: "Change");
+
+    public string SocialWorkerRegistrationSelectSocialWorkEnglandRegistrationDateChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkEnglandRegistrationDate", handler: "Change");
+
+    public string SocialWorkerRegistrationSelectHighestQualificationChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectHighestQualification", handler: "Change");
+
+    public string SocialWorkerRegistrationSelectSocialWorkQualificationEndYearChange() =>
+        GetRequiredPathByPage("/SocialWorkerRegistration/SelectSocialWorkQualificationEndYear", handler: "Change");
+
     public string SocialWorkerRegistrationSelectRouteIntoSocialWorkChange() => GetRequiredPathByPage("/SocialWorkerRegistration/SelectRouteIntoSocialWork", handler: "Change");
 
-    // Manage organisations links
-    public string ManageOrganisations(int? offset = 0, int? pageSize = 10) => GetRequiredPathByPage("/ManageOrganisations/Index", routeValues: new { offset, pageSize });
-    public string AddNewOrganisation() => GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode", handler: "new");
-    public string EnterLocalAuthorityCode() => GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode");
-    public string ConfirmOrganisationDetails() => GetRequiredPathByPage("/ManageOrganisations/ConfirmOrganisationDetails");
-    public string AddPrimaryCoordinator() => GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator");
-
-    protected abstract string GetRequiredPathByPage(
+    protected internal abstract string GetRequiredPathByPage(
         string page,
         string? handler = null,
         object? routeValues = null,
@@ -174,12 +193,11 @@ public abstract class EcfLinkGenerator(
 }
 
 public class RoutingEcfLinkGenerator(
-    IWebHostEnvironment environment,
     IOptions<OidcConfiguration> oidcConfiguration,
     LinkGenerator linkGenerator
-) : EcfLinkGenerator(environment, oidcConfiguration)
+) : EcfLinkGenerator(oidcConfiguration)
 {
-    protected override string GetRequiredPathByPage(
+    protected internal override string GetRequiredPathByPage(
         string page,
         string? handler = null,
         object? routeValues = null,

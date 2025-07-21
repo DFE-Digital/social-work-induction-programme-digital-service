@@ -23,10 +23,16 @@ public class AddPrimaryCoordinator(
     public PageResult OnGet()
     {
         AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
-
-        BackLinkPath = linkGenerator.ConfirmOrganisationDetails();
+        SetBackLinkPath();
 
         return Page();
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath();
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -36,15 +42,27 @@ public class AddPrimaryCoordinator(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState, nameof(AccountDetails));
-            BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+            BackLinkPath = linkGenerator.ManageOrganisations.EnterLocalAuthorityCode();
             return Page();
         }
 
+        AccountDetails.Types = new List<AccountType> { AccountType.Coordinator };
         createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
-        // TODO replace with confirm details including coordinator if using a different page to confirm details for organisation only
-        return Redirect(linkGenerator.ConfirmOrganisationDetails());
+        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
     }
 
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath();
+        return await OnPostAsync();
+    }
 
+    private void SetBackLinkPath()
+    {
+        BackLinkPath ??= FromChangeLink
+            ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+            : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
+    }
 }

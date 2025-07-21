@@ -1,11 +1,15 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAccessor) : ICreateOrganisationJourneyService
+public class CreateOrganisationJourneyService(
+    IHttpContextAccessor httpContextAccessor,
+    IOrganisationService organisationService,
+    IAccountService accountService) : ICreateOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -70,5 +74,29 @@ public class CreateOrganisationJourneyService(IHttpContextAccessor httpContextAc
     public void ResetCreateOrganisationJourneyModel()
     {
         Session.Remove(CreateOrganisationSessionKey);
+    }
+
+    public async Task<Organisation?> CompleteJourneyAsync()
+    {
+        var createAccountJourneyModel = GetOrganisationJourneyModel();
+
+        var organisation = createAccountJourneyModel.Organisation;
+        var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
+
+        if (organisation is null || primaryCoordinator is null)
+        {
+            throw new ArgumentNullException();
+        }
+
+        // TODO implement call to Moodle for creating a person and organisation here, then set the ids
+        organisation.ExternalOrganisationId = 123;
+        primaryCoordinator.ExternalUserId = 123;
+
+        var account = AccountDetails.ToAccount(primaryCoordinator);
+        organisation = await organisationService.CreateAsync(organisation, account);
+
+        ResetCreateOrganisationJourneyModel();
+
+        return organisation;
     }
 }

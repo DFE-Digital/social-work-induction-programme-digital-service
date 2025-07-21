@@ -19,7 +19,7 @@ public class ConfirmOrganisationDetails(
 
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.EnterLocalAuthorityCode();
+        BackLinkPath = linkGenerator.ManageOrganisations.EnterLocalAuthorityCode();
         Organisation = createOrganisationJourneyService.GetOrganisation();
 
         return Page();
@@ -27,6 +27,6 @@ public class ConfirmOrganisationDetails(
 
     public IActionResult OnPost()
     {
-        return Redirect(linkGenerator.AddPrimaryCoordinator());
+        return Redirect(linkGenerator.ManageOrganisations.AddPrimaryCoordinator());
     }
 }

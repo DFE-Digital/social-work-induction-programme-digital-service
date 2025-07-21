@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
@@ -125,6 +126,51 @@ public class AccountDetails
             Types = account.Types,
             PhoneNumber = account.PhoneNumber,
             PhoneNumberRequired = account.PhoneNumberRequired
+        };
+    }
+
+    public static Account ToAccount(AccountDetails accountDetails)
+    {
+        return new Account
+        {
+            FirstName = accountDetails.FirstName,
+            MiddleNames = accountDetails.MiddleNames,
+            LastName = accountDetails.LastName,
+            Email = accountDetails.Email,
+            PhoneNumber = accountDetails.PhoneNumber,
+            Status =
+                accountDetails.Types != null
+                && accountDetails.Types.Contains(AccountType.EarlyCareerSocialWorker)
+                    ? AccountStatus.PendingRegistration
+                    : AccountStatus.Active,
+            Types = accountDetails.Types?.ToImmutableList(),
+            SocialWorkEnglandNumber = accountDetails.SocialWorkEnglandNumber,
+            ProgrammeStartDate = accountDetails.ProgrammeStartDate,
+            ProgrammeEndDate = accountDetails.ProgrammeEndDate,
+            ExternalUserId = accountDetails.ExternalUserId,
+            IsFunded = accountDetails.IsFunded,
+            PhoneNumberRequired = accountDetails.PhoneNumberRequired,
+            DateOfBirth = accountDetails.DateOfBirth,
+            UserSex = accountDetails.UserSex,
+            GenderMatchesSexAtBirth = accountDetails.GenderMatchesSexAtBirth,
+            OtherGenderIdentity = accountDetails.OtherGenderIdentity,
+            EthnicGroup = accountDetails.EthnicGroup,
+            EthnicGroupWhite = accountDetails.EthnicGroupWhite,
+            OtherEthnicGroupWhite = accountDetails.OtherEthnicGroupWhite,
+            EthnicGroupMixed = accountDetails.EthnicGroupMixed,
+            OtherEthnicGroupMixed = accountDetails.OtherEthnicGroupMixed,
+            EthnicGroupAsian = accountDetails.EthnicGroupAsian,
+            OtherEthnicGroupAsian = accountDetails.OtherEthnicGroupAsian,
+            EthnicGroupBlack = accountDetails.EthnicGroupBlack,
+            OtherEthnicGroupBlack = accountDetails.OtherEthnicGroupBlack,
+            EthnicGroupOther = accountDetails.EthnicGroupOther,
+            OtherEthnicGroupOther = accountDetails.OtherEthnicGroupOther,
+            Disability = accountDetails.Disability,
+            SocialWorkEnglandRegistrationDate = accountDetails.SocialWorkEnglandRegistrationDate,
+            HighestQualification = accountDetails.HighestQualification,
+            SocialWorkQualificationEndYear = accountDetails.SocialWorkQualificationEndYear,
+            RouteIntoSocialWork = accountDetails.RouteIntoSocialWork,
+            OtherRouteIntoSocialWork = accountDetails.OtherRouteIntoSocialWork,
         };
     }
 }

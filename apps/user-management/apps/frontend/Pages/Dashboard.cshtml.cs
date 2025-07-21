@@ -20,7 +20,7 @@ public class Dashboard(EcfLinkGenerator linkGenerator) : BasePageModel
                 Link = new CardLink
                 {
                     Text = "Manage organisations",
-                    Path = linkGenerator.ManageOrganisations()
+                    Path = linkGenerator.ManageOrganisations.Index()
                 },
                 Description = "Add or edit organisations and manage users."
             }

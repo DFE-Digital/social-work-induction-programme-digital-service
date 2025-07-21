@@ -10,6 +10,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.OrganisationServiceTests;
 public abstract class OrganisationAccountServiceTestBase
 {
     private protected OrganisationBuilder OrganisationBuilder { get; }
+    private protected AccountBuilder AccountBuilder { get; }
 
     private protected MockAuthServiceClient MockClient { get; }
 
@@ -20,6 +21,7 @@ public abstract class OrganisationAccountServiceTestBase
     protected OrganisationAccountServiceTestBase()
     {
         OrganisationBuilder = new();
+        AccountBuilder = new();
         MockClient = new();
         Mapper = new OrganisationMapper();
 

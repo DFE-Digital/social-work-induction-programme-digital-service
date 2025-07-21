@@ -18,10 +18,9 @@ public class EnterLocalAuthorityCode(
     IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
     IValidator<EnterLocalAuthorityCode> validator
-    ) : BasePageModel
+) : BasePageModel
 {
-    [BindProperty]
-    public int? LocalAuthorityCode { get; set; }
+    [BindProperty] public int? LocalAuthorityCode { get; set; }
 
     public PageResult OnGet()
     {
@@ -31,14 +30,21 @@ public class EnterLocalAuthorityCode(
             LocalAuthorityCode = localAuthorityCode;
         }
 
-        BackLinkPath = linkGenerator.ManageOrganisations();
+        SetBackLinkPath();
         return Page();
     }
 
     public RedirectResult OnGetNew()
     {
         createOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
-        return Redirect(linkGenerator.EnterLocalAuthorityCode());
+        return Redirect(linkGenerator.ManageOrganisations.EnterLocalAuthorityCode());
+    }
+
+    public PageResult OnGetChange()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath();
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -47,7 +53,7 @@ public class EnterLocalAuthorityCode(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageOrganisations();
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
             return Page();
         }
 
@@ -57,6 +63,24 @@ public class EnterLocalAuthorityCode(
         // TODO show error if organisation not found once validation and error message designs are available
         createOrganisationJourneyService.SetOrganisation(organisation);
 
-        return Redirect(linkGenerator.ConfirmOrganisationDetails());
+        return Redirect(
+            FromChangeLink
+                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails()
+        );
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        SetBackLinkPath();
+        return await OnPostAsync();
+    }
+
+    private void SetBackLinkPath()
+    {
+        BackLinkPath ??= FromChangeLink
+            ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+            : linkGenerator.ManageOrganisations.Index();
     }
 }
