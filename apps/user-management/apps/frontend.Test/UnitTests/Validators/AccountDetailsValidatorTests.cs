@@ -167,6 +167,7 @@ public class AccountDetailsValidatorTests()
     [InlineData("00174123123")]
     [InlineData("075742367455")]
     [InlineData("+44074238521312")]
+    [InlineData("+4401275234234")]
     public void WhenPhoneNumberIsInvalidFormat_HasValidationErrors(string? phoneNumber)
     {
         // Arrange
@@ -191,6 +192,8 @@ public class AccountDetailsValidatorTests()
     [InlineData("07542123543")]
     [InlineData("07542 123 543")]
     [InlineData("07542 12 35 43")]
+    [InlineData("+441274 123 123")]
+    [InlineData("+441274 12 31 23")]
     public void WhenPhoneNumberInValidFormat_HasNoValidationErrors(string? phoneNumber)
     {
         // Arrange
