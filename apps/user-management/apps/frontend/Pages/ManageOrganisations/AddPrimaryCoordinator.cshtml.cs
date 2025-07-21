@@ -30,7 +30,8 @@ public class AddPrimaryCoordinator(
 
     public PageResult OnGetChange()
     {
-        SetBackLinkPath(true);
+        FromChangeLink = true;
+        SetBackLinkPath();
         return OnGet();
     }
 
@@ -54,13 +55,13 @@ public class AddPrimaryCoordinator(
     public async Task<IActionResult> OnPostChangeAsync()
     {
         FromChangeLink = true;
-        SetBackLinkPath(true);
+        SetBackLinkPath();
         return await OnPostAsync();
     }
 
-    private void SetBackLinkPath(bool fromCheckYourAnswersPage = false)
+    private void SetBackLinkPath()
     {
-        BackLinkPath ??= fromCheckYourAnswersPage
+        BackLinkPath ??= FromChangeLink
             ? linkGenerator.ManageOrganisations.CheckYourAnswers()
             : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
     }
