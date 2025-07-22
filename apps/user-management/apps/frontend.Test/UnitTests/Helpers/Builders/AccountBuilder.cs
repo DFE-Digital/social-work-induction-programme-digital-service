@@ -51,6 +51,7 @@ public class AccountBuilder
         _faker.RuleFor(a => a.RouteIntoSocialWork, f => f.PickRandom<RouteIntoSocialWork>());
         _faker.RuleFor(a => a.OtherRouteIntoSocialWork, f => f.Name.FirstName());
         _faker.RuleFor(a => a.HasCompletedLoginAccountLinking, f => f.Random.Bool());
+        _faker.RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber("##### ### ###"));
     }
 
     public AccountBuilder WithAddOrEditAccountDetailsData()
