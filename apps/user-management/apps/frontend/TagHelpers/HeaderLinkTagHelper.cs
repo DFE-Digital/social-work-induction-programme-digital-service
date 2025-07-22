@@ -15,18 +15,15 @@ public class HeaderLinkTagHelper : TagHelper
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
-        if (IsVisible is false)
-        {
-            return;
-        }
+        if (IsVisible is false) return;
 
         output.TagName = null;
         output.Content.SetHtmlContent(
-            $"<li class=\"service-header__nav-list-item {IsActiveClass}\">"
-                + $"<a class=\"service-header__nav-list-item-link\" href=\"{Href}\">"
-                + Text
-                + "</a>"
-                + "</li>"
+            $"<li class=\"govuk-service-navigation__item {IsActiveClass}\">"
+            + $"<a class=\"govuk-service-navigation__link\" href=\"{Href}\">"
+            + Text
+            + "</a>"
+            + "</li>"
         );
     }
 }
