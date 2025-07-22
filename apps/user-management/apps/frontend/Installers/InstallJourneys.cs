@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -20,7 +19,6 @@ public static class InstallJourneys
         services.AddTransient<ICreateAccountJourneyService, CreateAccountJourneyService>();
         services.AddTransient<IEditAccountJourneyService, EditAccountJourneyService>();
         services.AddTransient<IRegisterSocialWorkerJourneyService, RegisterSocialWorkerJourneyService>();
-        services.AddTransient<ICreateOrganisationJourneyService, CreateOrganisationJourneyService>();
-        services.AddTransient<IEditOrganisationJourneyService, EditOrganisationJourneyService>();
+        services.AddTransient<IManageOrganisationJourneyService, ManageOrganisationJourneyService>();
     }
 }

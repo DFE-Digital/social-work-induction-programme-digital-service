@@ -20,7 +20,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     public EnterLocalAuthorityCodePageTests()
     {
         Sut = new EnterLocalAuthorityCode(
-            MockCreateOrganisationJourneyService.Object,
+            MockManageOrganisationJourneyService.Object,
             MockOrganisationService.Object,
             new FakeLinkGenerator(),
             new EnterLocalAuthorityCodeValidator()
@@ -32,7 +32,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     {
         // Arrange
         var localAuthorityCodeInJourney = new Faker().Random.Int();
-        MockCreateOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
+        MockManageOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
 
         // Act
         var result = Sut.OnGet();
@@ -42,7 +42,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         Sut.BackLinkPath.Should().Be("/manage-organisations");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -57,7 +57,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         result.Should().NotBeNull();
         result.Url.Should().Be("/manage-organisations/enter-local-authority-code");
 
-        MockCreateOrganisationJourneyService.Verify(x => x.ResetCreateOrganisationJourneyModel(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.ResetOrganisationJourneyModel(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -66,7 +66,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     {
         // Arrange
         var localAuthorityCodeInJourney = new Faker().Random.Int();
-        MockCreateOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
+        MockManageOrganisationJourneyService.Setup(x => x.GetLocalAuthorityCode()).Returns(localAuthorityCodeInJourney);
 
         // Act
         var result = Sut.OnGetChange();
@@ -76,7 +76,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -130,8 +130,8 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
 
         MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -162,8 +162,8 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
         MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

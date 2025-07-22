@@ -14,7 +14,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 [AuthorizeRoles(RoleType.Administrator)]
 public class EnterLocalAuthorityCode(
-    ICreateOrganisationJourneyService createOrganisationJourneyService,
+    IManageOrganisationJourneyService manageOrganisationJourneyService,
     IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
     IValidator<EnterLocalAuthorityCode> validator
@@ -24,7 +24,7 @@ public class EnterLocalAuthorityCode(
 
     public PageResult OnGet()
     {
-        var localAuthorityCode = createOrganisationJourneyService.GetLocalAuthorityCode();
+        var localAuthorityCode = manageOrganisationJourneyService.GetLocalAuthorityCode();
         if (localAuthorityCode is not null)
         {
             LocalAuthorityCode = localAuthorityCode;
@@ -36,7 +36,7 @@ public class EnterLocalAuthorityCode(
 
     public RedirectResult OnGetNew()
     {
-        createOrganisationJourneyService.ResetCreateOrganisationJourneyModel();
+        manageOrganisationJourneyService.ResetOrganisationJourneyModel();
         return Redirect(linkGenerator.ManageOrganisations.EnterLocalAuthorityCode());
     }
 
@@ -57,11 +57,11 @@ public class EnterLocalAuthorityCode(
             return Page();
         }
 
-        createOrganisationJourneyService.SetLocalAuthorityCode(LocalAuthorityCode);
+        manageOrganisationJourneyService.SetLocalAuthorityCode(LocalAuthorityCode);
 
         var organisation = organisationService.GetByLocalAuthorityCode(LocalAuthorityCode);
         // TODO show error if organisation not found once validation and error message designs are available
-        createOrganisationJourneyService.SetOrganisation(organisation);
+        manageOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(
             FromChangeLink

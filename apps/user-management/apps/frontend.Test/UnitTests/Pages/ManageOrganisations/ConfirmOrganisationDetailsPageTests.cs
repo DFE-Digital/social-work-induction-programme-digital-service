@@ -20,7 +20,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
     public ConfirmOrganisationDetailsPageTests()
     {
         Sut = new ConfirmOrganisationDetails(
-            MockCreateOrganisationJourneyService.Object,
+            MockManageOrganisationJourneyService.Object,
             new FakeLinkGenerator()
             );
     }
@@ -30,7 +30,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
     {
         // Arrange
         var organisation = OrganisationBuilder.Build();
-        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
+        MockManageOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
 
         // Act
         var result = Sut.OnGet();
@@ -40,7 +40,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
         Sut.BackLinkPath.Should().Be("/manage-organisations/enter-local-authority-code");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
