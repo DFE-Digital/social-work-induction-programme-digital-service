@@ -107,6 +107,98 @@ public class OrganisationsOperationsTests
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
+    [Fact]
+    public async Task GetById_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var route = $"/api/Organisations/{organisationId}";
+        var organisation = new Organisation
+        {
+            OrganisationId = organisationId,
+            OrganisationName = "test org",
+            ExternalOrganisationId = 2,
+            LocalAuthorityCode = 123,
+            Type = OrganisationType.LocalAuthority,
+            Region = "Test region",
+            PrimaryCoordinatorId = Guid.Empty
+        };
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            organisation,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Organisations.GetByIdAsync(organisationId);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OrganisationDto>();
+        response.Should().BeEquivalentTo(organisation);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetById_WhenErrorResponseReturned_ReturnsNull()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var route = $"/api/Organisations/{organisationId}";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Get,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Organisations.GetByIdAsync(organisationId);
+
+        // Assert
+        response.Should().BeNull();
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetById_WhenNoOrganisationReturned_ThrowsException()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var route = $"/api/Organisations/{organisationId}";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act & Assert
+        await sut.Invoking(s => s.Organisations.GetByIdAsync(organisationId))
+            .Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Failed to get organisation.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
 
     private AuthServiceClient BuildSut(MockHttpMessageHandler mockHttpMessageHandler)
     {

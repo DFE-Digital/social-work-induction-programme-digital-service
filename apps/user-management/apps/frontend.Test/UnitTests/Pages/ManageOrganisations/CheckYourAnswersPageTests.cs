@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;

@@ -1,9 +1,6 @@
 using Bogus;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
