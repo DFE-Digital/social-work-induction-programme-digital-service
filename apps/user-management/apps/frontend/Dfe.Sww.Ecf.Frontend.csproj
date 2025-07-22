@@ -16,7 +16,7 @@
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="11.9.2" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
-        <PackageReference Include="GovUk.Frontend.AspNetCore" Version="3.0.0" />
+        <PackageReference Include="GovUk.Frontend.AspNetCore" Version="3.2.3" />
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
         <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="5.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
@@ -34,5 +34,5 @@
     <ItemGroup>
         <InternalsVisibleTo Include="Dfe.Sww.Ecf.Frontend.Test" />
     </ItemGroup>
-    
+
 </Project>
