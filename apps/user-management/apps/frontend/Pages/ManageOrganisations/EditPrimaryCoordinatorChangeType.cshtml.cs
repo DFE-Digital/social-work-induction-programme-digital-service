@@ -28,7 +28,7 @@ public class EditPrimaryCoordinatorChangeType(
         BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
         ChangeType = editOrganisationJourneyService.GetPrimaryCoordinatorChangeType();
         var organisation = editOrganisationJourneyService.GetOrganisation();
-        OrganisationName = organisation?.OrganisationName;
+        if (organisation is not null) OrganisationName = organisation.OrganisationName;
         return Page();
     }
 

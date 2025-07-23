@@ -64,7 +64,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public async Task OnPost_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    public async Task OnPostAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
         var account = AccountBuilder
@@ -94,7 +94,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public async Task OnPost_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
+    public async Task OnPostAsync_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
     {
         // Arrange
         Sut.AccountDetails = new AccountDetails
@@ -134,7 +134,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     }
 
     [Fact]
-    public async Task OnPostChange_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    public async Task OnPostChangeAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
         var account = AccountBuilder
