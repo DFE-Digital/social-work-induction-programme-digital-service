@@ -3,9 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisationJourneyServiceTests;
 
-public class SetOrganisationShould : CreateOrganisationJourneyServiceTestBase
+public class SetOrganisationShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_SetsOrganisation()
@@ -14,7 +14,7 @@ public class SetOrganisationShould : CreateOrganisationJourneyServiceTestBase
         var expectedOrganisation = OrganisationBuilder.Build();
         var existingOrganisation = OrganisationBuilder.Build();
         HttpContext.Session.Set(
-            CreateOrganisationSessionKey,
+            EditOrganisationSessionKey,
             new CreateOrganisationJourneyModel { Organisation = existingOrganisation }
         );
 
@@ -23,12 +23,12 @@ public class SetOrganisationShould : CreateOrganisationJourneyServiceTestBase
 
         // Assert
         HttpContext.Session.TryGet(
-            CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
+            EditOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.Organisation.Should().BeEquivalentTo(expectedOrganisation);
+        editOrganisationJourneyModel.Should().NotBeNull();
+        editOrganisationJourneyModel!.Organisation.Should().BeEquivalentTo(expectedOrganisation);
     }
 
     [Fact]
@@ -42,11 +42,11 @@ public class SetOrganisationShould : CreateOrganisationJourneyServiceTestBase
 
         // Assert
         HttpContext.Session.TryGet(
-            CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
+            EditOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
-        createOrganisationJourneyModel.Should().NotBeNull();
-        createOrganisationJourneyModel!.Organisation.Should().BeEquivalentTo(expectedOrganisation);
+        editOrganisationJourneyModel.Should().NotBeNull();
+        editOrganisationJourneyModel!.Organisation.Should().BeEquivalentTo(expectedOrganisation);
     }
 }

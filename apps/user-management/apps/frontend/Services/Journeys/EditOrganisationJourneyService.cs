@@ -7,9 +7,7 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditOrganisationJourneyService(
-    IHttpContextAccessor httpContextAccessor,
-    IOrganisationService organisationService,
-    IAccountService accountService) : IEditOrganisationJourneyService
+    IHttpContextAccessor httpContextAccessor) : IEditOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 

@@ -26,11 +26,11 @@ public class SetPrimaryCoordinatorAccountDetailsShould : CreateOrganisationJourn
         // Assert
         HttpContext.Session.TryGet(
             CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
     }
 
     [Fact]
@@ -46,10 +46,10 @@ public class SetPrimaryCoordinatorAccountDetailsShould : CreateOrganisationJourn
         // Assert
         HttpContext.Session.TryGet(
             CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
     }
 }

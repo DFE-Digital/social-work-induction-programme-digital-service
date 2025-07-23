@@ -48,6 +48,8 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
 
         MockOrganisationService.Verify(x => x.GetByIdAsync(organisationId), Times.Once);
         MockAccountService.Verify(x => x.GetByIdAsync(primaryCoordinatorId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorAccount(primaryCoordinator), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

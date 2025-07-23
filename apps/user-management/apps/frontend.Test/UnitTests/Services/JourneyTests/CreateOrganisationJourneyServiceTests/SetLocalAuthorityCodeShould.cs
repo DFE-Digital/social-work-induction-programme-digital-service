@@ -24,11 +24,11 @@ public class SetLocalAuthorityCodeShould : CreateOrganisationJourneyServiceTestB
         // Assert
         HttpContext.Session.TryGet(
             CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.LocalAuthorityCode.Should().Be(expectedLocalAuthorityCode);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.LocalAuthorityCode.Should().Be(expectedLocalAuthorityCode);
     }
 
     [Fact]
