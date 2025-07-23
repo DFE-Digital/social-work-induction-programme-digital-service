@@ -5,11 +5,11 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public abstract class ManageOrganisationJourneyServiceTestBase
+public abstract class CreateOrganisationJourneyServiceTestBase
 {
-    private protected const string ManageOrganisationSessionKey = "_manageOrganisation";
+    private protected const string CreateOrganisationSessionKey = "_createOrganisation";
     private protected HttpContext HttpContext { get; }
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
@@ -19,9 +19,9 @@ public abstract class ManageOrganisationJourneyServiceTestBase
 
     private protected AccountBuilder AccountBuilder { get; }
 
-    private protected readonly ManageOrganisationJourneyService Sut;
+    private protected readonly CreateOrganisationJourneyService Sut;
 
-    protected ManageOrganisationJourneyServiceTestBase()
+    protected CreateOrganisationJourneyServiceTestBase()
     {
         OrganisationBuilder = new OrganisationBuilder();
         AccountBuilder = new AccountBuilder();
@@ -35,7 +35,7 @@ public abstract class ManageOrganisationJourneyServiceTestBase
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
-        Sut = new ManageOrganisationJourneyService(
+        Sut = new CreateOrganisationJourneyService(
             httpContextAccessor,
             MockOrganisationService.Object
         );

@@ -4,9 +4,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class GetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestBase
+public class GetLocalAuthorityCodeShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_ReturnsLocalAuthorityCode()
@@ -14,8 +14,8 @@ public class GetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestB
         // Arrange
         var expectedLocalAuthorityCode = new Faker().Random.Int();
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { LocalAuthorityCode = expectedLocalAuthorityCode }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { LocalAuthorityCode = expectedLocalAuthorityCode }
         );
 
         // Act

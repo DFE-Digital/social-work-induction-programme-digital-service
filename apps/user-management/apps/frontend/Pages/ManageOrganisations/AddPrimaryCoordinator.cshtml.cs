@@ -12,7 +12,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 [AuthorizeRoles(RoleType.Administrator)]
 public class AddPrimaryCoordinator(
-    IManageOrganisationJourneyService manageOrganisationJourneyService,
+    ICreateOrganisationJourneyService createOrganisationJourneyService,
     IValidator<AccountDetails> validator,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
@@ -22,7 +22,7 @@ public class AddPrimaryCoordinator(
 
     public PageResult OnGet()
     {
-        AccountDetails = manageOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
+        AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
         SetBackLinkPath();
 
         return Page();
@@ -47,7 +47,7 @@ public class AddPrimaryCoordinator(
         }
 
         AccountDetails.Types = new List<AccountType> { AccountType.Coordinator };
-        manageOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
+        createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
 
         return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
     }

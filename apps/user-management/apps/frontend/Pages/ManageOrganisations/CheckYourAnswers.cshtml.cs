@@ -12,7 +12,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 [AuthorizeRoles(RoleType.Administrator)]
 public class CheckYourAnswers(
-    IManageOrganisationJourneyService manageOrganisationJourneyService,
+    ICreateOrganisationJourneyService createOrganisationJourneyService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
@@ -28,8 +28,8 @@ public class CheckYourAnswers(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
-        Organisation = manageOrganisationJourneyService.GetOrganisation();
-        PrimaryCoordinator = manageOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
+        Organisation = createOrganisationJourneyService.GetOrganisation();
+        PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         ChangeLocalAuthorityCodeLink = linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
         ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.AddPrimaryCoordinatorChange();
 
@@ -38,12 +38,12 @@ public class CheckYourAnswers(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var organisation = manageOrganisationJourneyService.GetOrganisation();
-        var primaryCoordinator = manageOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
+        var organisation = createOrganisationJourneyService.GetOrganisation();
+        var primaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         if (organisation is null || primaryCoordinator is null)
             return BadRequest();
 
-        await manageOrganisationJourneyService.CompleteJourneyAsync();
+        await createOrganisationJourneyService.CompleteJourneyAsync();
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been added";

@@ -5,9 +5,9 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class GetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourneyServiceTestBase
+public class GetPrimaryCoordinatorAccountDetailsShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_ReturnsOrganisation()
@@ -16,8 +16,8 @@ public class GetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourn
         var account = AccountBuilder.Build();
         var expected = AccountDetails.FromAccount(account);
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { PrimaryCoordinatorAccountDetails = expected }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { PrimaryCoordinatorAccountDetails = expected }
         );
 
         // Act

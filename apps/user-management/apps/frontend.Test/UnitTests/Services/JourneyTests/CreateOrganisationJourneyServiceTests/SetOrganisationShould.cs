@@ -3,9 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class SetOrganisationShould : ManageOrganisationJourneyServiceTestBase
+public class SetOrganisationShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_SetsOrganisation()
@@ -14,8 +14,8 @@ public class SetOrganisationShould : ManageOrganisationJourneyServiceTestBase
         var expectedOrganisation = OrganisationBuilder.Build();
         var existingOrganisation = OrganisationBuilder.Build();
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { Organisation = existingOrganisation }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { Organisation = existingOrganisation }
         );
 
         // Act
@@ -23,8 +23,8 @@ public class SetOrganisationShould : ManageOrganisationJourneyServiceTestBase
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
         );
 
         manageOrganisationJourneyModel.Should().NotBeNull();
@@ -42,8 +42,8 @@ public class SetOrganisationShould : ManageOrganisationJourneyServiceTestBase
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
         );
 
         manageOrganisationJourneyModel.Should().NotBeNull();

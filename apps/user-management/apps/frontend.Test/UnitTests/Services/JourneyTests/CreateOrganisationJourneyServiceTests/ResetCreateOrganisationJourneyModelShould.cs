@@ -3,9 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class ResetOrganisationJourneyModelShould : ManageOrganisationJourneyServiceTestBase
+public class ResetCreateOrganisationJourneyModelShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_ResetsJourney()
@@ -14,8 +14,8 @@ public class ResetOrganisationJourneyModelShould : ManageOrganisationJourneyServ
         var organisation = OrganisationBuilder.WithRegion().Build();
 
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel
             {
                 Organisation = organisation,
                 LocalAuthorityCode = organisation.LocalAuthorityCode
@@ -23,12 +23,12 @@ public class ResetOrganisationJourneyModelShould : ManageOrganisationJourneyServ
         );
 
         // Act
-        Sut.ResetOrganisationJourneyModel();
+        Sut.ResetCreateOrganisationJourneyModel();
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
         );
 
         manageOrganisationJourneyModel.Should().BeNull();

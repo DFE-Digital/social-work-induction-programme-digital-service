@@ -10,7 +10,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 [AuthorizeRoles(RoleType.Administrator)]
 public class ConfirmOrganisationDetails(
-    IManageOrganisationJourneyService manageOrganisationJourneyService,
+    ICreateOrganisationJourneyService createOrganisationJourneyService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
@@ -20,7 +20,7 @@ public class ConfirmOrganisationDetails(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ManageOrganisations.EnterLocalAuthorityCode();
-        Organisation = manageOrganisationJourneyService.GetOrganisation();
+        Organisation = createOrganisationJourneyService.GetOrganisation();
 
         return Page();
     }

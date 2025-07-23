@@ -17,7 +17,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     public AddPrimaryCoordinatorPageTests()
     {
         Sut = new AddPrimaryCoordinator(
-            MockManageOrganisationJourneyService.Object,
+            MockCreateOrganisationJourneyService.Object,
             new AccountDetailsValidator(),
             new FakeLinkGenerator()
             );
@@ -29,7 +29,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
+        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
         // Act
         var result = Sut.OnGet();
@@ -39,7 +39,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
         result.Should().BeOfType<PageResult>();
 
-        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -49,7 +49,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
+        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
         // Act
         var result = Sut.OnGetChange();
@@ -59,7 +59,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
         result.Should().BeOfType<PageResult>();
 
-        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -86,7 +86,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
 
-        MockManageOrganisationJourneyService.Verify(
+        MockCreateOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
@@ -158,7 +158,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
-        MockManageOrganisationJourneyService.Verify(
+        MockCreateOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );

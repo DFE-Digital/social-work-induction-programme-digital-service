@@ -18,7 +18,7 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
     public OrganisationDetailsPageTests()
     {
         Sut = new OrganisationDetails(
-            MockManageOrganisationJourneyService.Object,
+            MockEditOrganisationJourneyService.Object,
             MockOrganisationService.Object,
             MockAccountService.Object,
             new FakeLinkGenerator()
@@ -122,7 +122,7 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         result.Should().NotBeNull();
         result.Url.Should().Be($"/manage-organisations/organisation-details/{Guid.Empty}");
 
-        MockManageOrganisationJourneyService.Verify(x => x.ResetOrganisationJourneyModel(), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.ResetEditOrganisationJourneyModel(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }
