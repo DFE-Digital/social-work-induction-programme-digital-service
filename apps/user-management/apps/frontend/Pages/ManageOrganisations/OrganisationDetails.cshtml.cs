@@ -43,6 +43,8 @@ public class OrganisationDetails(
         PrimaryCoordinator = primaryCoordinator;
 
         BackLinkPath = linkGenerator.ManageOrganisations.Index();
+        editOrganisationJourneyService.SetOrganisation(Organisation);
+        editOrganisationJourneyService.SetPrimaryCoordinatorAccount(PrimaryCoordinator);
         return Page();
     }
 }

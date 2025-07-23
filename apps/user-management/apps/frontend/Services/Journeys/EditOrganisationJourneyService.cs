@@ -45,6 +45,32 @@ public class EditOrganisationJourneyService(
         SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
     }
 
+    public Organisation? GetOrganisation()
+    {
+        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        return editOrganisationJourneyModel.Organisation;
+    }
+
+    public void SetOrganisation(Organisation organisation)
+    {
+        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        editOrganisationJourneyModel.Organisation = organisation;
+        SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
+    }
+
+    public Account? GetPrimaryCoordinatorAccount()
+    {
+        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        return editOrganisationJourneyModel?.PrimaryCoordinatorAccount;
+    }
+
+    public void SetPrimaryCoordinatorAccount(Account account)
+    {
+        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        editOrganisationJourneyModel.PrimaryCoordinatorAccount = account;
+        SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
+    }
+
     public void ResetEditOrganisationJourneyModel()
     {
         Session.Remove(EditOrganisationSessionKey);

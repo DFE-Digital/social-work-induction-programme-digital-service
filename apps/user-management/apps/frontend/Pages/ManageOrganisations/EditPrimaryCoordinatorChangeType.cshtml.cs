@@ -13,7 +13,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 /// <summary>
 /// Edit Primary Coordinator Change Type
 /// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
+[AuthorizeRoles(RoleType.Administrator)]
 public class EditPrimaryCoordinatorChangeType(
     IEditOrganisationJourneyService editOrganisationJourneyService,
     EcfLinkGenerator linkGenerator,
@@ -21,27 +21,33 @@ public class EditPrimaryCoordinatorChangeType(
     : BasePageModel
 {
     [BindProperty] public PrimaryCoordinatorChangeType? ChangeType { get; set; }
+    [BindProperty] public string? OrganisationName { get; set; }
 
-    public PageResult OnGet()
+    public PageResult OnGet(Guid id)
     {
-        BackLinkPath = linkGenerator.ManageOrganisations.Index(); // TODO update this to org details page
+        BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
         ChangeType = editOrganisationJourneyService.GetPrimaryCoordinatorChangeType();
-
+        var organisation = editOrganisationJourneyService.GetOrganisation();
+        OrganisationName = organisation?.OrganisationName;
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(Guid id)
     {
         var validationResult = await validator.ValidateAsync(this);
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            linkGenerator.ManageOrganisations.Index(); // TODO update this to org details page
+            BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
+            OrganisationName = editOrganisationJourneyService.GetOrganisation()?.OrganisationName;
             return Page();
         }
 
         editOrganisationJourneyService.SetPrimaryCoordinatorChangeType(ChangeType);
 
-        return Redirect(linkGenerator.ManageOrganisations.Index()); // TODO update this to org details page
+        // TODO logic on add primary coordinator for updating user details and for adding a new set of details as part of the edit journey if using the same page
+        return Redirect(ChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator
+            ? linkGenerator.ManageOrganisations.AddPrimaryCoordinatorReplace()
+            : linkGenerator.ManageOrganisations.AddPrimaryCoordinatorEdit());
     }
 }

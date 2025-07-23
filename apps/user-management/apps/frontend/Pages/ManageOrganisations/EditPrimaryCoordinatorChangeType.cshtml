@@ -2,7 +2,6 @@
 @using Dfe.Sww.Ecf.Frontend.Extensions
 @using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation
 @using GovUk.Frontend.AspNetCore.TagHelpers
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations.EditPrimaryCoordinatorChangeType
 
 @{
@@ -10,8 +9,12 @@
 }
 
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
         <form method="post">
+            @if (Model.OrganisationName is not null)
+            {
+                <span class="govuk-caption-l">@Model.OrganisationName</span>
+            }
             <govuk-radios for="ChangeType">
                 <govuk-radios-fieldset>
                     <govuk-radios-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">

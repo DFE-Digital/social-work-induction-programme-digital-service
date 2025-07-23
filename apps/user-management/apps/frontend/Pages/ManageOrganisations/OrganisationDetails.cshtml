@@ -65,8 +65,7 @@
             <govuk-summary-card>
                 <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
                 <govuk-summary-card-actions>
-                    @* TODO update href to primary coordinator change link *@
-                    <govuk-summary-card-action href="#">Change</govuk-summary-card-action>
+                    <govuk-summary-card-action asp-page="EditPrimaryCoordinatorChangeType" asp-route-id="@Model.Organisation?.OrganisationId">Change</govuk-summary-card-action>
                 </govuk-summary-card-actions>
                 <govuk-summary-list>
                     <govuk-summary-list-row>
