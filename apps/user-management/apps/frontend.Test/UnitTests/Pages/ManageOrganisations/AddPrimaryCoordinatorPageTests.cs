@@ -1,13 +1,7 @@
-using Bogus;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Dfe.Sww.Ecf.Frontend.Validation;
-using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,7 +17,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     public AddPrimaryCoordinatorPageTests()
     {
         Sut = new AddPrimaryCoordinator(
-            MockCreateOrganisationJourneyService.Object,
+            MockManageOrganisationJourneyService.Object,
             new AccountDetailsValidator(),
             new FakeLinkGenerator()
             );
@@ -35,7 +29,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
+        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
         // Act
         var result = Sut.OnGet();
@@ -45,7 +39,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -55,7 +49,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
+        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
         // Act
         var result = Sut.OnGetChange();
@@ -65,7 +59,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -92,7 +86,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
 
-        MockCreateOrganisationJourneyService.Verify(
+        MockManageOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
@@ -164,7 +158,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
-        MockCreateOrganisationJourneyService.Verify(
+        MockManageOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );

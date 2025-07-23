@@ -18,6 +18,7 @@ public class OrganisationBuilder
         _faker.RuleFor(a => a.LocalAuthorityCode, f => f.Random.Number(1, 1000));
         _faker.RuleFor(a => a.Type, f => f.PickRandom<OrganisationType>());
         _faker.RuleFor(a => a.Region, f => f.Address.County());
+        _faker.RuleFor(a => a.PrimaryCoordinatorId, f => f.Random.Guid());
     }
 
     public OrganisationBuilder WithRegion()

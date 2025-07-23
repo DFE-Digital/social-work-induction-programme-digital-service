@@ -3,7 +3,7 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
-public interface ICreateOrganisationJourneyService
+public interface IManageOrganisationJourneyService
 {
     public Organisation? GetOrganisation();
     void SetOrganisation(Organisation organisation);
@@ -11,6 +11,6 @@ public interface ICreateOrganisationJourneyService
     void SetLocalAuthorityCode(int? localAuthorityCode);
     AccountDetails? GetPrimaryCoordinatorAccountDetails();
     void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails);
-    void ResetCreateOrganisationJourneyModel();
+    void ResetOrganisationJourneyModel();
     Task<Organisation?> CompleteJourneyAsync();
 }

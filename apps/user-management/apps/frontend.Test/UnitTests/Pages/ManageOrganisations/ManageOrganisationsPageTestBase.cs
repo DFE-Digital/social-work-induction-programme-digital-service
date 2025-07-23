@@ -16,7 +16,9 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
 
-    private protected Mock<ICreateOrganisationJourneyService> MockCreateOrganisationJourneyService { get; }
+    private protected Mock<IManageOrganisationJourneyService> MockManageOrganisationJourneyService { get; }
+
+    private protected Mock<IAccountService> MockAccountService { get; }
 
     protected ManageOrganisationsPageTestBase()
     {
@@ -26,12 +28,15 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
 
         MockOrganisationService = new();
 
-        MockCreateOrganisationJourneyService = new();
+        MockManageOrganisationJourneyService = new();
+
+        MockAccountService = new();
     }
 
     private protected void VerifyAllNoOtherCalls()
     {
         MockOrganisationService.VerifyNoOtherCalls();
-        MockCreateOrganisationJourneyService.VerifyNoOtherCalls();
+        MockManageOrganisationJourneyService.VerifyNoOtherCalls();
+        MockAccountService.VerifyNoOtherCalls();
     }
 }

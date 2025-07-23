@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
@@ -18,7 +17,7 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
     public CheckYourAnswersPageTests()
     {
         Sut = new CheckYourAnswers(
-            MockCreateOrganisationJourneyService.Object,
+            MockManageOrganisationJourneyService.Object,
             new FakeLinkGenerator()
         )
         {
@@ -33,8 +32,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         var organisation = OrganisationBuilder.Build();
         var account = AccountBuilder.Build();
         var primaryCoordinator = AccountDetails.FromAccount(account);
-        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(primaryCoordinator);
+        MockManageOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
+        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(primaryCoordinator);
 
         // Act
         var result = Sut.OnGet();
@@ -44,8 +43,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         Sut.BackLinkPath.Should().Be("/manage-organisations/add-primary-coordinator");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -57,8 +56,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         var account = AccountBuilder.Build();
         var primaryCoordinator = AccountDetails.FromAccount(account);
 
-        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(primaryCoordinator);
+        MockManageOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
+        MockManageOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(primaryCoordinator);
 
         Sut.Organisation = organisation;
         Sut.PrimaryCoordinator = primaryCoordinator;
@@ -76,9 +75,9 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         TempData["NotificationHeader"].Should().Be($"{organisation.OrganisationName} has been added");
         TempData["NotificationMessage"].Should().Be($"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}");
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -96,8 +95,8 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         // Assert
         result.Should().BeOfType<BadRequestResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockManageOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

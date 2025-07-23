@@ -9,5 +9,6 @@ public class OrganisationDto
     public int? ExternalOrganisationId { get; set; }
     public int? LocalAuthorityCode { get; set; }
     public OrganisationType? Type { get; set; }
+    public Guid? PrimaryCoordinatorId { get; set; }
     public string? Region { get; set; }
 }

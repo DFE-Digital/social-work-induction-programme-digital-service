@@ -1,9 +1,7 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -40,7 +38,8 @@ public class CreateShould : OrganisationAccountServiceTestBase
                 ExternalUserId = primaryCoordinator.ExternalUserId,
                 IsFunded = primaryCoordinator.IsFunded,
                 ProgrammeStartDate = primaryCoordinator.ProgrammeStartDate,
-                ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate
+                ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate,
+                PhoneNumber = primaryCoordinator.PhoneNumber
             }
         };
 

@@ -81,11 +81,19 @@ public class OrganisationService(
                     ExternalUserId = primaryCoordinator.ExternalUserId,
                     IsFunded = primaryCoordinator.IsFunded,
                     ProgrammeStartDate = primaryCoordinator.ProgrammeStartDate,
-                    ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate
+                    ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate,
+                    PhoneNumber = primaryCoordinator.PhoneNumber
                 }
             }
         );
 
         return mapper.MapToBo(createdOrganisationDto);
+    }
+
+    public async Task<Organisation?> GetByIdAsync(Guid id)
+    {
+        var organisation = await authServiceClient.Organisations.GetByIdAsync(id);
+
+        return organisation is null ? null : mapper.MapToBo(organisation);
     }
 }

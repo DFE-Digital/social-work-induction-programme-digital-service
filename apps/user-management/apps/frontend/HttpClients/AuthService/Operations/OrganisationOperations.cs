@@ -57,4 +57,22 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
         }
         return createdOrganisation;
     }
+
+    public async Task<OrganisationDto?> GetByIdAsync(Guid id)
+    {
+        var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Organisations/{id}");
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        var organisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
+        if (organisation is null)
+        {
+            throw new InvalidOperationException("Failed to get organisation.");
+        }
+        return organisation;
+    }
 }

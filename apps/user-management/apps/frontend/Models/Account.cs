@@ -129,6 +129,7 @@ public record Account
 
     public bool HasCompletedLoginAccountLinking { get; set; }
 
+    [Display(Name = "UK phone number")]
     public string? PhoneNumber { get; set; }
 
     public bool? PhoneNumberRequired { get; set; }

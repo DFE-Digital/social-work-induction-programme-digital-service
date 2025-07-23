@@ -1,0 +1,89 @@
+@page
+@using Dfe.Sww.Ecf.Frontend.Extensions
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations.OrganisationDetails
+
+@{
+    Model.Title = "Organisation details";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        @if (Model.Organisation?.Region is not null)
+        {
+            <span class="govuk-caption-l">@Model.Organisation.OrganisationName</span>
+        }
+        <h1 class="govuk-heading-l">
+            @Model.Title
+        </h1>
+
+        <govuk-summary-list>
+            @if (Model.Organisation?.LocalAuthorityCode is not null)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.LocalAuthorityCode)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.LocalAuthorityCode</p>
+                    </govuk-summary-list-row-value>
+                    <govuk-summary-list-row-actions>
+                    </govuk-summary-list-row-actions>
+                </govuk-summary-list-row>
+            }
+
+            @if (Model.Organisation?.OrganisationName is not null)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.OrganisationName)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.OrganisationName</p>
+                    </govuk-summary-list-row-value>
+                </govuk-summary-list-row>
+            }
+
+            @if (Model.Organisation?.Type is not null)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.Type)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.Type.GetDisplayName()</p>
+                    </govuk-summary-list-row-value>
+                </govuk-summary-list-row>
+            }
+
+            @if (Model.Organisation?.Region is not null)
+            {
+                <govuk-summary-list-row>
+                    <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.Region)</govuk-summary-list-row-key>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.Region</p>
+                    </govuk-summary-list-row-value>
+                </govuk-summary-list-row>
+            }
+        </govuk-summary-list>
+
+        @if (Model.PrimaryCoordinator != null)
+        {
+            <govuk-summary-card>
+                <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
+                <govuk-summary-card-actions>
+                    @* TODO update href to primary coordinator change link *@
+                    <govuk-summary-card-action href="#">Change</govuk-summary-card-action>
+                </govuk-summary-card-actions>
+                <govuk-summary-list>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.FullName)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.PrimaryCoordinator.FullName</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.PhoneNumber)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.PrimaryCoordinator.PhoneNumber</govuk-summary-list-row-value>
+                    </govuk-summary-list-row>
+                </govuk-summary-list>
+            </govuk-summary-card>
+        }
+    </div>
+</div>
+
