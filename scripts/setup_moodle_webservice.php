@@ -193,8 +193,7 @@ if (!$token) {
 
 // List of Moodle web service functions you want to allow
 $functions = [
-#    'core_user_get_users',
-    'core_course_get_courses',
+    'core_user_create_users',
 ];
 
 foreach ($functions as $functionname) {
