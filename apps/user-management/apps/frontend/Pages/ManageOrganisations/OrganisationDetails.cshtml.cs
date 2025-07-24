@@ -11,7 +11,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 [AuthorizeRoles(RoleType.Administrator)]
 public class OrganisationDetails(
-    IManageOrganisationJourneyService manageOrganisationJourneyService,
+    IEditOrganisationJourneyService editOrganisationJourneyService,
     IOrganisationService organisationService,
     IAccountService accountService,
     EcfLinkGenerator linkGenerator
@@ -25,7 +25,7 @@ public class OrganisationDetails(
 
     public RedirectResult OnGetNew(Guid id)
     {
-        manageOrganisationJourneyService.ResetOrganisationJourneyModel();
+        editOrganisationJourneyService.ResetEditOrganisationJourneyModel();
         return Redirect(linkGenerator.ManageOrganisations.ViewOrganisationDetails(id));
     }
 
@@ -43,6 +43,8 @@ public class OrganisationDetails(
         PrimaryCoordinator = primaryCoordinator;
 
         BackLinkPath = linkGenerator.ManageOrganisations.Index();
+        editOrganisationJourneyService.SetOrganisation(Organisation);
+        editOrganisationJourneyService.SetPrimaryCoordinatorAccount(PrimaryCoordinator);
         return Page();
     }
 }

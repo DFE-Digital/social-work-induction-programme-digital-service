@@ -4,9 +4,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class SetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourneyServiceTestBase
+public class SetPrimaryCoordinatorAccountDetailsShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_SetsOrganisation()
@@ -16,8 +16,8 @@ public class SetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourn
         var expectedAccount = AccountDetails.FromAccount(expected);
         var existingAccount = AccountDetails.FromAccount(AccountBuilder.Build());
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { PrimaryCoordinatorAccountDetails = existingAccount }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { PrimaryCoordinatorAccountDetails = existingAccount }
         );
 
         // Act
@@ -25,12 +25,12 @@ public class SetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourn
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
     }
 
     [Fact]
@@ -45,11 +45,11 @@ public class SetPrimaryCoordinatorAccountDetailsShould : ManageOrganisationJourn
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.PrimaryCoordinatorAccountDetails.Should().BeEquivalentTo(expectedAccount);
     }
 }

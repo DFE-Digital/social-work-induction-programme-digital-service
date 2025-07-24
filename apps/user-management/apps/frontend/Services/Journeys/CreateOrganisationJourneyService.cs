@@ -6,30 +6,30 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
-public class ManageOrganisationJourneyService(
+public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService
-) : IManageOrganisationJourneyService
+) : ICreateOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
-    private const string ManageOrganisationSessionKey = "_manageOrganisation";
+    private const string CreateOrganisationSessionKey = "_createOrganisation";
 
-    private ManageOrganisationJourneyModel GetOrganisationJourneyModel()
+    private CreateOrganisationJourneyModel GetOrganisationJourneyModel()
     {
         Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? createOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
-        return createOrganisationJourneyModel ?? new ManageOrganisationJourneyModel();
+        return createOrganisationJourneyModel ?? new CreateOrganisationJourneyModel();
     }
 
-    private void SetCreateOrganisationJourneyModel(ManageOrganisationJourneyModel manageOrganisationJourneyModel)
+    private void SetCreateOrganisationJourneyModel(CreateOrganisationJourneyModel createOrganisationJourneyModel)
     {
-        Session.Set(ManageOrganisationSessionKey, manageOrganisationJourneyModel);
+        Session.Set(CreateOrganisationSessionKey, createOrganisationJourneyModel);
     }
 
     public Organisation? GetOrganisation()
@@ -71,9 +71,9 @@ public class ManageOrganisationJourneyService(
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
-    public void ResetOrganisationJourneyModel()
+    public void ResetCreateOrganisationJourneyModel()
     {
-        Session.Remove(ManageOrganisationSessionKey);
+        Session.Remove(CreateOrganisationSessionKey);
     }
 
     public async Task<Organisation?> CompleteJourneyAsync()
@@ -95,7 +95,7 @@ public class ManageOrganisationJourneyService(
         var account = AccountDetails.ToAccount(primaryCoordinator);
         organisation = await organisationService.CreateAsync(organisation, account);
 
-        ResetOrganisationJourneyModel();
+        ResetCreateOrganisationJourneyModel();
 
         return organisation;
     }

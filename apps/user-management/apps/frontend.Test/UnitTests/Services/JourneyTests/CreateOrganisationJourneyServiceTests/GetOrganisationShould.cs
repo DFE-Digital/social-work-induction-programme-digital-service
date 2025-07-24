@@ -3,9 +3,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class GetOrganisationShould : ManageOrganisationJourneyServiceTestBase
+public class GetOrganisationShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_ReturnsOrganisation()
@@ -13,8 +13,8 @@ public class GetOrganisationShould : ManageOrganisationJourneyServiceTestBase
         // Arrange
         var expectedOrganisation = OrganisationBuilder.Build();
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { Organisation = expectedOrganisation }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { Organisation = expectedOrganisation }
         );
 
         // Act

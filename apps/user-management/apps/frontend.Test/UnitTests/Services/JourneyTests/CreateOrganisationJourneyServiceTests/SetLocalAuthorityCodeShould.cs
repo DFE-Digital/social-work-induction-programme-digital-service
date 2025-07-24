@@ -4,9 +4,9 @@ using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
 
-namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.ManageOrganisationJourneyServiceTests;
+namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateOrganisationJourneyServiceTests;
 
-public class SetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestBase
+public class SetLocalAuthorityCodeShould : CreateOrganisationJourneyServiceTestBase
 {
     [Fact]
     public void WhenCalled_WithExistingSessionData_SetsLocalAuthorityCode()
@@ -14,8 +14,8 @@ public class SetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestB
         // Arrange
         var expectedLocalAuthorityCode = new Faker().Random.Int();
         HttpContext.Session.Set(
-            ManageOrganisationSessionKey,
-            new ManageOrganisationJourneyModel { LocalAuthorityCode = new Faker().Random.Int() }
+            CreateOrganisationSessionKey,
+            new CreateOrganisationJourneyModel { LocalAuthorityCode = new Faker().Random.Int() }
         );
 
         // Act
@@ -23,12 +23,12 @@ public class SetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestB
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
         );
 
-        manageOrganisationJourneyModel.Should().NotBeNull();
-        manageOrganisationJourneyModel!.LocalAuthorityCode.Should().Be(expectedLocalAuthorityCode);
+        createOrganisationJourneyModel.Should().NotBeNull();
+        createOrganisationJourneyModel!.LocalAuthorityCode.Should().Be(expectedLocalAuthorityCode);
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class SetLocalAuthorityCodeShould : ManageOrganisationJourneyServiceTestB
 
         // Assert
         HttpContext.Session.TryGet(
-            ManageOrganisationSessionKey,
-            out ManageOrganisationJourneyModel? manageOrganisationJourneyModel
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? manageOrganisationJourneyModel
         );
 
         manageOrganisationJourneyModel.Should().NotBeNull();
