@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,8 +11,6 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 [AuthorizeRoles(RoleType.Administrator)]
 public class OrganisationDetails(
     IEditOrganisationJourneyService editOrganisationJourneyService,
-    IOrganisationService organisationService,
-    IAccountService accountService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
@@ -21,30 +18,28 @@ public class OrganisationDetails(
     public Organisation? Organisation { get; set; }
 
     [BindProperty]
-    public Account? PrimaryCoordinator { get; set; }
+    public AccountDetails? PrimaryCoordinator { get; set; }
 
     public RedirectResult OnGetNew(Guid id)
     {
-        editOrganisationJourneyService.ResetEditOrganisationJourneyModel();
+        editOrganisationJourneyService.ResetEditOrganisationJourneyModel(id);
         return Redirect(linkGenerator.ManageOrganisations.ViewOrganisationDetails(id));
     }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
-        var organisation = await organisationService.GetByIdAsync(id);
-        if (organisation is null) return NotFound();
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
 
-        if (organisation.PrimaryCoordinatorId is null) return NotFound();
-
-        var primaryCoordinator = await accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
-        if (primaryCoordinator is null) return NotFound();
+        if (organisation is null || primaryCoordinator is null)
+            return NotFound();
 
         Organisation = organisation;
         PrimaryCoordinator = primaryCoordinator;
 
         BackLinkPath = linkGenerator.ManageOrganisations.Index();
-        editOrganisationJourneyService.SetOrganisation(Organisation);
-        editOrganisationJourneyService.SetPrimaryCoordinatorAccount(PrimaryCoordinator);
+        await editOrganisationJourneyService.SetOrganisationAsync(id, Organisation);
+        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
         return Page();
     }
 }

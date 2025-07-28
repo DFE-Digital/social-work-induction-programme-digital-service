@@ -10,29 +10,32 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class GetPrimaryCoordinatorAccountShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_ReturnsOrganisation()
+    public async Task WhenCalled_WithExistingSessionData_ReturnsOrganisation()
     {
         // Arrange
-        var expected = AccountBuilder.Build();
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var expectedPrimaryCoordinator = AccountDetails.FromAccount(account);
+
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel { PrimaryCoordinatorAccount = expected }
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            new EditOrganisationJourneyModel(organisation, expectedPrimaryCoordinator)
         );
 
         // Act
-        var response = Sut.GetPrimaryCoordinatorAccount();
+        var response = await Sut.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeOfType<Account>();
-        response.Should().BeEquivalentTo(expected);
+        response.Should().BeOfType<AccountDetails>();
+        response.Should().BeEquivalentTo(expectedPrimaryCoordinator);
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_ReturnsNull()
+    public async Task WhenCalled_WithBlankSession_ReturnsNull()
     {
         // Act
-        var response = Sut.GetPrimaryCoordinatorAccount();
+        var response = await Sut.GetPrimaryCoordinatorAccountAsync(Guid.Empty);
 
         // Assert
         response.Should().BeNull();

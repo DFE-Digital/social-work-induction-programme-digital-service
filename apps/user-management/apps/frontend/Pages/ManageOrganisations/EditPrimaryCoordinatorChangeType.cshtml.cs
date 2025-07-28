@@ -23,11 +23,11 @@ public class EditPrimaryCoordinatorChangeType(
     [BindProperty] public PrimaryCoordinatorChangeType? ChangeType { get; set; }
     [BindProperty] public string? OrganisationName { get; set; }
 
-    public PageResult OnGet(Guid id)
+    public async Task<PageResult> OnGetAsync(Guid id)
     {
         BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
-        ChangeType = editOrganisationJourneyService.GetPrimaryCoordinatorChangeType();
-        var organisation = editOrganisationJourneyService.GetOrganisation();
+        ChangeType = await editOrganisationJourneyService.GetPrimaryCoordinatorChangeTypeAsync(id);
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         if (organisation is not null) OrganisationName = organisation.OrganisationName;
         return Page();
     }
@@ -39,15 +39,15 @@ public class EditPrimaryCoordinatorChangeType(
         {
             validationResult.AddToModelState(ModelState);
             BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
-            OrganisationName = editOrganisationJourneyService.GetOrganisation()?.OrganisationName;
+            OrganisationName = (await editOrganisationJourneyService.GetOrganisationAsync(id))?.OrganisationName;
             return Page();
         }
 
-        editOrganisationJourneyService.SetPrimaryCoordinatorChangeType(ChangeType);
+        await editOrganisationJourneyService.SetPrimaryCoordinatorChangeTypeAsync(id, ChangeType);
 
         // TODO logic on add primary coordinator for updating user details and for adding a new set of details as part of the edit journey if using the same page
         return Redirect(ChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator
             ? linkGenerator.ManageOrganisations.AddPrimaryCoordinatorReplace()
-            : linkGenerator.ManageOrganisations.AddPrimaryCoordinatorEdit());
+            : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id));
     }
 }

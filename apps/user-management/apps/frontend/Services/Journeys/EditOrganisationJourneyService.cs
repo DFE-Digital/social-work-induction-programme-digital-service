@@ -7,80 +7,113 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditOrganisationJourneyService(
-    IHttpContextAccessor httpContextAccessor) : IEditOrganisationJourneyService
+    IHttpContextAccessor httpContextAccessor,
+    IOrganisationService organisationService,
+    IAccountService accountService) : IEditOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IOrganisationService _organisationService = organisationService;
+    private readonly IAccountService _accountService = accountService;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
-    private const string EditOrganisationSessionKey = "_editOrganisation";
+    private static string EditOrganisationSessionKey(Guid id) => "_editOrganisation-" + id;
 
-    private EditOrganisationJourneyModel GetOrganisationJourneyModel()
+    private static KeyNotFoundException OrganisationNotFoundException(Guid id) =>
+        new("Organisation not found with ID " + id);
+
+    private async Task<EditOrganisationJourneyModel?> GetOrganisationJourneyModelAsync(Guid organisationId)
     {
         Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisationId),
             out EditOrganisationJourneyModel? editOrganisationJourneyModel
         );
-        return editOrganisationJourneyModel ?? new EditOrganisationJourneyModel();
+        if (editOrganisationJourneyModel is not null)
+        {
+            return editOrganisationJourneyModel;
+        }
+
+        var organisation = await _organisationService.GetByIdAsync(organisationId);
+        if (organisation?.PrimaryCoordinatorId is null)
+        {
+            return null;
+        }
+
+        var account = await _accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
+        var primaryCoordinator = account is not null ? AccountDetails.FromAccount(account) : null;
+        if (primaryCoordinator is null)
+        {
+            return null;
+        }
+
+        editOrganisationJourneyModel = new EditOrganisationJourneyModel(organisation, primaryCoordinator);
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
+        return editOrganisationJourneyModel;
     }
 
-    private void SetEditOrganisationJourneyModel(EditOrganisationJourneyModel editOrganisationJourneyModel)
+    private void SetEditOrganisationJourneyModel(Guid organisationId, EditOrganisationJourneyModel editOrganisationJourneyModel)
     {
-        Session.Set(EditOrganisationSessionKey, editOrganisationJourneyModel);
+        Session.Set(EditOrganisationSessionKey(organisationId), editOrganisationJourneyModel);
     }
 
-    public PrimaryCoordinatorChangeType? GetPrimaryCoordinatorChangeType()
+    public async Task<PrimaryCoordinatorChangeType?> GetPrimaryCoordinatorChangeTypeAsync(Guid organisationId)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return editOrganisationJourneyModel.PrimaryCoordinatorChangeType;
+        var editOrganisationJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
+        return editOrganisationJourneyModel?.PrimaryCoordinatorChangeType;
     }
 
-    public void SetPrimaryCoordinatorChangeType(PrimaryCoordinatorChangeType? primaryCoordinatorChangeType)
+    public async Task SetPrimaryCoordinatorChangeTypeAsync(Guid organisationId, PrimaryCoordinatorChangeType? primaryCoordinatorChangeType)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var editOrganisationJourneyModel =
+            await GetOrganisationJourneyModelAsync(organisationId)
+            ?? throw OrganisationNotFoundException(organisationId);
         editOrganisationJourneyModel.PrimaryCoordinatorChangeType = primaryCoordinatorChangeType;
-        SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
     }
 
-    public Organisation? GetOrganisation()
+    public async Task<Organisation?> GetOrganisationAsync(Guid organisationId)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return editOrganisationJourneyModel.Organisation;
+        var editOrganisationJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
+        return editOrganisationJourneyModel?.Organisation;
     }
 
-    public void SetOrganisation(Organisation organisation)
+    public async Task SetOrganisationAsync(Guid organisationId, Organisation organisation)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var editOrganisationJourneyModel =
+            await GetOrganisationJourneyModelAsync(organisationId)
+            ?? throw OrganisationNotFoundException(organisationId);
         editOrganisationJourneyModel.Organisation = organisation;
-        SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
     }
 
-    public Account? GetPrimaryCoordinatorAccount()
+    public async Task<AccountDetails?> GetPrimaryCoordinatorAccountAsync(Guid organisationId)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var editOrganisationJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
         return editOrganisationJourneyModel?.PrimaryCoordinatorAccount;
     }
 
-    public void SetPrimaryCoordinatorAccount(Account account)
+    public async Task SetPrimaryCoordinatorAccountAsync(Guid organisationId, AccountDetails account)
     {
-        var editOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var editOrganisationJourneyModel =
+            await GetOrganisationJourneyModelAsync(organisationId)
+            ?? throw OrganisationNotFoundException(organisationId);
         editOrganisationJourneyModel.PrimaryCoordinatorAccount = account;
-        SetEditOrganisationJourneyModel(editOrganisationJourneyModel);
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
     }
 
-    public void ResetEditOrganisationJourneyModel()
+    public void ResetEditOrganisationJourneyModel(Guid organisationId)
     {
-        Session.Remove(EditOrganisationSessionKey);
+        Session.Remove(EditOrganisationSessionKey(organisationId));
     }
 
-    public async Task<Organisation?> CompleteJourneyAsync()
+    public async Task<Organisation?> CompleteJourneyAsync(Guid organisationId)
     {
-        var editAccountJourneyModel = GetOrganisationJourneyModel();
+        var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
         // TODO update org here
 
-        ResetEditOrganisationJourneyModel();
+        ResetEditOrganisationJourneyModel(organisationId);
 
         return new Organisation();
     }

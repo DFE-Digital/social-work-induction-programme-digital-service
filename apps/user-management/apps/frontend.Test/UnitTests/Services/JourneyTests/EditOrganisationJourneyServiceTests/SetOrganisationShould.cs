@@ -8,22 +8,22 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class SetOrganisationShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_SetsOrganisation()
+    public async Task WhenCalled_WithExistingSessionData_SetsOrganisation()
     {
         // Arrange
         var expectedOrganisation = OrganisationBuilder.Build();
         var existingOrganisation = OrganisationBuilder.Build();
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(existingOrganisation.OrganisationId!.Value),
             new CreateOrganisationJourneyModel { Organisation = existingOrganisation }
         );
 
         // Act
-        Sut.SetOrganisation(expectedOrganisation);
+        await Sut.SetOrganisationAsync(existingOrganisation.OrganisationId!.Value, expectedOrganisation);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(existingOrganisation.OrganisationId!.Value),
             out CreateOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
@@ -32,17 +32,22 @@ public class SetOrganisationShould : EditOrganisationJourneyServiceTestBase
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_SetsOrganisation()
+    public async Task WhenCalled_WithBlankSession_SetsOrganisation()
     {
         // Arrange
         var expectedOrganisation = OrganisationBuilder.Build();
 
+        HttpContext.Session.Set(
+            EditOrganisationSessionKey(expectedOrganisation.OrganisationId!.Value),
+            new CreateOrganisationJourneyModel { Organisation = expectedOrganisation }
+        );
+
         // Act
-        Sut.SetOrganisation(expectedOrganisation);
+        await Sut.SetOrganisationAsync(expectedOrganisation.OrganisationId!.Value, expectedOrganisation);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(expectedOrganisation.OrganisationId!.Value),
             out CreateOrganisationJourneyModel? editOrganisationJourneyModel
         );
 

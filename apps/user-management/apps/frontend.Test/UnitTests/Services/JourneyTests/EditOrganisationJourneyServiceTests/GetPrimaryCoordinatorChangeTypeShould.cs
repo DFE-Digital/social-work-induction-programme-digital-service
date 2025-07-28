@@ -1,5 +1,6 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Xunit;
 using FluentAssertions;
@@ -9,28 +10,37 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class GetPrimaryCoordinatorChangeTypeShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_ReturnsChangeType()
+    public async Task WhenCalled_WithExistingSessionData_ReturnsChangeType()
     {
         // Arrange
-        var primaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator;
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
+        var expectedPrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator;
+
+        var model = new EditOrganisationJourneyModel(organisation, primaryCoordinator)
+        {
+            PrimaryCoordinatorChangeType = expectedPrimaryCoordinatorChangeType
+        };
+
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel { PrimaryCoordinatorChangeType = primaryCoordinatorChangeType }
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            model
         );
 
         // Act
-        var response = Sut.GetPrimaryCoordinatorChangeType();
+        var response = await Sut.GetPrimaryCoordinatorChangeTypeAsync(organisation.OrganisationId!.Value);
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().Be(primaryCoordinatorChangeType);
+        response.Should().Be(expectedPrimaryCoordinatorChangeType);
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_ReturnsNull()
+    public async Task WhenCalled_WithBlankSession_ReturnsNull()
     {
         // Act
-        var response = Sut.GetPrimaryCoordinatorChangeType();
+        var response = await Sut.GetPrimaryCoordinatorChangeTypeAsync(Guid.Empty);
 
         // Assert
         response.Should().BeNull();

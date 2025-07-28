@@ -1,4 +1,5 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
@@ -12,22 +13,25 @@ public class ResetEditOrganisationJourneyModelShould : EditOrganisationJourneySe
     {
         // Arrange
         var organisation = OrganisationBuilder.WithRegion().Build();
+        var account = AccountBuilder.Build();
+        var expectedPrimaryCoordinator = AccountDetails.FromAccount(account);
+
+        var model = new EditOrganisationJourneyModel(organisation, expectedPrimaryCoordinator)
+        {
+            PrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator
+        };
 
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel
-            {
-                Organisation = organisation,
-                PrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator
-            }
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            model
         );
 
         // Act
-        Sut.ResetEditOrganisationJourneyModel();
+        Sut.ResetEditOrganisationJourneyModel(organisation.OrganisationId!.Value);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
             out EditOrganisationJourneyModel? manageOrganisationJourneyModel
         );
 
