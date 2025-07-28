@@ -1,5 +1,3 @@
-using Bogus;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -26,26 +24,26 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
     }
 
     [Fact]
-    public void OnGet_WhenCalled_LoadsTheView()
+    public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
         var organisation = OrganisationBuilder.Build();
         var organisationId = organisation.OrganisationId ?? Guid.Empty;
         var primaryCoordinatorChangeType = PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator;
 
-        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
-        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorChangeType()).Returns(primaryCoordinatorChangeType);
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisationId)).ReturnsAsync(organisation);
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorChangeTypeAsync(organisationId)).ReturnsAsync(primaryCoordinatorChangeType);
 
         // Act
-        var result = Sut.OnGet(organisationId);
+        var result = await Sut.OnGetAsync(organisationId);
 
         // Assert
         Sut.OrganisationName.Should().BeEquivalentTo(organisation.OrganisationName);
         Sut.BackLinkPath.Should().Be($"/manage-organisations/organisation-details/{organisationId}");
         result.Should().BeOfType<PageResult>();
 
-        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
-        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorChangeType(), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorChangeTypeAsync(organisationId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -64,9 +62,9 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator?handler=Edit");
+        redirectResult!.Url.Should().Be($"/manage-organisations/edit-primary-coordinator/{organisationId}");
 
-        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorChangeType(Sut.ChangeType), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorChangeTypeAsync(organisationId, Sut.ChangeType), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -87,7 +85,7 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator?handler=Replace");
 
-        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorChangeType(Sut.ChangeType), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorChangeTypeAsync(organisationId, Sut.ChangeType), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -99,7 +97,7 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
         var organisation = OrganisationBuilder.Build();
         var organisationId = organisation.OrganisationId ?? Guid.Empty;
 
-        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisationId)).ReturnsAsync(organisation);
 
         // Act
         var result = await Sut.OnPostAsync(organisationId);
@@ -116,7 +114,7 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
 
         Sut.OrganisationName.Should().Be(organisation.OrganisationName);
 
-        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

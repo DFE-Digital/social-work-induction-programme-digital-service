@@ -9,10 +9,13 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 
 public abstract class EditOrganisationJourneyServiceTestBase
 {
-    private protected const string EditOrganisationSessionKey = "_editOrganisation";
+    private protected string EditOrganisationSessionKey(Guid id) => "_editOrganisation-" + id;
     private protected HttpContext HttpContext { get; }
     private protected OrganisationBuilder OrganisationBuilder { get; }
     private protected AccountBuilder AccountBuilder { get; }
+
+    private protected Mock<IOrganisationService> MockOrganisationService { get; }
+    private protected Mock<IAccountService> MockAccountService { get; }
 
     private protected readonly EditOrganisationJourneyService Sut;
 
@@ -28,8 +31,13 @@ public abstract class EditOrganisationJourneyServiceTestBase
 
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
+        MockOrganisationService = new();
+        MockAccountService = new();
+
         Sut = new EditOrganisationJourneyService(
-            httpContextAccessor
+            httpContextAccessor,
+            MockOrganisationService.Object,
+            MockAccountService.Object
         );
     }
 }

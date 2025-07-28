@@ -19,8 +19,6 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
     {
         Sut = new OrganisationDetails(
             MockEditOrganisationJourneyService.Object,
-            MockOrganisationService.Object,
-            MockAccountService.Object,
             new FakeLinkGenerator()
         );
     }
@@ -32,10 +30,11 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         var organisation = OrganisationBuilder.Build();
         var organisationId = organisation.OrganisationId ?? Guid.Empty;
         var primaryCoordinatorId = organisation.PrimaryCoordinatorId ?? Guid.Empty;
-        var primaryCoordinator = AccountBuilder.WithId(primaryCoordinatorId).Build();
+        var account = AccountBuilder.WithId(primaryCoordinatorId).Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
 
-        MockOrganisationService.Setup(x => x.GetByIdAsync(organisationId)).ReturnsAsync(organisation);
-        MockAccountService.Setup(x => x.GetByIdAsync(primaryCoordinatorId)).ReturnsAsync(primaryCoordinator);
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisationId)).ReturnsAsync(organisation);
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisationId)).ReturnsAsync(primaryCoordinator);
 
         // Act
         var result = await Sut.OnGetAsync(organisationId);
@@ -46,10 +45,10 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         Sut.BackLinkPath.Should().Be("/manage-organisations");
         result.Should().BeOfType<PageResult>();
 
-        MockOrganisationService.Verify(x => x.GetByIdAsync(organisationId), Times.Once);
-        MockAccountService.Verify(x => x.GetByIdAsync(primaryCoordinatorId), Times.Once);
-        MockEditOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
-        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorAccount(primaryCoordinator), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisationId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetOrganisationAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(organisation)), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(primaryCoordinator)), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -59,7 +58,8 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         // Arrange
         var id = Guid.NewGuid();
 
-        MockOrganisationService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync((Organisation?)null);
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(id)).ReturnsAsync((Organisation?)null);
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(id)).ReturnsAsync((AccountDetails?)null);
 
         // Act
         var result = await Sut.OnGetAsync(id);
@@ -67,49 +67,8 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         // Assert
         result.Should().BeOfType<NotFoundResult>();
 
-        MockOrganisationService.Verify(x => x.GetByIdAsync(id), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task OnGetAsync_WhenCalledAndPrimaryCoordinatorIdIsNull_ReturnsNotFoundResult()
-    {
-        // Arrange
-        var organisation = OrganisationBuilder.Build();
-        var organisationId = organisation.OrganisationId ?? Guid.Empty;
-        organisation.PrimaryCoordinatorId = null;
-
-        MockOrganisationService.Setup(x => x.GetByIdAsync(organisationId)).ReturnsAsync(organisation);
-
-        // Act
-        var result = await Sut.OnGetAsync(organisationId);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-
-        MockOrganisationService.Verify(x => x.GetByIdAsync(organisationId), Times.Once);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task OnGetAsync_WhenCalledAndPrimaryCoordinatorIsNull_ReturnsNotFoundResult()
-    {
-        // Arrange
-        var organisation = OrganisationBuilder.Build();
-        var organisationId = organisation.OrganisationId ?? Guid.Empty;
-        var primaryCoordinatorId = organisation.PrimaryCoordinatorId ?? Guid.Empty;
-
-        MockOrganisationService.Setup(x => x.GetByIdAsync(organisationId)).ReturnsAsync(organisation);
-        MockAccountService.Setup(x => x.GetByIdAsync(primaryCoordinatorId)).ReturnsAsync((Account?)null);
-
-        // Act
-        var result = await Sut.OnGetAsync(organisationId);
-
-        // Assert
-        result.Should().BeOfType<NotFoundResult>();
-
-        MockOrganisationService.Verify(x => x.GetByIdAsync(organisationId), Times.Once);
-        MockAccountService.Verify(x => x.GetByIdAsync(primaryCoordinatorId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(id), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -124,7 +83,7 @@ public class OrganisationDetailsPageTests : ManageOrganisationsPageTestBase<Orga
         result.Should().NotBeNull();
         result.Url.Should().Be($"/manage-organisations/organisation-details/{Guid.Empty}");
 
-        MockEditOrganisationJourneyService.Verify(x => x.ResetEditOrganisationJourneyModel(), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.ResetEditOrganisationJourneyModel(Guid.Empty), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

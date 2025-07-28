@@ -1,5 +1,6 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
 using Xunit;
@@ -9,21 +10,25 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class SetPrimaryCoordinatorChangeType : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_SetsPrimaryCoordinatorChangeType()
+    public async Task WhenCalled_WithExistingSessionData_SetsPrimaryCoordinatorChangeType()
     {
         // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
         var expectedPrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator;
+
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel { PrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator }
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            new EditOrganisationJourneyModel(organisation, primaryCoordinator)
         );
 
         // Act
-        Sut.SetPrimaryCoordinatorChangeType(expectedPrimaryCoordinatorChangeType);
+        await Sut.SetPrimaryCoordinatorChangeTypeAsync(organisation.OrganisationId!.Value, expectedPrimaryCoordinatorChangeType);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
             out EditOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
@@ -32,17 +37,25 @@ public class SetPrimaryCoordinatorChangeType : EditOrganisationJourneyServiceTes
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_SetsLocalAuthorityCode()
+    public async Task WhenCalled_WithBlankSession_SetsPrimaryCoordinatorChangeType()
     {
         // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
         var expectedPrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator;
 
+        HttpContext.Session.Set(
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            new EditOrganisationJourneyModel(organisation, primaryCoordinator)
+        );
+
         // Act
-        Sut.SetPrimaryCoordinatorChangeType(expectedPrimaryCoordinatorChangeType);
+        await Sut.SetPrimaryCoordinatorChangeTypeAsync(organisation.OrganisationId!.Value, expectedPrimaryCoordinatorChangeType);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
             out EditOrganisationJourneyModel? editOrganisationJourneyModel
         );
 

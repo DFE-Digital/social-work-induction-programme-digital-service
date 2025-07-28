@@ -1,6 +1,5 @@
-using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisationJourneyServiceTests;
@@ -8,17 +7,17 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class GetOrganisationShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_ReturnsOrganisation()
+    public async Task WhenCalled_WithExistingSessionData_ReturnsOrganisation()
     {
         // Arrange
-        var expectedOrganisation = OrganisationBuilder.Build();
-        HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel { Organisation = expectedOrganisation }
-        );
+        var account = AccountBuilder.Build();
+        var expectedOrganisation = OrganisationBuilder.WithPrimaryCoordinatorId(account.Id).Build();
+
+        MockOrganisationService.Setup(x => x.GetByIdAsync(expectedOrganisation.OrganisationId!.Value)).ReturnsAsync(expectedOrganisation);
+        MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
 
         // Act
-        var response = Sut.GetOrganisation();
+        var response = await Sut.GetOrganisationAsync(expectedOrganisation.OrganisationId!.Value);
 
         // Assert
         response.Should().NotBeNull();
@@ -26,10 +25,10 @@ public class GetOrganisationShould : EditOrganisationJourneyServiceTestBase
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_ReturnsNull()
+    public async Task WhenCalled_WithBlankSession_ReturnsNull()
     {
         // Act
-        var response = Sut.GetOrganisation();
+        var response = await Sut.GetOrganisationAsync(Guid.Empty);
 
         // Assert
         response.Should().BeNull();

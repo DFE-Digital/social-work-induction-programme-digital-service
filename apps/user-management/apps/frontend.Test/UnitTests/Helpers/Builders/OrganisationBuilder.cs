@@ -21,6 +21,12 @@ public class OrganisationBuilder
         _faker.RuleFor(a => a.PrimaryCoordinatorId, f => f.Random.Guid());
     }
 
+    public OrganisationBuilder WithPrimaryCoordinatorId(Guid? primaryCoordinatorId = null)
+    {
+        _faker.RuleFor(a => a.PrimaryCoordinatorId, primaryCoordinatorId);
+        return this;
+    }
+
     public OrganisationBuilder WithRegion()
     {
         _faker.RuleFor(a => a.Region, f => f.Name.FirstName());

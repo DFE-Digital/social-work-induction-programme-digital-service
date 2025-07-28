@@ -9,22 +9,24 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditOrganisa
 public class SetPrimaryCoordinatorAccountShould : EditOrganisationJourneyServiceTestBase
 {
     [Fact]
-    public void WhenCalled_WithExistingSessionData_SetsOrganisation()
+    public async Task WhenCalled_WithExistingSessionData_SetsOrganisation()
     {
         // Arrange
-        var expectedAccount = AccountBuilder.Build();
-        var existingAccount = AccountBuilder.Build();
+        var organisation = OrganisationBuilder.Build();
+        var expectedAccount = AccountDetails.FromAccount(AccountBuilder.Build());
+        var existingAccount = AccountDetails.FromAccount(AccountBuilder.Build());
+
         HttpContext.Session.Set(
-            EditOrganisationSessionKey,
-            new EditOrganisationJourneyModel { PrimaryCoordinatorAccount = existingAccount }
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            new EditOrganisationJourneyModel(organisation, existingAccount)
         );
 
         // Act
-        Sut.SetPrimaryCoordinatorAccount(expectedAccount);
+        await Sut.SetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value, expectedAccount);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
             out EditOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
@@ -33,17 +35,23 @@ public class SetPrimaryCoordinatorAccountShould : EditOrganisationJourneyService
     }
 
     [Fact]
-    public void WhenCalled_WithBlankSession_SetsOrganisation()
+    public async Task WhenCalled_WithBlankSession_SetsOrganisation()
     {
         // Arrange
-        var expectedAccount = AccountBuilder.Build();
+        var organisation = OrganisationBuilder.Build();
+        var expectedAccount = AccountDetails.FromAccount(AccountBuilder.Build());
+
+        HttpContext.Session.Set(
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
+            new EditOrganisationJourneyModel(new Organisation(), new AccountDetails())
+        );
 
         // Act
-        Sut.SetPrimaryCoordinatorAccount(expectedAccount);
+        await Sut.SetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value, expectedAccount);
 
         // Assert
         HttpContext.Session.TryGet(
-            EditOrganisationSessionKey,
+            EditOrganisationSessionKey(organisation.OrganisationId!.Value),
             out EditOrganisationJourneyModel? editOrganisationJourneyModel
         );
 
