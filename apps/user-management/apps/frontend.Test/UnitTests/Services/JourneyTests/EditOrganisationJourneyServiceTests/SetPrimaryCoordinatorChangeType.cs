@@ -37,7 +37,7 @@ public class SetPrimaryCoordinatorChangeType : EditOrganisationJourneyServiceTes
     }
 
     [Fact]
-    public async Task WhenCalled_WithBlankSession_SetsLocalAuthorityCode()
+    public async Task WhenCalled_WithBlankSession_SetsPrimaryCoordinatorChangeType()
     {
         // Arrange
         var organisation = OrganisationBuilder.Build();
