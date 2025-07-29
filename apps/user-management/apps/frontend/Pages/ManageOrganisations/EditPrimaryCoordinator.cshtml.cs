@@ -55,7 +55,6 @@ public class EditPrimaryCoordinator(
 
         await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
 
-        // TODO update this link to check your answers edit page
-        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
+        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswersEdit(id));
     }
 }

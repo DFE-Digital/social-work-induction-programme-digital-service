@@ -63,10 +63,22 @@ public class CreateShould : OrganisationAccountServiceTestBase
     }
 
     [Fact]
-    public async Task WhenCalledWithNullValues_ThrowArgumentException()
+    public async Task WhenCalledWithNullOrganisationValues_ThrowArgumentException()
     {
         // Arrange
         var organisation = new Organisation();
+        var account = new Account();
+
+        // Act & Assert
+        await FluentActions.Awaiting(() => Sut.CreateAsync(organisation, account))
+            .Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task WhenCalledWithNullAccountValues_ThrowArgumentException()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
         var account = new Account();
 
         // Act & Assert
