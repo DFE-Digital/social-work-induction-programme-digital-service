@@ -19,4 +19,5 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     public string EditPrimaryCoordinatorChangeType(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinatorChangeType", routeValues: new { id });
     public string AddPrimaryCoordinatorReplace() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator", handler: "Replace");
     public string EditPrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id });
+    public string CheckYourAnswersEdit(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", handler: "Edit", routeValues: new { id });
 }

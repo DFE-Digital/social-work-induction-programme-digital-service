@@ -13,17 +13,17 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 [AuthorizeRoles(RoleType.Administrator)]
 public class CheckYourAnswers(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
+    IEditOrganisationJourneyService editOrganisationJourneyService,
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
-    [BindProperty]
-    public Organisation? Organisation { get; set; }
+    [BindProperty] public Organisation? Organisation { get; set; }
 
-    [BindProperty]
-    public AccountDetails? PrimaryCoordinator { get; set; }
+    [BindProperty] public AccountDetails? PrimaryCoordinator { get; set; }
 
     public string? ChangeLocalAuthorityCodeLink { get; set; }
     public string? ChangePrimaryCoordinatorLink { get; set; }
+    public bool IsEdit { get; set; }
 
     public PageResult OnGet()
     {
@@ -32,6 +32,18 @@ public class CheckYourAnswers(
         PrimaryCoordinator = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails();
         ChangeLocalAuthorityCodeLink = linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
         ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.AddPrimaryCoordinatorChange();
+
+        return Page();
+    }
+
+    public async Task<PageResult> OnGetEditAsync(Guid id)
+    {
+        IsEdit = true;
+        BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
+        Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        ChangeLocalAuthorityCodeLink = null;
+        ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
 
         return Page();
     }
@@ -47,6 +59,22 @@ public class CheckYourAnswers(
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been added";
+        TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
+
+        return Redirect(linkGenerator.ManageOrganisations.Index());
+    }
+
+    public async Task<IActionResult> OnPostEditAsync(Guid id)
+    {
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        if (organisation is null || primaryCoordinator is null)
+            return BadRequest();
+
+        await editOrganisationJourneyService.CompleteJourneyAsync(id);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
         TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
 
         return Redirect(linkGenerator.ManageOrganisations.Index());

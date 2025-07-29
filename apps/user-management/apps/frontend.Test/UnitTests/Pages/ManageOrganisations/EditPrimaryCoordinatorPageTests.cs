@@ -51,6 +51,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
     public async Task OnPostAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
+        var organisationId = Guid.NewGuid();
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
             .WithPhoneNumber("07123123123")
@@ -60,20 +61,20 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
 
         Sut.PrimaryCoordinator = accountDetails;
 
-        MockEditOrganisationJourneyService.Setup(x => x.SetPrimaryCoordinatorAccountAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails)));
+        MockEditOrganisationJourneyService.Setup(x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)));
 
         // Act
-        var result = await Sut.OnPostAsync(account.Id);
+        var result = await Sut.OnPostAsync(organisationId);
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
+        redirectResult!.Url.Should().Be($"/manage-organisations/check-your-answers/{organisationId}?handler=Edit");
 
         MockEditOrganisationJourneyService.Verify(
-            x => x.SetPrimaryCoordinatorAccountAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
         VerifyAllNoOtherCalls();

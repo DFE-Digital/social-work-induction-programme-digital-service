@@ -1,4 +1,4 @@
-﻿@page "{id:Guid?}"
+﻿@page
 @using Dfe.Sww.Ecf.Frontend.Extensions
 @model CheckYourAnswers
 
@@ -25,11 +25,14 @@
                         <govuk-summary-list-row-value>
                             <p class="govuk-body">@Model.Organisation.LocalAuthorityCode</p>
                         </govuk-summary-list-row-value>
-                        <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeLocalAuthorityCodeLink">
-                                Change code
-                            </govuk-summary-list-row-action>
-                        </govuk-summary-list-row-actions>
+                        @if (!string.IsNullOrEmpty(Model.ChangeLocalAuthorityCodeLink))
+                        {
+                            <govuk-summary-list-row-actions>
+                                <govuk-summary-list-row-action href="@Model.ChangeLocalAuthorityCodeLink">
+                                    Change code
+                                </govuk-summary-list-row-action>
+                            </govuk-summary-list-row-actions>
+                        }
                     </govuk-summary-list-row>
                 }
 
@@ -88,9 +91,9 @@
                 </govuk-summary-card>
             }
 
-            <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One Login. You should inform them to expect this email.</p>
+            <p class="govuk-body">@(Model.IsEdit ? "When you update this organisation" : "When you save this organisation"), we will send the coordinator an invitation email with a link to enter the service through GOV.UK One Login. You should inform them to expect this email.</p>
 
-            <govuk-button type="submit">Save new organisation</govuk-button>
+            <govuk-button type="submit">@(Model.IsEdit ? "Update organisation" : "Save new organisation")</govuk-button>
         </form>
     </div>
 </div>
