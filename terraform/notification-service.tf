@@ -1,3 +1,13 @@
+resource "azurerm_key_vault_secret" "govnotify_api_key" {
+  name         = "GOVNOTIFY-API-KEY"
+  value        = var.govnotify_api_key
+  key_vault_id = module.stack.kv_id
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 module "notification-service" {
   source                        = "./modules/function-app"
   environment                   = var.environment
@@ -15,4 +25,8 @@ module "notification-service" {
   appinsights_connection_string = module.stack.appinsights_connection_string
   health_check_path             = "/api/health"
   subnet_functionapp_id         = module.stack.subnet_functionapp_id
+  
+  app_settings = merge({
+    "GOVNOTIFY__APIKEY" = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.govnotify_api_key.name})"
+  }, var.notification_service_app_settings)
 }

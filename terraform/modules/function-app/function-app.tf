@@ -33,7 +33,7 @@ resource "azurerm_linux_function_app" "function_app" {
 
   }
 
-  app_settings = {
+  app_settings = merge({
     "DOCKER_REGISTRY_SERVER_URL"            = "https://${var.acr_name}.azurecr.io"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
@@ -41,7 +41,7 @@ resource "azurerm_linux_function_app" "function_app" {
     "DOCKER_REGISTRY_SERVER_USERNAME"       = ""
     "DOCKER_REGISTRY_SERVER_PASSWORD"       = ""
     DOCKER_ENABLE_CI                        = "false" # Github will control CI, not Azure
-  }
+  }, var.app_settings)
 
 
   lifecycle {

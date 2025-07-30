@@ -80,3 +80,9 @@ variable "subnet_functionapp_id" {
   description = "The ID of the function app subnet"
   type        = string
 }
+
+variable "app_settings" {
+  description = "App settings for the web app"
+  type        = map(string)
+}
+
