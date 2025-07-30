@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
@@ -18,7 +19,8 @@ public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
     IMoodleServiceClient moodleServiceClient,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    FeatureFlags featureFlags
 ) : BasePageModel
 {
     public Guid Id { get; set; }
@@ -26,8 +28,7 @@ public class ConfirmAccountDetails(
     [Display(Name = "Who do you want to add?")]
     public string? UserType { get; set; }
 
-    [Display(Name = "Account type")]
-    public IList<AccountType>? AccountTypes { get; set; }
+    [Display(Name = "Account type")] public IList<AccountType>? AccountTypes { get; set; }
 
     [Display(Name = "Are they registered with Social Work England?")]
     public string? RegisteredWithSocialWorkEngland { get; set; }
@@ -42,28 +43,27 @@ public class ConfirmAccountDetails(
     public string? Qualified { get; set; }
 
     /// <summary>
-    /// First Name
+    ///     First Name
     /// </summary>
     [Display(Name = "First name")]
     public string? FirstName { get; set; }
 
-    [Display(Name = "Middle names")]
-    public string? MiddleNames { get; set; }
+    [Display(Name = "Middle names")] public string? MiddleNames { get; set; }
 
     /// <summary>
-    /// Last Name
+    ///     Last Name
     /// </summary>
     [Display(Name = "Last name")]
     public string? LastName { get; set; }
 
     /// <summary>
-    /// Email
+    ///     Email
     /// </summary>
     [Display(Name = "Email address")]
     public string? Email { get; set; }
 
     /// <summary>
-    /// Social Work England number
+    ///     Social Work England number
     /// </summary>
     [Display(Name = "Social Work England registration number")]
     public string? SocialWorkEnglandNumber { get; set; }
@@ -82,7 +82,7 @@ public class ConfirmAccountDetails(
     public bool IsSocialWorker { get; set; }
 
     /// <summary>
-    /// Action for confirming user details
+    ///     Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
@@ -141,7 +141,7 @@ public class ConfirmAccountDetails(
     }
 
     /// <summary>
-    /// Action for confirming user details
+    ///     Action for confirming user details
     /// </summary>
     /// <returns>A confirmation screen displaying user details</returns>
     public async Task<IActionResult> OnPostAsync()
@@ -149,17 +149,20 @@ public class ConfirmAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         if (accountDetails is null) return BadRequest();
 
-        var moodleRequest = new CreateMoodleUserRequest
+        if (featureFlags.EnableMoodleIntegration)
         {
-            Username = accountDetails.Email,
-            Email = accountDetails.Email,
-            FirstName = accountDetails.FirstName,
-            LastName = accountDetails.LastName
-        };
-        var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-        if (response.Successful == false) return BadRequest();
+            var moodleRequest = new CreateMoodleUserRequest
+            {
+                Username = accountDetails.Email,
+                Email = accountDetails.Email,
+                FirstName = accountDetails.FirstName,
+                LastName = accountDetails.LastName
+            };
+            var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
+            if (response.Successful == false) return BadRequest();
 
-        createAccountJourneyService.SetExternalUserId(response.Id);
+            createAccountJourneyService.SetExternalUserId(response.Id);
+        }
 
         await createAccountJourneyService.CompleteJourneyAsync();
 
