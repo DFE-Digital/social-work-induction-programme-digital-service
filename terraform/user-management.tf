@@ -39,6 +39,7 @@ module "user_management" {
     "NOTIFICATIONCLIENTOPTIONS__BASEURL"      = "https://temp.placeholder.url.com" # TODO: Notifications service deployment
     "BASIC_AUTH_USER"                         = var.basic_auth_user
     "BASIC_AUTH_PASSWORD"                     = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"   = module.stack.appinsights_connection_string
     DOCKER_ENABLE_CI                          = "false" # Github will control CI, not Azure
   }, var.user_management_app_settings)
 }
