@@ -6,4 +6,5 @@ public class FeatureFlags
     public bool EnableHttpStrictTransportSecurity { get; set; }
     public bool EnableContentSecurityPolicyWorkaround { get; set; }
     public bool EnableForwardedHeaders { get; set; }
+    public bool EnableMoodleIntegration { get; set; }
 }

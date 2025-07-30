@@ -7,7 +7,7 @@
 set -eo pipefail
 
 # Define source and destination
-SOURCE="../scripts/setup_moodle_webservice.php"
+SOURCE="../../scripts/setup_moodle_webservice.php"
 DESTINATION="public/"
 
 # Check if the file exists in the repo root

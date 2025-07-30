@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
@@ -22,14 +23,18 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
             MockMoodleServiceClient.Object,
-            new FakeLinkGenerator()
+            new FakeLinkGenerator(),
+            new FeatureFlags
+            {
+                EnableMoodleIntegration = true
+            }
         )
         {
             TempData = TempData
         };
     }
 
-    private ConfirmAccountDetails Sut { get; }
+    private ConfirmAccountDetails Sut { get; set; }
 
     [Fact]
     public void Get_WhenCalled_LoadsTheViewWithCorrectValues()
@@ -198,6 +203,51 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
             Times.Once
         );
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenCalledWithMoodleIntegrationDisabled_CreatesUserAndSendsEmailAndDoesNotCallMoodleAndSetExternalUserId()
+    {
+        // Arrange
+        Sut = new ConfirmAccountDetails(
+            MockCreateAccountJourneyService.Object,
+            MockEditAccountJourneyService.Object,
+            MockMoodleServiceClient.Object,
+            new FakeLinkGenerator(),
+            new FeatureFlags
+            {
+                EnableMoodleIntegration = false
+            }
+        )
+        {
+            TempData = TempData
+        };
+        var account = AccountBuilder.Build();
+        var updatedAccountDetails = AccountDetails.FromAccount(account);
+
+        MockCreateAccountJourneyService
+            .Setup(x => x.GetAccountDetails())
+            .Returns(updatedAccountDetails);
+
+        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync());
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        var response = result as RedirectResult;
+        response.Should().NotBeNull();
+        response!.Url.Should().Be("/manage-accounts");
+
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("New user added");
+        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
+
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(It.IsAny<int>()), Times.Never);
+        MockMoodleServiceClient.VerifyNoOtherCalls();
         VerifyAllNoOtherCalls();
     }
 
