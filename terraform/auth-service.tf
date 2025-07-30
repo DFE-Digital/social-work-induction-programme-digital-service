@@ -98,6 +98,7 @@ module "auth_service" {
     "ONELOGIN__CLIENTID"                               = var.one_login_client_id
     "ONELOGIN__CERTIFICATENAME"                        = module.one_login_certificate.cert_name
     "ONELOGIN__URL"                                    = var.one_login_oidc_url
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"            = module.stack.appinsights_connection_string
     DOCKER_ENABLE_CI                                   = "false" # Github will control CI, not Azure
   }, var.auth_service_app_settings)
 

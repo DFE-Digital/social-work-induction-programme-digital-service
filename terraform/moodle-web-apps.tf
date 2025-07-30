@@ -119,18 +119,19 @@ module "web_app_moodle" {
   tags                      = local.common_tags
 
   app_settings = merge({
-    "IS_CRON_JOB_ONLY"                 = "false"
-    "MOODLE_WEB_SERVICE_NAME"          = var.moodle_web_service_name
-    "MOODLE_WEB_SERVICE_USER"          = var.moodle_web_service_user
-    "MOODLE_WEB_SERVICE_USER_EMAIL"    = var.moodle_web_service_user_email
-    "MOODLE_WEB_SERVICE_USER_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.web_service_user_password.name})"
-    "AUTH_SERVICE_CLIENT_ID"           = local.auth_service_client_id
-    "AUTH_SERVICE_CLIENT_SECRET"       = local.auth_service_client_secret
-    "AUTH_SERVICE_END_POINT"           = local.auth_service_end_point
-    "AUTH_SERVICE_TOKEN_END_POINT"     = local.auth_service_token_end_point
-    "AUTH_SERVICE_LOGOUT_URI"          = local.auth_service_logout_uri
-    "BASIC_AUTH_USER"                  = var.basic_auth_user
-    "BASIC_AUTH_PASSWORD"              = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
+    "IS_CRON_JOB_ONLY"                      = "false"
+    "MOODLE_WEB_SERVICE_NAME"               = var.moodle_web_service_name
+    "MOODLE_WEB_SERVICE_USER"               = var.moodle_web_service_user
+    "MOODLE_WEB_SERVICE_USER_EMAIL"         = var.moodle_web_service_user_email
+    "MOODLE_WEB_SERVICE_USER_PASSWORD"      = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.web_service_user_password.name})"
+    "AUTH_SERVICE_CLIENT_ID"                = local.auth_service_client_id
+    "AUTH_SERVICE_CLIENT_SECRET"            = local.auth_service_client_secret
+    "AUTH_SERVICE_END_POINT"                = local.auth_service_end_point
+    "AUTH_SERVICE_TOKEN_END_POINT"          = local.auth_service_token_end_point
+    "AUTH_SERVICE_LOGOUT_URI"               = local.auth_service_logout_uri
+    "BASIC_AUTH_USER"                       = var.basic_auth_user
+    "BASIC_AUTH_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = module.stack.appinsights_connection_string
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 
   storage_mounts = {
