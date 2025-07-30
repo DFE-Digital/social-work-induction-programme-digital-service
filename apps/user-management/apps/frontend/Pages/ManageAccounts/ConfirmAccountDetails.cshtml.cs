@@ -159,7 +159,7 @@ public class ConfirmAccountDetails(
                 LastName = accountDetails.LastName
             };
             var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-            if (response.Successful == false) return BadRequest();
+            if (!response.Successful) return BadRequest();
 
             createAccountJourneyService.SetExternalUserId(response.Id);
         }
