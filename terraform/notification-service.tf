@@ -1,5 +1,5 @@
 resource "azurerm_key_vault_secret" "govnotify_api_key" {
-  name         = "GOVNOTIFY-API-KEY"
+  name         = "NotificationService-GovNotifyApiKey"
   value        = var.govnotify_api_key
   key_vault_id = module.stack.kv_id
 
