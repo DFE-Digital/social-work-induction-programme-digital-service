@@ -17,7 +17,7 @@ if [ ! -f "$SOURCE" ]; then
 fi
 
 # Move the file
-mv "$SOURCE" "$DESTINATION"
+cp "$SOURCE" "$DESTINATION"
 
 # Confirm the move
 if [ $? -eq 0 ]; then
