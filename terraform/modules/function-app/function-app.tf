@@ -69,3 +69,25 @@ resource "azurerm_role_assignment" "acr_pull" {
   principal_type       = "ServicePrincipal"
   principal_id         = azurerm_linux_function_app.function_app.identity.0.principal_id
 }
+
+resource "azurerm_key_vault_access_policy" "kv_policy" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = azurerm_linux_function_app.function_app.identity.0.tenant_id
+  object_id    = azurerm_linux_function_app.function_app.identity.0.principal_id
+
+  key_permissions = [
+    "Get",
+    "List",
+    "UnwrapKey"
+  ]
+
+  secret_permissions = [
+    "Get",
+    "List",
+  ]
+
+  certificate_permissions = [
+    "Get",
+    "List",
+  ]
+}

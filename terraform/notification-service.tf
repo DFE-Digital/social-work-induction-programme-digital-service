@@ -33,6 +33,7 @@ module "notification-service" {
   subnet_functionapp_id         = module.stack.subnet_functionapp_id
   virtual_network_name          = module.stack.vnet_name
   virtual_network_id            = module.stack.vnet_id
+  key_vault_id                  = module.stack.kv_id
 
   app_settings = merge({
     "GOVNOTIFY__APIKEY" = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.govnotify_api_key.name})"
