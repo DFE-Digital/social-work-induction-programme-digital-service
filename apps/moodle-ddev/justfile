@@ -1,0 +1,15 @@
+# https://just.systems
+
+default:
+    @just --list
+
+setup:
+    ddev start
+    ddev composer create-project moodle/moodle . "4.5.5"
+    ddev install-moodle
+    ddev install-theme
+    ddev move-setup-webservice
+    ddev setup-ws
+    ddev install-moosh
+    ddev install-oidc-plugin
+    ddev launch /login
