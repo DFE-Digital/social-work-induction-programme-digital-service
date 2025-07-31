@@ -32,7 +32,7 @@ public class NotificationServiceClientTests
             });
 
         // Act
-        var _ = new NotificationServiceClient(client, _mockOptions.Object, _mockLogger.Object);
+        _ = new NotificationServiceClient(client, _mockOptions.Object, _mockLogger.Object);
 
         // Assert
         client.DefaultRequestHeaders.Contains("x-functions-key").Should().BeTrue();
@@ -64,7 +64,7 @@ public class NotificationServiceClientTests
             });
 
         // Act
-        var _ = new NotificationServiceClient(client, _mockOptions.Object, _mockLogger.Object);
+        _ = new NotificationServiceClient(client, _mockOptions.Object, _mockLogger.Object);
 
         // Assert
         client.DefaultRequestHeaders.Contains("x-functions-key").Should().BeFalse();
