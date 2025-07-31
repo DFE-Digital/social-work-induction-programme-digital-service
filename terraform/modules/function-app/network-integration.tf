@@ -19,7 +19,7 @@ resource "azurerm_private_dns_zone" "pvt_dns_zone" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  name                  = "${azurerm_virtual_network.vnet_stack.name}-dns-link"
+  name                  = "${var.virtual_network_name}-dns-link"
   resource_group_name   = var.resource_group
   private_dns_zone_name = azurerm_private_dns_zone.pvt_dns_zone.name
   virtual_network_id    = var.virtual_network_id
