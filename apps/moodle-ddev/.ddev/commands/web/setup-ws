@@ -30,4 +30,4 @@ else
   echo -e "\n\$CFG->auth = \"webservice,oidc\";" >> "$CONFIG_FILE"
 fi
 
-php /var/www/html/public/setup_webservice.php --username=$webservice_user --password=$webservice_password --email=$webservice_email --servicename=${webservice_servicename}
+php /var/www/html/public/setup_moodle_webservice.php --username=$webservice_user --password=$webservice_password --email=$webservice_email --servicename=${webservice_servicename}
