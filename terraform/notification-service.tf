@@ -8,6 +8,12 @@ resource "azurerm_key_vault_secret" "govnotify_api_key" {
   }
 }
 
+resource "azurerm_key_vault_secret" "function_key" {
+  name         = "NotificationService-FunctionKey"
+  value        = module.notification-service.function_app_key
+  key_vault_id = module.stack.kv_id
+}
+
 module "notification-service" {
   source                        = "./modules/function-app"
   environment                   = var.environment
