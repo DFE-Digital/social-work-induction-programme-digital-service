@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -15,8 +15,9 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.NotificationServiceClie
 
 public class NotificationOperationsTests
 {
-    private readonly NotificationRequestFaker _notificationRequestFaker = new();
+    private readonly Mock<ILogger<NotificationServiceClient>> _mockLogger = new();
     private readonly Mock<IOptions<NotificationClientOptions>> _mockOptions = new();
+    private readonly NotificationRequestFaker _notificationRequestFaker = new();
 
     [Fact]
     public async Task GetById_SuccessfulRequest_ReturnsCorrectResponse()
@@ -89,11 +90,11 @@ public class NotificationOperationsTests
                 new NotificationClientOptions
                 {
                     BaseUrl = "http://localhost",
-                    Routes = new() { Notification = new() { SendEmail = route } }
+                    Routes = new NotificationServiceRoutes { Notification = new NotificationRoutes { SendEmail = route } }
                 }
             );
 
-        var sut = new NotificationServiceClient(client, _mockOptions.Object);
+        var sut = new NotificationServiceClient(client, _mockOptions.Object, _mockLogger.Object);
 
         return sut;
     }
@@ -101,11 +102,11 @@ public class NotificationOperationsTests
     private static (
         MockHttpMessageHandler MockHttpMessageHandler,
         MockedRequest MockedRequest
-    ) GenerateMockClient(
-        HttpStatusCode statusCode,
-        NotificationResponse response,
-        string route = "/api/Notification"
-    )
+        ) GenerateMockClient(
+            HttpStatusCode statusCode,
+            NotificationResponse response,
+            string route = "/api/Notification"
+        )
     {
         using var mockHttp = new MockHttpMessageHandler();
         var request = mockHttp

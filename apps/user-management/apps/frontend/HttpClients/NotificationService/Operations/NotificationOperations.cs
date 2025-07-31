@@ -9,11 +9,11 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Operations;
 public class NotificationOperations(NotificationServiceClient notificationServiceClient)
     : INotificationOperations
 {
-    private static JsonSerializerOptions? SerializerOptions { get; } =
-        new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
-
     private readonly NotificationServiceClient _notificationServiceClient =
         notificationServiceClient;
+
+    private static JsonSerializerOptions? SerializerOptions { get; } =
+        new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
 
     public async Task<NotificationResponse> SendEmailAsync(NotificationRequest request)
     {
@@ -26,11 +26,6 @@ public class NotificationOperations(NotificationServiceClient notificationServic
         );
 
         var httpResponse = await _notificationServiceClient.HttpClient.PostAsync(route, content);
-
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            return new NotificationResponse { StatusCode = httpResponse.StatusCode };
-        }
 
         return new NotificationResponse { StatusCode = httpResponse.StatusCode };
     }
