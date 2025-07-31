@@ -3,21 +3,27 @@
 # This command updates the govuk theme for Moodle.
 # It downloads and installs a govuk theme release.
 # Usage:
-#   ddev install-theme           # Uses the default release 2024200800
-#   ddev install-theme 2025010100  # Uses the specified release version
+#   ddev install-theme           # Fetches the latest release by default
+#   ddev install-theme "v0.1.0"  # Uses the specified release version
 #
 # The script then updates config.php to set the theme to govuk and purges Moodle caches.
 
 set -e
 
+REPO="DFE-Digital/govuk-moodle-theme"
+
+LATEST_RELEASE=$(curl --silent -m 10 --connect-timeout 5 "https://api.github.com/repos/${REPO}/releases/latest")
+
+LATEST_TAG=$(echo "$LATEST_RELEASE" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
 # Default release if no argument is provided.
 if [[ "$1" == "" || "$1" == "default" ]]; then
-  RELEASE=2024200800
+  RELEASE=$LATEST_TAG
 else
   RELEASE=$1
 fi
 
-THEME_URL="https://github.com/DFE-Digital/govuk-moodle-theme/releases/download/${RELEASE}/govuk-moodle-theme.zip"
+THEME_URL="https://github.com/${REPO}/releases/download/${RELEASE}/govuk-moodle-theme.zip"
 
 echo "Downloading and installing govuk theme release ${RELEASE} from ${THEME_URL}..."
 rm -rf /tmp/theme
