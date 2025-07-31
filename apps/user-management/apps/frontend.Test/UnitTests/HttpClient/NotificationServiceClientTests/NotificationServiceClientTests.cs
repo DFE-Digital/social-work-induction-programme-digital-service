@@ -19,7 +19,7 @@ public class NotificationServiceClientTests
     {
         // Arrange
         const string functionKey = "test-key";
-        var mockHttp = new MockHttpMessageHandler();
+        using var mockHttp = new MockHttpMessageHandler();
         var client = mockHttp.ToHttpClient();
 
         _mockOptions
@@ -51,7 +51,7 @@ public class NotificationServiceClientTests
     public void Constructor_WithoutFunctionKey_LogsWarning()
     {
         // Arrange
-        var mockHttp = new MockHttpMessageHandler();
+        using var mockHttp = new MockHttpMessageHandler();
         var client = mockHttp.ToHttpClient();
 
         _mockOptions
