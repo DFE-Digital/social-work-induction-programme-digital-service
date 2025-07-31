@@ -3,8 +3,8 @@
 This repository houses the core digital service for the Social Work Induction programme in children's social care. The digital service is based on [Moodle LMS](https://moodle.org).
 
 ## Local development setup
-The `moodle-docker` image in this repository builds on the [official Moodle PHP-apache image](https://github.com/moodlehq/moodle-php-apache).
-The configuration files in the .ddev directory provide a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
+
+The `apps/moodle-docker` project provides a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
 
 The primary custom command, install-moodle, bundles all installation steps into a single command. It performs the following tasks:
 
@@ -12,54 +12,62 @@ The primary custom command, install-moodle, bundles all installation steps into 
 - Downloads and installs the govuk theme into the correct directory.
 - Updates config.php to set the default theme to govuk.
 - Purges Moodle caches so that changes take effect immediately.
----
-### Windows setup
+
+#### Windows setup
 You need to clone this repository into your user directory in the WSL directory. This is usually found in `\\wsl.localhost\Ubuntu\home\{USERNAME}`.
 
-### DDEV installation
+---
+
+### DDEV installation and setup
 Follow the instructions at [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation) for your operating system.
 
----
-### Running the service
-After configuring your project with DDEV, follow these steps from this project’s `apps\moodle-ddev` directory:
+#### Quick project setup
+Once you have DDev installed on your machine, you can either run through the setup process step-by-step, or utilise the `just setup` script to utilise the default settings and get up and running quickly.
 
-Configure DDEV with both the composer root and document root set to public:
+> Note: You will need [just](https://just.systems/man/en/) installed on your system. A `.tool-versions` file exists in the project so you can use a tool like [asdf](https://asdf-vm.com/) to install `just`.
 
-- `ddev config --composer-root=public --docroot=public --webserver-type=apache-fpm --database=postgres:14 --project-name=moodle`
+```bash
+just setup
+```
 
-Start your DDEV environment:
-
-- `ddev start`
-
-Use Composer to create the new Moodle installation:
-
-- `ddev composer create moodle/moodle`
-
-Use the custom DDEV commands to perform the full installation, theme import, configuration update, and cache purge:
-
-- `ddev install-moodle`
-- `ddev install-theme`
-
-Finally, launch your Moodle site in your default web browser:
-
-- `ddev launch /login`
+This will install Moodle, add the latest GovUK Moodle theme, setup a Moodle web service, and add the [OIDC plugin](https://moodle.org/plugins/auth_oidc); feel free check the `justfile` to see exactly what this script does.
 
 ---
-### Create a Moodle a web service
+
+#### Manual project setup
+If you would like to setup your project step-by-step and specify different parameters, you can follow these steps:
+
+```bash
+# Start your DDEV environment
+ddev start
+
+# Use Composer to create the new Moodle installation
+ddev composer create-project moodle/moodle . "v4.5.5" # You can specify a different moodle version here
+
+# Use the custom DDEV commands to perform the full installation
+ddev install-moodle
+# Run the DDev command to install the GovUK Moodle theme
+# You can specify a different version of the DfE-Digital/govuk-moodle-theme package or omit the version to use the latest
+ddev install-theme "v0.1.0"
+
+# Finally, launch your Moodle site in your default web browser
+ddev launch /login
+```
+
+##### Create a Moodle a web service
 [Web services](https://docs.moodle.org/405/en/Web_services) enable other systems to login to Moodle and perform operations. We have created scripts to automate this process.
 
 - Run `ddev move-setup-webservice`
-  - This moves the `install-scripts\setup_webservice.php` file into Moodle's public folder, making it available to ddev.
-  - **Important** - You will need to run this command everytime before running the below command. Any updates to the `setup_webservice.php` are commited to the `install-scripts\setup_webservice.php` version of this file. We need to run this script to move the newest version of the file into Moodle's `public` directory.
+  - This moves the `install-scripts\setup_moodle_webservice.php` file into Moodle's public folder, making it available to ddev.
+  - **Important** - You will need to run this command everytime before running the below command. Any updates to the `setup_moodle_webservice.php` are commited to the `install-scripts\setup_moodle_webservice.php` version of this file. We need to run this script to move the newest version of the file into Moodle's `public` directory.
 
 - Run `ddev setup-ws {webservice_user} {webservice_password} {webservice_email} {webservice_servicename}`
-  - This will run the `setup-ws` ddev script, which references the above `setup_webservice.php` file. It has four optional inputs, e.g. `ddev setup-ws test password123! wsuser@example.com SwipService`. You can also run this script without any inputs and it will use default parameters by running `ddev setup-ws`.
+  - This will run the `setup-ws` ddev script, which references the above `setup_moodle_webservice.php` file. It has four optional inputs, e.g. `ddev setup-ws test password123! wsuser@example.com SwipService`. You can also run this script without any inputs and it will use default parameters by running `ddev setup-ws`.
 
----
-### Single sign-on (SSO) configuration
+##### Single sign-on (SSO) configuration
 Moodle integrates with the SWIP authentication service for users to log in via single sign-on and GOV.UK One Login. The [Moodle OpenID Connect (OIDC)](https://moodle.org/plugins/auth_oidc) plugin is used.
 
-#### Install and configure OIDC plugin
+###### Install and configure OIDC plugin
 
 The following steps are required to install and configure the plugin. These should be carried out after `ddev start`. If this is done as part of initial moodle setup on your local environment, then follow this guide after you complete the setup in [Running the service](#running-the-service).
 
@@ -74,6 +82,8 @@ This script can also take an OIDC plugin release URL as a parameter, which will 
 If the OIDC plugin is already installed, the script will exit.
 
 Once the OIDC plugin is installed and configured, the login page will be bypassed by default. To access Moodle as admin, use the query string parameter `noredirect=1`, e.g. https://moodle.ddev.site/?noredirect=1.
+
+---
 
 #### Generate and install SSL certificates
 
