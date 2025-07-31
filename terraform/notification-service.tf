@@ -25,6 +25,8 @@ module "notification-service" {
   appinsights_connection_string = module.stack.appinsights_connection_string
   health_check_path             = "/api/health"
   subnet_functionapp_id         = module.stack.subnet_functionapp_id
+  virtual_network_name          = module.stack.vnet_name
+  virtual_network_id            = module.stack.vnet_id
 
   app_settings = merge({
     "GOVNOTIFY__APIKEY" = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.govnotify_api_key.name})"

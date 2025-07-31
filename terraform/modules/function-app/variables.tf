@@ -86,3 +86,12 @@ variable "app_settings" {
   type        = map(string)
 }
 
+variable "virtual_network_name" {
+  description = "The name of the main vnet"
+  type        = string
+}
+
+variable "virtual_network_id" {
+  description = "The ID of the main vnet"
+  type        = string
+}
