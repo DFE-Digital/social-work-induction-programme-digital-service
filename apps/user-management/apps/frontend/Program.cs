@@ -49,6 +49,9 @@ builder
         options.Conventions.AuthorizeFolder("/ManageAccounts");
     });
 
+// Enable App Insights
+builder.Services.AddApplicationInsightsTelemetry();
+
 // Dependencies
 builder.Services.AddValidators();
 builder.Services.AddRepository();

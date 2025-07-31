@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\assets\fonts\"/>
-        <Folder Include="wwwroot\govuk\"/>
+        <Folder Include="wwwroot\assets\fonts\" />
+        <Folder Include="wwwroot\govuk\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,6 +19,7 @@
         <PackageReference Include="GovUk.Frontend.AspNetCore" Version="3.2.3" />
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
         <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" Version="5.0.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.8" />
         <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.0.2" />
