@@ -29,7 +29,7 @@ resource "azurerm_private_endpoint" "function_app_endpoint" {
   name                = "${azurerm_linux_function_app.function_app.name}-endpoint"
   location            = var.location
   resource_group_name = var.resource_group
-  subnet_id           = var.subnet_functionapp_id
+  subnet_id           = azurerm_subnet.private_endpoint.id
 
   # Create the necessary DNS 'A' record.
   private_dns_zone_group {
