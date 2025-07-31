@@ -2,6 +2,7 @@ resource "azurerm_key_vault_secret" "govnotify_api_key" {
   name         = "NotificationService-GovNotifyApiKey"
   value        = var.govnotify_api_key
   key_vault_id = module.stack.kv_id
+  content_type = "API Key"
 
   lifecycle {
     ignore_changes = [value]
@@ -12,6 +13,7 @@ resource "azurerm_key_vault_secret" "function_key" {
   name         = "NotificationService-FunctionKey"
   value        = module.notification-service.function_app_key
   key_vault_id = module.stack.kv_id
+  content_type = "function app key"
 }
 
 module "notification-service" {
