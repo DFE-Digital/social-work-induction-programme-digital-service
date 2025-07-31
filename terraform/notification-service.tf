@@ -7,6 +7,7 @@ resource "azurerm_key_vault_secret" "govnotify_api_key" {
   lifecycle {
     ignore_changes = [value]
   }
+  #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
 resource "azurerm_key_vault_secret" "function_key" {
@@ -14,6 +15,7 @@ resource "azurerm_key_vault_secret" "function_key" {
   value        = module.notification-service.function_app_key
   key_vault_id = module.stack.kv_id
   content_type = "function app key"
+  #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
 module "notification-service" {
