@@ -14,10 +14,11 @@ on:
       govuk-theme-version:
         description: "Gov UK theme version"
         required: true
-        default: "v0.0.3"
+        default: "v0.1.0"
         type: choice
         options:
           - "v0.0.3"
+          - "v0.1.0"
       instance:
         description: "Environment instance"
         required: true
