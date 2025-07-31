@@ -78,6 +78,12 @@ variable "acr_name" {
   type        = string
 }
 
+variable "govnotify_api_key" {
+  description = "GOV.UK Notify API key for sending notifications"
+  type        = string
+  sensitive   = true
+}
+
 variable "acr_resource_group" {
   description = "Azure Container Registry resource group"
   type        = string
@@ -186,6 +192,12 @@ variable "moodle_app_settings" {
 
 variable "user_management_app_settings" {
   description = "Environment specific user management app settings"
+  type        = map(string)
+  default     = {}
+}
+
+variable "notification_service_app_settings" {
+  description = "Environment specific notification service app settings"
   type        = map(string)
   default     = {}
 }
