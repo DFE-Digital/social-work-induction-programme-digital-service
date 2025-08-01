@@ -83,7 +83,7 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
 
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator?handler=Replace");
+        redirectResult!.Url.Should().Be($"/manage-organisations/edit-primary-coordinator/{organisationId}?handler=Replace");
 
         MockEditOrganisationJourneyService.Verify(x => x.SetPrimaryCoordinatorChangeTypeAsync(organisationId, Sut.ChangeType), Times.Once);
         VerifyAllNoOtherCalls();

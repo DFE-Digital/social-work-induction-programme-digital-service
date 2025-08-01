@@ -45,9 +45,8 @@ public class EditPrimaryCoordinatorChangeType(
 
         await editOrganisationJourneyService.SetPrimaryCoordinatorChangeTypeAsync(id, ChangeType);
 
-        // TODO logic on add primary coordinator for updating user details and for adding a new set of details as part of the edit journey if using the same page
         return Redirect(ChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator
-            ? linkGenerator.ManageOrganisations.AddPrimaryCoordinatorReplace()
+            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinator(id)
             : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id));
     }
 }
