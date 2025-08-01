@@ -91,5 +91,5 @@ fi
 su -s /bin/sh www-data -c 'php admin/cli/purge_caches.php'
 
 # exec so Apache gets PID 1 and handles signals cleanly - will be serving as user www-data
-log "Starting Apache..."
-exec apache2-foreground
+# log "Starting Apache..."
+# exec apache2-foreground
