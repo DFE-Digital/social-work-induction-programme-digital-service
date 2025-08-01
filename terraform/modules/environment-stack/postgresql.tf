@@ -46,7 +46,7 @@ resource "azurerm_subnet" "sn_postgres" {
 resource "random_password" "password" {
   length = 25
   special          = true
-  override_special = "!#$%&*-_=+<>:?"
+  override_special = "!@#^*_-"
 }
 
 resource "azurerm_postgresql_flexible_server" "swipdb" {
