@@ -139,6 +139,7 @@ jobs:
             -var='basic_auth_password_team_environments=${{ secrets.BASIC_AUTH_PASSWORD_TEAM_ENVIRONMENTS }}' \
             -var='basic_auth_password_user_environments=${{ secrets.BASIC_AUTH_PASSWORD_USER_ENVIRONMENTS }}' \
             -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
+            -var='govnotify_api_key=${{secrets.GOVNOTIFY_API_KEY}}' \
             || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT

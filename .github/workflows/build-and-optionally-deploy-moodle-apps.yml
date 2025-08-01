@@ -12,12 +12,10 @@ on:
           - "405"
           - "500"
       govuk-theme-version:
-        description: "Gov UK theme version"
+        description: "Gov UK theme version (e.g. v0.1.0)"
         required: true
-        default: "v0.0.3"
-        type: choice
-        options:
-          - "v0.0.3"
+        default: "v0.1.0"
+        type: string
       instance:
         description: "Environment instance"
         required: true
