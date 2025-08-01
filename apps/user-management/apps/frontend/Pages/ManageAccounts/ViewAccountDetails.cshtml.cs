@@ -29,7 +29,7 @@ public class ViewAccountDetails(
     public async Task<RedirectResult> OnGetNewAsync(Guid id)
     {
         await editAccountJourneyService.ResetEditAccountJourneyModelAsync(id);
-        return Redirect(linkGenerator.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id));
     }
 
     public async Task<IActionResult> OnGetAsync(Guid id)
@@ -37,7 +37,7 @@ public class ViewAccountDetails(
         var account = await accountService.GetByIdAsync(id);
         if (account is null) return NotFound();
 
-        BackLinkPath = linkGenerator.ManageAccounts();
+        BackLinkPath = linkGenerator.ManageAccount.Index();
         Account = account;
 
         if (Account.Types is null) return Page();
@@ -59,6 +59,6 @@ public class ViewAccountDetails(
         TempData["NotificationHeader"] = "An invitation to register has been resent";
         TempData["NotificationMessage"] = $"A new invitation to register has been sent to {account.FullName}, {account.Email}";
 
-        return Redirect(linkGenerator.ManageAccounts());
+        return Redirect(linkGenerator.ManageAccount.Index());
     }
 }

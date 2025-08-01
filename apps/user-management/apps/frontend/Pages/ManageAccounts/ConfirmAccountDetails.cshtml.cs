@@ -87,7 +87,7 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.SocialWorkerProgrammeDates();
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates();
         ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
@@ -119,7 +119,7 @@ public class ConfirmAccountDetails(
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (updatedAccountDetails is null) return NotFound();
 
-        BackLinkPath = linkGenerator.EditAccountDetails(id);
+        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id);
         ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
 
         IsUpdatingAccount = true;
@@ -170,7 +170,7 @@ public class ConfirmAccountDetails(
         TempData["NotificationHeader"] = "New user added";
         TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ManageAccounts());
+        return Redirect(linkGenerator.ManageAccount.Index());
     }
 
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
@@ -186,6 +186,6 @@ public class ConfirmAccountDetails(
         TempData["NotificationHeader"] = "User details updated";
         TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id));
     }
 }

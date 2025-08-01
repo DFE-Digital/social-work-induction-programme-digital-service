@@ -49,7 +49,7 @@ public class EditAccountDetails(
             return NotFound();
         }
 
-        BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
+        BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id);
         Id = id;
 
         FirstName = accountDetails.FirstName;
@@ -94,12 +94,12 @@ public class EditAccountDetails(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath ??= linkGenerator.ViewAccountDetails(id);
+            BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id);
             return Page();
         }
 
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
-        return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(id));
+        return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(id));
     }
 }

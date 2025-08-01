@@ -142,13 +142,13 @@ public class EditAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            AccountTypesChangeLink = _linkGenerator.SelectUseCaseChange(id),
-            FirstNameChangeLink = _linkGenerator.EditAccountDetails(id),
-            MiddleNamesChangeLink = _linkGenerator.EditAccountDetails(id),
-            LastNameChangeLink = _linkGenerator.EditAccountDetails(id),
-            EmailChangeLink = _linkGenerator.EditAccountDetails(id),
-            SocialWorkEnglandNumberChangeLink = _linkGenerator.EditAccountDetails(id),
-            ProgrammeDatesChangeLink = _linkGenerator.SocialWorkerProgrammeDatesChange(id)
+            AccountTypesChangeLink = _linkGenerator.ManageAccount.SelectUseCaseChange(id),
+            FirstNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id),
+            MiddleNamesChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id),
+            LastNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id),
+            EmailChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id),
+            SocialWorkEnglandNumberChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id),
+            ProgrammeDatesChangeLink = _linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(id)
         };
     }
 }
