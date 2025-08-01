@@ -180,10 +180,6 @@ RUN a2enmod headers
 # and needs to serve something
 COPY --chown=www-data:www-data index.html /var/www/html/public/index.html
 
-RUN ["/app/entry-point.sh"]
-
-USER www-data
-
-CMD ["apache2-foreground"]
+CMD ["/app/entry-point.sh"]
 
 EXPOSE 80
