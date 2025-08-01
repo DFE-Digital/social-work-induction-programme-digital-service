@@ -4,6 +4,7 @@ public class ManageAccountLinks(EcfLinkGenerator ecfLinkGenerator)
 {
     public string Index(int? offset = 0, int? pageSize = 10) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/Index", routeValues: new { offset, pageSize });
     public string ViewAccountDetails(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
+    public string ViewAccountDetailsNew(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id }, handler: "New");
 
     // Create Links
     public string AddSomeoneNew() => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
