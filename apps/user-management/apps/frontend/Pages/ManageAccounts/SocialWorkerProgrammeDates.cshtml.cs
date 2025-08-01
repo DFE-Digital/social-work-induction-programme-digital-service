@@ -41,7 +41,7 @@ public class SocialWorkerProgrammeDates(
             return await OnGetUpdateAsync(id.Value);
         }
 
-        BackLinkPath = linkGenerator.AddAccountDetails();
+        BackLinkPath = linkGenerator.ManageAccount.AddAccountDetails();
 
         var retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
         ProgrammeStartDate = retrievedStartDate.HasValue
@@ -59,7 +59,7 @@ public class SocialWorkerProgrammeDates(
     private async Task<IActionResult> OnGetUpdateAsync(Guid id)
     {
         Id = id;
-        BackLinkPath = linkGenerator.ViewAccountDetails(id);
+        BackLinkPath = linkGenerator.ManageAccount.ViewAccountDetails(id);
 
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (accountDetails?.ProgrammeStartDate is null || accountDetails.ProgrammeEndDate is null)
@@ -89,7 +89,7 @@ public class SocialWorkerProgrammeDates(
 
         if (!ModelState.IsValid || !result.IsValid)
         {
-            BackLinkPath = Id.HasValue ? linkGenerator.ViewAccountDetails(Id.Value) : linkGenerator.AddAccountDetails();
+            BackLinkPath = Id.HasValue ? linkGenerator.ManageAccount.ViewAccountDetails(Id.Value) : linkGenerator.ManageAccount.AddAccountDetails();
             return Page();
         }
 
@@ -107,7 +107,7 @@ public class SocialWorkerProgrammeDates(
             createAccountJourneyService.SetProgrammeEndDate(dateOnlyEndDate);
         }
 
-        return Redirect(linkGenerator.ConfirmAccountDetails());
+        return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails());
     }
 
     private async Task<IActionResult> OnPostUpdateAsync(Guid id)
@@ -126,6 +126,6 @@ public class SocialWorkerProgrammeDates(
 
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
-        return Redirect(linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
+        return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value));
     }
 }

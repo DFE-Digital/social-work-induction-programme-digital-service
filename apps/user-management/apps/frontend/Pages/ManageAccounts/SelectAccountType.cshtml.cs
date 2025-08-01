@@ -28,8 +28,8 @@ public class SelectAccountType(
     private void SetBackLinkPath()
     {
         BackLinkPath = FromChangeLink
-            ? linkGenerator.ConfirmAccountDetails()
-            : linkGenerator.ManageAccounts();
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails()
+            : linkGenerator.ManageAccount.Index();
     }
 
     private string GetRedirectPath()
@@ -38,23 +38,23 @@ public class SelectAccountType(
 
         if (IsStaff == true)
         {
-            return FromChangeLink ? linkGenerator.SelectUseCaseChange() : linkGenerator.SelectUseCase();
+            return FromChangeLink ? linkGenerator.ManageAccount.SelectUseCaseChange() : linkGenerator.ManageAccount.SelectUseCase();
         }
 
         if (FromChangeLink)
         {
             if (createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland() is null)
             {
-                return linkGenerator.EligibilityInformation();
+                return linkGenerator.ManageAccount.EligibilityInformation();
             }
             if (details?.SocialWorkEnglandNumber is null)
             {
-                return linkGenerator.AddAccountDetailsChange();
+                return linkGenerator.ManageAccount.AddAccountDetailsChange();
             }
-            return linkGenerator.ConfirmAccountDetails();
+            return linkGenerator.ManageAccount.ConfirmAccountDetails();
         }
 
-        return linkGenerator.EligibilityInformation();
+        return linkGenerator.ManageAccount.EligibilityInformation();
     }
 
     private void SetHandler()
@@ -66,7 +66,7 @@ public class SelectAccountType(
     {
         SetHandler();
         createAccountJourneyService.ResetCreateAccountJourneyModel();
-        return Redirect(linkGenerator.SelectAccountType());
+        return Redirect(linkGenerator.ManageAccount.SelectAccountType());
     }
 
     public PageResult OnGet()
