@@ -73,6 +73,30 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
     }
 
     [Fact]
+    public async Task OnGetReplaceAsync_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value)).ReturnsAsync(primaryCoordinator);
+
+        // Act
+        var result = await Sut.OnGetReplaceAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        Sut.Organisation.Should().BeEquivalentTo(organisation);
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator/{organisation.OrganisationId!.Value}?handler=Replace");
+        Sut.IsReplace.Should().BeTrue();
+        result.Should().BeOfType<PageResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task OnPostAsync_WhenCalled_RedirectsUser()
     {
         // Arrange
