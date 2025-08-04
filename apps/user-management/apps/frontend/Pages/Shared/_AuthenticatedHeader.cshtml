@@ -91,14 +91,13 @@
                         @{
                             if (Context.User.Identity?.IsAuthenticated == true)
                             {
-                                var isAdmin = User.IsInRole(nameof(RoleType.Administrator));
-                                <header-link is-active-class="@Html.IsActive("/Dashboard", isAdmin)" href="@LinkGenerator.Dashboard()" text="Dashboard"
+                                <header-link is-active-class="@Html.IsActive("/Dashboard")" href="@LinkGenerator.Dashboard()" text="Dashboard"
                                              is-visible="@User.IsInRole(nameof(RoleType.Administrator))"></header-link>
-                                <header-link is-active-class="@Html.IsActive("/ManageOrganisations", isAdmin)" href="@LinkGenerator.ManageOrganisations.Index()"
+                                <header-link is-active-class="@Html.IsActive("/ManageOrganisations")" href="@LinkGenerator.ManageOrganisations.Index()"
                                              text="Manage organisations" is-visible="@User.IsInRole(nameof(RoleType.Administrator))"></header-link>
-                                <header-link is-active-class="@Html.IsActive("/Index", isAdmin)" href="@LinkGenerator.Home()" text="Home"
+                                <header-link is-active-class="@Html.IsActive("/Index")" href="@LinkGenerator.Home()" text="Home"
                                              is-visible="@User.IsInRole(nameof(RoleType.Coordinator))"></header-link>
-                                <header-link is-active-class="@Html.IsActive("/ManageAccounts", isAdmin)" href="@LinkGenerator.ManageAccount.Index()" text="Manage users"
+                                <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccount.Index()" text="Manage users"
                                              is-visible="@User.IsInRole(nameof(RoleType.Coordinator))"></header-link>
                             }
                         }
