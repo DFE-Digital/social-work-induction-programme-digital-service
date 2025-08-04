@@ -26,14 +26,13 @@ on:
           - d01
           - d02
           - d03
-          - d04
   pull_request:
     branches:
       - main
     paths:
-      - 'apps/moodle-apps-azure/**'
-      - 'apps/moodle-ddev/**'
-      - 'apps/moodle-docker/**'
+      - "apps/moodle-apps-azure/**"
+      - "apps/moodle-ddev/**"
+      - "apps/moodle-docker/**"
 
 concurrency:
   # Unique group for workflow_dispatch AND unique group for each PR
@@ -76,7 +75,7 @@ jobs:
       version-endpoint-path: /version.txt
 
   optional-deploy-moodle-cron-app:
-    needs: 
+    needs:
       - build-and-publish-moodle-image
       - optional-deploy-moodle-app
     if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
