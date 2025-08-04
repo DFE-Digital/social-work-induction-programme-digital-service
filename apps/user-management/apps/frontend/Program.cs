@@ -57,9 +57,7 @@ builder
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ManageAccountsPolicy", policy =>
-        policy.RequireRole(RoleType.Coordinator.ToString(), RoleType.Administrator.ToString()));
-
-builder.Services.AddAuthorizationBuilder()
+        policy.RequireRole(RoleType.Coordinator.ToString(), RoleType.Administrator.ToString()))
     .AddPolicy("ManageOrganisationsPolicy", policy =>
         policy.RequireRole(RoleType.Administrator.ToString()));
 
