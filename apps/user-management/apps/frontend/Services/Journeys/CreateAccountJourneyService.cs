@@ -202,18 +202,18 @@ public class CreateAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            UserTypeChangeLink = linkGenerator.SelectAccountTypeChange(),
-            AccountTypesChangeLink = linkGenerator.SelectUseCaseChange(),
-            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.EligibilitySocialWorkEnglandChange(),
-            StatutoryWorkerChangeLink = linkGenerator.EligibilityStatutoryWorkChange(),
-            AgencyWorkerChangeLink = linkGenerator.EligibilityAgencyWorkerChange(),
-            RecentlyQualifiedChangeLink = linkGenerator.EligibilityQualificationChange(),
-            FirstNameChangeLink = linkGenerator.AddAccountDetailsChangeFirstName(),
-            MiddleNamesChangeLink = linkGenerator.AddAccountDetailsChangeMiddleNames(),
-            LastNameChangeLink = linkGenerator.AddAccountDetailsChangeLastName(),
-            EmailChangeLink = linkGenerator.AddAccountDetailsChangeEmail(),
-            SocialWorkEnglandNumberChangeLink = linkGenerator.AddAccountDetailsChangeSocialWorkEnglandNumber(),
-            ProgrammeDatesChangeLink = linkGenerator.SocialWorkerProgrammeDates()
+            UserTypeChangeLink = linkGenerator.ManageAccount.SelectAccountTypeChange(),
+            AccountTypesChangeLink = linkGenerator.ManageAccount.SelectUseCaseChange(),
+            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(),
+            StatutoryWorkerChangeLink = linkGenerator.ManageAccount.EligibilityStatutoryWorkChange(),
+            AgencyWorkerChangeLink = linkGenerator.ManageAccount.EligibilityAgencyWorkerChange(),
+            RecentlyQualifiedChangeLink = linkGenerator.ManageAccount.EligibilityQualificationChange(),
+            FirstNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeFirstName(),
+            MiddleNamesChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeMiddleNames(),
+            LastNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeLastName(),
+            EmailChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeEmail(),
+            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(),
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates()
         };
     }
 

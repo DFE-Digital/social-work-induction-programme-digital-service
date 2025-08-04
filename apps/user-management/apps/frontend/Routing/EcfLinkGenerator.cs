@@ -13,9 +13,11 @@ public abstract class EcfLinkGenerator
     {
         _oidcConfiguration = oidcConfiguration.Value;
         ManageOrganisations = new(this);
+        ManageAccount = new(this);
     }
 
     public ManageOrganisationLinks ManageOrganisations { get; set; }
+    public ManageAccountLinks ManageAccount { get; set; }
 
     private bool IsBackdoorEnabled => _oidcConfiguration.EnableDevelopmentBackdoor;
 
@@ -44,88 +46,6 @@ public abstract class EcfLinkGenerator
     public string Welcome() => GetRequiredPathByPage("/Welcome");
 
     public string Dashboard() => GetRequiredPathByPage("/Dashboard");
-
-    public string ManageAccounts(int? offset = 0, int? pageSize = 10) =>
-        GetRequiredPathByPage("/ManageAccounts/Index", routeValues: new { offset, pageSize });
-
-    public string AddAccountDetails() => GetRequiredPathByPage("/ManageAccounts/AddAccountDetails");
-
-    public string AddAccountDetailsChange() => GetRequiredPathByPage("/ManageAccounts/AddAccountDetails", handler: "Change");
-
-    public string AddAccountDetailsChangeFirstName() =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/AddAccountDetails",
-            handler: "Change",
-            fragment: new FragmentString("#FirstName")
-        );
-
-    public string AddAccountDetailsChangeMiddleNames() =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/AddAccountDetails",
-            handler: "Change",
-            fragment: new FragmentString("#MiddleNames")
-        );
-
-    public string AddAccountDetailsChangeLastName() =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/AddAccountDetails",
-            handler: "Change",
-            fragment: new FragmentString("#LastName")
-        );
-
-    public string AddAccountDetailsChangeEmail() =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/AddAccountDetails",
-            handler: "Change",
-            fragment: new FragmentString("#Email")
-        );
-
-    public string AddAccountDetailsChangeSocialWorkEnglandNumber() =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/AddAccountDetails",
-            handler: "Change",
-            fragment: new FragmentString("#SocialWorkEnglandNumber")
-        );
-
-    public string EditAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/EditAccountDetails", routeValues: new { id });
-
-    public string ConfirmAccountDetails() =>
-        GetRequiredPathByPage("/ManageAccounts/ConfirmAccountDetails");
-
-    public string ConfirmAccountDetailsUpdate(Guid id) =>
-        GetRequiredPathByPage(
-            "/ManageAccounts/ConfirmAccountDetails",
-            handler: "Update",
-            routeValues: new { id }
-        );
-
-    public string ViewAccountDetails(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", routeValues: new { id });
-    public string ViewAccountDetailsNew(Guid id) => GetRequiredPathByPage("/ManageAccounts/ViewAccountDetails", handler: "new", routeValues: new { id });
-    public string SelectAccountType() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType");
-    public string SelectAccountTypeChange() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "Change");
-    public string AddSomeoneNew() => GetRequiredPathByPage("/ManageAccounts/SelectAccountType", handler: "New");
-    public string SelectUseCase() => GetRequiredPathByPage("/ManageAccounts/SelectUseCase");
-    public string SelectUseCaseChange(Guid? id = null) => GetRequiredPathByPage("/ManageAccounts/SelectUseCase", handler: "Change", routeValues: new { id });
-    public string AddExistingUser() => GetRequiredPathByPage("/ManageAccounts/AddExistingUser");
-    public string EligibilityInformation() => GetRequiredPathByPage("/ManageAccounts/EligibilityInformation");
-    public string EligibilitySocialWorkEngland() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland");
-    public string EligibilitySocialWorkEnglandChange() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland", handler: "Change");
-    public string EligibilitySocialWorkEnglandDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout");
-    public string EligibilitySocialWorkEnglandDropoutChange() => GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout", handler: "Change");
-    public string EligibilityStatutoryWork() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWork");
-    public string EligibilityStatutoryWorkChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWork", handler: "Change");
-    public string EligibilityStatutoryWorkDropout() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout");
-    public string EligibilityStatutoryWorkDropoutChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWorkDropout", handler: "Change");
-    public string EligibilityAgencyWorker() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorker");
-    public string EligibilityAgencyWorkerChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityAgencyWorker", handler: "Change");
-    public string EligibilityQualification() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification");
-    public string EligibilityQualificationChange() => GetRequiredPathByPage("/ManageAccounts/EligibilityQualification", handler: "Change");
-    public string EligibilityFundingNotAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingNotAvailable");
-    public string EligibilityFundingAvailable() => GetRequiredPathByPage("/ManageAccounts/EligibilityFundingAvailable");
-    public string SocialWorkerProgrammeDates() => GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates");
-
-    public string SocialWorkerProgrammeDatesChange(Guid? id = null) =>
-        GetRequiredPathByPage("/ManageAccounts/SocialWorkerProgrammeDates", handler: "Change", routeValues: new { id });
 
     // SWE registration links
     public string SocialWorkerRegistration() => GetRequiredPathByPage("/SocialWorkerRegistration/Index");

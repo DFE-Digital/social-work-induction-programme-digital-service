@@ -97,7 +97,7 @@
                                              text="Manage organisations" is-visible="@User.IsInRole(nameof(RoleType.Administrator))"></header-link>
                                 <header-link is-active-class="@Html.IsActive("/Index")" href="@LinkGenerator.Home()" text="Home"
                                              is-visible="@User.IsInRole(nameof(RoleType.Coordinator))"></header-link>
-                                <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccounts()" text="Manage users"
+                                <header-link is-active-class="@Html.IsActive("/ManageAccounts")" href="@LinkGenerator.ManageAccount.Index()" text="Manage users"
                                              is-visible="@User.IsInRole(nameof(RoleType.Coordinator))"></header-link>
                             }
                         }

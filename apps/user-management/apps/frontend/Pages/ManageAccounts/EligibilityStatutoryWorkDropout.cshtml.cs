@@ -13,7 +13,7 @@ public class EligibilityStatutoryWorkDropout(EcfLinkGenerator linkGenerator) : B
 {
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.EligibilityStatutoryWorkChange() : linkGenerator.EligibilityStatutoryWork();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityStatutoryWorkChange() : linkGenerator.ManageAccount.EligibilityStatutoryWork();
         return Page();
     }
 
