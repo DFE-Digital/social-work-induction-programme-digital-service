@@ -9,7 +9,7 @@ public class EligibilityInformation(EcfLinkGenerator linkGenerator) : BasePageMo
 {
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.SelectAccountType();
+        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
         return Page();
     }
 }

@@ -23,6 +23,7 @@ public class CheckYourAnswers(
     public string? ChangeLocalAuthorityCodeLink { get; set; }
     public string? ChangePrimaryCoordinatorLink { get; set; }
     public bool IsEdit { get; set; }
+    public bool IsReplace { get; set; }
 
     public PageResult OnGet()
     {
@@ -38,11 +39,15 @@ public class CheckYourAnswers(
     public async Task<PageResult> OnGetEditAsync(Guid id)
     {
         IsEdit = true;
-        BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
-        Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
-        PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
-        ChangeLocalAuthorityCodeLink = null;
-        ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
+        await GetEditReplaceDataAsync(id);
+
+        return Page();
+    }
+
+    public async Task<PageResult> OnGetReplaceAsync(Guid id)
+    {
+        IsReplace = true;
+        await GetEditReplaceDataAsync(id);
 
         return Page();
     }
@@ -77,5 +82,16 @@ public class CheckYourAnswers(
         TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
 
         return Redirect(linkGenerator.ManageOrganisations.Index());
+    }
+
+    private async Task GetEditReplaceDataAsync(Guid id)
+    {
+        BackLinkPath = IsReplace
+            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinator(id)
+            : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
+        Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        ChangeLocalAuthorityCodeLink = null;
+        ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
     }
 }

@@ -9,7 +9,7 @@ public class EligibilitySocialWorkEnglandDropout(EcfLinkGenerator linkGenerator)
 {
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.EligibilitySocialWorkEnglandChange() : linkGenerator.EligibilitySocialWorkEngland();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange() : linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
         return Page();
     }
 

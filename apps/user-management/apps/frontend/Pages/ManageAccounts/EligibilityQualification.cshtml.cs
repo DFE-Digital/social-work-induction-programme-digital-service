@@ -22,7 +22,7 @@ public class EligibilityQualification(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.EligibilityAgencyWorkerChange() : linkGenerator.EligibilityAgencyWorker();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityAgencyWorkerChange() : linkGenerator.ManageAccount.EligibilityAgencyWorker();
         IsRecentlyQualified = createAccountJourneyService.GetIsRecentlyQualified();
         return Page();
     }
@@ -33,15 +33,15 @@ public class EligibilityQualification(
         if (IsRecentlyQualified is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EligibilityAgencyWorker();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityAgencyWorker();
             return Page();
         }
 
         createAccountJourneyService.SetIsRecentlyQualified(IsRecentlyQualified);
 
         return Redirect(IsRecentlyQualified is false
-            ? linkGenerator.EligibilityFundingNotAvailable()
-            : linkGenerator.EligibilityFundingAvailable());
+            ? linkGenerator.ManageAccount.EligibilityFundingNotAvailable()
+            : linkGenerator.ManageAccount.EligibilityFundingAvailable());
     }
 
     public PageResult OnGetChange()

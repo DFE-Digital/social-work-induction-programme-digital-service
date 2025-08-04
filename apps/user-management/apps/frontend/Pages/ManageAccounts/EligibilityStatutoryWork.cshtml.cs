@@ -19,7 +19,7 @@ public class EligibilityStatutoryWork(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ConfirmAccountDetails() : linkGenerator.EligibilitySocialWorkEngland();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
         IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
         return Page();
     }
@@ -30,7 +30,7 @@ public class EligibilityStatutoryWork(
         if (IsStatutoryWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.EligibilitySocialWorkEngland();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
             return Page();
         }
 
@@ -40,13 +40,13 @@ public class EligibilityStatutoryWork(
         {
             if (IsStatutoryWorker == true)
             {
-                return Redirect(linkGenerator.ConfirmAccountDetails());
+                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails());
             }
-            return Redirect(linkGenerator.EligibilityStatutoryWorkDropoutChange());
+            return Redirect(linkGenerator.ManageAccount.EligibilityStatutoryWorkDropoutChange());
         }
         return Redirect(IsStatutoryWorker is false
-            ? linkGenerator.EligibilityStatutoryWorkDropout()
-            : linkGenerator.EligibilityAgencyWorker());
+            ? linkGenerator.ManageAccount.EligibilityStatutoryWorkDropout()
+            : linkGenerator.ManageAccount.EligibilityAgencyWorker());
     }
 
     public PageResult OnGetChange()

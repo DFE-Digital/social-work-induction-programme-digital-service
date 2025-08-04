@@ -22,11 +22,11 @@ public class SelectUseCase(
 
     public async Task<PageResult> OnGetAsync(Guid? id = null)
     {
-        BackLinkPath = linkGenerator.SelectAccountType();
+        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
 
         if (id.HasValue)
         {
-            BackLinkPath = linkGenerator.ViewAccountDetails(id.Value);
+            BackLinkPath = linkGenerator.ManageAccount.ViewAccountDetails(id.Value);
             Id = id.Value;
             var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id.Value);
             SelectedAccountTypes = accountDetails?.Types;
@@ -44,7 +44,7 @@ public class SelectUseCase(
         if (SelectedAccountTypes is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.SelectAccountType();
+            BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
             return Page();
         }
 
@@ -59,7 +59,7 @@ public class SelectUseCase(
         }
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
-        return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ConfirmAccountDetails() : linkGenerator.AddAccountDetails());
+        return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.AddAccountDetails());
     }
 
     private async Task<IActionResult> OnPostUpdateAsync(Guid id, bool captureSocialWorkEnglandNumber)
@@ -71,7 +71,7 @@ public class SelectUseCase(
 
         await editAccountJourneyService.SetAccountTypesAsync(Id.Value, SelectedAccountTypes);
 
-        return Redirect(captureSocialWorkEnglandNumber ? linkGenerator.EditAccountDetails(Id.Value) : linkGenerator.ConfirmAccountDetailsUpdate(Id.Value));
+        return Redirect(captureSocialWorkEnglandNumber ? linkGenerator.ManageAccount.EditAccountDetails(Id.Value) : linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value));
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

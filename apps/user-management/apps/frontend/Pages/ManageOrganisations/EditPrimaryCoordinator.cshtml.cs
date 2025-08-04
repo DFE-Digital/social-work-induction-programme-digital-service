@@ -21,6 +21,8 @@ public class EditPrimaryCoordinator(
 
     [BindProperty] public string? OrganisationName { get; set; }
 
+    public bool IsReplace { get; set; }
+
     public async Task<PageResult> OnGetAsync(Guid id)
     {
         BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
@@ -32,6 +34,18 @@ public class EditPrimaryCoordinator(
         var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
         if (primaryCoordinator is not null)
             PrimaryCoordinator = primaryCoordinator;
+
+        return Page();
+    }
+
+    public async Task<PageResult> OnGetReplaceAsync(Guid id)
+    {
+        IsReplace = true;
+        BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
+
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        if (organisation is not null)
+            OrganisationName = organisation.OrganisationName;
 
         return Page();
     }
@@ -51,6 +65,15 @@ public class EditPrimaryCoordinator(
 
         await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
 
-        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswersEdit(id));
+        return Redirect(
+            IsReplace
+                ? linkGenerator.ManageOrganisations.CheckYourAnswersReplace(id)
+                : linkGenerator.ManageOrganisations.CheckYourAnswersEdit(id));
+    }
+
+    public async Task<IActionResult> OnPostReplaceAsync(Guid id)
+    {
+        IsReplace = true;
+        return await OnPostAsync(id);
     }
 }

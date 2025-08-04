@@ -59,10 +59,10 @@ public class AddAccountDetails(
     private void SetBackLinkPath(bool fromConfirmPage = false)
     {
         BackLinkPath ??= fromConfirmPage
-            ? linkGenerator.ConfirmAccountDetails()
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails()
             : IsStaff
-                ? linkGenerator.SelectUseCase()
-                : linkGenerator.SelectAccountType();
+                ? linkGenerator.ManageAccount.SelectUseCase()
+                : linkGenerator.ManageAccount.SelectAccountType();
     }
 
     public PageResult OnGet()
@@ -108,7 +108,7 @@ public class AddAccountDetails(
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect((IsStaff || FromChangeLink) ? linkGenerator.ConfirmAccountDetails() : linkGenerator.SocialWorkerProgrammeDates());
+        return Redirect((IsStaff || FromChangeLink) ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.SocialWorkerProgrammeDates());
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

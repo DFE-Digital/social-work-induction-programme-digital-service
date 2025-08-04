@@ -15,20 +15,20 @@ public class EligibilityFundingNotAvailable(
     public PageResult OnGet()
     {
         BackLinkPath = createAccountJourneyService.GetIsAgencyWorker() == true
-            ? linkGenerator.EligibilityAgencyWorker()
-            : linkGenerator.EligibilityQualification();
+            ? linkGenerator.ManageAccount.EligibilityAgencyWorker()
+            : linkGenerator.ManageAccount.EligibilityQualification();
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         if (accountDetails?.SocialWorkEnglandNumber is null)
         {
-            NextPagePath = linkGenerator.AddAccountDetails();
+            NextPagePath = linkGenerator.ManageAccount.AddAccountDetails();
         }
         else if (createAccountJourneyService.GetProgrammeStartDate() is null)
         {
-            NextPagePath = linkGenerator.SocialWorkerProgrammeDates();
+            NextPagePath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates();
         }
         else
         {
-            NextPagePath = linkGenerator.ConfirmAccountDetails();
+            NextPagePath = linkGenerator.ManageAccount.ConfirmAccountDetails();
         }
 
         return Page();
