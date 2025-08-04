@@ -164,3 +164,23 @@ variable "file_storage_account_tier" {
     error_message = "Allowed values for file_storage_account_tier are Standard or Premium."
   }
 }
+
+variable "postgresql_sku" {
+  description = "The SKU for the PostgreSQL database"
+  type        = string
+}
+
+variable "frontdoor_sku" {
+  description = "Azure Front Door SKU"
+  type        = string
+}
+
+variable "key_vault_sku" {
+  description = "Azure Key Vault SKU"
+  type        = string
+}
+
+variable "log_analytics_sku" {
+  description = "Log Analytics Workspace SKU"
+  type        = string
+}

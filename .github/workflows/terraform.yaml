@@ -13,7 +13,6 @@ on:
           - d01
           - d02
           - d03
-          - d04
 
       action:
         description: "Test the planned changes or plan and apply the changes"

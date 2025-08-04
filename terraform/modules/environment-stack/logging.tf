@@ -2,7 +2,7 @@ resource "azurerm_log_analytics_workspace" "log_analytics_web" {
   name                = "${var.resource_name_prefix}-log-analytics"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
-  sku                 = "PerGB2018"
+  sku                 = var.log_analytics_sku
   retention_in_days   = 30
   daily_quota_gb      = 1
 

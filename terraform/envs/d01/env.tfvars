@@ -17,6 +17,10 @@ asp_sku_services                  = "B1"
 asp_sku_notification              = "B1"
 days_to_expire                    = "365"
 kv_purge_protection_enabled       = false
+postgresql_sku                    = "B_Standard_B1ms"
+frontdoor_sku                     = "Standard_AzureFrontDoor"
+key_vault_sku                     = "standard"
+log_analytics_sku                 = "PerGB2018"
 moodle_instances = {
   # Capability to add multiple instances in the future (secondary = {} etc.)
   # They will each have their own dedicated DB
@@ -26,7 +30,7 @@ moodle_instances = {
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
-  "DATABASESEED__ORGANISATIONID"             = "00000000-0000-0000-0000-000000000001"
+  "DATABASESEED__ORGANISATIONID"               = "00000000-0000-0000-0000-000000000001"
   "DATABASESEED__ORGANISATIONNAME"             = "Test Organisation"
   "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
   "DATABASESEED__ROLEID"                       = 800
@@ -43,7 +47,7 @@ user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"
 }
 moodle_max_data_storage_size_in_gb = 5
-storage_redundancy = "LRS"
-blob_storage_account_tier = "Standard"
+storage_redundancy                 = "LRS"
+blob_storage_account_tier          = "Standard"
 # Standard pay as you go HDD file share 
 file_storage_account_tier = "Standard"

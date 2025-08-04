@@ -13,13 +13,12 @@ on:
           - d01
           - d02
           - d03
-          - d04
   pull_request:
     branches:
       - main
     paths:
-      - 'apps/user-management/apps/notification-service/**'
-      - 'apps/user-management/apps/notification-service-test/**'
+      - "apps/user-management/apps/notification-service/**"
+      - "apps/user-management/apps/notification-service-test/**"
 
 concurrency:
   # Unique group for workflow_dispatch AND unique group for each PR

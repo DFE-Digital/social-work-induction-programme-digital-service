@@ -13,12 +13,11 @@ on:
           - d01
           - d02
           - d03
-          - d04
   pull_request:
     branches:
       - main
     paths:
-      - 'apps/auth-service/**'
+      - "apps/auth-service/**"
 
 concurrency:
   # Unique group for workflow_dispatch AND unique group for each PR

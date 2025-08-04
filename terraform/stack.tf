@@ -16,4 +16,8 @@ module "stack" {
   email_support_address                      = var.email_support_address
   tags                                       = local.common_tags
   asp_sku_notification                       = var.asp_sku_notification
+  postgresql_sku                             = var.postgresql_sku
+  frontdoor_sku                              = var.frontdoor_sku
+  log_analytics_sku                          = var.log_analytics_sku
+  key_vault_sku                              = var.key_vault_sku
 }

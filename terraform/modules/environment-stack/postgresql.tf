@@ -44,7 +44,7 @@ resource "azurerm_subnet" "sn_postgres" {
 }
 
 resource "random_password" "password" {
-  length = 25
+  length           = 25
   special          = true
   override_special = "!@#^*_-"
 }
@@ -60,7 +60,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   administrator_password        = random_password.password.result
   zone                          = "3"
   storage_mb                    = 32768
-  sku_name                      = "B_Standard_B1ms"
+  sku_name                      = var.postgresql_sku
   backup_retention_days         = 7
   geo_redundant_backup_enabled  = false
   public_network_access_enabled = false
@@ -110,10 +110,10 @@ resource "azurerm_private_dns_a_record" "dns_a_postgres" {
 }
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name            = "Database-AdminPassword"
-  value           = azurerm_postgresql_flexible_server.swipdb.administrator_password
-  key_vault_id    = azurerm_key_vault.kv.id
-  content_type    = "password"
+  name         = "Database-AdminPassword"
+  value        = azurerm_postgresql_flexible_server.swipdb.administrator_password
+  key_vault_id = azurerm_key_vault.kv.id
+  content_type = "password"
 
   // TODO: Managed expiry of db passwords
   //expiration_date = local.expiration_date
@@ -122,7 +122,7 @@ resource "azurerm_key_vault_secret" "database_password" {
     ignore_changes = [value, expiration_date]
   }
 
-  depends_on = [ azurerm_key_vault_access_policy.kv_gh_ap ]
+  depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
 
   #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
