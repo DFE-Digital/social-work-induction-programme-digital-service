@@ -15,7 +15,12 @@
             }
 
             <govuk-fieldset>
-                <govuk-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">Update primary coordinator details</govuk-fieldset-legend>
+                <govuk-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">
+                    @(Model.IsReplace
+                        ? "Add new primary coordinator"
+                        : "Update primary coordinator details"
+                    )
+                </govuk-fieldset-legend>
 
                 <govuk-input for="PrimaryCoordinator.FirstName" autocomplete="given-name" spellcheck="false" type="text">
                     <govuk-input-label/>
@@ -34,7 +39,11 @@
 
                 <govuk-input for="PrimaryCoordinator.Email" autocomplete="email" spellcheck="false" type="email">
                     <govuk-input-label/>
-                    <govuk-input-hint>We will send an invitation email to this email address</govuk-input-hint>
+                    <govuk-input-hint>
+                        @(Model.IsReplace
+                            ? "We will send an invitation email to this email address if it is not already registered"
+                            : "We will send an invitation email to this email address")
+                    </govuk-input-hint>
                     <govuk-input-error-message/>
                 </govuk-input>
 

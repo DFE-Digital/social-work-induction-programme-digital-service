@@ -31,19 +31,41 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         var accountDetails = AccountDetails.FromAccount(account);
         var organisation = OrganisationBuilder.Build();
 
-        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value));
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
         MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value)).ReturnsAsync(accountDetails);
 
         // Act
         var result = await Sut.OnGetAsync(organisation.OrganisationId!.Value);
 
         // Assert
+        Sut.OrganisationName.Should().Be(organisation.OrganisationName);
         Sut.PrimaryCoordinator.Should().BeEquivalentTo(accountDetails);
         Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}");
         result.Should().BeOfType<PageResult>();
 
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetReplaceAsync_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
+
+        // Act
+        var result = await Sut.OnGetReplaceAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        Sut.OrganisationName.Should().Be(organisation.OrganisationName);
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}");
+        Sut.IsReplace.Should().BeTrue();
+        result.Should().BeOfType<PageResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -72,6 +94,41 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be($"/manage-organisations/check-your-answers/{organisationId}?handler=Edit");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            Times.Once
+        );
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostReplaceAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithPhoneNumber("07123123123")
+            .WithPhoneNumberRequired(true)
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        Sut.PrimaryCoordinator = accountDetails;
+
+        MockEditOrganisationJourneyService.Setup(x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)));
+
+        // Act
+        var result = await Sut.OnPostReplaceAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-organisations/check-your-answers/{organisationId}?handler=Replace");
+
+        Sut.IsReplace.Should().BeTrue();
 
         MockEditOrganisationJourneyService.Verify(
             x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
