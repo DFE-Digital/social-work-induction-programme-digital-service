@@ -6,10 +6,6 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Eligibility Funding Available View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityFundingAvailable(
     EcfLinkGenerator linkGenerator,
     ICreateAccountJourneyService createAccountJourneyService

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
-[AuthorizeRoles(RoleType.Administrator)]
 public class AddPrimaryCoordinator(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
     IValidator<AccountDetails> validator,

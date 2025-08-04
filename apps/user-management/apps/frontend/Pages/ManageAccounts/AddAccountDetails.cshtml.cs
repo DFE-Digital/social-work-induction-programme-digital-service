@@ -11,10 +11,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Add User Details View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator,

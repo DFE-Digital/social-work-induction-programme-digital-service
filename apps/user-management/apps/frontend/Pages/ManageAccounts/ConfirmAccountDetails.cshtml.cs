@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-[AuthorizeRoles(RoleType.Coordinator)]
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,

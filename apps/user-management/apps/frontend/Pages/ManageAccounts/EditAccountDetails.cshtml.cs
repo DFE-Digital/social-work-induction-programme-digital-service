@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-[AuthorizeRoles(RoleType.Coordinator)]
 public class EditAccountDetails(
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<AccountDetails> validator,

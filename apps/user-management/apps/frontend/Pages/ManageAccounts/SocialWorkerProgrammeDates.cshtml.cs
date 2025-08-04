@@ -11,10 +11,6 @@ using NodaTime;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Social Worker Programme Dates View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class SocialWorkerProgrammeDates(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,

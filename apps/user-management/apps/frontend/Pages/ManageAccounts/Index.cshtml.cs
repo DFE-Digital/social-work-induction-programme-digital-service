@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-[AuthorizeRoles(RoleType.Coordinator)]
 public class Index(IAccountService accountService) : BasePageModel
 {
     [FromQuery]

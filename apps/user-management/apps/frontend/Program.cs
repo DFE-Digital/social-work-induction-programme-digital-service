@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Configuration;
+﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.Installers;
@@ -39,7 +40,12 @@ builder.Services.AddGovUkFrontend(options =>
 });
 builder.Services.AddCsp(nonceByteAmount: 32);
 builder
-    .Services.AddRazorPages()
+    .Services
+    .AddRazorPages(options =>
+    {
+        options.Conventions.AuthorizeFolder("/ManageAccounts", "ManageAccountsPolicy");
+        options.Conventions.AuthorizeFolder("/ManageOrganisations", "ManageOrganisationsPolicy");
+    })
     .AddViewOptions(options => options.HtmlHelperOptions.ClientValidationEnabled = false)
     .AddRazorPagesOptions(options =>
     {
@@ -48,6 +54,12 @@ builder
         );
         options.Conventions.AuthorizeFolder("/ManageAccounts");
     });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("ManageAccountsPolicy", policy =>
+        policy.RequireRole(RoleType.Coordinator.ToString(), RoleType.Administrator.ToString()))
+    .AddPolicy("ManageOrganisationsPolicy", policy =>
+        policy.RequireRole(RoleType.Administrator.ToString()));
 
 // Enable App Insights
 builder.Services.AddApplicationInsightsTelemetry();
