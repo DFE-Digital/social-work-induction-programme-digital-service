@@ -9,10 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Eligibility Social Work England View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilitySocialWorkEngland(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,

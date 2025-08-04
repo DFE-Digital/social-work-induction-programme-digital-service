@@ -9,10 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Eligibility Statutory Work View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityStatutoryWork(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,

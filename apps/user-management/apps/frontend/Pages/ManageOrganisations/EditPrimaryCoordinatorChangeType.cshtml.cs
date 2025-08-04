@@ -10,10 +10,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
-/// <summary>
-/// Edit Primary Coordinator Change Type
-/// </summary>
-[AuthorizeRoles(RoleType.Administrator)]
 public class EditPrimaryCoordinatorChangeType(
     IEditOrganisationJourneyService editOrganisationJourneyService,
     EcfLinkGenerator linkGenerator,

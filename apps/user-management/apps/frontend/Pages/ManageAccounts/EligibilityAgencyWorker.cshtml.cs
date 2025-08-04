@@ -9,10 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-/// <summary>
-/// Eligibility Agency Worker View Model
-/// </summary>
-[AuthorizeRoles(RoleType.Coordinator)]
 public class EligibilityAgencyWorker(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,

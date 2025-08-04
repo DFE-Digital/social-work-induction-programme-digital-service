@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
-[AuthorizeRoles(RoleType.Administrator)]
 public class OrganisationDetails(
     IEditOrganisationJourneyService editOrganisationJourneyService,
     EcfLinkGenerator linkGenerator

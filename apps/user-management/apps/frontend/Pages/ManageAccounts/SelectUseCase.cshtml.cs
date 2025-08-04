@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-[AuthorizeRoles(RoleType.Coordinator)]
 public class SelectUseCase(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,

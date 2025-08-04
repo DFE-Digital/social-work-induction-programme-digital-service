@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-[AuthorizeRoles(RoleType.Coordinator)]
 public class ViewAccountDetails(
     IAccountService accountService,
     EcfLinkGenerator linkGenerator,
