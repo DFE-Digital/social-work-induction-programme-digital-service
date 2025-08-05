@@ -272,17 +272,15 @@ builder
 
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
-            var certName = builder.Configuration.GetRequiredValue("Oidc:SigningCertificateName");
             var signingCert = certificateClient
-                .GetX509CertificateAsync(certName)
+                .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
             options.AddSigningCertificate(signingCert);
 
-            certName = builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName");
             var encryptionCert = certificateClient
-                .GetX509CertificateAsync(certName)
+                .GetX509CertificateAsync(builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName"))
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
@@ -481,6 +479,7 @@ app.UseCsp(csp =>
     }
 });
 
+app.UseMiddleware<JwksFilterMiddleware>();
 app.UseMiddleware<AppendSecurityResponseHeadersMiddleware>();
 
 app.UseStaticFiles();
