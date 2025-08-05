@@ -41,9 +41,12 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
+var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<Program>();
+
+logger.LogInformation("Starting auth-service application");
 
 builder.Services.Configure<AppInfo>(
-  builder.Configuration.GetRequiredSection("AppInfo")
+    builder.Configuration.GetRequiredSection("AppInfo")
 );
 
 var featureFlags = builder.Configuration
@@ -62,6 +65,7 @@ SecretClient? secretClient = null;
 CertificateClient? certificateClient = null;
 if (featureFlags.EnableOneLoginCertificateRotation || featureFlags.EnableOpenIdCertificates)
 {
+    logger.LogInformation("Registering Azure KeyVault as secret client for certificates");
     var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
     secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
     certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
@@ -85,14 +89,16 @@ if (oidcConfiguration is null)
 {
     throw new InvalidConfigurationException("Missing OIDC configuration.");
 }
+
 if (oidcConfiguration.Issuer is null)
 {
     throw new InvalidConfigurationException("OIDC Issuer not configured.");
 }
+
 builder.Services.Configure<OidcConfiguration>(oidcConfigurationSection);
 
 builder.Services.AddGovUkFrontend();
-builder.Services.AddCsp(nonceByteAmount: 32);
+builder.Services.AddCsp();
 
 builder
     .Services.AddAuthentication(options =>
@@ -102,22 +108,17 @@ builder
 
         options.AddScheme(
             AuthenticationSchemes.FormFlowJourney,
-            scheme =>
-            {
-                scheme.HandlerType = typeof(FormFlowJourneySignInHandler);
-            }
+            scheme => { scheme.HandlerType = typeof(FormFlowJourneySignInHandler); }
         );
 
         options.AddScheme(
             AuthenticationSchemes.MatchToEcfAccount,
-            scheme =>
-            {
-                scheme.HandlerType = typeof(MatchToEcfAccountAuthenticationHandler);
-            }
+            scheme => { scheme.HandlerType = typeof(MatchToEcfAccountAuthenticationHandler); }
         );
     })
     .AddOneLogin(options =>
     {
+        logger.LogInformation("Registering OneLogin authentication provider");
         options.SignInScheme = AuthenticationSchemes.FormFlowJourney;
 
         options.Events.OnRedirectToIdentityProviderForSignOut = context =>
@@ -172,6 +173,7 @@ builder
 
         if (featureFlags.EnableOneLoginCertificateRotation && secretClient is not null)
         {
+            logger.LogInformation("Using secret client to get certificate and private key for OneLogin");
             KeyVaultSecret pfxSecret = secretClient
                 .GetSecret(oneLoginConfig.CertificateName);
             var pfxBytes = Convert.FromBase64String(pfxSecret.Value);
@@ -188,11 +190,12 @@ builder
         }
         else
         {
+            logger.LogInformation("Using private key from PrivateKeyPem for OneLogin");
             using var rsa = RSA.Create();
             rsa.ImportFromPem(oneLoginConfig.PrivateKeyPem);
 
             options.ClientAuthenticationCredentials = new SigningCredentials(
-                new RsaSecurityKey(rsa.ExportParameters(includePrivateParameters: true)),
+                new RsaSecurityKey(rsa.ExportParameters(true)),
                 SecurityAlgorithms.RsaSha256
             );
         }
@@ -272,6 +275,7 @@ builder
 
         if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
         {
+            logger.LogInformation("Using certificate client to get certificates for OpenID");
             var signingCert = certificateClient
                 .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
                 .ConfigureAwait(false)
@@ -289,6 +293,7 @@ builder
 
         if (featureFlags.EnableDevelopmentOpenIdCertificates)
         {
+            logger.LogInformation("Using development certificates for OpenID");
             options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
         }
     })
@@ -321,7 +326,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
         {
             Title = "Accounts API",
             Version = "v1",
-            Description = "API for managing accounts in the system",
+            Description = "API for managing accounts in the system"
         }
     );
     // If you need to add authentication
@@ -332,7 +337,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter JWT Bearer token **_only_**",
+        Description = "Enter JWT Bearer token **_only_**"
     };
     swaggerGenOptions.AddSecurityDefinition("Bearer", securityScheme);
     var securityRequirement = new OpenApiSecurityRequirement
@@ -343,18 +348,17 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer",
-                },
+                    Id = "Bearer"
+                }
             },
             []
-        },
+        }
     };
     swaggerGenOptions.AddSecurityRequirement(securityRequirement);
 });
 builder
     .Services.AddOptions<SwaggerUIOptions>()
-    .Configure<IHttpContextAccessor>(
-        (swaggerUiOptions, httpContextAccessor) =>
+    .Configure<IHttpContextAccessor>((swaggerUiOptions, httpContextAccessor) =>
         {
             // 2. Take a reference of the original Stream factory which reads from Swashbuckle's embedded resources
             var originalIndexStreamFactory = swaggerUiOptions.IndexStream;
@@ -411,10 +415,7 @@ builder.Services
     .AddTransient<MatchToEcfAccountAuthenticationHandler>()
     .AddHttpContextAccessor()
     .AddSingleton<IStartupFilter, FormFlowSessionMiddlewareStartupFilter>()
-    .AddFormFlow(options =>
-    {
-        options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor);
-    })
+    .AddFormFlow(options => { options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor); })
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
@@ -435,6 +436,8 @@ builder.AddTestApp();
 
 var app = builder.Build();
 
+logger.LogInformation("Application built, configuring middleware");
+
 app.MapDefaultEndpoints();
 
 app.UseWhen(
@@ -445,10 +448,12 @@ app.UseWhen(
         {
             a.UseDeveloperExceptionPage();
         }
+
         if (featureFlags.EnableMigrationsEndpoint)
         {
             a.UseMigrationsEndPoint();
         }
+
         if (featureFlags.EnableErrorExceptionHandler)
         {
             a.UseExceptionHandler("/error");
@@ -515,7 +520,13 @@ if (builder.Configuration["RootRedirect"] is { } rootRedirect)
     );
 }
 
+logger.LogInformation("Application starting");
+
 app.Run();
 
+logger.LogInformation("Application stopped");
+
 [PublicAPI]
-public partial class Program { }
+public partial class Program
+{
+}

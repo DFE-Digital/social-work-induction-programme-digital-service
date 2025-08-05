@@ -14,19 +14,25 @@ public class KeysController(
     CertificateClient certClient,
     SecretClient secretClient,
     IMemoryCache cache,
-    OneLoginConfiguration oneLoginConfiguration
+    OneLoginConfiguration oneLoginConfiguration,
+    ILogger<KeysController> logger
 ) : Controller
 {
     [HttpGet("onelogin")]
     [ResponseCache(Duration = 3600)]
     public async Task<IActionResult> GetOneLoginKeys()
     {
+        logger.LogInformation("/api/keys/onelogin called");
+
         // This method provides an /api/keys/onelogin JWKS endpoint for use with OneLogin
         // It lists the public keys which are supported for signing JWTs
         if (cache.TryGetValue<JsonWebKeySet>("OneLoginJWKS", out var jwks))
         {
+            logger.LogInformation("Returning cached JWKS");
             return Ok(jwks);
         }
+
+        logger.LogInformation("Fetching OneLogin keys");
 
         var versions = certClient
             .GetPropertiesOfCertificateVersionsAsync(oneLoginConfiguration.CertificateName)
@@ -48,7 +54,7 @@ public class KeysController(
 
         jwks = new JsonWebKeySet();
 
-        foreach(var cert in toInclude)
+        foreach (var cert in toInclude)
         {
             var rsa = cert.GetRSAPublicKey() ?? throw new InvalidOperationException("Not RSA");
             var parameters = rsa.ExportParameters(false);
@@ -66,7 +72,9 @@ public class KeysController(
             };
 
             jwks.Keys.Add(jwk);
-        }        
+        }
+
+        logger.LogInformation("Adding JWKS to cache and returning");
 
         cache.Set("OneLoginJWKS", jwks, TimeSpan.FromMinutes(60));
 
@@ -78,7 +86,7 @@ public class KeysController(
         var secret = await secretClient
             .GetSecretAsync(oneLoginConfiguration.CertificateName, version);
         var raw = Convert.FromBase64String(secret.Value.Value);
-        
+
         return new X509Certificate2(
             raw,
             (string?)null,
