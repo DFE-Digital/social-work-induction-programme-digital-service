@@ -43,12 +43,6 @@ resource "azurerm_subnet" "sn_postgres" {
   }
 }
 
-resource "random_password" "password" {
-  length           = 25
-  special          = true
-  override_special = "!@#^*_-"
-}
-
 resource "azurerm_postgresql_flexible_server" "swipdb" {
   name                          = "${var.resource_name_prefix}-swipdb"
   resource_group_name           = azurerm_resource_group.rg_primary.name
@@ -57,7 +51,7 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   delegated_subnet_id           = azurerm_subnet.sn_postgres.id
   private_dns_zone_id           = azurerm_private_dns_zone.private_dns_postgres.id
   administrator_login           = "psqladmin"
-  administrator_password        = random_password.password.result
+  administrator_password        = azurerm_key_vault_secret.database_password.value
   zone                          = "3"
   storage_mb                    = 32768
   sku_name                      = var.postgresql_sku
@@ -65,6 +59,8 @@ resource "azurerm_postgresql_flexible_server" "swipdb" {
   geo_redundant_backup_enabled  = false
   public_network_access_enabled = false
   tags                          = var.tags
+
+  depends_on = [azurerm_key_vault_secret.database_password]
 
   lifecycle {
     ignore_changes = [tags]
@@ -109,9 +105,15 @@ resource "azurerm_private_dns_a_record" "dns_a_postgres" {
   }
 }
 
+resource "random_password" "password" {
+  length           = 25
+  special          = true
+  override_special = "!@#^*_-"
+}
+
 resource "azurerm_key_vault_secret" "database_password" {
   name         = "Database-AdminPassword"
-  value        = azurerm_postgresql_flexible_server.swipdb.administrator_password
+  value        = random_password.password.result
   key_vault_id = azurerm_key_vault.kv.id
   content_type = "password"
 
