@@ -171,7 +171,8 @@ builder
         options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
         options.ClientAssertionJwtAudience = oneLoginConfig.Url + "/token";
 
-        if (featureFlags.EnableOneLoginCertificateRotation && secretClient is not null)
+        if (oneLoginConfig.PrivateKeyPem is null && featureFlags.EnableOneLoginCertificateRotation &&
+            secretClient is not null)
         {
             logger.LogInformation("Using secret client to get certificate and private key for OneLogin");
             KeyVaultSecret pfxSecret = secretClient
