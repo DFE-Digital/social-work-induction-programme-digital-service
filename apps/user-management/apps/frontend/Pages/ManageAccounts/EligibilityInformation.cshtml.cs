@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class EligibilityInformation(EcfLinkGenerator linkGenerator) : BasePageModel
+public class EligibilityInformation(EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
+        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
         return Page();
     }
 }

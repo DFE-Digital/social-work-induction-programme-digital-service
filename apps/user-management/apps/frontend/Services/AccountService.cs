@@ -14,9 +14,9 @@ public class AccountService(
     IModelMapper<Person, Account> mapper
 ) : IAccountService
 {
-    public async Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request)
+    public async Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request, Guid? organisationId = null)
     {
-        var persons = await authServiceClient.Accounts.GetAllAsync(request);
+        var persons = await authServiceClient.Accounts.GetAllAsync(request, organisationId);
 
         var accounts = new PaginationResult<Account>
         {

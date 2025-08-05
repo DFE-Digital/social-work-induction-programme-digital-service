@@ -77,9 +77,12 @@
                         <td class="govuk-table__cell">
                             <p class="govuk-body">@organisations.Type?.GetDisplayName()</p>
                         </td>
-                        <td class="govuk-table__cell">
-                            <a href="@LinkGenerator.ManageAccount.Index()" title="Manage Users" class="govuk-link govuk-link--no-visited-state">Manage users</a>
-                        </td>
+                        @if (organisations.OrganisationId.HasValue)
+                        {
+                            <td class="govuk-table__cell">
+                                <a href="@LinkGenerator.ManageAccount.Index(organisations.OrganisationId.Value)" title="Manage Users" class="govuk-link govuk-link--no-visited-state">Manage users</a>
+                            </td>
+                        }
                     </tr>
                 }
                 </tbody>

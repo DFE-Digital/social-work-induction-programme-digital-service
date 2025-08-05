@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -10,7 +11,7 @@ using Moq;
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
 public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageModelTestBase<T>
-    where T : PageModel
+    where T : ManageAccountsBasePageModel
 {
     private protected AccountBuilder AccountBuilder { get; }
     private protected AccountDetailsFaker AccountDetailsFaker { get; }
@@ -22,6 +23,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
 
     private protected Mock<ISocialWorkEnglandService> MockSocialWorkEnglandService { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
+    private protected Mock<IOrganisationService> MockOrganisationService { get; }
 
     private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; }
 
@@ -35,6 +37,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
         MockEditAccountJourneyService = new();
         MockSocialWorkEnglandService = new();
         MockAccountService = new();
+        MockOrganisationService = new();
         MockMoodleServiceClient = new();
     }
 
@@ -45,5 +48,6 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
         MockSocialWorkEnglandService.VerifyNoOtherCalls();
         MockAccountService.VerifyNoOtherCalls();
         MockMoodleServiceClient.VerifyNoOtherCalls();
+        MockOrganisationService.VerifyNoOtherCalls();
     }
 }

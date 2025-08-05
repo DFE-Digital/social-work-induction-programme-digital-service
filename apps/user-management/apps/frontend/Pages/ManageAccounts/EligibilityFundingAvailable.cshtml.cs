@@ -9,7 +9,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class EligibilityFundingAvailable(
     EcfLinkGenerator linkGenerator,
     ICreateAccountJourneyService createAccountJourneyService
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     public string? NextPagePath { get; set; }
 

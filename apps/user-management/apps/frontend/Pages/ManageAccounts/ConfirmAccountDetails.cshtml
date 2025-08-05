@@ -7,9 +7,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form method="post" asp-page-handler="@(Model.IsUpdatingAccount ? "update" : "")"
-              data-test-id="confirm-details">
-
+        <form method="post" asp-page-handler="@(Model.IsUpdatingAccount ? "update" : "")" asp-route-OrganisationId="@Model.OrganisationId" data-test-id="confirm-details">
             <h1 class="govuk-heading-l">
                 Check user details before @(Model.IsUpdatingAccount ? "updating" : "adding") them
             </h1>

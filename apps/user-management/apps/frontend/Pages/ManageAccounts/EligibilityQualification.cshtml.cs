@@ -13,7 +13,7 @@ public class EligibilityQualification(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityQualification> validator)
-    : BasePageModel
+    : ManageAccountsBasePageModel
 {
     /// <summary>
     /// Property capturing whether the user has completed their social work qualification within the last 3 years.
@@ -22,7 +22,7 @@ public class EligibilityQualification(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityAgencyWorkerChange() : linkGenerator.ManageAccount.EligibilityAgencyWorker();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityAgencyWorkerChange(OrganisationId) : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId);
         IsRecentlyQualified = createAccountJourneyService.GetIsRecentlyQualified();
         return Page();
     }
@@ -33,15 +33,15 @@ public class EligibilityQualification(
         if (IsRecentlyQualified is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityAgencyWorker();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId);
             return Page();
         }
 
         createAccountJourneyService.SetIsRecentlyQualified(IsRecentlyQualified);
 
         return Redirect(IsRecentlyQualified is false
-            ? linkGenerator.ManageAccount.EligibilityFundingNotAvailable()
-            : linkGenerator.ManageAccount.EligibilityFundingAvailable());
+            ? linkGenerator.ManageAccount.EligibilityFundingNotAvailable(OrganisationId)
+            : linkGenerator.ManageAccount.EligibilityFundingAvailable(OrganisationId));
     }
 
     public PageResult OnGetChange()

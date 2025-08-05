@@ -1,4 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -13,13 +12,13 @@ public class EligibilityStatutoryWork(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityStatutoryWork> validator)
-    : BasePageModel
+    : ManageAccountsBasePageModel
 {
     [BindProperty] public bool? IsStatutoryWorker { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
         IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
         return Page();
     }
@@ -30,7 +29,7 @@ public class EligibilityStatutoryWork(
         if (IsStatutoryWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
             return Page();
         }
 
@@ -40,13 +39,13 @@ public class EligibilityStatutoryWork(
         {
             if (IsStatutoryWorker == true)
             {
-                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails());
+                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId));
             }
-            return Redirect(linkGenerator.ManageAccount.EligibilityStatutoryWorkDropoutChange());
+            return Redirect(linkGenerator.ManageAccount.EligibilityStatutoryWorkDropoutChange(OrganisationId));
         }
         return Redirect(IsStatutoryWorker is false
-            ? linkGenerator.ManageAccount.EligibilityStatutoryWorkDropout()
-            : linkGenerator.ManageAccount.EligibilityAgencyWorker());
+            ? linkGenerator.ManageAccount.EligibilityStatutoryWorkDropout(OrganisationId)
+            : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
     }
 
     public PageResult OnGetChange()

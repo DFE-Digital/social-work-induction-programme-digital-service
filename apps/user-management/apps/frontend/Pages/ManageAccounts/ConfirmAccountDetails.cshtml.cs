@@ -20,7 +20,7 @@ public class ConfirmAccountDetails(
     IMoodleServiceClient moodleServiceClient,
     EcfLinkGenerator linkGenerator,
     FeatureFlags featureFlags
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
 
@@ -86,7 +86,7 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates();
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
         ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks();
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
@@ -118,7 +118,7 @@ public class ConfirmAccountDetails(
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (updatedAccountDetails is null) return NotFound();
 
-        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id);
+        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
         ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
 
         IsUpdatingAccount = true;
@@ -169,7 +169,7 @@ public class ConfirmAccountDetails(
         TempData["NotificationHeader"] = "New user added";
         TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ManageAccount.Index());
+        return Redirect(linkGenerator.ManageAccount.Index(OrganisationId));
     }
 
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
@@ -185,6 +185,6 @@ public class ConfirmAccountDetails(
         TempData["NotificationHeader"] = "User details updated";
         TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId));
     }
 }
