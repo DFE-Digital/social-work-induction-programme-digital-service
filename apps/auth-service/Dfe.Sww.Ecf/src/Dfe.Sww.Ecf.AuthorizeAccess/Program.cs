@@ -183,7 +183,8 @@ builder
                 X509KeyStorageFlags.EphemeralKeySet
             );
             var rsaPrivateKey = certificate.GetRSAPrivateKey();
-            logger.LogInformation("Public key for OneLogin certificate: {publicKey}", certificate.GetRSAPublicKey());
+            logger.LogInformation("Public key for OneLogin certificate: {publicKey}",
+                certificate.GetRSAPublicKey()?.ExportRSAPublicKeyPem());
             options.ClientAuthenticationCredentials = new SigningCredentials(
                 new RsaSecurityKey(rsaPrivateKey!),
                 SecurityAlgorithms.RsaSha256
