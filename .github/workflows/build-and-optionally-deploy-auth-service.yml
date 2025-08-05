@@ -1,4 +1,5 @@
 name: Build auth service (optionally deploy to non-prod)
+run-name: Build auth service (optionally deploy to non-prod) - ${{inputs.instance}}
 
 on:
   workflow_dispatch:

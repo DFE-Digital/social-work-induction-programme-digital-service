@@ -1,5 +1,5 @@
 name: Build Notification API (optionally deploy to non-prod)
-
+run-name: Build Notification API (optionally deploy to non-prod) - ${{inputs.instance}}
 on:
   workflow_dispatch:
     inputs:

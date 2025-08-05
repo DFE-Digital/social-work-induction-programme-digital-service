@@ -1,4 +1,5 @@
 name: Build Moodle apps (optionally deploy to non-prod)
+run-name: Build Moodle apps (optionally deploy to non-prod) - ${{inputs.instance}}
 
 on:
   workflow_dispatch:

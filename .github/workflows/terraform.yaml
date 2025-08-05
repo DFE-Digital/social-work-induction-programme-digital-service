@@ -1,4 +1,4 @@
-run-name: "Terraform Deploy - ${{inputs.environment}} (${{inputs.action}})"
+run-name: "Terraform Deploy - ${{inputs.instance}} (${{inputs.action}})"
 name: "Terraform Deploy"
 
 on:
@@ -50,6 +50,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Output Inputs
+        run: echo "${{ toJSON(github.event.inputs) }}"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
