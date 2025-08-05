@@ -80,6 +80,7 @@ public class CreateAccountJourneyService(
         {
             createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
         }
+
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -198,7 +199,7 @@ public class CreateAccountJourneyService(
         return accountLabels;
     }
 
-    public AccountChangeLinks GetAccountChangeLinks(Guid? organisationId)
+    public AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null)
     {
         return new AccountChangeLinks
         {
@@ -227,7 +228,7 @@ public class CreateAccountJourneyService(
         Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
     }
 
-    public async Task<Account> CompleteJourneyAsync(Guid? organisationId)
+    public async Task<Account> CompleteJourneyAsync(Guid? organisationId = null)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 

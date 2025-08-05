@@ -16,14 +16,11 @@ public abstract class CreateAccountJourneyServiceTestBase
 {
     private protected const string CreateAccountSessionKey = "_createAccount";
     private protected AccountBuilder AccountBuilder { get; }
-    private protected AccountDetailsFaker AccountDetailsFaker { get; }
     private protected HttpContext HttpContext { get; }
-    private protected ITempDataDictionary TempData { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
     private protected MockNotificationServiceClient MockNotificationServiceClient { get; }
     private protected MockEmailTemplateOptions MockEmailTemplateOptions { get; }
     private protected MockAuthServiceClient MockAuthServiceClient { get; }
-
     private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; }
 
     private protected CreateAccountJourneyService Sut;
@@ -31,7 +28,6 @@ public abstract class CreateAccountJourneyServiceTestBase
     protected CreateAccountJourneyServiceTestBase()
     {
         AccountBuilder = new();
-        AccountDetailsFaker = new AccountDetailsFaker();
 
         HttpContext = new DefaultHttpContext
         {
@@ -39,7 +35,6 @@ public abstract class CreateAccountJourneyServiceTestBase
             Session = new MockHttpSession()
         };
 
-        TempData = new TempDataDictionary(HttpContext, Mock.Of<ITempDataProvider>());
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
         MockAccountService = new Mock<IAccountService>();

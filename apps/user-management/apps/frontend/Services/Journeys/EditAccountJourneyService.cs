@@ -138,7 +138,7 @@ public class EditAccountJourneyService(
         return updatedAccount;
     }
 
-    public AccountChangeLinks GetAccountChangeLinks(Guid id, Guid? organisationId)
+    public AccountChangeLinks GetAccountChangeLinks(Guid id, Guid? organisationId = null)
     {
         return new AccountChangeLinks
         {

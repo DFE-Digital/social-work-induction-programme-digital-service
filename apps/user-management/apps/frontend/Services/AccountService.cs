@@ -39,7 +39,7 @@ public class AccountService(
         return mapper.MapToBo(person);
     }
 
-    public async Task<Account> CreateAsync(Account account, Guid? organisationId)
+    public async Task<Account> CreateAsync(Account account, Guid? organisationId = null)
     {
         if (
             string.IsNullOrWhiteSpace(account.FirstName)
