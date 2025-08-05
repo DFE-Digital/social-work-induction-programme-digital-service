@@ -15,5 +15,5 @@ public interface IEditAccountJourneyService
     Task SetIsStaffAsync(Guid accountId, bool? isStaff);
     Task ResetEditAccountJourneyModelAsync(Guid accountId);
     Task<Account> CompleteJourneyAsync(Guid accountId);
-    AccountChangeLinks GetAccountChangeLinks(Guid id);
+    AccountChangeLinks GetAccountChangeLinks(Guid id, Guid? organisationId);
 }

@@ -87,7 +87,7 @@ public class ConfirmAccountDetails(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
-        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks();
+        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(OrganisationId);
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
@@ -119,7 +119,7 @@ public class ConfirmAccountDetails(
         if (updatedAccountDetails is null) return NotFound();
 
         BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
-        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
+        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id, OrganisationId);
 
         IsUpdatingAccount = true;
         Id = id;
@@ -163,7 +163,7 @@ public class ConfirmAccountDetails(
             createAccountJourneyService.SetExternalUserId(response.Id);
         }
 
-        await createAccountJourneyService.CompleteJourneyAsync();
+        await createAccountJourneyService.CompleteJourneyAsync(OrganisationId);
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = "New user added";

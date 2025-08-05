@@ -39,7 +39,7 @@ public class AccountService(
         return mapper.MapToBo(person);
     }
 
-    public async Task<Account> CreateAsync(Account account)
+    public async Task<Account> CreateAsync(Account account, Guid? organisationId)
     {
         if (
             string.IsNullOrWhiteSpace(account.FirstName)
@@ -50,7 +50,9 @@ public class AccountService(
             throw new ArgumentException("First name, last name, and email are required");
         }
 
-        var organisationId = authServiceClient.HttpContextService.GetOrganisationId();
+        var organisationIdString = organisationId.HasValue
+            ? organisationId.Value.ToString()
+            : authServiceClient.HttpContextService.GetOrganisationId();
 
         var person = await authServiceClient.Accounts.CreateAsync(
             new CreatePersonRequest
@@ -62,7 +64,7 @@ public class AccountService(
                 SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
                 Roles = account.Types ?? [],
                 Status = account.Status,
-                OrganisationId = new Guid(organisationId),
+                OrganisationId = new Guid(organisationIdString),
                 ExternalUserId = account.ExternalUserId,
                 IsFunded = account.IsFunded,
                 ProgrammeStartDate = account.ProgrammeStartDate,
