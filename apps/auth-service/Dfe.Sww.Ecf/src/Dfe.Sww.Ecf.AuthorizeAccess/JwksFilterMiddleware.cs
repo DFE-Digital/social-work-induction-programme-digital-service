@@ -1,44 +1,36 @@
-using Microsoft.AspNetCore.Http;
-using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 
-public class JwksFilterMiddleware
+namespace Dfe.Sww.Ecf.AuthorizeAccess;
+
+public class JwksFilterMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-    private readonly HashSet<string> _allowedFields;
-
-    public JwksFilterMiddleware(RequestDelegate next)
+    // Define the allowed fields for GovUK OneLogin compatibility
+    private readonly HashSet<string> _allowedFields = new(StringComparer.OrdinalIgnoreCase)
     {
-        _next = next;
+        "kty",
+        "e",
+        "use",
+        "kid",
+        "n"
+    };
 
-        // Define the allowed fields for GovUK OneLogin compatibility
-        _allowedFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "kty",
-            "e", 
-            "use",
-            "kid",
-            "n"
-        };
-    }
+    // Define the allowed fields for GovUK OneLogin compatibility
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Request.Path.Equals("/.well-known/jwks", StringComparison.OrdinalIgnoreCase))
+        if (context.Request.Path.Equals("/.well-known/jwks", StringComparison.OrdinalIgnoreCase) ||
+            context.Request.Path.Equals("/api/keys/onelogin", StringComparison.OrdinalIgnoreCase))
         {
             // Capture the original response
             var originalBody = context.Response.Body;
             using var responseBody = new MemoryStream();
             context.Response.Body = responseBody;
 
-            await _next(context);
+            await next(context);
 
-            if (context.Response.StatusCode == 200 && 
+            if (context.Response.StatusCode == 200 &&
                 context.Response.ContentType?.Contains("application/json") == true)
             {
                 responseBody.Seek(0, SeekOrigin.Begin);
@@ -50,16 +42,18 @@ public class JwksFilterMiddleware
                 {
                     foreach (var key in keys)
                     {
-                        if (key is JsonObject keyObj)
+                        if (key is not JsonObject keyObj)
                         {
-                            // Get all property names and remove those not in the allowed list
-                            var propertyNames = keyObj.Select(kvp => kvp.Key).ToList();
-                            foreach (var propertyName in propertyNames)
+                            continue;
+                        }
+
+                        // Get all property names and remove those not in the allowed list
+                        var propertyNames = keyObj.Select(kvp => kvp.Key).ToList();
+                        foreach (var propertyName in propertyNames)
+                        {
+                            if (!_allowedFields.Contains(propertyName))
                             {
-                                if (!_allowedFields.Contains(propertyName))
-                                {
-                                    keyObj.Remove(propertyName);
-                                }
+                                keyObj.Remove(propertyName);
                             }
                         }
                     }
@@ -83,7 +77,7 @@ public class JwksFilterMiddleware
         }
         else
         {
-            await _next(context);
+            await next(context);
         }
     }
 }
