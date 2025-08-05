@@ -99,6 +99,10 @@ if [[ "$INSTALL_ACTIONS" == *"config"* ]]; then
     echo "Curl allowed ports:"
     moosh $MOOSH_COMMAND_LINE_ARGS config-set curlsecurityallowedport ""
 
+    echo "Configuring additional authentication settings ..."
+    echo "Allow extended characters in usernames:"
+    moosh $MOOSH_COMMAND_LINE_ARGS config-set extendedusernamechars 1
+
     echo "Clearing cache to apply all settings changes..."
     moosh $MOOSH_COMMAND_LINE_ARGS cache-clear
 fi
