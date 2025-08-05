@@ -174,7 +174,7 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
 
         TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
         TempData["NotificationHeader"].Should().Be($"{organisation.OrganisationName} has been updated");
-        TempData["NotificationMessage"].Should().Be($"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}");
+        TempData["NotificationMessage"].Should().BeNull();
 
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
