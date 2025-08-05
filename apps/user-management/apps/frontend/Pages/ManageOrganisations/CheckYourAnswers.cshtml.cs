@@ -79,7 +79,6 @@ public class CheckYourAnswers(
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
-        TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
 
         return Redirect(linkGenerator.ManageOrganisations.Index());
     }
