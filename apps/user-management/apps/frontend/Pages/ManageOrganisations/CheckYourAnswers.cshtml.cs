@@ -83,14 +83,32 @@ public class CheckYourAnswers(
         return Redirect(linkGenerator.ManageOrganisations.Index());
     }
 
+    public async Task<IActionResult> OnPostReplaceAsync(Guid id)
+    {
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        if (organisation is null || primaryCoordinator is null)
+            return BadRequest();
+
+        await editOrganisationJourneyService.CompleteJourneyAsync(id);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
+        TempData["NotificationMessage"] = $"An invitation email has been sent to {primaryCoordinator.FullName}, {primaryCoordinator.Email}";
+
+        return Redirect(linkGenerator.ManageOrganisations.Index());
+    }
+
     private async Task GetEditReplaceDataAsync(Guid id)
     {
         BackLinkPath = IsReplace
-            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinator(id)
+            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id)
             : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
         Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
         ChangeLocalAuthorityCodeLink = null;
-        ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
+        ChangePrimaryCoordinatorLink = IsReplace
+            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id)
+            : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
     }
 }
