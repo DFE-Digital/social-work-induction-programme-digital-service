@@ -15,23 +15,23 @@ public static class KeyVaultCertificateExtensions
     {
         KeyVaultCertificateWithPolicy certWithPolicy =
             await certClient.GetCertificateAsync(certificateName)
-                            .ConfigureAwait(false);
+                .ConfigureAwait(false);
 
         var secretClient = new SecretClient(
             certClient.VaultUri,
             credential ?? new DefaultAzureCredential());
 
-        string secretName = certWithPolicy.Name!;
-        string secretVersion = certWithPolicy.Properties.Version!;
+        var secretName = certWithPolicy.Name!;
+        var secretVersion = certWithPolicy.Properties.Version!;
 
-        KeyVaultSecret secret = 
+        KeyVaultSecret secret =
             await secretClient.GetSecretAsync(secretName, secretVersion)
-            .ConfigureAwait(false);
+                .ConfigureAwait(false);
 
-        byte[] pfxBytes = Convert.FromBase64String(secret.Value);
-        
+        var pfxBytes = Convert.FromBase64String(secret.Value);
+
         return new X509Certificate2(
-            pfxBytes,                      
+            pfxBytes,
             (string?)null,
             X509KeyStorageFlags.EphemeralKeySet
         );

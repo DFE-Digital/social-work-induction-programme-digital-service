@@ -20,8 +20,7 @@ public class JwksFilterMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Request.Path.Equals("/.well-known/jwks", StringComparison.OrdinalIgnoreCase) ||
-            context.Request.Path.Equals("/api/keys/onelogin", StringComparison.OrdinalIgnoreCase))
+        if (context.Request.Path.Equals("/.well-known/jwks", StringComparison.OrdinalIgnoreCase))
         {
             // Capture the original response
             var originalBody = context.Response.Body;

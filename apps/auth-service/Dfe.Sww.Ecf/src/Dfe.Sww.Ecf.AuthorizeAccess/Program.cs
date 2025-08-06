@@ -61,13 +61,11 @@ builder.Services
     .AddSingleton(oneLoginConfig)
     .AddSingleton(featureFlags);
 
-SecretClient? secretClient = null;
 CertificateClient? certificateClient = null;
 if (featureFlags.EnableOneLoginCertificateRotation || featureFlags.EnableOpenIdCertificates)
 {
-    logger.LogInformation("Registering Azure KeyVault as secret client for certificates");
     var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
-    secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
+    var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
     certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
     builder.Services
         .AddSingleton(_ => secretClient)
@@ -171,23 +169,23 @@ builder
         options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
         options.ClientAssertionJwtAudience = oneLoginConfig.Url + "/token";
 
-        if (oneLoginConfig.PrivateKeyPem is null && featureFlags.EnableOneLoginCertificateRotation &&
-            secretClient is not null)
+        if (featureFlags.EnableOneLoginCertificateRotation && certificateClient is not null)
         {
-            logger.LogInformation("Using secret client to get certificate and private key for OneLogin");
-            KeyVaultSecret pfxSecret = secretClient
-                .GetSecret(oneLoginConfig.CertificateName);
-            var pfxBytes = Convert.FromBase64String(pfxSecret.Value);
-            var certificate = new X509Certificate2(
-                pfxBytes,
-                (string?)null,
-                X509KeyStorageFlags.EphemeralKeySet
-            );
-            var rsaPrivateKey = certificate.GetRSAPrivateKey();
-            logger.LogInformation("Public key for OneLogin certificate: {publicKey}",
-                certificate.GetRSAPublicKey()?.ExportRSAPublicKeyPem());
+            logger.LogInformation("Using certificate client to get certificate for OneLogin");
+            var signingCert = certificateClient
+                .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+            var rsaPrivateKey = signingCert.GetRSAPrivateKey();
+            if (rsaPrivateKey is null)
+            {
+                logger.LogError("Unable to get private key from certificate for OneLogin");
+                throw new InvalidOperationException("Unable to get private key from certificate for OneLogin");
+            }
+
             options.ClientAuthenticationCredentials = new SigningCredentials(
-                new RsaSecurityKey(rsaPrivateKey!),
+                new RsaSecurityKey(rsaPrivateKey) { KeyId = signingCert.Thumbprint },
                 SecurityAlgorithms.RsaSha256
             );
         }
