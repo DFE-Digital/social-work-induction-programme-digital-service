@@ -9,6 +9,4 @@ public sealed class OneLoginOptions
     public string? ClientId { get; init; }
 
     public string? PrivateKeyPem { get; init; }
-
-    public string? CertificateName { get; init; }
 }

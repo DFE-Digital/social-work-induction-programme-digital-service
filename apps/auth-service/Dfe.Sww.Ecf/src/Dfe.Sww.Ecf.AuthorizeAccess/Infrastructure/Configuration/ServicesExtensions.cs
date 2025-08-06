@@ -109,6 +109,7 @@ public static class ServicesExtensions
         var serviceProvider = builder.Services.BuildServiceProvider();
         var oneLoginConfig = serviceProvider.GetRequiredService<IOptions<OneLoginOptions>>().Value;
         var featureFlags = serviceProvider.GetRequiredService<IOptions<FeatureFlagOptions>>().Value;
+        var oidcConfiguration = serviceProvider.GetRequiredService<IOptions<OidcOptions>>().Value;
         var certificateClient = serviceProvider.GetService<CertificateClient>();
 
         builder
@@ -187,8 +188,14 @@ public static class ServicesExtensions
                 if (featureFlags.EnableOneLoginCertificateRotation && certificateClient is not null)
                 {
                     logger.LogInformation("Using certificate client to get certificate for OneLogin");
+                    if (oidcConfiguration.SigningCertificateName is null)
+                    {
+                        throw new InvalidConfigurationException(
+                            "Oidc:SigningCertificateName is required for OneLogin certificate rotation");
+                    }
+
                     var signingCert = certificateClient
-                        .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
+                        .GetX509CertificateAsync(oidcConfiguration.SigningCertificateName)
                         .ConfigureAwait(false)
                         .GetAwaiter()
                         .GetResult();
