@@ -62,7 +62,7 @@
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell" data-test-class="account-name">
                             <a title="View details of @account.FullName" class="govuk-link govuk-link--no-visited-state"
-                               href="@LinkGenerator.ManageAccount.ViewAccountDetailsNew(account.Id, Model.Organisation?.OrganisationId)">
+                               href="@LinkGenerator.ManageAccount.ViewAccountDetailsNew(account.Id, Model.OrganisationId)">
                                 @account.FullName
                             </a>
                         </td>
@@ -83,7 +83,7 @@
                     @if (paging.Links?["previous"] != null && paging.Page != 1)
                     {
                         var prev = paging.Links["previous"];
-                        <govuk-pagination-previous href="@LinkGenerator.ManageAccount.Index(Model.Organisation?.OrganisationId, prev.Offset, prev.PageSize)"/>
+                        <govuk-pagination-previous href="@LinkGenerator.ManageAccount.Index(Model.OrganisationId, prev.Offset, prev.PageSize)"/>
                     }
 
                     @for (var i = 1; i < paging?.PageCount + 1; i++)
@@ -93,7 +93,7 @@
 
                         <govuk-pagination-item
                             current=@(currentPage == pageNo)
-                            href=@LinkGenerator.ManageAccount.Index(Model.Organisation?.OrganisationId, (pageNo - 1) * paging?.PageSize, paging?.PageSize)>
+                            href=@LinkGenerator.ManageAccount.Index(Model.OrganisationId, (pageNo - 1) * paging?.PageSize, paging?.PageSize)>
                             @pageNo
                         </govuk-pagination-item>
                     }
@@ -101,7 +101,7 @@
                     @if (paging?.Links?["next"] != null && paging.PageCount != paging.Page)
                     {
                         var next = paging.Links["next"];
-                        <govuk-pagination-next href="@LinkGenerator.ManageAccount.Index(Model.Organisation?.OrganisationId, next.Offset, next.PageSize)"/>
+                        <govuk-pagination-next href="@LinkGenerator.ManageAccount.Index(Model.OrganisationId, next.Offset, next.PageSize)"/>
                     }
                 </govuk-pagination>
             }
