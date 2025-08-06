@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -15,7 +13,7 @@ public class SelectAccountType(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<SelectAccountType> validator
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     [BindProperty]
     public bool? IsStaff { get; set; }
@@ -27,8 +25,8 @@ public class SelectAccountType(
     private void SetBackLinkPath()
     {
         BackLinkPath = FromChangeLink
-            ? linkGenerator.ManageAccount.ConfirmAccountDetails()
-            : linkGenerator.ManageAccount.Index();
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            : linkGenerator.ManageAccount.Index(OrganisationId);
     }
 
     private string GetRedirectPath()
@@ -37,23 +35,23 @@ public class SelectAccountType(
 
         if (IsStaff == true)
         {
-            return FromChangeLink ? linkGenerator.ManageAccount.SelectUseCaseChange() : linkGenerator.ManageAccount.SelectUseCase();
+            return FromChangeLink ? linkGenerator.ManageAccount.SelectUseCaseChange(OrganisationId) : linkGenerator.ManageAccount.SelectUseCase(OrganisationId);
         }
 
         if (FromChangeLink)
         {
             if (createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland() is null)
             {
-                return linkGenerator.ManageAccount.EligibilityInformation();
+                return linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
             }
             if (details?.SocialWorkEnglandNumber is null)
             {
-                return linkGenerator.ManageAccount.AddAccountDetailsChange();
+                return linkGenerator.ManageAccount.AddAccountDetailsChange(OrganisationId);
             }
-            return linkGenerator.ManageAccount.ConfirmAccountDetails();
+            return linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId);
         }
 
-        return linkGenerator.ManageAccount.EligibilityInformation();
+        return linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
     }
 
     private void SetHandler()
@@ -65,7 +63,7 @@ public class SelectAccountType(
     {
         SetHandler();
         createAccountJourneyService.ResetCreateAccountJourneyModel();
-        return Redirect(linkGenerator.ManageAccount.SelectAccountType());
+        return Redirect(linkGenerator.ManageAccount.SelectAccountType(OrganisationId));
     }
 
     public PageResult OnGet()

@@ -1,4 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -13,13 +12,13 @@ public class EligibilityAgencyWorker(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilityAgencyWorker> validator)
-    : BasePageModel
+    : ManageAccountsBasePageModel
 {
     [BindProperty] public bool? IsAgencyWorker { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.EligibilityStatutoryWork();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
         IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
         return Page();
     }
@@ -30,7 +29,7 @@ public class EligibilityAgencyWorker(
         if (IsAgencyWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityStatutoryWork();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
             return Page();
         }
 
@@ -39,10 +38,10 @@ public class EligibilityAgencyWorker(
         if (IsAgencyWorker is true)
         {
             createAccountJourneyService.SetIsRecentlyQualified(null);
-            return Redirect(linkGenerator.ManageAccount.EligibilityFundingNotAvailable());
+            return Redirect(linkGenerator.ManageAccount.EligibilityFundingNotAvailable(OrganisationId));
         }
 
-        return Redirect(linkGenerator.ManageAccount.EligibilityQualification());
+        return Redirect(linkGenerator.ManageAccount.EligibilityQualification(OrganisationId));
     }
 
     public PageResult OnGetChange()

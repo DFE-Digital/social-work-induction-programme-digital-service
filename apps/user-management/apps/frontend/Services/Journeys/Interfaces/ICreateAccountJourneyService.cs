@@ -47,7 +47,7 @@ public interface ICreateAccountJourneyService
 
     DateOnly? GetProgrammeEndDate();
 
-    Task<Account> CompleteJourneyAsync();
+    Task<Account> CompleteJourneyAsync(Guid? organisationId = null);
 
     void ResetCreateAccountJourneyModel();
 
@@ -57,7 +57,7 @@ public interface ICreateAccountJourneyService
 
     AccountLabels? GetAccountLabels();
 
-    AccountChangeLinks GetAccountChangeLinks();
+    AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null);
 
     Task SendInvitationEmailAsync(Account account);
 }

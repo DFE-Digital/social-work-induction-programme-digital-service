@@ -5,7 +5,7 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 
 public interface IAccountsOperations
 {
-    Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request);
+    Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request, Guid? organisationId = null);
 
     Task<Person?> GetByIdAsync(Guid guid);
 

@@ -60,7 +60,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetails())
             .Returns(expectedAccountDetails);
         MockCreateAccountJourneyService
-            .Setup(x => x.GetAccountChangeLinks())
+            .Setup(x => x.GetAccountChangeLinks(null))
             .Returns(expectedChangeLinks);
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountTypes())
@@ -104,7 +104,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(null), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -130,7 +130,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetailsAsync(account.Id))
             .ReturnsAsync(updatedAccountDetails);
 
-        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks(account.Id)).Returns(expectedChangeLinks);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountChangeLinks(account.Id, null)).Returns(expectedChangeLinks);
 
         // Act
         var result = await Sut.OnGetUpdateAsync(account.Id);
@@ -149,7 +149,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.ChangeDetailsLinks.Should().Be(expectedChangeLinks);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(account.Id, null), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -164,7 +164,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetails())
             .Returns(updatedAccountDetails);
 
-        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync());
+        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync(null));
 
         var createUserRequest = new CreateMoodleUserRequest
         {
@@ -198,7 +198,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(null), Times.Once);
         MockMoodleServiceClient.Verify(
             x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
             Times.Once
@@ -230,7 +230,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetails())
             .Returns(updatedAccountDetails);
 
-        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync());
+        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync(null));
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -245,7 +245,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(null), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(It.IsAny<int>()), Times.Never);
         MockMoodleServiceClient.VerifyNoOtherCalls();
         VerifyAllNoOtherCalls();

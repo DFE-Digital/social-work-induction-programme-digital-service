@@ -40,7 +40,7 @@ public class GetAllShould : AccountServiceTestBase
         MockClient.SetupMockHttpContextAccessorWithOrganisationId();
 
         MockClient
-            .Setup(x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)))
+            .Setup(x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest), null))
             .ReturnsAsync(clientResponse);
 
         // Act
@@ -52,7 +52,7 @@ public class GetAllShould : AccountServiceTestBase
         response.Should().BeEquivalentTo(paginationResponse);
 
         MockClient.Verify(
-            x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest)),
+            x => x.Accounts.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest), null),
             Times.Once
         );
         VerifyAllNoOtherCalls();

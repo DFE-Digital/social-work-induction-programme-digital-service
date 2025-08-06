@@ -13,13 +13,13 @@ public class EligibilitySocialWorkEngland(
     ICreateAccountJourneyService createAccountJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilitySocialWorkEngland> validator)
-    : BasePageModel
+    : ManageAccountsBasePageModel
 {
     [BindProperty] public bool? IsRegisteredWithSocialWorkEngland { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.EligibilityInformation();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         return Page();
     }
@@ -30,7 +30,7 @@ public class EligibilitySocialWorkEngland(
         if (IsRegisteredWithSocialWorkEngland is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation();
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
             return Page();
         }
 
@@ -39,13 +39,13 @@ public class EligibilitySocialWorkEngland(
         {
             if (IsRegisteredWithSocialWorkEngland == true)
             {
-                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails());
+                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId));
             }
-            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropoutChange());
+            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropoutChange(OrganisationId));
         }
         return Redirect(IsRegisteredWithSocialWorkEngland is false
-            ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropout()
-            : linkGenerator.ManageAccount.EligibilityStatutoryWork());
+            ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropout(OrganisationId)
+            : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId));
     }
 
     public PageResult OnGetChange()

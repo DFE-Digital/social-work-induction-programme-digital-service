@@ -1,14 +1,16 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class Index(IAccountService accountService) : BasePageModel
+public class Index(IAccountService accountService, IOrganisationService organisationService, EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     [FromQuery]
     public int Offset { get; set; } = 0;
@@ -20,10 +22,19 @@ public class Index(IAccountService accountService) : BasePageModel
 
     public PaginationMetaData? Pagination { get; set; }
 
+    public Organisation? Organisation { get; set; }
+
     public async Task<PageResult> OnGetAsync()
     {
+        if (User.IsInRole(nameof(RoleType.Administrator)) && OrganisationId.HasValue)
+        {
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
+            Organisation = await organisationService.GetByIdAsync(OrganisationId.Value);
+        }
+
         var paginatedResults = await accountService.GetAllAsync(
-            new PaginationRequest(Offset, PageSize)
+            new PaginationRequest(Offset, PageSize),
+            OrganisationId
         );
 
         Accounts = paginatedResults.Records.ToList();

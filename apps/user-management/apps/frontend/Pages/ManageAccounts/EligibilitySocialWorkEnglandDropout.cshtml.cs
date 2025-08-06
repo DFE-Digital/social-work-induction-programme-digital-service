@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class EligibilitySocialWorkEnglandDropout(EcfLinkGenerator linkGenerator) : BasePageModel
+public class EligibilitySocialWorkEnglandDropout(EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange() : linkGenerator.ManageAccount.EligibilitySocialWorkEngland();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(OrganisationId) : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
         return Page();
     }
 

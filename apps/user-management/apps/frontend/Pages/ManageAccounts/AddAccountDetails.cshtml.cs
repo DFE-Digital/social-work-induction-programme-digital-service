@@ -15,7 +15,7 @@ public class AddAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IValidator<AccountDetails> validator,
     EcfLinkGenerator linkGenerator
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     /// <summary>
     /// First Name
@@ -59,10 +59,10 @@ public class AddAccountDetails(
     private void SetBackLinkPath(bool fromConfirmPage = false)
     {
         BackLinkPath ??= fromConfirmPage
-            ? linkGenerator.ManageAccount.ConfirmAccountDetails()
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : IsStaff
-                ? linkGenerator.ManageAccount.SelectUseCase()
-                : linkGenerator.ManageAccount.SelectAccountType();
+                ? linkGenerator.ManageAccount.SelectUseCase(OrganisationId)
+                : linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
     }
 
     public PageResult OnGet()
@@ -108,7 +108,9 @@ public class AddAccountDetails(
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect((IsStaff || FromChangeLink) ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.SocialWorkerProgrammeDates());
+        return Redirect((IsStaff || FromChangeLink)
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            : linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId));
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

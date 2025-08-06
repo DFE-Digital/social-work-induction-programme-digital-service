@@ -8,7 +8,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <form method="post" data-test-id="add-user-form">
+        <form method="post" asp-route-OrganisationId="@Model.OrganisationId" data-test-id="add-user-form">
             <govuk-fieldset>
                 <govuk-fieldset-legend is-page-heading="true" class="govuk-fieldset__legend--l">Enter their details</govuk-fieldset-legend>
 

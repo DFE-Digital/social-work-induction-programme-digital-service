@@ -20,7 +20,7 @@ public class ConfirmAccountDetails(
     IMoodleServiceClient moodleServiceClient,
     EcfLinkGenerator linkGenerator,
     FeatureFlags featureFlags
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
 
@@ -86,8 +86,8 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates();
-        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks();
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
+        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(OrganisationId);
 
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
@@ -118,8 +118,8 @@ public class ConfirmAccountDetails(
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (updatedAccountDetails is null) return NotFound();
 
-        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id);
-        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id);
+        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
+        ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id, OrganisationId);
 
         IsUpdatingAccount = true;
         Id = id;
@@ -163,13 +163,13 @@ public class ConfirmAccountDetails(
             createAccountJourneyService.SetExternalUserId(response.Id);
         }
 
-        await createAccountJourneyService.CompleteJourneyAsync();
+        await createAccountJourneyService.CompleteJourneyAsync(OrganisationId);
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = "New user added";
         TempData["NotificationMessage"] = $"An invitation to register has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ManageAccount.Index());
+        return Redirect(linkGenerator.ManageAccount.Index(OrganisationId));
     }
 
     public async Task<IActionResult> OnPostUpdateAsync(Guid id)
@@ -185,6 +185,6 @@ public class ConfirmAccountDetails(
         TempData["NotificationHeader"] = "User details updated";
         TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
-        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id));
+        return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId));
     }
 }

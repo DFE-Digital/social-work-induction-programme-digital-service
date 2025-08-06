@@ -5,10 +5,10 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 
 public interface IAccountService
 {
-    public Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request);
+    public Task<PaginationResult<Account>> GetAllAsync(PaginationRequest request, Guid? organisationId = null);
 
     public Task<Account?> GetByIdAsync(Guid id);
 
-    public Task<Account> CreateAsync(Account account);
+    public Task<Account> CreateAsync(Account account, Guid? organisationId = null);
     Task<Account> UpdateAsync(Account updatedAccount);
 }

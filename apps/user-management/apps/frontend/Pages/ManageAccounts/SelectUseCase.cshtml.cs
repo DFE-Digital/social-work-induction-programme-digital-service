@@ -15,18 +15,18 @@ public class SelectUseCase(
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<SelectUseCase> validator,
     EcfLinkGenerator linkGenerator
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     [BindProperty] public IList<AccountType>? SelectedAccountTypes { get; set; }
     [BindProperty] public Guid? Id { get; set; }
 
     public async Task<PageResult> OnGetAsync(Guid? id = null)
     {
-        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
+        BackLinkPath = linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
 
         if (id.HasValue)
         {
-            BackLinkPath = linkGenerator.ManageAccount.ViewAccountDetails(id.Value);
+            BackLinkPath = linkGenerator.ManageAccount.ViewAccountDetails(id.Value, OrganisationId);
             Id = id.Value;
             var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id.Value);
             SelectedAccountTypes = accountDetails?.Types;
@@ -44,7 +44,7 @@ public class SelectUseCase(
         if (SelectedAccountTypes is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.SelectAccountType();
+            BackLinkPath = linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
             return Page();
         }
 
@@ -59,7 +59,9 @@ public class SelectUseCase(
         }
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
-        return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber ? linkGenerator.ManageAccount.ConfirmAccountDetails() : linkGenerator.ManageAccount.AddAccountDetails());
+        return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId));
     }
 
     private async Task<IActionResult> OnPostUpdateAsync(Guid id, bool captureSocialWorkEnglandNumber)
@@ -71,7 +73,9 @@ public class SelectUseCase(
 
         await editAccountJourneyService.SetAccountTypesAsync(Id.Value, SelectedAccountTypes);
 
-        return Redirect(captureSocialWorkEnglandNumber ? linkGenerator.ManageAccount.EditAccountDetails(Id.Value) : linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value));
+        return Redirect(captureSocialWorkEnglandNumber
+            ? linkGenerator.ManageAccount.EditAccountDetails(Id.Value, OrganisationId)
+            : linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value, OrganisationId));
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

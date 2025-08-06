@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class EligibilityStatutoryWorkDropout(EcfLinkGenerator linkGenerator) : BasePageModel
+public class EligibilityStatutoryWorkDropout(EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityStatutoryWorkChange() : linkGenerator.ManageAccount.EligibilityStatutoryWork();
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityStatutoryWorkChange(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
         return Page();
     }
 

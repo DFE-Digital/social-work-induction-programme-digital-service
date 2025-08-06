@@ -14,7 +14,7 @@ public class EditAccountDetails(
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<AccountDetails> validator,
     EcfLinkGenerator linkGenerator
-) : BasePageModel
+) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
 
@@ -48,7 +48,7 @@ public class EditAccountDetails(
             return NotFound();
         }
 
-        BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id);
+        BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId);
         Id = id;
 
         FirstName = accountDetails.FirstName;
@@ -93,12 +93,12 @@ public class EditAccountDetails(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id);
+            BackLinkPath ??= linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId);
             return Page();
         }
 
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
-        return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(id));
+        return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(id, OrganisationId));
     }
 }

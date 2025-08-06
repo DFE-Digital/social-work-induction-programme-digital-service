@@ -42,7 +42,7 @@
                     @if (!Model.IsSocialWorker)
                     {
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SelectUseCaseChange(Model.Account.Id)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SelectUseCaseChange(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -52,7 +52,7 @@
                     <govuk-summary-list-row-key>First name</govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Html.DisplayFor(model => model.Account.FirstName)</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id)"
+                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id, Model.OrganisationId)"
                                                        visually-hidden-text="account details">
                             Change
                         </govuk-summary-list-row-action>
@@ -64,7 +64,7 @@
                         <govuk-summary-list-row-key>Middle names</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.MiddleNames</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id)"
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id, Model.OrganisationId)"
                                                            visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
@@ -75,7 +75,7 @@
                     <govuk-summary-list-row-key>Last name</govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Model.Account.LastName</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id)"
+                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id, Model.OrganisationId)"
                                                        visually-hidden-text="account details">
                             Change
                         </govuk-summary-list-row-action>
@@ -85,7 +85,7 @@
                     <govuk-summary-list-row-key>Email address</govuk-summary-list-row-key>
                     <govuk-summary-list-row-value>@Model.Account.Email</govuk-summary-list-row-value>
                     <govuk-summary-list-row-actions>
-                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id)"
+                        <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id, Model.OrganisationId)"
                                                        visually-hidden-text="account details">
                             Change
                         </govuk-summary-list-row-action>
@@ -98,7 +98,7 @@
                         <govuk-summary-list-row-key>SWE registration number</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.SocialWorkEnglandNumber</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.EditAccountDetails(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -110,7 +110,7 @@
                         <govuk-summary-list-row-key>Programme start date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeStartDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -119,7 +119,7 @@
                         <govuk-summary-list-row-key>Expected programme end date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeEndDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>

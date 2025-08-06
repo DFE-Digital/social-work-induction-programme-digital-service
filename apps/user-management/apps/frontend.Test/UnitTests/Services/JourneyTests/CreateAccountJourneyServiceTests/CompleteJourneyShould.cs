@@ -27,7 +27,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         );
 
         var expected = account with { Id = Guid.NewGuid() };
-        MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>())).ReturnsAsync(expected);
+        MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
 
         const string expectedLinkingToken = "LinkingTokenString";
         MockAuthServiceClient
@@ -80,7 +80,8 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
                         && acc.Types != null
                         && acc.Types.SequenceEqual(account.Types!)
                         && acc.SocialWorkEnglandNumber == account.SocialWorkEnglandNumber
-                    )
+                    ),
+                    It.IsAny<Guid?>()
                 ),
             Times.Once
         );
@@ -114,7 +115,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         );
 
         var expected = account with { Id = Guid.NewGuid() };
-        MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>())).ReturnsAsync(expected);
+        MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
 
         const string expectedLinkingToken = "LinkingTokenString";
         MockAuthServiceClient
@@ -145,7 +146,8 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
                         && acc.Types != null
                         && acc.Types.SequenceEqual(account.Types!)
                         && acc.SocialWorkEnglandNumber == account.SocialWorkEnglandNumber
-                    )
+                    ),
+                    It.IsAny<Guid?>()
                 ),
             Times.Once
         );

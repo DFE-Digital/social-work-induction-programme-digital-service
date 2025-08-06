@@ -80,6 +80,7 @@ public class CreateAccountJourneyService(
         {
             createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
         }
+
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
@@ -198,22 +199,22 @@ public class CreateAccountJourneyService(
         return accountLabels;
     }
 
-    public AccountChangeLinks GetAccountChangeLinks()
+    public AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null)
     {
         return new AccountChangeLinks
         {
-            UserTypeChangeLink = linkGenerator.ManageAccount.SelectAccountTypeChange(),
-            AccountTypesChangeLink = linkGenerator.ManageAccount.SelectUseCaseChange(),
-            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(),
-            StatutoryWorkerChangeLink = linkGenerator.ManageAccount.EligibilityStatutoryWorkChange(),
-            AgencyWorkerChangeLink = linkGenerator.ManageAccount.EligibilityAgencyWorkerChange(),
-            RecentlyQualifiedChangeLink = linkGenerator.ManageAccount.EligibilityQualificationChange(),
-            FirstNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeFirstName(),
-            MiddleNamesChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeMiddleNames(),
-            LastNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeLastName(),
-            EmailChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeEmail(),
-            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates()
+            UserTypeChangeLink = linkGenerator.ManageAccount.SelectAccountTypeChange(organisationId),
+            AccountTypesChangeLink = linkGenerator.ManageAccount.SelectUseCaseChange(organisationId),
+            RegisteredWithSocialWorkEnglandChangeLink = linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(organisationId),
+            StatutoryWorkerChangeLink = linkGenerator.ManageAccount.EligibilityStatutoryWorkChange(organisationId),
+            AgencyWorkerChangeLink = linkGenerator.ManageAccount.EligibilityAgencyWorkerChange(organisationId),
+            RecentlyQualifiedChangeLink = linkGenerator.ManageAccount.EligibilityQualificationChange(organisationId),
+            FirstNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeFirstName(organisationId),
+            MiddleNamesChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeMiddleNames(organisationId),
+            LastNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeLastName(organisationId),
+            EmailChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeEmail(organisationId),
+            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(organisationId)
         };
     }
 
@@ -227,13 +228,13 @@ public class CreateAccountJourneyService(
         Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
     }
 
-    public async Task<Account> CompleteJourneyAsync()
+    public async Task<Account> CompleteJourneyAsync(Guid? organisationId = null)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
 
-        account = await accountService.CreateAsync(account);
+        account = await accountService.CreateAsync(account, organisationId);
 
         await SendInvitationEmailAsync(account);
 
