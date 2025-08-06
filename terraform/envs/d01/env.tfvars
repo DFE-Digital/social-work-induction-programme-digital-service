@@ -36,7 +36,7 @@ auth_service_app_settings = {
   "DATABASESEED__ROLEID"                       = 800
   "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
-one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
+one_login_client_id = "EsYDRVMBVfTviM3KcsszKUrL_Fw"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
