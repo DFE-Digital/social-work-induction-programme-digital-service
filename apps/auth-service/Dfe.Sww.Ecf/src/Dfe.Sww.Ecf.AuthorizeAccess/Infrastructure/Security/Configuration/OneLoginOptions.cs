@@ -1,6 +1,6 @@
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 
-public sealed class OneLoginConfiguration
+public sealed class OneLoginOptions
 {
     public const string ConfigurationKey = "OneLogin";
 

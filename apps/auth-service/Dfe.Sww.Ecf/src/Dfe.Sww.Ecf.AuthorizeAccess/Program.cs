@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
@@ -16,7 +13,6 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Logging;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security.Configuration;
 using Dfe.Sww.Ecf.AuthorizeAccess.TagHelpers;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
 using Dfe.Sww.Ecf.SupportUi.Infrastructure.FormFlow;
@@ -24,52 +20,53 @@ using Dfe.Sww.Ecf.UiCommon.Filters;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.Middleware;
 using GovUk.Frontend.AspNetCore;
-using GovUk.OneLogin.AspNetCore;
 using JetBrains.Annotations;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Joonasw.AspNetCore.SecurityHeaders.Csp;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.Configuration;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<Program>();
 
 logger.LogInformation("Starting auth-service application");
 
-builder.Services.Configure<AppInfo>(
-    builder.Configuration.GetRequiredSection("AppInfo")
-);
+builder.Services.AddOptions<AuthorizeAccessOptions>().Bind(builder.Configuration).ValidateDataAnnotations()
+    .ValidateOnStart();
+var applicationOptions = builder.Configuration.Get<AuthorizeAccessOptions>();
+if (applicationOptions is null)
+{
+    throw new InvalidConfigurationException("Failed to parse application configuration.");
+}
 
-var featureFlags = builder.Configuration
-    .GetRequiredSection("FeatureFlags")
-    .Get<FeatureFlags>()!;
+builder.Services.AddOptions<AppInfo>().Bind(builder.Configuration.GetRequiredSection("AppInfo"));
 
-var oneLoginSection = builder.Configuration.GetRequiredSection("OneLogin");
-builder.Services.Configure<OneLoginConfiguration>(oneLoginSection);
-var oneLoginConfig = oneLoginSection.Get<OneLoginConfiguration>()!;
+var featureFlagsSection = builder.Configuration.GetRequiredSection(FeatureFlagOptions.ConfigurationKey);
+builder.Services.AddOptions<FeatureFlagOptions>().Bind(featureFlagsSection);
+var featureFlags = featureFlagsSection.Get<FeatureFlagOptions>();
 
-builder.Services
-    .AddSingleton(oneLoginConfig)
-    .AddSingleton(featureFlags);
+if (featureFlags is null)
+{
+    throw new InvalidConfigurationException("Failed to parse feature flags configuration.");
+}
 
-CertificateClient? certificateClient = null;
 if (featureFlags.EnableOneLoginCertificateRotation || featureFlags.EnableOpenIdCertificates)
 {
-    var keyVaultUri = new Uri(builder.Configuration.GetRequiredValue("KeyVaultUri"));
-    var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
-    certificateClient = new CertificateClient(keyVaultUri, new DefaultAzureCredential());
+    if (applicationOptions.KeyVaultUri is null)
+    {
+        throw new InvalidConfigurationException(
+            "KeyVaultUri must be set if one of the certificate rotation features are enabled.");
+    }
+
+    var keyVaultUri = new Uri(applicationOptions.KeyVaultUri);
     builder.Services
-        .AddSingleton(_ => secretClient)
-        .AddSingleton(_ => certificateClient);
+        .AddSingleton(_ => new SecretClient(keyVaultUri, new DefaultAzureCredential()))
+        .AddSingleton(_ => new CertificateClient(keyVaultUri, new DefaultAzureCredential()));
 }
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
@@ -79,232 +76,15 @@ builder.Configuration.AddEnvironmentVariables();
 builder.AddServiceDefaults();
 
 builder.ConfigureLogging();
-var oidcConfigurationSection = builder.Configuration.GetRequiredSection(
-    OidcConfiguration.ConfigurationKey
-);
-var oidcConfiguration = oidcConfigurationSection.Get<OidcConfiguration>();
-if (oidcConfiguration is null)
-{
-    throw new InvalidConfigurationException("Missing OIDC configuration.");
-}
-
-if (oidcConfiguration.Issuer is null)
-{
-    throw new InvalidConfigurationException("OIDC Issuer not configured.");
-}
-
-builder.Services.Configure<OidcConfiguration>(oidcConfigurationSection);
+builder.Services.AddOptions<OidcOptions>().Bind(builder.Configuration.GetRequiredSection(
+    OidcOptions.ConfigurationKey
+));
 
 builder.Services.AddGovUkFrontend();
 builder.Services.AddCsp();
 
-builder
-    .Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = AuthenticationSchemes.MatchToEcfAccount;
-        options.DefaultChallengeScheme = AuthenticationSchemes.MatchToEcfAccount;
-
-        options.AddScheme(
-            AuthenticationSchemes.FormFlowJourney,
-            scheme => { scheme.HandlerType = typeof(FormFlowJourneySignInHandler); }
-        );
-
-        options.AddScheme(
-            AuthenticationSchemes.MatchToEcfAccount,
-            scheme => { scheme.HandlerType = typeof(MatchToEcfAccountAuthenticationHandler); }
-        );
-    })
-    .AddOneLogin(options =>
-    {
-        logger.LogInformation("Registering OneLogin authentication provider");
-        options.SignInScheme = AuthenticationSchemes.FormFlowJourney;
-
-        options.Events.OnRedirectToIdentityProviderForSignOut = context =>
-        {
-            // The standard sign out process will call Authenticate() on SignInScheme then try to extract the id_token from the Principal.
-            // That won't work in our case most of the time since sign out journeys won't have the FormFlow instance around that has the AuthenticationTicket.
-            // Instead, we'll get it passed to us in explicitly in AuthenticationProperties.Items.
-
-            if (
-                context.ProtocolMessage.IdTokenHint is null
-                && context.Properties.Parameters.TryGetValue(
-                    OpenIdConnectParameterNames.IdToken,
-                    out var idToken
-                )
-                && idToken is string idTokenString
-            )
-            {
-                context.ProtocolMessage.IdTokenHint = idTokenString;
-            }
-
-            return Task.CompletedTask;
-        };
-
-        options.Events.OnAccessDenied = async context =>
-        {
-            // This handles the scenario where we've requested ID verification but One Login couldn't do it.
-
-            if (
-                context.Properties!.TryGetVectorOfTrust(out var vtr)
-                && vtr == SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr
-                && TryGetJourneyInstanceId(context.Properties, out var journeyInstanceId)
-            )
-            {
-                context.HandleResponse();
-
-                var signInJourneyHelper =
-                    context.HttpContext.RequestServices.GetRequiredService<SignInJourneyHelper>();
-                var journeyInstance = (
-                    await signInJourneyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(
-                        context.HttpContext,
-                        journeyInstanceId
-                    )
-                )!;
-
-                var result = await signInJourneyHelper.OnVerificationFailed(journeyInstance);
-                await result.ExecuteAsync(context.HttpContext);
-            }
-        };
-
-        options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
-        options.ClientAssertionJwtAudience = oneLoginConfig.Url + "/token";
-
-        if (featureFlags.EnableOneLoginCertificateRotation && certificateClient is not null)
-        {
-            logger.LogInformation("Using certificate client to get certificate for OneLogin");
-            var signingCert = certificateClient
-                .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-            var rsaPrivateKey = signingCert.GetRSAPrivateKey();
-            if (rsaPrivateKey is null)
-            {
-                logger.LogError("Unable to get private key from certificate for OneLogin");
-                throw new InvalidOperationException("Unable to get private key from certificate for OneLogin");
-            }
-
-            options.ClientAuthenticationCredentials = new SigningCredentials(
-                new RsaSecurityKey(rsaPrivateKey) { KeyId = signingCert.Thumbprint },
-                SecurityAlgorithms.RsaSha256
-            );
-        }
-        else
-        {
-            logger.LogInformation("Using private key from PrivateKeyPem for OneLogin");
-            using var rsa = RSA.Create();
-            rsa.ImportFromPem(oneLoginConfig.PrivateKeyPem);
-
-            options.ClientAuthenticationCredentials = new SigningCredentials(
-                new RsaSecurityKey(rsa.ExportParameters(true)),
-                SecurityAlgorithms.RsaSha256
-            );
-        }
-
-        options.ClientId =
-            oneLoginConfig.ClientId
-            ?? throw new InvalidOperationException("Missing OneLogin:ClientId");
-        options.CallbackPath = "/_onelogin/callback";
-        options.SignedOutCallbackPath = "/_onelogin/logout-callback";
-
-        options.CorrelationCookie.Name = "onelogin-correlation.";
-        options.NonceCookie.Name = "onelogin-nonce.";
-        return;
-
-        static bool TryGetJourneyInstanceId(
-            AuthenticationProperties? properties,
-            [NotNullWhen(true)] out JourneyInstanceId? journeyInstanceId
-        )
-        {
-            if (
-                properties?.Items.TryGetValue(
-                    FormFlowJourneySignInHandler.PropertyKeys.JourneyInstanceId,
-                    out var serializedInstanceId
-                ) == true
-                && serializedInstanceId is not null
-            )
-            {
-                journeyInstanceId = JourneyInstanceId.Deserialize(serializedInstanceId);
-                return true;
-            }
-
-            journeyInstanceId = null;
-            return false;
-        }
-    });
-
-builder
-    .Services.AddOpenIddict()
-    .AddCore(options =>
-    {
-        options
-            .UseEntityFrameworkCore()
-            .UseDbContext<EcfDbContext>()
-            .ReplaceDefaultEntities<Guid>();
-    })
-    .AddServer(options =>
-    {
-        options
-            .SetAuthorizationEndpointUris("/oauth2/authorize")
-            .SetLogoutEndpointUris("/oauth2/logout")
-            .SetTokenEndpointUris("/oauth2/token")
-            .SetUserinfoEndpointUris("/oauth2/userinfo");
-
-        options.SetIssuer(oidcConfiguration.Issuer);
-
-        options.RegisterScopes(
-            Scopes.Email,
-            Scopes.Profile,
-            CustomScopes.SocialWorkerRecord,
-            Scopes.Roles,
-            CustomScopes.Organisation,
-            CustomScopes.EcswRegistered,
-            CustomScopes.Person
-        );
-
-        options.AllowAuthorizationCodeFlow();
-
-        options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
-
-        options
-            .UseAspNetCore()
-            .EnableAuthorizationEndpointPassthrough()
-            .EnableLogoutEndpointPassthrough()
-            .EnableTokenEndpointPassthrough()
-            .EnableUserinfoEndpointPassthrough()
-            .EnableStatusCodePagesIntegration();
-
-        if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
-        {
-            logger.LogInformation("Using certificate client to get certificates for OpenID");
-            var signingCert = certificateClient
-                .GetX509CertificateAsync(oneLoginConfig.CertificateName!)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-            options.AddSigningCertificate(signingCert);
-
-            var encryptionCert = certificateClient
-                .GetX509CertificateAsync(builder.Configuration.GetRequiredValue("Oidc:EncryptionCertificateName"))
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
-            options.AddEncryptionCertificate(encryptionCert);
-        }
-
-        if (featureFlags.EnableDevelopmentOpenIdCertificates)
-        {
-            logger.LogInformation("Using development certificates for OpenID");
-            options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
-        }
-    })
-    .AddValidation(options =>
-    {
-        // Import the configuration from the local OpenIddict server instance.
-        options.UseLocalServer();
-        // Register the ASP.NET Core host.
-        options.UseAspNetCore();
-    });
+builder.AddAuthentication(logger);
+builder.AddOpenIddict(logger);
 
 builder
     .Services.AddDfeAnalytics()
@@ -424,14 +204,7 @@ builder.Services
     .AddScoped<IAccountsService, AccountsService>()
     .AddScoped<IOrganisationService, OrganisationService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
-    .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value)
-    .AddSingleton(sp => sp.GetRequiredService<IOptions<OneLoginConfiguration>>().Value);
-
-builder
-    .Services.AddOptions<AuthorizeAccessOptions>()
-    .Bind(builder.Configuration)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
+    .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value);
 
 builder.AddTestApp();
 
@@ -507,18 +280,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
-
-if (builder.Configuration["RootRedirect"] is { } rootRedirect)
-{
-    app.MapGet(
-        "/",
-        ctx =>
-        {
-            ctx.Response.Redirect(rootRedirect);
-            return Task.CompletedTask;
-        }
-    );
-}
 
 logger.LogInformation("Application starting");
 
