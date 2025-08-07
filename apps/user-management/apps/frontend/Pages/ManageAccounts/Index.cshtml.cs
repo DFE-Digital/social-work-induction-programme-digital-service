@@ -1,4 +1,5 @@
 using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class Index(IAccountService accountService, IOrganisationService organisationService, EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
+public class Index(IAccountService accountService, IOrganisationService organisationService, IAuthServiceClient authServiceClient, EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     [FromQuery]
     public int Offset { get; set; } = 0;
@@ -26,11 +27,12 @@ public class Index(IAccountService accountService, IOrganisationService organisa
 
     public async Task<PageResult> OnGetAsync()
     {
-        if (User.IsInRole(nameof(RoleType.Administrator)) && OrganisationId.HasValue)
+        if (User.IsInRole(nameof(RoleType.Administrator)))
         {
             BackLinkPath = linkGenerator.ManageOrganisations.Index();
-            Organisation = await organisationService.GetByIdAsync(OrganisationId.Value);
         }
+
+        Organisation = await organisationService.GetByIdAsync(OrganisationId ?? new Guid(authServiceClient.HttpContextService.GetOrganisationId()));
 
         var paginatedResults = await accountService.GetAllAsync(
             new PaginationRequest(Offset, PageSize),
