@@ -70,6 +70,31 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
     }
 
     [Fact]
+    public async Task OnGetReplaceChangeAsync_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value)).ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnGetReplaceChangeAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        Sut.OrganisationName.Should().Be(organisation.OrganisationName);
+        Sut.PrimaryCoordinator.Should().BeEquivalentTo(accountDetails);
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}");
+        result.Should().BeOfType<PageResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task OnPostAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
     {
         // Arrange
@@ -178,6 +203,39 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         modelState["PrimaryCoordinator.PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
 
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostReplaceChangeAsync_WhenCalledWithValidData_RedirectsToConfirmDetails()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .WithPhoneNumber("07123123123")
+            .WithPhoneNumberRequired(true)
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        Sut.PrimaryCoordinator = accountDetails;
+
+        MockEditOrganisationJourneyService.Setup(x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)));
+
+        // Act
+        var result = await Sut.OnPostReplaceChangeAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-organisations/check-your-answers/{organisationId}?handler=Replace");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorAccountAsync(organisationId, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            Times.Once
+        );
         VerifyAllNoOtherCalls();
     }
 }
