@@ -5,7 +5,8 @@ using OpenIddict.Abstractions;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 
-public class OidcApplicationSeeder(IServiceProvider serviceProvider, IOptions<OidcConfiguration> oidcConfiguration) : IHostedService
+public class OidcApplicationSeeder(IServiceProvider serviceProvider, IOptions<OidcOptions> oidcConfiguration)
+    : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -13,7 +14,10 @@ public class OidcApplicationSeeder(IServiceProvider serviceProvider, IOptions<Oi
     }
 
 
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 
     private async Task SeedOidcApplicationsAsync()
     {
@@ -36,7 +40,8 @@ public class OidcApplicationSeeder(IServiceProvider serviceProvider, IOptions<Oi
         }
     }
 
-    private static async Task SeedOidcApplicationAsync(IOpenIddictApplicationManager manager, OidcApplicationConfiguration oidcApplicationConfiguration)
+    private static async Task SeedOidcApplicationAsync(IOpenIddictApplicationManager manager,
+        OidcApplicationConfiguration oidcApplicationConfiguration)
     {
         ArgumentNullException.ThrowIfNull(oidcApplicationConfiguration.ClientId);
 
@@ -45,19 +50,24 @@ public class OidcApplicationSeeder(IServiceProvider serviceProvider, IOptions<Oi
             ClientId = oidcApplicationConfiguration.ClientId,
             ClientSecret = oidcApplicationConfiguration.ClientSecret,
             ClientType = oidcApplicationConfiguration.ClientType,
-            DisplayName = oidcApplicationConfiguration.DisplayName,
+            DisplayName = oidcApplicationConfiguration.DisplayName
         };
 
         oidcApplicationDescriptor.RedirectUris.AddRange(oidcApplicationConfiguration.RedirectUris);
         oidcApplicationDescriptor.PostLogoutRedirectUris.AddRange(oidcApplicationConfiguration.PostLogoutRedirectUris);
 
-        oidcApplicationDescriptor.Permissions.AddRange(oidcApplicationConfiguration.AllowedEndpoints.Select(endpoint => "ept:" + endpoint));
-        oidcApplicationDescriptor.Permissions.AddRange(oidcApplicationConfiguration.AllowedGrantTypes.Select(grantType => "gt:" + grantType));
-        oidcApplicationDescriptor.Permissions.AddRange(oidcApplicationConfiguration.AllowedResponseTypes.Select(responseType => "rst:" + responseType));
-        oidcApplicationDescriptor.Permissions.AddRange(oidcApplicationConfiguration.AllowedScopes.Select(scope => "scp:" + scope));
+        oidcApplicationDescriptor.Permissions.AddRange(
+            oidcApplicationConfiguration.AllowedEndpoints.Select(endpoint => "ept:" + endpoint));
+        oidcApplicationDescriptor.Permissions.AddRange(
+            oidcApplicationConfiguration.AllowedGrantTypes.Select(grantType => "gt:" + grantType));
+        oidcApplicationDescriptor.Permissions.AddRange(
+            oidcApplicationConfiguration.AllowedResponseTypes.Select(responseType => "rst:" + responseType));
+        oidcApplicationDescriptor.Permissions.AddRange(
+            oidcApplicationConfiguration.AllowedScopes.Select(scope => "scp:" + scope));
         if (oidcApplicationConfiguration.RequirePkce == true)
         {
-            oidcApplicationDescriptor.Requirements.Add(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
+            oidcApplicationDescriptor.Requirements.Add(
+                OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
         }
 
         var oidcApplicationClient = await manager.FindByClientIdAsync(oidcApplicationDescriptor.ClientId);

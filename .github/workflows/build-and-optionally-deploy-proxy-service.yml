@@ -1,5 +1,5 @@
 name: Build proxy service (optionally deploy to non-prod)
-run-name: Build proxy service (optionally deploy to non-prod) - ${{inputs.instance}}
+run-name: Build proxy service ${{ github.event.inputs.instance && github.event.inputs.instance != 'None' && format('and deploy to {0}', inputs.instance) || format('') }}
 
 on:
   workflow_dispatch:

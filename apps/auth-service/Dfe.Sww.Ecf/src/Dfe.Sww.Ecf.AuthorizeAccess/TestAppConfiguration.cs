@@ -6,6 +6,7 @@ using Dfe.Sww.Ecf.UiCommon.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using static IdentityModel.OidcConstants;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess;
@@ -22,7 +23,8 @@ public static class TestAppConfiguration
     {
         var featureFlags = builder.Services
             .BuildServiceProvider()
-            .GetRequiredService<FeatureFlags>();
+            .GetRequiredService<IOptions<FeatureFlagOptions>>()
+            .Value;
 
         if (featureFlags.SupportEndToEndTesting)
         {
@@ -95,7 +97,7 @@ file class MapJsonClaimAction(string claimType) : ClaimAction(claimType, JsonCla
     {
         if (userData.TryGetProperty(ClaimType, out var element))
         {
-            identity.AddClaim(new Claim(ClaimType, element.ToString(), valueType: ""));
+            identity.AddClaim(new Claim(ClaimType, element.ToString(), ""));
         }
     }
 }
