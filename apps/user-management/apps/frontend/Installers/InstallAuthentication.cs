@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using OpenIddict.Abstractions;
@@ -50,6 +51,23 @@ public static class InstallAuthentication
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+
+                // Validate absolute session timeout on each request
+                options.Events.OnValidatePrincipal = async context =>
+                {
+                    var expiresAt = context.Properties.GetTokenValue("expires_at");
+                    if (
+                        !string.IsNullOrEmpty(expiresAt)
+                        && DateTimeOffset.Parse(expiresAt).ToUniversalTime()
+                        < DateTimeOffset.UtcNow
+                    )
+                    {
+                        context.RejectPrincipal();
+                        await context.HttpContext.SignOutAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme
+                        );
+                    }
+                };
             })
             .AddOpenIdConnect(options =>
             {

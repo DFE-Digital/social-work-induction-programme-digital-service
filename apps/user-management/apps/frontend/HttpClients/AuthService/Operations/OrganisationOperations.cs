@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
@@ -7,20 +6,14 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Operations;
 
 public class OrganisationOperations(AuthServiceClient authServiceClient)
-    : IOrganisationOperations
+    : BaseOperations, IOrganisationOperations
 {
-    private static JsonSerializerOptions? SerializerOptions { get; } =
-        new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
-
     public async Task<PaginationResult<OrganisationDto>> GetAllAsync(PaginationRequest request)
     {
         var route = $"/api/Organisations?Offset={request.Offset}&PageSize={request.PageSize}";
         var httpResponse = await authServiceClient.HttpClient.GetAsync(route);
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to get organisations.");
-        }
+        HandleHttpResponse(httpResponse, "Failed to get organisations.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
@@ -44,10 +37,7 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
             createOrganisationRequest
         );
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to create organisation.");
-        }
+        HandleHttpResponse(httpResponse, "Failed to create organisation.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
         var createdOrganisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
@@ -62,10 +52,7 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
     {
         var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Organisations/{id}");
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            return null;
-        }
+        HandleHttpResponse(httpResponse, $"Failed to get organisation with ID {id}.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
         var organisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);

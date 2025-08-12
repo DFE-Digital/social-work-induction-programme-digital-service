@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
+using Dfe.Sww.Ecf.Frontend.Filters;
 using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.Installers;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -54,6 +55,11 @@ builder
         );
         options.Conventions.AuthorizeFolder("/ManageAccounts");
     });
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<UnauthorizedExceptionFilter>();
+});
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ManageAccountsPolicy", policy =>
