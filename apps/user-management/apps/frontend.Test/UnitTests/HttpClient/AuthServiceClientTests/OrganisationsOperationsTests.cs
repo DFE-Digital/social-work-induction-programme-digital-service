@@ -78,7 +78,7 @@ public class OrganisationsOperationsTests
     }
 
     [Fact]
-    public async Task GetAll_WhenErrorResponseReturned_ReturnsNull()
+    public async Task GetAll_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var route = "/api/Organisations";
@@ -95,12 +95,12 @@ public class OrganisationsOperationsTests
         var paginationRequest = new PaginationRequest(0, 10);
 
         // Act
-        var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Organisations.GetAllAsync(paginationRequest)
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Organisations.GetAllAsync(paginationRequest)
         );
 
         // Assert
-        actualException.Should().BeOfType<InvalidOperationException>();
+        exception.Message.Should().Be("Failed to get organisations.");
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -147,7 +147,7 @@ public class OrganisationsOperationsTests
     }
 
     [Fact]
-    public async Task GetById_WhenErrorResponseReturned_ReturnsNull()
+    public async Task GetById_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
@@ -163,10 +163,12 @@ public class OrganisationsOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.Organisations.GetByIdAsync(organisationId);
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Organisations.GetByIdAsync(organisationId)
+        );
 
         // Assert
-        response.Should().BeNull();
+        exception.Message.Should().Be($"Failed to get organisation with ID {organisationId}.");
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
