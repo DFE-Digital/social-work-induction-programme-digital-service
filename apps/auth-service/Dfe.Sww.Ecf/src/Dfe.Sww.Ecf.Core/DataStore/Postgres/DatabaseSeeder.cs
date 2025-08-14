@@ -4,14 +4,14 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
 public static class DatabaseSeeder
 {
-    public static async Task SeedOrganisationAsync(DbContext db, Guid orgId, CancellationToken ct)
+    public static async Task SeedOrganisationAsync(DbContext db, Guid orgId, string? orgName, CancellationToken ct)
     {
         await db.Set<Organisation>().AddIfNotExistsAsync(
             o => o.OrganisationId == orgId,
             () => new Organisation
             {
                 OrganisationId = orgId,
-                OrganisationName = "Test Organisation",
+                OrganisationName = orgName ?? "Test Organisation",
                 ExternalOrganisationId = 0
             },
             ct
