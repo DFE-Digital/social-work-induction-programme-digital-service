@@ -10,7 +10,7 @@ public static class DbContextOptionsBuilderExtensions
     {
         builder.UseAsyncSeeding(async (db, _, ct) =>
         {
-            await DatabaseSeeder.SeedPersonAsync(db, seedOptions.PersonId, ct);
+            await DatabaseSeeder.SeedPersonAsync(db, seedOptions.PersonId, seedOptions.OneLoginEmail, ct);
             await DatabaseSeeder.SeedPersonRoleAsync(db, seedOptions.PersonId, seedOptions.RoleId, ct);
 
             if (seedOptions.OrganisationId != null)

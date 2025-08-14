@@ -18,7 +18,7 @@ public static class DatabaseSeeder
         );
     }
 
-    public static async Task SeedPersonAsync(DbContext db, Guid personId, CancellationToken ct)
+    public static async Task SeedPersonAsync(DbContext db, Guid personId, string email, CancellationToken ct)
     {
         await db.Set<Person>().AddIfNotExistsAsync(
             p => p.PersonId == personId,
@@ -26,8 +26,8 @@ public static class DatabaseSeeder
             {
                 PersonId = personId,
                 FirstName = "Test",
-                LastName = "Coordinator",
-                EmailAddress = "test.coordinator@test-org.com",
+                LastName = "User",
+                EmailAddress = email,
                 CreatedOn = DateTime.UtcNow,
                 Status = PersonStatus.Active
             },
