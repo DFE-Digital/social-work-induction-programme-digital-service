@@ -297,7 +297,7 @@ public static class ServicesExtensions
 
                 options.AllowAuthorizationCodeFlow();
 
-                options.SetAccessTokenLifetime(TimeSpan.FromHours(1));
+                options.SetAccessTokenLifetime(TimeSpan.FromHours(4));
 
                 options
                     .UseAspNetCore()

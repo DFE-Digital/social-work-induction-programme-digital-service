@@ -81,7 +81,7 @@ public class AccountsOperationsTests
     }
 
     [Fact]
-    public async Task GetAll_WhenErrorResponseReturned_ReturnsNull()
+    public async Task GetAll_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var route = $"/api/Accounts";
@@ -98,12 +98,12 @@ public class AccountsOperationsTests
         var paginationRequest = new PaginationRequest(0, 10);
 
         // Act
-        var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Accounts.GetAllAsync(paginationRequest)
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Accounts.GetAllAsync(paginationRequest)
         );
 
         // Assert
-        actualException.Should().BeOfType<InvalidOperationException>();
+        exception.Message.Should().Be("Failed to get accounts.");
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -149,7 +149,7 @@ public class AccountsOperationsTests
     }
 
     [Fact]
-    public async Task GetById_WhenErrorResponseReturned_ReturnsNull()
+    public async Task GetById_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var personId = Guid.NewGuid();
@@ -165,10 +165,12 @@ public class AccountsOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.Accounts.GetByIdAsync(personId);
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Accounts.GetByIdAsync(personId)
+        );
 
         // Assert
-        response.Should().BeNull();
+        exception.Message.Should().Be($"Failed to get account with ID {personId}.");
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -224,7 +226,7 @@ public class AccountsOperationsTests
     }
 
     [Fact]
-    public async Task Create_WhenErrorResponseReturned_ReturnsNull()
+    public async Task Create_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var createRequest = new CreatePersonRequest
@@ -245,11 +247,13 @@ public class AccountsOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Accounts.CreateAsync(createRequest)
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Accounts.CreateAsync(createRequest)
         );
 
         // Assert
+        exception.Message.Should().Be("Failed to create account.");
+
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();
@@ -305,7 +309,7 @@ public class AccountsOperationsTests
     }
 
     [Fact]
-    public async Task Update_WhenErrorResponseReturned_ReturnsNull()
+    public async Task Update_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var updateRequest = new UpdatePersonRequest
@@ -327,11 +331,13 @@ public class AccountsOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await sut.Accounts.UpdateAsync(updateRequest)
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Accounts.UpdateAsync(updateRequest)
         );
 
         // Assert
+        exception.Message.Should().Be("Failed to update account.");
+
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();

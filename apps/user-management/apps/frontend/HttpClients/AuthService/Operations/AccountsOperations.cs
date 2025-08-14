@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.Helpers;
+﻿using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
@@ -8,11 +6,8 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Operations;
 
 public class AccountsOperations(AuthServiceClient authServiceClient)
-    : IAccountsOperations
+    : BaseOperations, IAccountsOperations
 {
-    private static JsonSerializerOptions? SerializerOptions { get; } =
-        new(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } };
-
     public async Task<PaginationResult<Person>> GetAllAsync(PaginationRequest request, Guid? organisationId = null)
     {
         var organisationIdString = organisationId.HasValue
@@ -22,10 +17,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
         var route = $"/api/Accounts?Offset={request.Offset}&PageSize={request.PageSize}&organisationId={organisationIdString}";
         var httpResponse = await authServiceClient.HttpClient.GetAsync(route);
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to get accounts.");
-        }
+        HandleHttpResponse(httpResponse, "Failed to get accounts.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
@@ -46,10 +38,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
     {
         var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Accounts/{id}");
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            return null;
-        }
+        HandleHttpResponse(httpResponse, $"Failed to get account with ID {id}.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
@@ -64,10 +53,8 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
             "/api/Accounts/Create",
             createPersonRequest
         );
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to create account.");
-        }
+
+        HandleHttpResponse(httpResponse, "Failed to create account.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
         var createdPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
@@ -85,10 +72,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
             $"/api/Accounts/{accountId}/linking-token"
         );
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to get account linking token.");
-        }
+        HandleHttpResponse(httpResponse, "Failed to get account linking token.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
@@ -111,10 +95,8 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
             "/api/Accounts",
             updatePersonRequest
         );
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException("Failed to update account.");
-        }
+
+        HandleHttpResponse(httpResponse, "Failed to update account.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
         var updatedPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
