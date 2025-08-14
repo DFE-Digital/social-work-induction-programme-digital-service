@@ -8,11 +8,12 @@ public class ClaimsBuilder(ClaimsIdentity identity, OpenIddictRequest request)
 {
     private readonly ClaimsIdentity _identity =
         identity ?? throw new ArgumentNullException(nameof(identity));
+
     private readonly OpenIddictRequest _request =
         request ?? throw new ArgumentNullException(nameof(request));
 
     /// <summary>
-    /// Add a claim if the specified scope is present.
+    ///     Add a claim if the specified scope is present.
     /// </summary>
     public ClaimsBuilder AddIfScope(string scope, string claimType, Func<string?> valueProvider)
     {
@@ -26,11 +27,12 @@ public class ClaimsBuilder(ClaimsIdentity identity, OpenIddictRequest request)
         {
             _identity.SetClaim(claimType, value);
         }
+
         return this;
     }
 
     /// <summary>
-    /// Add multiple role claims if the "roles" scope is present.
+    ///     Add multiple role claims if the "roles" scope is present.
     /// </summary>
     public async Task<ClaimsBuilder> AddRoleClaimsIfScopeAsync(
         string scope,
@@ -56,7 +58,7 @@ public class ClaimsBuilder(ClaimsIdentity identity, OpenIddictRequest request)
     }
 
     /// <summary>
-    /// Add the organisation id claim if the "organisation" scope is present.
+    ///     Add the organisation id claim if the "organisation" scope is present.
     /// </summary>
     public async Task<ClaimsBuilder> AddOrganisationIdClaimIfScopeAsync(
         string scope,
@@ -71,10 +73,10 @@ public class ClaimsBuilder(ClaimsIdentity identity, OpenIddictRequest request)
 
         var organisationIdClaim = await dbContext
             .PersonOrganisations.Where(po => po.PersonId == personId)
-            .Where(po => po.EndDate == null || (po.StartDate >= po.EndDate))
+            .Where(po => po.EndDate == null || po.StartDate >= po.EndDate)
             .Select(po => po.OrganisationId.ToString()
             )
-            .FirstAsync();
+            .FirstOrDefaultAsync();
 
         if (!string.IsNullOrEmpty(organisationIdClaim))
         {

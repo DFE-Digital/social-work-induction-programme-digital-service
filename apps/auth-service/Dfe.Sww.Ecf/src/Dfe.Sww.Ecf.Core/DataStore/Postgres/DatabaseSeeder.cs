@@ -4,21 +4,21 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
 public static class DatabaseSeeder
 {
-    public static async Task SeedOrganisationAsync(DbContext db, Guid orgId, CancellationToken ct)
+    public static async Task SeedOrganisationAsync(DbContext db, Guid orgId, string? orgName, CancellationToken ct)
     {
         await db.Set<Organisation>().AddIfNotExistsAsync(
             o => o.OrganisationId == orgId,
             () => new Organisation
             {
                 OrganisationId = orgId,
-                OrganisationName = "Test Organisation",
+                OrganisationName = orgName ?? "Test Organisation",
                 ExternalOrganisationId = 0
             },
             ct
         );
     }
 
-    public static async Task SeedPersonAsync(DbContext db, Guid personId, CancellationToken ct)
+    public static async Task SeedPersonAsync(DbContext db, Guid personId, string email, CancellationToken ct)
     {
         await db.Set<Person>().AddIfNotExistsAsync(
             p => p.PersonId == personId,
@@ -26,8 +26,8 @@ public static class DatabaseSeeder
             {
                 PersonId = personId,
                 FirstName = "Test",
-                LastName = "Coordinator",
-                EmailAddress = "test.coordinator@test-org.com",
+                LastName = "User",
+                EmailAddress = email,
                 CreatedOn = DateTime.UtcNow,
                 Status = PersonStatus.Active
             },
