@@ -148,12 +148,16 @@ resource "azurerm_storage_container" "moodle_container" {
   name                  = "${var.resource_name_prefix}-moodle-backups"
   storage_account_id    = azurerm_storage_account.sa_db_backup_blob_storage.id
   container_access_type = "private" # Keep backups private
+
+  #checkov:skip=CKV2_AZURE_21:Don't need storage loggin to be enabled
 }
 
 resource "azurerm_storage_container" "um_container" {
   name                  = "${var.resource_name_prefix}-usermanagement-backups"
   storage_account_id    = azurerm_storage_account.sa_db_backup_blob_storage.id
   container_access_type = "private" # Keep backups private
+
+  #checkov:skip=CKV2_AZURE_21:Don't need storage loggin to be enabled
 }
 
 resource "azurerm_key_vault_secret" "db_backup_blob_storage_connection_string" {
