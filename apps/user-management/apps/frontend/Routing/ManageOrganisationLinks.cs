@@ -22,4 +22,7 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     public string EditPrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id });
     public string CheckYourAnswersEdit(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "Edit");
     public string CheckYourAnswersReplace(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "Replace");
+
+    // Edit change links
+    public string ReplacePrimaryCoordinatorChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "ReplaceChange");
 }

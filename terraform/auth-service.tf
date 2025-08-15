@@ -30,18 +30,6 @@ resource "azurerm_key_vault_secret" "auth_service_client_secret" {
   #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
-# The OneLogin public key is entered manually into the admin site 
-# (https://admin.sign-in.service.gov.uk/) for non-prod environments. The admin site will 
-# generate a client ID in return. For prod the public key must be given to the central 
-# OneLogin team for configuration. They will send you the client ID after the prod 
-# instance has been configured.
-
-module "one_login_certificate" {
-  source       = "./modules/certificate"
-  key_vault_id = module.stack.kv_id
-  cert_name    = "AuthService-OneLoginKeyPair"
-}
-
 module "signing_certificate" {
   source       = "./modules/certificate"
   key_vault_id = module.stack.kv_id
@@ -96,7 +84,7 @@ module "auth_service" {
     "OIDC__APPLICATIONS__0__REDIRECTURIS__1"           = local.user_management_auth_redirect_uri
     "OIDC__APPLICATIONS__0__POSTLOGOUTREDIRECTURIS__1" = local.user_management_auth_post_logout_redirect_uri
     "ONELOGIN__CLIENTID"                               = var.one_login_client_id
-    "ONELOGIN__CERTIFICATENAME"                        = module.one_login_certificate.cert_name
+    "ONELOGIN__CERTIFICATENAME"                        = module.signing_certificate.cert_name
     "ONELOGIN__URL"                                    = var.one_login_oidc_url
     "APPLICATIONINSIGHTS_CONNECTION_STRING"            = module.stack.appinsights_connection_string
     DOCKER_ENABLE_CI                                   = "false" # Github will control CI, not Azure

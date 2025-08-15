@@ -15,7 +15,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
 
     public IndexPageTests()
     {
-        Sut = new ManageAccountsIndex(MockAccountService.Object, MockOrganisationService.Object, new FakeLinkGenerator());
+        Sut = new ManageAccountsIndex(MockAccountService.Object, MockOrganisationService.Object, MockAuthServiceClient.Object, new FakeLinkGenerator());
     }
 
     [Fact]
@@ -24,6 +24,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
         // Arrange
         Sut.PageContext = new PageContext { HttpContext = HttpContext };
 
+        var organisation = OrganisationBuilder.Build();
         var expectedAccounts = AccountBuilder.BuildMany(10);
 
         var paginationRequest = new PaginationRequest(0, 10);
@@ -40,6 +41,8 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
             }
         };
 
+        MockAuthServiceClient.Setup(x => x.HttpContextService.GetOrganisationId()).Returns(organisation.OrganisationId!.Value.ToString());
+        MockOrganisationService.Setup(x => x.GetByIdAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
         MockAccountService
             .Setup(x => x.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest), null))
             .ReturnsAsync(paginationResponse);
@@ -51,5 +54,11 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
         result.Should().BeOfType<PageResult>();
         Sut.Accounts.Should().NotBeEmpty();
         Sut.Accounts.Should().BeEquivalentTo(expectedAccounts);
+
+        MockAuthServiceClient.Verify(x => x.HttpContextService.GetOrganisationId(), Times.Once);
+        MockOrganisationService.Verify(x => x.GetByIdAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockAccountService.Verify(x => x.GetAllAsync(MoqHelpers.ShouldBeEquivalentTo(paginationRequest), null), Times.Once);
+
+        VerifyAllNoOtherCalls();
     }
 }

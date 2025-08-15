@@ -50,6 +50,12 @@ public class EditPrimaryCoordinator(
         return Page();
     }
 
+    public async Task<PageResult> OnGetReplaceChangeAsync(Guid id)
+    {
+        IsReplace = true;
+        return await OnGetAsync(id);
+    }
+
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
         PrimaryCoordinator.PhoneNumberRequired = true;
@@ -72,6 +78,12 @@ public class EditPrimaryCoordinator(
     }
 
     public async Task<IActionResult> OnPostReplaceAsync(Guid id)
+    {
+        IsReplace = true;
+        return await OnPostAsync(id);
+    }
+
+    public async Task<IActionResult> OnPostReplaceChangeAsync(Guid id)
     {
         IsReplace = true;
         return await OnPostAsync(id);

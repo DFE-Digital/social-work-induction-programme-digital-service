@@ -30,13 +30,11 @@ moodle_instances = {
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
-  "DATABASESEED__ORGANISATIONID"               = "00000000-0000-0000-0000-000000000001"
-  "DATABASESEED__ORGANISATIONNAME"             = "Test Organisation"
   "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
-  "DATABASESEED__ROLEID"                       = 800
+  "DATABASESEED__ROLEID"                       = 1000
   "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
-one_login_client_id = "p4yA1KMFQIoQbqmtntQZPTfdN_I"
+one_login_client_id = "EsYDRVMBVfTviM3KcsszKUrL_Fw"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
