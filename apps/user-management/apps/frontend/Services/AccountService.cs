@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 using Dfe.Sww.Ecf.Frontend.Mappers;
@@ -31,12 +29,7 @@ public class AccountService(
     {
         var person = await authServiceClient.Accounts.GetByIdAsync(id);
 
-        if (person is null)
-        {
-            return null;
-        }
-
-        return mapper.MapToBo(person);
+        return person is null ? null : mapper.MapToBo(person);
     }
 
     public async Task<Account> CreateAsync(Account account, Guid? organisationId = null)
@@ -46,9 +39,7 @@ public class AccountService(
             || string.IsNullOrWhiteSpace(account.LastName)
             || string.IsNullOrWhiteSpace(account.Email)
         )
-        {
             throw new ArgumentException("First name, last name, and email are required");
-        }
 
         var organisationIdString = organisationId.HasValue
             ? organisationId.Value.ToString()
@@ -82,9 +73,7 @@ public class AccountService(
             || string.IsNullOrWhiteSpace(updatedAccount.LastName)
             || string.IsNullOrWhiteSpace(updatedAccount.Email)
         )
-        {
             throw new ArgumentException("Person ID, First name, last name, and email are required");
-        }
 
         var person = await authServiceClient.Accounts.UpdateAsync(
             new UpdatePersonRequest

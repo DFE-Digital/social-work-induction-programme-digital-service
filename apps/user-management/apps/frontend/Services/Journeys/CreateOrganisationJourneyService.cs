@@ -1,36 +1,31 @@
+using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    IOrganisationService organisationService
+    IOrganisationService organisationService,
+    IAuthServiceClient authServiceClient,
+    IAccountService accountService,
+    INotificationServiceClient notificationServiceClient,
+    IOptions<EmailTemplateOptions> emailTemplateOptions,
+    EcfLinkGenerator linkGenerator
 ) : ICreateOrganisationJourneyService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
-    private ISession Session =>
-        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
-
     private const string CreateOrganisationSessionKey = "_createOrganisation";
 
-    private CreateOrganisationJourneyModel GetOrganisationJourneyModel()
-    {
-        Session.TryGet(
-            CreateOrganisationSessionKey,
-            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
-        );
-        return createOrganisationJourneyModel ?? new CreateOrganisationJourneyModel();
-    }
-
-    private void SetCreateOrganisationJourneyModel(CreateOrganisationJourneyModel createOrganisationJourneyModel)
-    {
-        Session.Set(CreateOrganisationSessionKey, createOrganisationJourneyModel);
-    }
+    private ISession Session =>
+        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     public Organisation? GetOrganisation()
     {
@@ -61,7 +56,7 @@ public class CreateOrganisationJourneyService(
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel?.PrimaryCoordinatorAccountDetails;
+        return createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails;
     }
 
     public void SetPrimaryCoordinatorAccountDetails(AccountDetails accountDetails)
@@ -83,10 +78,7 @@ public class CreateOrganisationJourneyService(
         var organisation = createAccountJourneyModel.Organisation;
         var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
 
-        if (organisation is null || primaryCoordinator is null)
-        {
-            throw new ArgumentNullException();
-        }
+        if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
         // TODO implement call to Moodle for creating a person and organisation here, then set the ids
         organisation.ExternalOrganisationId = 123;
@@ -97,6 +89,54 @@ public class CreateOrganisationJourneyService(
 
         ResetCreateOrganisationJourneyModel();
 
+        if (organisation.PrimaryCoordinatorId is { } primaryCoordinatorId) await SendInvitationEmailAsync(primaryCoordinatorId, organisation.OrganisationName);
+
         return organisation;
+    }
+
+    private async Task SendInvitationEmailAsync(Guid accountId, string organisationName)
+    {
+        if (httpContextAccessor.HttpContext is null) return;
+
+        var account = await accountService.GetByIdAsync(accountId);
+        if (account?.Email is null) return;
+
+        var linkingToken = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
+            accountId
+        );
+
+        var invitationLink = linkGenerator.SignInWithLinkingToken(
+            httpContextAccessor.HttpContext,
+            linkingToken
+        );
+
+        var templateId = emailTemplateOptions.Value.PrimaryCoordinatorInvitationEmail;
+        var notificationRequest = new NotificationRequest
+        {
+            EmailAddress = account.Email,
+            TemplateId = templateId,
+            Personalisation = new Dictionary<string, string>
+            {
+                { "name", account.FullName },
+                { "organisation", organisationName },
+                { "invitation_link", invitationLink }
+            }
+        };
+
+        await notificationServiceClient.Notification.SendEmailAsync(notificationRequest);
+    }
+
+    private CreateOrganisationJourneyModel GetOrganisationJourneyModel()
+    {
+        Session.TryGet(
+            CreateOrganisationSessionKey,
+            out CreateOrganisationJourneyModel? createOrganisationJourneyModel
+        );
+        return createOrganisationJourneyModel ?? new CreateOrganisationJourneyModel();
+    }
+
+    private void SetCreateOrganisationJourneyModel(CreateOrganisationJourneyModel createOrganisationJourneyModel)
+    {
+        Session.Set(CreateOrganisationSessionKey, createOrganisationJourneyModel);
     }
 }
