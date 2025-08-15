@@ -1,0 +1,85 @@
+name: "Backup or Restore a database"
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_to_run:
+        description: "The job to run (backup or restore)"
+        required: true
+        type: choice
+        options:
+          - backup
+          - restore
+      db_name:
+        description: "The name of the database to backup/restore"
+        required: true
+        type: choice
+        options:
+          - moodle
+          - authservice
+      backup_file_name:
+        description: "The name of the backup file in Blob Storage to restore (only for restore jobs)"
+        required: false
+        type: string
+      instance:
+        description: "Environment instance"
+        required: true
+        default: None
+        type: choice
+        options:
+          - None
+          - d01
+          - d02
+          - d03
+
+jobs:
+  fetch_secrets:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      db_user: ${{ steps.get_secrets.outputs.db_user }}
+      db_password: ${{ steps.get_secrets.outputs.db_password }}
+      db_instance: ${{ steps.map_name.outputs.db_name }}
+
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch DB credentials from Key Vault
+        run: |
+          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
+          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
+          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
+          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Map service to actual DB instance
+        id: map_name
+        run: |
+          DB_INSTANCE = ""
+          case "${{ github.event.inputs.db_name }}" in
+            moodle)
+              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_moodle_primary"
+              ;;
+            authservice)
+              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_auth_service"
+              ;;
+          esac
+          echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
+
+  db-backup-restore:
+    uses: ./.github/workflows/db-backup-restore.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      job_to_run: ${{ github.event.inputs.job_to_run }}
+      db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
+      backup_file_name: ${{ github.event.inputs.backup_file_name }}
+    secrets: inherit

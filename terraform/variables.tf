@@ -332,3 +332,8 @@ variable "log_analytics_sku" {
   description = "Log Analytics Workspace SKU"
   type        = string
 }
+
+variable "db_backup_blob_sa_name" {
+  description = "DB backup blob storage account name"
+  type        = string
+}

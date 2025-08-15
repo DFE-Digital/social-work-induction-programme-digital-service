@@ -47,3 +47,5 @@ moodle_app_settings = {
 user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"
 }
+
+db_backup_blob_sa_name = "sabackups"

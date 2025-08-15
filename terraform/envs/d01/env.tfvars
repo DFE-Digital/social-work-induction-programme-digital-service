@@ -49,3 +49,5 @@ storage_redundancy                 = "LRS"
 blob_storage_account_tier          = "Standard"
 # Standard pay as you go HDD file share 
 file_storage_account_tier = "Standard"
+
+db_backup_blob_sa_name = "sabackups"
