@@ -1,0 +1,5 @@
+{
+  "moodle-availability_save-form": {
+    "requires": ["base", "node", "event", "escape", "moodle-core_availability-form"]
+  }
+}

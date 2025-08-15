@@ -1,0 +1,8 @@
+{
+  "name": "moodle-availability_save-form",
+  "builds": {
+    "moodle-availability_save-form": {
+      "jsfiles": ["js/form.js"]
+    }
+  }
+}
