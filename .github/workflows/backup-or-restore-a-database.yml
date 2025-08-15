@@ -75,6 +75,9 @@ jobs:
 
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
+    permissions:
+      id-token: write
+      contents: read
     with:
       job_to_run: ${{ github.event.inputs.job_to_run }}
       db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
