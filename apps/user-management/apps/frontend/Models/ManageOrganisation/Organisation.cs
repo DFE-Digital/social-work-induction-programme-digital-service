@@ -6,19 +6,17 @@ public class Organisation
 {
     public Guid? OrganisationId { get; init; }
 
-    [Display(Name = "Organisation name")]
-    public string? OrganisationName { get; set; }
+    [Display(Name = "Organisation name")] public string OrganisationName { get; init; } = "";
 
     public int? ExternalOrganisationId { get; set; }
 
     [Display(Name = "Local authority code")]
-    public int? LocalAuthorityCode { get; set; }
+    public int? LocalAuthorityCode { get; init; }
 
-    [Display(Name = "Type")]
-    public OrganisationType? Type { get; set; }
+    [Display(Name = "Type")] public OrganisationType? Type { get; init; }
 
     [Display(Name = "Local authority region")]
-    public string? Region { get; set; }
+    public string? Region { get; init; }
 
-    public Guid? PrimaryCoordinatorId { get; set; }
+    public Guid? PrimaryCoordinatorId { get; init; }
 }

@@ -1,8 +1,5 @@
-﻿using System.Collections.Immutable;
-using Bogus;
-using Dfe.Sww.Ecf.Frontend.Models;
+﻿using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
-using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 
@@ -24,12 +21,6 @@ public class OrganisationBuilder
     public OrganisationBuilder WithPrimaryCoordinatorId(Guid? primaryCoordinatorId = null)
     {
         _faker.RuleFor(a => a.PrimaryCoordinatorId, primaryCoordinatorId);
-        return this;
-    }
-
-    public OrganisationBuilder WithRegion()
-    {
-        _faker.RuleFor(a => a.Region, f => f.Name.FirstName());
         return this;
     }
 

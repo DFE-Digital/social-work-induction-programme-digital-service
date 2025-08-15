@@ -11,7 +11,7 @@ public class ResetCreateOrganisationJourneyModelShould : CreateOrganisationJourn
     public void WhenCalled_ResetsJourney()
     {
         // Arrange
-        var organisation = OrganisationBuilder.WithRegion().Build();
+        var organisation = OrganisationBuilder.Build();
 
         HttpContext.Session.Set(
             CreateOrganisationSessionKey,
