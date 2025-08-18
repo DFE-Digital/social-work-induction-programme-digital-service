@@ -94,7 +94,7 @@ class condition extends \core_availability\condition {
 
     /**
      * Returns true if $userid has at least one entry in the Database represented by $cmid.
-     * If $cmid is not a Database cm (or invalid), returns false.
+     * If $cmid is not a Database cm (course module a.k.a course activity) or invalid, returns false.
      *
      * @param int $userid
      * @param int $cmid Database coursemodule id to check

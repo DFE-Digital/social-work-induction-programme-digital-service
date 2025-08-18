@@ -1,40 +1,33 @@
 <?php
 namespace availability_save;
-
 defined('MOODLE_INTERNAL') || die();
 
 class frontend extends \core_availability\frontend {
     protected function get_javascript_strings() {
-        return [
-            'label_selectactivity',
-            'error_noactivity',
-            'error_sameactivity'
-        ];
+        return ['label_selectactivity','error_noactivity','error_sameactivity','title'];
     }
 
     protected function get_javascript_init_params($course, \cm_info $cm = null, \section_info $section = null) {
-        // Provide a list of Database activities in this course.
         $modinfo = get_fast_modinfo($course);
         $databases = [];
-        $targetcmid = $cm ? $cm->id : 0;
-
         foreach ($modinfo->cms as $cmid => $cminfo) {
-            if ($cminfo->modname === 'data' && !$cminfo->deletioninprogress) {
-                if ($targetcmid && $cmid === $targetcmid) {
-                    continue;
-                }
-
-                $databases[] = [
-                    'cmid' => $cmid,
-                    'name' => format_string($cminfo->name, true, ['context' => $cminfo->context]),
-                    'section' => $cminfo->sectionnum,
-                ];
-            }
+            if ($cminfo->deletioninprogress) { continue; }
+            if ($cminfo->modname !== 'data') { continue; }
+            if ($cm && $cmid === $cm->id) { continue; } // don't allow watching itself
+            $databases[] = ['cmid' => (int)$cmid, 'name' => (string)$cminfo->name];
         }
-        return ['databases' => $databases, 'targetcmid' => $targetcmid];
+
+        return [[
+            'databases'  => $databases,
+            'targetcmid' => $cm ? (int)$cm->id : 0,
+        ]];
     }
 
     protected function allow_add($course, \cm_info $cm = null, \section_info $section = null) {
-        return true;
+        $modinfo = get_fast_modinfo($course);
+        foreach ($modinfo->cms as $cminfo) {
+            if (!$cminfo->deletioninprogress && $cminfo->modname === 'data') { return true; }
+        }
+        return false;
     }
 }
