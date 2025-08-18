@@ -59,9 +59,9 @@ jobs:
       issues: write
     environment: ${{ inputs.environment }}
     env:
-      AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
       REMOTE_TUNNEL_HOST: ${{ inputs.tunnel-remote-server-name }}
       # This will make the credentials available for remote tunnelling
       AZURE_KUDU_SSH_USER: ${{ vars.AZURE_KUDU_SSH_USER }}

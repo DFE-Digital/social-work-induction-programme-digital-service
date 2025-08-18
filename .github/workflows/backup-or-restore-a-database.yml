@@ -73,7 +73,7 @@ jobs:
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       environment: Dev
       # db-host-name: ${{  }}
-      # instance: ${{ github.env. }}
-      # tunnel-remote-server-name:
+      instance: ${{ github.event.inputs.instance }}
+      tunnel-remote-server-name: s205${{ github.event.inputs.instance }}wa-proxy-service
       # storage-account-name:
       # storage-container-name:
