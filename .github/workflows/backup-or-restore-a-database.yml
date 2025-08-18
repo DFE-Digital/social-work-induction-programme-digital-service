@@ -79,12 +79,14 @@ jobs:
     needs: fetch-secrets
     permissions:
       id-token: write
-      contents: read
+      contents: write
+      issues: write
     secrets: inherit
     with:
       job-to-run: ${{ github.event.inputs.job_to_run }}
       db-name: ${{ github.env.DB_INSTANCE }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
+      environment: Dev
       # db-host-name: ${{  }}
       # instance: ${{ github.env. }}
       # tunnel-remote-server-name:
