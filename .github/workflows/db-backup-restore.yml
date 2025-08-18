@@ -31,32 +31,33 @@ on:
         description: Name of the storage container for backup files
         type: string
 
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      # KEY_VAULT_NAME:           # might not need this, on proxy server?
-      #   required: true
-      # DB_USER_SECRET_NAME:      # might not need this, on proxy server?
-      #   required: true
-      # DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
-      #   required: true
+    # secrets:
+    #   AZURE_CLIENT_ID:
+    #     required: true
+    #   AZURE_TENANT_ID:
+    #     required: true
+    #   AZURE_SUBSCRIPTION_ID:
+    #     required: true
+    # KEY_VAULT_NAME:           # might not need this, on proxy server?
+    #   required: true
+    # DB_USER_SECRET_NAME:      # might not need this, on proxy server?
+    #   required: true
+    # DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
+    #   required: true
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
+  issues: write
 
 jobs:
   backup:
     if: inputs.job-to-run == 'backup'
     runs-on: ubuntu-latest
     env:
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       REMOTE_TUNNEL_HOST: ${{ inputs.tunnel-remote-server-name }}
       # This will make the credentials available for remote tunnelling
       AZURE_KUDU_SSH_USER: ${{ vars.AZURE_KUDU_SSH_USER }}
