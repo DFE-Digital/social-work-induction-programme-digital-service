@@ -45,15 +45,14 @@ on:
     # DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
     #   required: true
 
-permissions:
-  id-token: write
-  contents: write
-  issues: write
-
 jobs:
   backup:
     if: inputs.job-to-run == 'backup'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
     env:
       AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZ_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -87,7 +86,10 @@ jobs:
   restore:
     if: inputs.job-to-run == 'restore'
     runs-on: ubuntu-latest
-
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
     steps:
       - name: Check for backup-file-name
         if: inputs.backup-file-name == ''
