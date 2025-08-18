@@ -12,7 +12,7 @@ public class ResetEditOrganisationJourneyModelShould : EditOrganisationJourneySe
     public void WhenCalled_ResetsJourney()
     {
         // Arrange
-        var organisation = OrganisationBuilder.WithRegion().Build();
+        var organisation = OrganisationBuilder.Build();
         var account = AccountBuilder.Build();
         var expectedPrimaryCoordinator = AccountDetails.FromAccount(account);
 

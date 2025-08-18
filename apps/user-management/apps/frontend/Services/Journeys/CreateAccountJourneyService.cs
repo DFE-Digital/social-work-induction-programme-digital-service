@@ -1,44 +1,26 @@
 ﻿using System.Collections.Immutable;
-using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
-    INotificationServiceClient notificationServiceClient,
-    IOptions<EmailTemplateOptions> emailTemplateOptions,
-    IAuthServiceClient authServiceClient,
     IAccountService accountService,
-    IMoodleServiceClient moodleServiceClient,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IEmailService emailService
 ) : ICreateAccountJourneyService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
     private const string CreateAccountSessionKey = "_createAccount";
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
-
-    private CreateAccountJourneyModel GetCreateAccountJourneyModel()
-    {
-        Session.TryGet(
-            CreateAccountSessionKey,
-            out CreateAccountJourneyModel? createAccountJourneyModel
-        );
-        return createAccountJourneyModel ?? new CreateAccountJourneyModel();
-    }
 
     public IList<AccountType>? GetAccountTypes()
     {
@@ -76,10 +58,7 @@ public class CreateAccountJourneyService(
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsStaff = isStaff;
-        if (createAccountJourneyModel.AccountDetails is not null && isStaff is not null)
-        {
-            createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
-        }
+        if (createAccountJourneyModel.AccountDetails is not null && isStaff is not null) createAccountJourneyModel.AccountDetails.IsStaff = (bool)isStaff;
 
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
@@ -223,11 +202,6 @@ public class CreateAccountJourneyService(
         Session.Remove(CreateAccountSessionKey);
     }
 
-    private void SetCreateAccountJourneyModel(CreateAccountJourneyModel createAccountJourneyModel)
-    {
-        Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
-    }
-
     public async Task<Account> CompleteJourneyAsync(Guid? organisationId = null)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
@@ -236,7 +210,12 @@ public class CreateAccountJourneyService(
 
         account = await accountService.CreateAsync(account, organisationId);
 
-        await SendInvitationEmailAsync(account);
+        await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+        {
+            AccountId = account.Id,
+            OrganisationName = "Test Organisation", // TODO: Retrieve actual organization name
+            Role = account.Types?.Min() // Get the highest ranking role - the lowest (int)enum
+        });
 
         ResetCreateAccountJourneyModel();
 
@@ -256,47 +235,17 @@ public class CreateAccountJourneyService(
         return createAccountJourneyModel.SocialWorkerDetails;
     }
 
-    public async Task SendInvitationEmailAsync(Account account)
+    private CreateAccountJourneyModel GetCreateAccountJourneyModel()
     {
-        var accountTypes = account.Types;
-
-        if (
-            accountTypes is null
-            || string.IsNullOrWhiteSpace(account.Email)
-            || _httpContextAccessor.HttpContext is null
-        )
-        {
-            return;
-        }
-
-        var linkingToken = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
-            account.Id
+        Session.TryGet(
+            CreateAccountSessionKey,
+            out CreateAccountJourneyModel? createAccountJourneyModel
         );
+        return createAccountJourneyModel ?? new CreateAccountJourneyModel();
+    }
 
-        var invitationLink = linkGenerator.SignInWithLinkingToken(
-            _httpContextAccessor.HttpContext,
-            linkingToken
-        );
-
-        // Get the highest ranking role - the lowest (int)enum
-        var invitationEmailType = accountTypes.Min();
-
-        var templateId = emailTemplateOptions
-            .Value
-            .Roles[invitationEmailType.ToString()]
-            .Invitation;
-        var notificationRequest = new NotificationRequest
-        {
-            EmailAddress = account.Email,
-            TemplateId = templateId,
-            Personalisation = new Dictionary<string, string>
-            {
-                { "name", account.FullName },
-                { "organisation", "TEST ORGANISATION" }, // TODO Retrieve this value when we can
-                { "invitation_link", invitationLink }
-            }
-        };
-
-        await notificationServiceClient.Notification.SendEmailAsync(notificationRequest);
+    private void SetCreateAccountJourneyModel(CreateAccountJourneyModel createAccountJourneyModel)
+    {
+        Session.Set(CreateAccountSessionKey, createAccountJourneyModel);
     }
 }
