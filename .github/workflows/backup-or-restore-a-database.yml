@@ -79,7 +79,12 @@ jobs:
       id-token: write
       contents: read
     with:
-      job_to_run: ${{ github.event.inputs.job_to_run }}
-      db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
-      backup_file_name: ${{ github.event.inputs.backup_file_name }}
+      job-to-run: ${{ github.event.inputs.job_to_run }}
+      db-name: ${{ github.env.DB_INSTANCE }}
+      backup-file-name: ${{ github.event.inputs.backup_file_name }}
+      # db-host-name: ${{  }}
+      # instance: ${{ github.env. }}
+      # tunnel-remote-server-name:
+      # storage-account-name:
+      # storage-container-name:
     secrets: inherit

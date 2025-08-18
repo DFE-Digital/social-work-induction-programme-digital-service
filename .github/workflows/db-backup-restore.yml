@@ -30,7 +30,6 @@ on:
       storage-container-name:
         description: Name of the storage container for backup files
         type: string
-      
 
     secrets:
       AZURE_CLIENT_ID:
@@ -39,12 +38,12 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
-      KEY_VAULT_NAME:           # might not need this, on proxy server?
-        required: true
-      DB_USER_SECRET_NAME:      # might not need this, on proxy server?
-        required: true
-      DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
-        required: true
+      # KEY_VAULT_NAME:           # might not need this, on proxy server?
+      #   required: true
+      # DB_USER_SECRET_NAME:      # might not need this, on proxy server?
+      #   required: true
+      # DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
+      #   required: true
 
 permissions:
   id-token: write
@@ -71,21 +70,18 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      # - name: Perform database backup
+      #   run: |
+      #     TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+      #     BACKUP_FILE="${{ inputs.db-name }}_backup_${TIMESTAMP}.dump"
+      #     pg_dump -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db-name }} -F c -v -f $BACKUP_FILE
+      #     echo "BACKUP_FILE_NAME=${BACKUP_FILE}" >> $GITHUB_ENV
 
-      - name: Perform database backup
-        run: |
-          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          BACKUP_FILE="${{ inputs.db-name }}_backup_${TIMESTAMP}.dump"
-          pg_dump -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db-name }} -F c -v -f $BACKUP_FILE
-          echo "BACKUP_FILE_NAME=${BACKUP_FILE}" >> $GITHUB_ENV
-
-      - name: Upload backup to Azure Blob Storage
-        uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
-        with:
-          inlineScript: |
-            az storage blob upload --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --file ${{ env.BACKUP_FILE_NAME }} --name ${{ env.BACKUP_FILE_NAME }} --auth-mode login
+      # - name: Upload backup to Azure Blob Storage
+      #   uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
+      #   with:
+      #     inlineScript: |
+      #       az storage blob upload --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --file ${{ env.BACKUP_FILE_NAME }} --name ${{ env.BACKUP_FILE_NAME }} --auth-mode login
 
   restore:
     if: inputs.job-to-run == 'restore'
