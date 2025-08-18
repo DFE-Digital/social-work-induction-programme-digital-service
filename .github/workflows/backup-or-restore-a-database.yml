@@ -33,7 +33,7 @@ on:
           - d03
 
 jobs:
-  fetch_secrets:
+  fetch-secrets:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -75,6 +75,7 @@ jobs:
 
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
+    needs: fetch-secrets
     permissions:
       id-token: write
       contents: read
