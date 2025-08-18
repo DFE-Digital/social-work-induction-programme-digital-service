@@ -80,6 +80,20 @@ jobs:
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
+      - name: Map service to actual DB instance
+        id: map_name
+        run: |
+          DB_INSTANCE=""
+          case "${{ github.event.inputs.db_name }}" in
+            moodle)
+              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_moodle_primary"
+              ;;
+            authservice)
+              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_auth_service"
+              ;;
+          esac
+          echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
+
       # - name: Perform database backup
       #   run: |
       #     TIMESTAMP=$(date +"%Y%m%d%H%M%S")
