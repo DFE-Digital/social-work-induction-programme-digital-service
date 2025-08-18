@@ -22,14 +22,12 @@ builder.Services.AddSingleton(featureFlags);
 // Need forwarded headers if using Azure Front Door. Note, this needs to be done
 // early, before authentication
 if (featureFlags.EnableForwardedHeaders)
-{
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.All;
         options.KnownNetworks.Clear();
         options.KnownProxies.Clear();
     });
-}
 
 // Add services to the container.
 builder.Services.AddGovUkFrontend(options =>
@@ -39,7 +37,7 @@ builder.Services.AddGovUkFrontend(options =>
     options.ErrorSummaryGeneration = ErrorSummaryGenerationOptions.PrependToFormElements;
     options.Rebrand = true;
 });
-builder.Services.AddCsp(nonceByteAmount: 32);
+builder.Services.AddCsp(32);
 builder
     .Services
     .AddRazorPages(options =>
@@ -56,16 +54,13 @@ builder
         options.Conventions.AuthorizeFolder("/ManageAccounts");
     });
 
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<UnauthorizedExceptionFilter>();
-});
+builder.Services.AddControllersWithViews(options => { options.Filters.Add<UnauthorizedExceptionFilter>(); });
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("ManageAccountsPolicy", policy =>
-        policy.RequireRole(RoleType.Coordinator.ToString(), RoleType.Administrator.ToString()))
+        policy.RequireRole(nameof(RoleType.Coordinator), nameof(RoleType.Administrator)))
     .AddPolicy("ManageOrganisationsPolicy", policy =>
-        policy.RequireRole(RoleType.Administrator.ToString()));
+        policy.RequireRole(nameof(RoleType.Administrator)));
 
 // Enable App Insights
 builder.Services.AddApplicationInsightsTelemetry();
@@ -97,19 +92,13 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (featureFlags.EnableDeveloperExceptionPage)
-{
     app.UseDeveloperExceptionPage();
-}
 else
-{
     app.UseExceptionHandler("/Home/Error");
-}
 
 if (featureFlags.EnableHttpStrictTransportSecurity)
-{
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
 
 app.UseCsp(csp =>
 {
@@ -123,18 +112,12 @@ app.UseCsp(csp =>
 
     // Ensure ASP.NET Core's auto refresh works
     // See https://github.com/dotnet/aspnetcore/issues/33068
-    if (featureFlags.EnableContentSecurityPolicyWorkaround)
-    {
-        csp.AllowConnections.ToAnywhere();
-    }
+    if (featureFlags.EnableContentSecurityPolicyWorkaround) csp.AllowConnections.ToAnywhere();
 });
 
 // Need forwarded headers if using Azure Front Door. Note, this needs to be done
 // early, before authentication
-if (featureFlags.EnableForwardedHeaders)
-{
-    app.UseForwardedHeaders();
-}
+if (featureFlags.EnableForwardedHeaders) app.UseForwardedHeaders();
 
 app.UseGovUkFrontend();
 

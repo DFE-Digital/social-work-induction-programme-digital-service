@@ -1,9 +1,8 @@
-﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Configuration;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
@@ -17,41 +16,31 @@ public abstract class CreateOrganisationJourneyServiceTestBase
 
     protected CreateOrganisationJourneyServiceTestBase()
     {
-        OrganisationBuilder = new OrganisationBuilder();
-        AccountBuilder = new AccountBuilder();
-        MockOrganisationService = new Mock<IOrganisationService>();
-        MockAccountService = new Mock<IAccountService>();
-        MockAuthServiceClient = new MockAuthServiceClient();
-        MockNotificationServiceClient = new MockNotificationServiceClient();
-        MockEmailTemplateOptions = new MockEmailTemplateOptions();
-        HttpContext = new DefaultHttpContext
-        {
-            Request = { Headers = { Referer = "test-referer" } },
-            Session = new MockHttpSession()
-        };
-
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
         Sut = new CreateOrganisationJourneyService(
             httpContextAccessor,
             MockOrganisationService.Object,
-            MockAuthServiceClient.Object,
-            MockAccountService.Object,
-            MockNotificationServiceClient.Object,
-            MockEmailTemplateOptions.Object,
-            new FakeLinkGenerator()
+            MockEmailService.Object
         );
     }
 
-    private protected HttpContext HttpContext { get; }
+    private protected HttpContext HttpContext { get; } = new DefaultHttpContext
+    {
+        Request = { Headers = { Referer = "test-referer" } },
+        Session = new MockHttpSession()
+    };
 
-    private protected Mock<IOrganisationService> MockOrganisationService { get; }
-    private protected Mock<IAccountService> MockAccountService { get; }
-    private protected MockAuthServiceClient MockAuthServiceClient { get; }
-    private protected MockNotificationServiceClient MockNotificationServiceClient { get; }
-    private protected MockEmailTemplateOptions MockEmailTemplateOptions { get; }
+    private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
+    private protected Mock<IEmailService> MockEmailService { get; } = new();
 
-    private protected OrganisationBuilder OrganisationBuilder { get; }
+    private protected OrganisationBuilder OrganisationBuilder { get; } = new();
 
-    private protected AccountBuilder AccountBuilder { get; }
+    private protected AccountBuilder AccountBuilder { get; } = new();
+
+    private protected void VerifyAllNoOtherCall()
+    {
+        MockOrganisationService.VerifyNoOtherCalls();
+        MockEmailService.VerifyNoOtherCalls();
+    }
 }

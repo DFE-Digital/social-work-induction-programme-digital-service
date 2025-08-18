@@ -1,9 +1,8 @@
-﻿using Bogus;
-using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
+﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
+using FluentAssertions;
 using Moq;
 using Xunit;
 
@@ -18,9 +17,6 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
         var primaryCoordinator = AccountBuilder.Build();
         var organisation = OrganisationBuilder.WithPrimaryCoordinatorId(primaryCoordinator.Id).Build();
         MockOrganisationService.Setup(x => x.CreateAsync(It.IsAny<Organisation>(), It.IsAny<Account>())).ReturnsAsync(organisation);
-        var linkingToken = new Faker().Random.String();
-        MockAuthServiceClient.MockAccountsOperations.Setup(x => x.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>())).ReturnsAsync(linkingToken);
-        MockAccountService.Setup(x => x.GetByIdAsync(primaryCoordinator.Id)).ReturnsAsync(primaryCoordinator);
 
         HttpContext.Session.Set(
             CreateOrganisationSessionKey,
@@ -39,12 +35,40 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
         MockOrganisationService.Verify(x => x.CreateAsync(It.Is<Organisation>(org => org.OrganisationName == organisation.OrganisationName),
             It.Is<Account>(acc => acc.Email == primaryCoordinator.Email))
         );
-        MockNotificationServiceClient.Verify(x => x.Notification.SendEmailAsync(It.Is<NotificationRequest>(req =>
-            req.EmailAddress == primaryCoordinator.Email
-            && req.Personalisation != null
-            && req.Personalisation["name"] == primaryCoordinator.FullName
-            && req.Personalisation["organisation"] == organisation.OrganisationName
-            && req.Personalisation["invitation_link"] == new FakeLinkGenerator().SignInWithLinkingToken(HttpContext, linkingToken)
+        MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
+            req.AccountId == primaryCoordinator.Id
+            && req.OrganisationName == organisation.OrganisationName
+            && req.Role == null
         )));
+
+        VerifyAllNoOtherCall();
+    }
+
+    [Fact]
+    public async Task CompleteJourneyAsync_WithNullOrganisation_ThrowsArgumentNullException()
+    {
+        // Arrange
+        HttpContext.Session.Set(CreateOrganisationSessionKey, new CreateOrganisationJourneyModel
+        {
+            Organisation = null,
+            PrimaryCoordinatorAccountDetails = new AccountDetails()
+        });
+
+        // Act & Assert
+        await Sut.Invoking(x => x.CompleteJourneyAsync()).Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task CompleteJourneyAsync_WithNullPrimaryCoordinator_ThrowsArgumentNullException()
+    {
+        // Arrange
+        HttpContext.Session.Set(CreateOrganisationSessionKey, new CreateOrganisationJourneyModel
+        {
+            Organisation = OrganisationBuilder.Build(),
+            PrimaryCoordinatorAccountDetails = null
+        });
+
+        // Act & Assert
+        await Sut.Invoking(x => x.CompleteJourneyAsync()).Should().ThrowAsync<ArgumentNullException>();
     }
 }

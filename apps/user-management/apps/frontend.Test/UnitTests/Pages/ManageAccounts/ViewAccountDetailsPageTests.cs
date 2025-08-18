@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
@@ -18,7 +19,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         Sut = new ViewAccountDetails(
             MockAccountService.Object,
             new FakeLinkGenerator(),
-            MockCreateAccountJourneyService.Object,
+            MockEmailService.Object,
             MockEditAccountJourneyService.Object
         )
         {
@@ -121,6 +122,8 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         var account = AccountBuilder.Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        MockEmailService.Setup(x => x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -144,7 +147,12 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         notificationMessage.Should().Be($"A new invitation to register has been sent to {account.FullName}, {account.Email}");
 
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.SendInvitationEmailAsync(account), Times.Once);
+        MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
+                req.AccountId == account.Id &&
+                req.OrganisationName == "Test Organisation" &&
+                req.Role == account.Types!.Min())),
+            Times.Once);
+
         VerifyAllNoOtherCalls();
     }
 

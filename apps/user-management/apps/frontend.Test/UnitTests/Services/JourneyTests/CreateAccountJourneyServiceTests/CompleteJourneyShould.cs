@@ -1,7 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -28,138 +27,46 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
 
         var expected = account with { Id = Guid.NewGuid() };
         MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
+        InvitationEmailRequest? capturedEmailRequest = null;
+        MockEmailService.Setup(x => x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>())).Callback<InvitationEmailRequest>(req => capturedEmailRequest = req);
 
-        const string expectedLinkingToken = "LinkingTokenString";
-        MockAuthServiceClient
-            .MockAccountsOperations.Setup(x => x.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(expectedLinkingToken);
+        // Act
+        var result = await Sut.CompleteJourneyAsync();
 
-        var invitationEmailTemplateId = MockEmailTemplateOptions
-            .EmailTemplateOptions
-            .Roles[expected.Types!.Min().ToString()]
-            .Invitation;
-        var expectedNotificationRequest = new NotificationRequest
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<Account>();
+        result.Should().BeEquivalentTo(expected);
+        HttpContext.Session.TryGet(
+            CreateAccountSessionKey,
+            out CreateAccountJourneyModel? createAccountJourneyModel
+        );
+        createAccountJourneyModel.Should().BeNull();
+
+        MockAccountService.Verify(
+            x =>
+                x.CreateAsync(
+                    It.Is<Account>(acc =>
+                        acc.Id == account.Id
+                        && acc.FullName == account.FullName
+                        && acc.Email == account.Email
+                        && acc.IsStaff == account.IsStaff
+                        && acc.Types != null
+                        && acc.Types.SequenceEqual(account.Types!)
+                        && acc.SocialWorkEnglandNumber == account.SocialWorkEnglandNumber
+                    ),
+                    It.IsAny<Guid?>()
+                ),
+            Times.Once
+        );
+        MockEmailService.Verify(x =>
+            x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>()), Times.Once);
+        capturedEmailRequest.Should().BeEquivalentTo(new InvitationEmailRequest
         {
-            EmailAddress = expected.Email!,
-            TemplateId = invitationEmailTemplateId,
-            Personalisation = new Dictionary<string, string>
-            {
-                { "name", account.FullName },
-                { "organisation", "TEST ORGANISATION" }, // TODO Retrieve this value when we can
-                {
-                    "invitation_link",
-                    new FakeLinkGenerator().SignInWithLinkingToken(
-                        HttpContext,
-                        expectedLinkingToken
-                    )
-                }
-            }
-        };
-
-        // Act
-        var result = await Sut.CompleteJourneyAsync();
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<Account>();
-        result.Should().BeEquivalentTo(expected);
-        HttpContext.Session.TryGet(
-            CreateAccountSessionKey,
-            out CreateAccountJourneyModel? createAccountJourneyModel
-        );
-        createAccountJourneyModel.Should().BeNull();
-
-        MockAccountService.Verify(
-            x =>
-                x.CreateAsync(
-                    It.Is<Account>(acc =>
-                        acc.Id == account.Id
-                        && acc.FullName == account.FullName
-                        && acc.Email == account.Email
-                        && acc.IsStaff == account.IsStaff
-                        && acc.Types != null
-                        && acc.Types.SequenceEqual(account.Types!)
-                        && acc.SocialWorkEnglandNumber == account.SocialWorkEnglandNumber
-                    ),
-                    It.IsAny<Guid?>()
-                ),
-            Times.Once
-        );
-        MockAuthServiceClient.MockAccountsOperations.Verify(
-            x => x.GetLinkingTokenByAccountIdAsync(expected.Id),
-            Times.Once()
-        );
-        MockNotificationServiceClient.MockNotificationsOperations.Verify(
-            x => x.SendEmailAsync(MoqHelpers.ShouldBeEquivalentTo(expectedNotificationRequest)),
-            Times.Once
-        );
-        MockEmailTemplateOptions.Verify(x => x.Value, Times.Once);
-
-        VerifyAllNoOtherCall();
-    }
-
-    [Fact]
-    public async Task WhenCalled_WithBlankEmail_DoesNotSendEmail()
-    {
-        // Arrange
-        var account = AccountBuilder.WithId(Guid.Empty).WithEmail(null).Build();
-
-        HttpContext.Session.Set(
-            CreateAccountSessionKey,
-            new CreateAccountJourneyModel
-            {
-                AccountDetails = AccountDetails.FromAccount(account),
-                AccountTypes = account.Types,
-                IsStaff = account.IsStaff
-            }
-        );
-
-        var expected = account with { Id = Guid.NewGuid() };
-        MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
-
-        const string expectedLinkingToken = "LinkingTokenString";
-        MockAuthServiceClient
-            .MockAccountsOperations.Setup(x => x.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(expectedLinkingToken);
-
-        // Act
-        var result = await Sut.CompleteJourneyAsync();
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<Account>();
-        result.Should().BeEquivalentTo(expected);
-        HttpContext.Session.TryGet(
-            CreateAccountSessionKey,
-            out CreateAccountJourneyModel? createAccountJourneyModel
-        );
-        createAccountJourneyModel.Should().BeNull();
-
-        MockAccountService.Verify(
-            x =>
-                x.CreateAsync(
-                    It.Is<Account>(acc =>
-                        acc.Id == account.Id
-                        && acc.FullName == account.FullName
-                        && acc.Email == account.Email
-                        && acc.IsStaff == account.IsStaff
-                        && acc.Types != null
-                        && acc.Types.SequenceEqual(account.Types!)
-                        && acc.SocialWorkEnglandNumber == account.SocialWorkEnglandNumber
-                    ),
-                    It.IsAny<Guid?>()
-                ),
-            Times.Once
-        );
-        MockAuthServiceClient.MockAccountsOperations.Verify(
-            x => x.GetLinkingTokenByAccountIdAsync(It.IsAny<Guid>()),
-            Times.Never()
-        );
-        MockNotificationServiceClient.MockNotificationsOperations.Verify(
-            x => x.SendEmailAsync(It.IsAny<NotificationRequest>()),
-            Times.Never
-        );
-        MockEmailTemplateOptions.Verify(x => x.Value, Times.Never);
+            AccountId = expected.Id,
+            OrganisationName = "Test Organisation",
+            Role = expected.Types!.Min()
+        });
 
         VerifyAllNoOtherCall();
     }

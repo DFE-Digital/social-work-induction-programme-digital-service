@@ -1,25 +1,16 @@
-using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
-using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IAuthServiceClient authServiceClient,
-    IAccountService accountService,
-    INotificationServiceClient notificationServiceClient,
-    IOptions<EmailTemplateOptions> emailTemplateOptions,
-    EcfLinkGenerator linkGenerator
+    IEmailService emailService
 ) : ICreateOrganisationJourneyService
 {
     private const string CreateOrganisationSessionKey = "_createOrganisation";
@@ -89,41 +80,14 @@ public class CreateOrganisationJourneyService(
 
         ResetCreateOrganisationJourneyModel();
 
-        if (organisation.PrimaryCoordinatorId is { } primaryCoordinatorId) await SendInvitationEmailAsync(primaryCoordinatorId, organisation.OrganisationName);
+        if (organisation.PrimaryCoordinatorId is { } primaryCoordinatorId)
+            await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+            {
+                AccountId = primaryCoordinatorId,
+                OrganisationName = organisation.OrganisationName
+            });
 
         return organisation;
-    }
-
-    private async Task SendInvitationEmailAsync(Guid accountId, string organisationName)
-    {
-        if (httpContextAccessor.HttpContext is null) return;
-
-        var account = await accountService.GetByIdAsync(accountId);
-        if (account?.Email is null) return;
-
-        var linkingToken = await authServiceClient.Accounts.GetLinkingTokenByAccountIdAsync(
-            accountId
-        );
-
-        var invitationLink = linkGenerator.SignInWithLinkingToken(
-            httpContextAccessor.HttpContext,
-            linkingToken
-        );
-
-        var templateId = emailTemplateOptions.Value.PrimaryCoordinatorInvitationEmail;
-        var notificationRequest = new NotificationRequest
-        {
-            EmailAddress = account.Email,
-            TemplateId = templateId,
-            Personalisation = new Dictionary<string, string>
-            {
-                { "name", account.FullName },
-                { "organisation", organisationName },
-                { "invitation_link", invitationLink }
-            }
-        };
-
-        await notificationServiceClient.Notification.SendEmailAsync(notificationRequest);
     }
 
     private CreateOrganisationJourneyModel GetOrganisationJourneyModel()
