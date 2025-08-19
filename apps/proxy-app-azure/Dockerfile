@@ -4,7 +4,9 @@ ARG AZURE_KUDU_SSH_USER
 ARG FULL_TAG
 
 # Install lighttpd - lightweight / fast web server
-RUN apk add --no-cache lighttpd
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.19/community" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache lighttpd
 
 # Copy hardened lighttpd config
 COPY lighttpd.conf /etc/lighttpd/lighttpd.conf
