@@ -104,6 +104,7 @@ jobs:
           echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
 
       - name: Establish remote tunnel (optional)
+        if: inputs.tunnel-app-service != '' && inputs.app-service-resource-group != '' && inputs.tunnel-remote-server-name != '' && inputs.tunnel-remote-server-port != ''
         uses: ./.github/actions/create-app-service-tunnel
         with:
           app-service-name: ${{ inputs.tunnel-app-service }}
