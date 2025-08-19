@@ -114,9 +114,19 @@ jobs:
 
       - name: Run backup script
         run: |
-          echo "Starting backup..."
-          /usr/local/bin/run-backup.sh ${{ inputs.db-name }} ${{ inputs.storage-account-name }} ${{ inputs.storage-container-name }} ${{ inputs.backup-file-name }}
-        shell: sh
+          set -e
+          if [ -z "$CONNECTIONSTRINGS__DEFAULTCONNECTION" ] || [ -z "$DB_PASSWORD" ]; then
+            echo "Error: Please set the CONNECTIONSTRINGS__DEFAULTCONNECTION and DB_PASSWORD environment variables."
+            exit 1
+          fi
+          echo "Parsing connection string template..."
+          DB_HOST=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Host=[^;]*' | cut -d'=' -f2)
+          DB_USER=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Username=[^;]*' | cut -d'=' -f2)
+          if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
+            echo "Error: Could not parse Host and Username from CONNECTIONSTRINGS__DEFAULTCONNECTION."
+            exit 1
+          fi
+        shell: bash
 
   restore:
     if: inputs.job-to-run == 'restore'
