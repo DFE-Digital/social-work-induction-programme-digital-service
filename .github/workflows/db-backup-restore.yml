@@ -25,8 +25,17 @@ on:
       instance:
         description: "Environment instance"
         type: string
+      app-service-resource-group:
+        description: Name of resource group which hosts the app services
+        type: string
+      tunnel-app-service:
+        description: Name of remote app service providing tunnel
+        type: string
       tunnel-remote-server-name:
         description: Name of remote server to tunnel to, if tunnelling connection required
+        type: string
+      tunnel-remote-server-port:
+        description: Port of remote server to tunnel to, if tunnelling connection required
         type: string
       storage-account-name:
         description: Name of the storage account where the backup files will be stored
@@ -93,6 +102,14 @@ jobs:
               ;;
           esac
           echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
+
+      - name: Establish remote tunnel (optional)
+        uses: ./.github/actions/create-app-service-tunnel
+        with:
+          app-service-name: ${{ inputs.tunnel-app-service }}
+          resource-group: ${{ inputs.app-service-resource-group }}
+          host-name: ${{ env.REMOTE_TUNNEL_HOST }}
+          port: ${{ inputs.tunnel-remote-server-port }}
 
       # - name: Perform database backup
       #   run: |
