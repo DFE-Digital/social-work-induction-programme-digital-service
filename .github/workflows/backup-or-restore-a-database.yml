@@ -75,7 +75,7 @@ jobs:
       # db-host-name: ${{  }}
       instance: ${{ github.event.inputs.instance }}
       app-service-resource-group: s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-swip-rg
-      tunnel_app_service: s205${{ github.event.inputs.instance }}-wa-proxy-service
+      tunnel-app-service: s205${{ github.event.inputs.instance }}-wa-proxy-service
       tunnel-remote-server-name: s205${{ github.event.inputs.instance }}-pvtswipdb.postgres.database.azure.com
       tunnel-remote-server-port: 5432
       # storage-account-name:
