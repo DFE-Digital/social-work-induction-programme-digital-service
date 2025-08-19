@@ -51,7 +51,7 @@ RUN apk add --no-cache \
     python3-dev \
     libffi-dev \
     openssl-dev && \
-    pip install azure-cli && \
+    pip install --no-cache-dir --break-system-packages azure-cli && \
     apk del build-base python3-dev libffi-dev openssl-dev
 
 # Copy backup and restore scripts into the container
