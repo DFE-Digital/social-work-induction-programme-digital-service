@@ -19,7 +19,7 @@ RUN mkdir -p /var/www/localhost/htdocs \
 COPY index.html /var/www/localhost/htdocs
 RUN echo $FULL_TAG > /var/www/localhost/htdocs/version.txt \
     && chown -R lighttpd:lighttpd /var/www/localhost/htdocs
-    
+
 # Mandatory tools for installation + remote SSH
 RUN apk add --no-cache \
     openssh \
@@ -42,7 +42,15 @@ RUN apk add --no-cache \
     bind-tools \
     net-tools \
     traceroute \
-    postgresql-client
+    postgresql-client \
+    azure-cli
+
+# Copy backup and restore scripts into the container
+COPY run-backup.sh /usr/local/bin/run-backup.sh
+COPY run-restore.sh /usr/local/bin/run-restore.sh
+
+RUN chmod +x /usr/local/bin/run-backup.sh
+RUN chmod +x /usr/local/bin/run-restore.sh
 
 ENTRYPOINT ["/apps/entry-point.sh"]
 

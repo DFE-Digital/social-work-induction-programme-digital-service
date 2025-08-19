@@ -112,27 +112,6 @@ jobs:
           host-name: ${{ env.REMOTE_TUNNEL_HOST }}
           port: ${{ inputs.tunnel-remote-server-port }}
 
-      - name: Fetch DB credentials from Key Vault
-        run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
-        shell: bash
-
-      # - name: Perform database backup
-      #   run: |
-      #     TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-      #     BACKUP_FILE="${{ inputs.db-name }}_backup_${TIMESTAMP}.dump"
-      #     pg_dump -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db-name }} -F c -v -f $BACKUP_FILE
-      #     echo "BACKUP_FILE_NAME=${BACKUP_FILE}" >> $GITHUB_ENV
-
-      # - name: Upload backup to Azure Blob Storage
-      #   uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
-      #   with:
-      #     inlineScript: |
-      #       az storage blob upload --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --file ${{ env.BACKUP_FILE_NAME }} --name ${{ env.BACKUP_FILE_NAME }} --auth-mode login
-
   restore:
     if: inputs.job-to-run == 'restore'
     runs-on: ubuntu-latest

@@ -72,7 +72,7 @@ jobs:
     secrets: inherit
     with:
       job-to-run: ${{ github.event.inputs.job_to_run }}
-      db-name: ${{ github.env.DB_INSTANCE }}
+      db-name: ${{ github.event.inputs.db_name }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       environment: Dev
       # db-host-name: ${{  }}
