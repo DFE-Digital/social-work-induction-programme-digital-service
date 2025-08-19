@@ -4,9 +4,7 @@ ARG AZURE_KUDU_SSH_USER
 ARG FULL_TAG
 
 # Install lighttpd - lightweight / fast web server
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.19/community" >> /etc/apk/repositories && \
-    apk update && \
-    apk add --no-cache lighttpd
+RUN apk add --no-cache lighttpd
 
 # Copy hardened lighttpd config
 COPY lighttpd.conf /etc/lighttpd/lighttpd.conf
@@ -44,8 +42,17 @@ RUN apk add --no-cache \
     bind-tools \
     net-tools \
     traceroute \
-    postgresql-client \
-    azure-cli
+    postgresql-client
+
+# Install dependencies, use pip to install azure-cli, then clean up build tools
+RUN apk add --no-cache \
+    py3-pip \
+    build-base \
+    python3-dev \
+    libffi-dev \
+    openssl-dev && \
+    pip install azure-cli && \
+    apk del build-base python3-dev libffi-dev openssl-dev
 
 # Copy backup and restore scripts into the container
 COPY run-backup.sh /usr/local/bin/run-backup.sh
