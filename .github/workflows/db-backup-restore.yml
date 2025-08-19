@@ -135,7 +135,7 @@ jobs:
              az webapp ssh \
                --name s205${{inputs.instance}}-wa-proxy-service \
                --resource-group s205${{inputs.instance}}-swip-rg \
-               --command "echo '--- Environment Variables ---' && printenv && echo '--- Home Directory Listing ---' && ls -l /home"
+               --command "printenv"
 
   restore:
     if: inputs.job-to-run == 'restore'
