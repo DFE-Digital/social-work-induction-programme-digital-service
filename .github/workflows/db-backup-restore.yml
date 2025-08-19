@@ -115,7 +115,7 @@ jobs:
       - name: Run backup script
         run: |
           echo "Starting backup..."
-          /usr/local/bin/run-backup ${{ inputs.db-name }} ${{ inputs.storage-account-name }} ${{ inputs.storage-container-name }} ${{ inputs.backup-file-name }}
+          /usr/local/bin/run-backup.sh ${{ inputs.db-name }} ${{ inputs.storage-account-name }} ${{ inputs.storage-container-name }} ${{ inputs.backup-file-name }}
         shell: sh
 
   restore:
