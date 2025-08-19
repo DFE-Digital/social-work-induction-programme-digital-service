@@ -93,7 +93,7 @@ jobs:
         id: map_name
         run: |
           DB_INSTANCE=""
-          case "${{ github.event.inputs.db_name }}" in
+          case "${{ github.event.inputs.db-name }}" in
             moodle)
               DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_moodle_primary"
               ;;
@@ -103,7 +103,7 @@ jobs:
           esac
           echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
 
-      - name: Establish remote tunnel (optional)
+      - name: Establish remote tunnel
         if: inputs.tunnel-app-service != '' && inputs.app-service-resource-group != '' && inputs.tunnel-remote-server-name != '' && inputs.tunnel-remote-server-port != ''
         uses: ./.github/actions/create-app-service-tunnel
         with:
@@ -111,6 +111,14 @@ jobs:
           resource-group: ${{ inputs.app-service-resource-group }}
           host-name: ${{ env.REMOTE_TUNNEL_HOST }}
           port: ${{ inputs.tunnel-remote-server-port }}
+
+      - name: Fetch DB credentials from Key Vault
+        run: |
+          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
+          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
+          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
+          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
+        shell: bash
 
       # - name: Perform database backup
       #   run: |
