@@ -21,4 +21,5 @@ module "stack" {
   log_analytics_sku                          = var.log_analytics_sku
   key_vault_sku                              = var.key_vault_sku
   db_backup_blob_sa_name                     = var.db_backup_blob_sa_name
+  container_app_env_name                     = var.container_app_env_name
 }

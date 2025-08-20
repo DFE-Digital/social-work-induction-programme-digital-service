@@ -15,14 +15,8 @@ on:
         description: "The name of the database to backup/restore"
         required: true
         type: string
-      db-host-name:
-        description: The name of the database server
-        type: string
       instance:
         description: "Environment instance"
-        type: string
-      tunnel-remote-server-name:
-        description: Name of remote server to tunnel to, if tunnelling connection required
         type: string
       storage-account-name:
         description: Name of the storage account where the backup files will be stored
@@ -39,13 +33,7 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
-      KEY_VAULT_NAME:           # might not need this, on proxy server?
-        required: true
-      DB_USER_SECRET_NAME:      # might not need this, on proxy server?
-        required: true
-      DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
-        required: true
-
+      
 permissions:
   id-token: write
   contents: read
@@ -58,11 +46,7 @@ jobs:
       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
       AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
       AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      REMOTE_TUNNEL_HOST: ${{ inputs.tunnel-remote-server-name }}
-      # This will make the credentials available for remote tunnelling
-      AZURE_KUDU_SSH_USER: ${{ vars.AZURE_KUDU_SSH_USER }}
-      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
-
+      
     steps:
       - name: Log in to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
@@ -71,21 +55,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Perform database backup
-        run: |
-          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          BACKUP_FILE="${{ inputs.db-name }}_backup_${TIMESTAMP}.dump"
-          pg_dump -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db-name }} -F c -v -f $BACKUP_FILE
-          echo "BACKUP_FILE_NAME=${BACKUP_FILE}" >> $GITHUB_ENV
-
-      - name: Upload backup to Azure Blob Storage
-        uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
+      - name: Trigger Backup Job
+        uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --file ${{ env.BACKUP_FILE_NAME }} --name ${{ env.BACKUP_FILE_NAME }} --auth-mode login
+            az containerapp job start \
+            --name "s205${{inputs.instance}}-database-jobs-ca" \
+            --resource-group "s205${{inputs.instance}}-swip-rg" \
+            --command "/usr/local/bin/run-backup.sh ${{ github.event.inputs.db-name }} ${{ github.event.inputs.storage-account-name }} ${{ github.event.inputs.storage-container-name }}"
 
   restore:
     if: inputs.job-to-run == 'restore'
@@ -97,6 +74,7 @@ jobs:
         run: |
           echo "Error: backup_file_name input is required for the restore job."
           exit 1
+      
       - name: Log in to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
@@ -104,25 +82,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Fetch DB credentials from Key Vault
-        run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_ENV
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Download backup from Azure Blob Storage
-        uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
+      - name: Trigger Restore job
+        uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob download --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --name ${{ inputs.backup-file-name }} --file ./restore.dump --auth-mode login
-
-      - name: Restore database
-        run: |
-          psql -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d postgres -c "DROP DATABASE IF EXISTS ${{ inputs.db-name }};"
-          psql -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d postgres -c "CREATE DATABASE ${{ inputs.db-name }};"
-          pg_restore -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db_name }} -v --no-owner --no-privileges ./restore.dump
+            az containerapp job start \
+            --name "s205${{inputs.instance}}-database-jobs-ca" \
+            --resource-group "s205${{inputs.instance}}-swip-rg" \
+            --command "/usr/local/bin/run-restore.sh ${{ github.event.inputs.db-name }} ${{ github.event.inputs.storage-account-name }} ${{ github.event.inputs.storage-container-name }} ${{ github.event.inputs.backup-file-name }}"

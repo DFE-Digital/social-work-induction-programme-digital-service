@@ -33,32 +33,16 @@ on:
           - d03
 
 jobs:
-  fetch_secrets:
+  map_variables:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     outputs:
-      db_user: ${{ steps.get_secrets.outputs.db_user }}
-      db_password: ${{ steps.get_secrets.outputs.db_password }}
       db_instance: ${{ steps.map_name.outputs.db_name }}
+      sa_container_name: ${{ steps.map_container.outputs.sa_container_name}}
 
     steps:
-      - name: Log in to Azure
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Fetch DB credentials from Key Vault
-        run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Map service to actual DB instance
         id: map_name
         run: |
@@ -73,13 +57,31 @@ jobs:
           esac
           echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
 
+      - name: Map storage container name
+        id: map_container
+        run: |
+          SA_CONTAINER = ""
+          case "${{ github.event.inputs.db_name }}" in
+            moodle)
+              SA_CONTAINER="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-moodle-backups"
+              ;;
+            authservice)
+              SA_CONTAINER="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}-usermanagement-backups
+              ;;
+            esac
+            echo "sa_container_name=$SA_CONTAINER" >> $GITHUB_OUTPUT
+
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
+    needs: map_variables
     permissions:
       id-token: write
       contents: read
     with:
       job_to_run: ${{ github.event.inputs.job_to_run }}
-      db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
+      db_name: ${{ needs.map_variables.outputs.db_instance }}
       backup_file_name: ${{ github.event.inputs.backup_file_name }}
+      instance: ${{ inputs.instance }}
+      storage-account-name: "s205${{inputs.instance}}sabackups"
+      storage-container-name: ${{ needs.map_variables.outputs.sa_container_name}} 
     secrets: inherit

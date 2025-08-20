@@ -123,3 +123,23 @@ output "subnet_functionapp_id" {
   description = "The ID of the function app subnet"
   value       = azurerm_subnet.sn_function_app.id
 }
+
+output "subnet_containerapps_id" {
+  description = "The ID of the container apps subnet"
+  value       = azurerm_subnet.cae_subnet.id
+}
+
+output "db_backup_blob_Storage_account_id" {
+  description = "The ID of the blob storage account for DB backups"
+  value       = azurerm_storage_account.sa_db_backup_blob_storage.id
+}
+
+output "db_backup_blob_storage_account_name" {
+  description = "The name of the blob storage account"
+  value       = azurerm_storage_account.sa_db_backup_blob_storage.name
+}
+
+output "log_analytics_workspace_id" {
+  description = "The ID of the Log Analytics Workspace"
+  value       = azurerm_log_analytics_workspace.log_analytics_web.id
+}

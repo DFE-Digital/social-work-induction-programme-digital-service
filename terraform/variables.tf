@@ -337,3 +337,8 @@ variable "db_backup_blob_sa_name" {
   description = "DB backup blob storage account name"
   type        = string
 }
+
+variable "container_app_env_name" {
+  description = "Name of the Container App Environment"
+  type        = string
+}
