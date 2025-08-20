@@ -112,30 +112,23 @@ jobs:
           host-name: ${{ env.REMOTE_TUNNEL_HOST }}
           port: ${{ inputs.tunnel-remote-server-port }}
 
-      # - name: Run backup script
-      #   run: |
-      #     set -e
-      #     if [ -z "$CONNECTIONSTRINGS__DEFAULTCONNECTION" ] || [ -z "$DB_PASSWORD" ]; then
-      #       echo "Error: Please set the CONNECTIONSTRINGS__DEFAULTCONNECTION and DB_PASSWORD environment variables."
-      #       exit 1
-      #     fi
-      #     echo "Parsing connection string template..."
-      #     DB_HOST=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Host=[^;]*' | cut -d'=' -f2)
-      #     DB_USER=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Username=[^;]*' | cut -d'=' -f2)
-      #     if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
-      #       echo "Error: Could not parse Host and Username from CONNECTIONSTRINGS__DEFAULTCONNECTION."
-      #       exit 1
-      #     fi
-      #   shell: bash
+      # set app settings ?
 
-      - name: Execute remote command via SSH
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-             az webapp ssh \
-               --name s205${{inputs.instance}}-wa-proxy-service \
-               --resource-group s205${{inputs.instance}}-swip-rg \
-               --command "printenv"
+      - name: Run backup script
+        run: |
+          set -e
+          if [ -z "$CONNECTIONSTRINGS__DEFAULTCONNECTION" ] || [ -z "$DB_PASSWORD" ]; then
+            echo "Error: Please set the CONNECTIONSTRINGS__DEFAULTCONNECTION and DB_PASSWORD environment variables."
+            exit 1
+          fi
+          echo "Parsing connection string template..."
+          DB_HOST=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Host=[^;]*' | cut -d'=' -f2)
+          DB_USER=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Username=[^;]*' | cut -d'=' -f2)
+          if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
+            echo "Error: Could not parse Host and Username from CONNECTIONSTRINGS__DEFAULTCONNECTION."
+            exit 1
+          fi
+        shell: bash
 
   restore:
     if: inputs.job-to-run == 'restore'
