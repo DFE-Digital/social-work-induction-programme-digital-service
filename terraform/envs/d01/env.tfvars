@@ -43,6 +43,7 @@ moodle_app_settings = {
 }
 user_management_app_settings = {
   "BASIC_AUTH_ENABLED" = "true"
+  "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
 }
 moodle_max_data_storage_size_in_gb = 5
 storage_redundancy                 = "LRS"
