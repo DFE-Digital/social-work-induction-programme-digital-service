@@ -45,7 +45,7 @@ test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  @cd "tests/" && dotnet test
+  @cd {{solution-root / "tests" /}} && dotnet test
 
 # Format the .NET solution and Terraform code
 format:
