@@ -45,8 +45,7 @@ test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  pwd
-  @cd {{solution-root}}/Dfe.Sww.Ecf && dotnet test
+  @cd "tests/" && dotnet test
 
 # Format the .NET solution and Terraform code
 format:
