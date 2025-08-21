@@ -34,11 +34,6 @@ variable "log_analytics_workspace_id" {
   type        = string
 }
 
-variable "key_vault_id" {
-  description = "ID of the Key Vault to grant access to"
-  type        = string
-}
-
 variable "container_app_job_name" {
   description = "The name of the Container App Job"
   type        = string
