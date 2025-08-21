@@ -17,7 +17,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.NotificationServiceClie
 
 public class NotificationOperationsTests
 {
-    private readonly FakeLogger _fakeLogger = new();
+    private readonly FakeLogger<NotificationOperations> _fakeLogger = new();
     private readonly Mock<FeatureFlags> _mockFeatureFlags = new();
     private readonly NotificationRequestFaker _notificationRequestFaker = new();
 
