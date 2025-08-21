@@ -53,3 +53,8 @@ variable "environment_settings" {
   description = "The environment settings for the container app job"
   type        = map(string)
 }
+
+variable "container_app_env_id" {
+  description = "The ID of the Container App Environment"
+  type        = string
+}

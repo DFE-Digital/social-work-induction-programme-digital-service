@@ -10,6 +10,7 @@ module "database-jobs" {
   resource_group_name        = var.primary_resource_group
   tags                       = local.common_tags
   acr_id                     = local.acr_id
+  container_app_env_id       = module.stack.container_env_id
   environment_settings = merge({
     "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
     "STORAGECONNECTIONSTRING"              = "https://${module.stack.db_backup_blob_storage_account_name}.blob.core.windows.net/[SA_REPLACE_CONTAINER]"

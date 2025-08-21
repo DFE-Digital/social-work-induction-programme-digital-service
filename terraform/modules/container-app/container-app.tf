@@ -2,7 +2,7 @@ resource "azurerm_container_app_job" "job" {
   name                         = var.container_app_job_name
   location                     = var.location
   resource_group_name          = var.resource_group_name
-  container_app_environment_id = azurerm_container_app_environment.env.id
+  container_app_environment_id = var.container_app_env_id
 
   replica_timeout_in_seconds = 120
   replica_retry_limit        = 10

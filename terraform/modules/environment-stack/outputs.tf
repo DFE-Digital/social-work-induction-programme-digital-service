@@ -143,3 +143,8 @@ output "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics Workspace"
   value       = azurerm_log_analytics_workspace.log_analytics_web.id
 }
+
+output "container_env_id" {
+  description = "The ID of the Container App Environment"
+  value       = azurerm_container_app_environment.env.id
+}
