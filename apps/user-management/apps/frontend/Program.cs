@@ -9,15 +9,16 @@ using GovUk.Frontend.AspNetCore;
 using Joonasw.AspNetCore.SecurityHeaders;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using NodaTime;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var featureFlags = builder.Configuration
-    .GetRequiredSection("FeatureFlags")
-    .Get<FeatureFlags>()!;
-
-builder.Services.AddSingleton(featureFlags);
+var featureFlagsConfiguration = builder.Configuration
+    .GetRequiredSection("FeatureFlags");
+builder.Services.Configure<FeatureFlags>(featureFlagsConfiguration);
+var featureFlags = featureFlagsConfiguration.Get<FeatureFlags>();
+if (featureFlags is null) throw new InvalidConfigurationException("Unable to parse feature flags configuration.");
 
 // Need forwarded headers if using Azure Front Door. Note, this needs to be done
 // early, before authentication
@@ -37,7 +38,7 @@ builder.Services.AddGovUkFrontend(options =>
     options.ErrorSummaryGeneration = ErrorSummaryGenerationOptions.PrependToFormElements;
     options.Rebrand = true;
 });
-builder.Services.AddCsp(32);
+builder.Services.AddCsp();
 builder
     .Services
     .AddRazorPages(options =>

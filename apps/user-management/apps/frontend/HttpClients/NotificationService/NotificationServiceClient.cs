@@ -16,7 +16,7 @@ public class NotificationServiceClient : INotificationServiceClient
     {
         HttpClient = httpClient;
         Options = clientOptions.Value;
-        Notification = new NotificationOperations(HttpClient, Options.Routes.Notification, logger, featureFlags.Value);
+        Notification = new NotificationOperations(HttpClient, Options.Routes.Notification, logger, featureFlags);
 
         if (!string.IsNullOrEmpty(Options.FunctionKey))
         {

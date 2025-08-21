@@ -5,10 +5,11 @@ using Dfe.Sww.Ecf.Frontend.Helpers;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Operations;
 
-public class NotificationOperations(HttpClient httpClient, NotificationRoutes routes, ILogger logger, FeatureFlags featureFlags)
+public class NotificationOperations(HttpClient httpClient, NotificationRoutes routes, ILogger logger, IOptions<FeatureFlags> featureFlags)
     : INotificationOperations
 {
     private static JsonSerializerOptions? SerializerOptions { get; } =
@@ -17,7 +18,7 @@ public class NotificationOperations(HttpClient httpClient, NotificationRoutes ro
     public async Task<NotificationResponse> SendEmailAsync(NotificationRequest request)
     {
         Log("Sending email...");
-        if (featureFlags.EnablePlusEmailStripping)
+        if (featureFlags.Value.EnablePlusEmailStripping)
         {
             Log("Stripping 'plus' tag from email address");
             var email = request.EmailAddress;

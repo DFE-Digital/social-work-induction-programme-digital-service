@@ -19,15 +19,16 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 {
     public ConfirmAccountDetailsShould()
     {
+        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags
+        {
+            EnableMoodleIntegration = true
+        });
         Sut = new ConfirmAccountDetails(
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
             MockMoodleServiceClient.Object,
             new FakeLinkGenerator(),
-            new FeatureFlags
-            {
-                EnableMoodleIntegration = true
-            }
+            MockFeatureFlags.Object
         )
         {
             TempData = TempData
@@ -209,16 +210,17 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     [Fact]
     public async Task Post_WhenCalledWithMoodleIntegrationDisabled_CreatesUserAndSendsEmailAndDoesNotCallMoodleAndSetExternalUserId()
     {
+        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags
+        {
+            EnableMoodleIntegration = false
+        });
         // Arrange
         Sut = new ConfirmAccountDetails(
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
             MockMoodleServiceClient.Object,
             new FakeLinkGenerator(),
-            new FeatureFlags
-            {
-                EnableMoodleIntegration = false
-            }
+            MockFeatureFlags.Object
         )
         {
             TempData = TempData

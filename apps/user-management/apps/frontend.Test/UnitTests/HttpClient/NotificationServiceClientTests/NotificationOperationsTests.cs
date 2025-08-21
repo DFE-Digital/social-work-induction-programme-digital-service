@@ -9,6 +9,7 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
+using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
@@ -18,8 +19,13 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.NotificationServiceClie
 public class NotificationOperationsTests
 {
     private readonly FakeLogger<NotificationOperations> _fakeLogger = new();
-    private readonly Mock<FeatureFlags> _mockFeatureFlags = new();
+    private readonly Mock<IOptions<FeatureFlags>> _mockFeatureFlags = new();
     private readonly NotificationRequestFaker _notificationRequestFaker = new();
+
+    public NotificationOperationsTests()
+    {
+        _mockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags());
+    }
 
     [Fact]
     public async Task SendEmailAsync_SuccessfulRequest_ReturnsCorrectResponse()
@@ -150,7 +156,8 @@ public class NotificationOperationsTests
         client.BaseAddress = new Uri("http://localhost");
 
         var routes = new NotificationRoutes { SendEmail = route };
-        return new NotificationOperations(client, routes, _fakeLogger, featureFlags ?? _mockFeatureFlags.Object);
+        if (featureFlags is not null) _mockFeatureFlags.SetupGet(x => x.Value).Returns(featureFlags);
+        return new NotificationOperations(client, routes, _fakeLogger, _mockFeatureFlags.Object);
     }
 
     private static (
