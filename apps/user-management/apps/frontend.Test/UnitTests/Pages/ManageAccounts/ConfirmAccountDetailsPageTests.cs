@@ -169,7 +169,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         var createUserRequest = new CreateMoodleUserRequest
         {
-            Username = updatedAccountDetails.Email?.ToLower(),
+            Username = updatedAccountDetails.Email,
             Email = updatedAccountDetails.Email,
             FirstName = updatedAccountDetails.FirstName,
             LastName = updatedAccountDetails.LastName
@@ -206,50 +206,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         );
         VerifyAllNoOtherCalls();
     }
-
-    [Fact]
-    public async Task Post_WhenCalledWithUpperCaseEmail_SetsMoodleUsernameToLowerCase()
-    {
-        // Arrange
-        var upperCaseEmail = "TEST@TEST.COM";
-        var lowerCaseEmail = "test@test.com";
-        var account = AccountBuilder.WithEmail(upperCaseEmail).Build();
-        var updatedAccountDetails = AccountDetails.FromAccount(account);
-
-        MockCreateAccountJourneyService
-            .Setup(x => x.GetAccountDetails())
-            .Returns(updatedAccountDetails);
-
-        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync(null));
-
-        var createUserRequest = new CreateMoodleUserRequest
-        {
-            Username = lowerCaseEmail,
-            Email = updatedAccountDetails.Email,
-            FirstName = updatedAccountDetails.FirstName,
-            LastName = updatedAccountDetails.LastName
-        };
-        MockMoodleServiceClient
-            .Setup(x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)))
-            .ReturnsAsync(
-                new CreateMoodleUserResponse
-                {
-                    Id = 1,
-                    Username = "test",
-                    Successful = true
-                }
-            );
-
-        // Act
-        _ = await Sut.OnPostAsync();
-
-        // Assert
-        MockMoodleServiceClient.Verify(
-            x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
-            Times.Once
-        );
-    }
-
 
     [Fact]
     public async Task Post_WhenCalledWithMoodleIntegrationDisabled_CreatesUserAndSendsEmailAndDoesNotCallMoodleAndSetExternalUserId()

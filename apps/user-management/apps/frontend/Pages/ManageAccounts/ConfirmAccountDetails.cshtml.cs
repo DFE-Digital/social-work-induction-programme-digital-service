@@ -152,7 +152,7 @@ public class ConfirmAccountDetails(
         {
             var moodleRequest = new CreateMoodleUserRequest
             {
-                Username = accountDetails.Email?.ToLower(),
+                Username = accountDetails.Email,
                 Email = accountDetails.Email,
                 FirstName = accountDetails.FirstName,
                 LastName = accountDetails.LastName
