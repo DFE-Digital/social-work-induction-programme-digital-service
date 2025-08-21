@@ -3,7 +3,7 @@ resource "azurerm_subnet" "cae_subnet" {
   resource_group_name  = var.primary_resource_group
   virtual_network_name = azurerm_virtual_network.vnet_stack.name
 
-  address_prefixes = ["10.0.8.0/24"]
+  address_prefixes = ["10.0.12.0/23"] # min required is a /23  
 }
 
 resource "azurerm_container_app_environment" "env" {
