@@ -49,7 +49,6 @@ public class NotificationServiceClientTests
         const string functionKey = "test-key";
         using var mockHttp = new MockHttpMessageHandler();
         var client = mockHttp.ToHttpClient();
-        var fakeLogger = new FakeLogger<NotificationServiceClient>();
 
         _mockOptions
             .Setup(x => x.Value)
