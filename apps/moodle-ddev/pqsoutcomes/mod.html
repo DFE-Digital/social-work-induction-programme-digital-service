@@ -1,0 +1,39 @@
+<?php
+defined('MOODLE_INTERNAL') || die();
+
+// Current values (when editing an existing field).
+$name        = $this->field->name        ?? get_string('pluginname', 'datafield_pqsoutcomes');
+$description = $this->field->description ?? '';
+$required    = !empty($this->field->required);
+$outcome     = isset($this->field->param1) ? (int)$this->field->param1 : 1; // default = Attach evidence (1)
+?>
+
+<!-- Name -->
+<div class="fitem">
+  <label for="pqs_name"><?php echo get_string('fieldname', 'data'); ?></label>
+  <input type="text" id="pqs_name" name="name" value="<?php echo s($name); ?>">
+</div>
+
+<!-- Description -->
+<div class="fitem">
+  <label for="pqs_desc"><?php echo get_string('fielddescription', 'data'); ?></label>
+  <textarea id="pqs_desc" name="description" rows="3"><?php echo s($description); ?></textarea>
+</div>
+
+<!-- Required -->
+<div class="fitem fitem_checkbox">
+  <label for="pqs_req"><?php echo get_string('requiredfield', 'data'); ?></label>
+  <input type="checkbox" id="pqs_req" name="required" value="1" <?php echo $required ? 'checked' : ''; ?>>
+</div>
+
+<!-- Outcome saved on this field (used on Mark as done) -->
+<div class="fitem">
+  <label for="pqs_outcome"><?php echo get_string('outcomeonmarkdone', 'datafield_pqsoutcomes'); ?></label>
+  <select id="pqs_outcome" name="param1">
+    <option value="0" <?php echo $outcome===0?'selected':''; ?>><?php echo get_string('outcome_none','datafield_pqsoutcomes'); ?></option>
+    <option value="1" <?php echo $outcome===1?'selected':''; ?>><?php echo get_string('outcome_evidence','datafield_pqsoutcomes'); ?></option>
+    <option value="2" <?php echo $outcome===2?'selected':''; ?>><?php echo get_string('outcome_review','datafield_pqsoutcomes'); ?></option>
+    <option value="3" <?php echo $outcome===3?'selected':''; ?>><?php echo get_string('outcome_complete','datafield_pqsoutcomes'); ?></option>
+  </select>
+  <div class="dimmed_text"><?php echo get_string('outcomeonmarkdone_desc','datafield_pqsoutcomes'); ?></div>
+</div>
