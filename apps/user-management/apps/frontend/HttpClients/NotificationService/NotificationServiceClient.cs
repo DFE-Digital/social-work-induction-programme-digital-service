@@ -1,7 +1,7 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.Configuration;
+using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Operations;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
@@ -11,12 +11,12 @@ public class NotificationServiceClient : INotificationServiceClient
     public NotificationServiceClient(
         HttpClient httpClient,
         IOptions<NotificationClientOptions> clientOptions,
-        ILogger<NotificationServiceClient> logger
-    )
+        ILogger<NotificationServiceClient> logger,
+        IOptions<FeatureFlags> featureFlags)
     {
         HttpClient = httpClient;
         Options = clientOptions.Value;
-        Notification = new NotificationOperations(this);
+        Notification = new NotificationOperations(HttpClient, Options.Routes.Notification, logger, featureFlags.Value);
 
         if (!string.IsNullOrEmpty(Options.FunctionKey))
         {
@@ -29,9 +29,9 @@ public class NotificationServiceClient : INotificationServiceClient
         }
     }
 
-    internal HttpClient HttpClient { get; init; }
+    private HttpClient HttpClient { get; }
 
-    internal NotificationClientOptions Options { get; init; }
+    private NotificationClientOptions Options { get; }
 
     public INotificationOperations Notification { get; init; }
 }

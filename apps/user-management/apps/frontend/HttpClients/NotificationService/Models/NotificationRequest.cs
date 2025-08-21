@@ -1,6 +1,6 @@
 ﻿namespace Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 
-public class NotificationRequest
+public record NotificationRequest
 {
     public required string EmailAddress { get; set; }
 
