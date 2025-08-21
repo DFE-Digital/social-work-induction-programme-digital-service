@@ -2,9 +2,10 @@ namespace Dfe.Sww.Ecf.Frontend.Configuration;
 
 public class FeatureFlags
 {
-    public bool EnableDeveloperExceptionPage { get; set; }
-    public bool EnableHttpStrictTransportSecurity { get; set; }
-    public bool EnableContentSecurityPolicyWorkaround { get; set; }
-    public bool EnableForwardedHeaders { get; set; }
-    public bool EnableMoodleIntegration { get; set; }
+    public bool EnableDeveloperExceptionPage { get; init; }
+    public bool EnableHttpStrictTransportSecurity { get; init; }
+    public bool EnableContentSecurityPolicyWorkaround { get; init; }
+    public bool EnableForwardedHeaders { get; init; }
+    public bool EnableMoodleIntegration { get; init; }
+    public bool EnablePlusEmailStripping { get; init; }
 }

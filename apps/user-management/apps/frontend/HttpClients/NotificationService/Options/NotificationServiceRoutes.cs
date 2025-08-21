@@ -2,5 +2,5 @@
 
 public class NotificationServiceRoutes
 {
-    public required NotificationRoutes Notification { get; set; }
+    public required NotificationRoutes Notification { get; init; }
 }
