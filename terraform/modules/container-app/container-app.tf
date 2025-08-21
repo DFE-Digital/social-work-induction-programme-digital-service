@@ -30,8 +30,8 @@ resource "azurerm_container_app_job" "job" {
       dynamic "env" {
         for_each = var.environment_settings
         content {
-          name  = each.key
-          value = each.value
+          name  = env.key
+          value = env.value
         }
       }
     }
