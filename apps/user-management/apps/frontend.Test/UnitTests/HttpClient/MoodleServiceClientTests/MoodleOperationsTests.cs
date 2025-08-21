@@ -176,7 +176,7 @@ public class MoodleOperationsTests
             IList<CreateMoodleUserResponse> response,
             IDictionary<string, string>? expectedFormParams = null)
     {
-        var mockHttp = new MockHttpMessageHandler();
+        using var mockHttp = new MockHttpMessageHandler();
 
         var request = mockHttp
             .When(HttpMethod.Post, string.Empty)
