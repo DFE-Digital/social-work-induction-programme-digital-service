@@ -1,6 +1,7 @@
 set shell := ["pwsh", "-nop", "-c"]
 
 solution-root := "Dfe.Sww.Ecf"
+solution-dir := justfile_directory() / solution-root
 user-secrets-id := "Dfe.Sww.Ecf"
 cli-user-secrets-id := "Dfe.Sww.Ecf.Cli"
 test-user-secrets-id := "Dfe.Sww.EcfTests"
@@ -45,7 +46,10 @@ test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  @cd {{solution-root / "tests/"}} && dotnet test
+  echo "justfile_dir = {{justfile_directory()}}"
+  echo "solution_dir = {{solution_dir}}"
+  pwd
+  dotnet test --no-build --norelease "{{solution-root}}"
 
 # Format the .NET solution and Terraform code
 format:
