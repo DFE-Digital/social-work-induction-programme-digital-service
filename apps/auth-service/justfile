@@ -46,10 +46,10 @@ test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  echo "justfile_dir = {{justfile_directory()}}"
-  echo "solution_dir = {{solution_dir}}"
+  echo "justfile-dir = {{justfile_directory()}}"
+  echo "solution-dir = {{solution-dir}}"
   pwd
-  dotnet test --no-build --norelease "{{solution-root}}"
+  dotnet test  --no-build --no-restore "{{solution-dir}}"
 
 # Format the .NET solution and Terraform code
 format:
