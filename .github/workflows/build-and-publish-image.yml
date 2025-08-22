@@ -63,9 +63,24 @@ jobs:
       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
       AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
       AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      # Used for database required for testing 
+      DB_USER: ${{ secrets.TEST_DB_USER }}
+      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+      DB_NAME: ecf_test_${{ github.run_id }} 
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U ${{ env.DB_USER }}"
+          --health-interval=10s --health-timeout=5s --health-retries=10 
       
     steps:
       - name: Checkout repository
@@ -125,9 +140,28 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
+      - name: Wait for Postgres
+        shell: bash
+        run: |
+          for i in {1..60}; do
+            (echo > /dev/tcp/127.0.0.1/5432) >/dev/null 2>&1 && exit 0
+            sleep 1
+          done
+          echo "Postgres didn't open port 5432 in time" >&2
+          exit 1
+
+      - name: Apply EF Core migrations for test database
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
+        run: just ci-db-migrate
+
       - name: Test component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
         run: just ci-test
 
       - name: Package component

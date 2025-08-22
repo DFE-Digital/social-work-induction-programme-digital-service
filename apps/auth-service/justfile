@@ -42,13 +42,16 @@ build-project project:
   @dotnet build {{solution-root}}/src/{{project}}
 
 # Test the .NET solution
+ci-db-migrate:
+  @cd {{solution-root}} && dotnet tool run dotnet-ef database update \
+     --project "src/Dfe.Sww.Ecf.Core" \
+     --startup-project "src/Dfe.Sww.Ecf.AuthorizeAccess" \
+     --no-build
+
 test:
   @cd {{solution-root}} && dotnet test
 
 ci-test:
-  echo "justfile-dir = {{justfile_directory()}}"
-  echo "solution-dir = {{solution-dir}}"
-  pwd
   dotnet test  --no-build --no-restore "{{solution-dir}}"
 
 # Format the .NET solution and Terraform code
