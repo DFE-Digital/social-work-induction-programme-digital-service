@@ -146,32 +146,13 @@ jobs:
           echo "PWD=$(pwd)"
           ls -la  
 
-      - name: Show appsettings in source and output
-        working-directory: ${{ inputs.working-dir }}
-        run: |
-          echo "PWD=$(pwd)"
-          echo "Source files (case matters on Linux):"
-          find . -maxdepth 10 -type f -name 'appsettings*.json' -print | sed 's/^/  /'
-
-          echo "Built output copies:"
-          find src -type f -path '*/bin/*/net*/*' -name 'appsettings*.json' -print | sed 's/^/  /' || true
-
-      - name: Wait for Postgres
-        shell: bash
-        run: |
-          for i in {1..60}; do
-            (echo > /dev/tcp/127.0.0.1/5432) >/dev/null 2>&1 && exit 0
-            sleep 1
-          done
-          echo "Postgres didn't open port 5432 in time" >&2
-          exit 1
-
       - name: Test component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        env:
-          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
-        run: just ci-test
+        run: |
+          dotnet test --no-build --no-restore \
+            -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}" \
+            apps/auth-service/Dfe.Sww.Ecf
 
       - name: Package component
         shell: bash
