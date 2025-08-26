@@ -140,10 +140,15 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
-      - name: Check appsettings copied
+      - name: Show appsettings in source and output
+        working-directory: ${{ inputs.working-dir }}
         run: |
-          find src -name "appsettings*.json" -maxdepth 3 -print
-          find src -path "*/bin/*/net*/appsettings*.json" -print
+          echo "PWD=$(pwd)"
+          echo "Source files (case matters on Linux):"
+          find . -maxdepth 3 -type f -name 'appsettings*.json' -print | sed 's/^/  /'
+
+          echo "Built output copies:"
+          find src -type f -path '*/bin/*/net*/*' -name 'appsettings*.json' -print | sed 's/^/  /' || true
 
       - name: Wait for Postgres
         shell: bash
