@@ -72,7 +72,7 @@ jobs:
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: ${{ env.DB_USER }}
           POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
@@ -149,13 +149,6 @@ jobs:
           done
           echo "Postgres didn't open port 5432 in time" >&2
           exit 1
-
-      - name: Apply EF Core migrations for test database
-        shell: bash
-        working-directory: ${{ inputs.working-dir }}
-        env:
-          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
-        run: just ci-db-migrate
 
       - name: Test component
         shell: bash
