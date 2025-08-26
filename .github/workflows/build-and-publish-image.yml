@@ -140,12 +140,18 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
+      - name: Where am I?
+        working-directory: ${{ inputs.working-dir }}   # e.g. apps/auth-service/Dfe.Sww.Ecf
+        run: |
+          echo "PWD=$(pwd)"
+          ls -la  
+
       - name: Show appsettings in source and output
         working-directory: ${{ inputs.working-dir }}
         run: |
           echo "PWD=$(pwd)"
           echo "Source files (case matters on Linux):"
-          find . -maxdepth 3 -type f -name 'appsettings*.json' -print | sed 's/^/  /'
+          find . -maxdepth 10 -type f -name 'appsettings*.json' -print | sed 's/^/  /'
 
           echo "Built output copies:"
           find src -type f -path '*/bin/*/net*/*' -name 'appsettings*.json' -print | sed 's/^/  /' || true
