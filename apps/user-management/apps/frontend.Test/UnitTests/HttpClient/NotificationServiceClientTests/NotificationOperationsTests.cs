@@ -119,6 +119,38 @@ public class NotificationOperationsTests
     }
 
     [Fact]
+    public async Task SendEmailAsync_WithPlusEmailStrippingFeatureFlagEnabled_HandlesEmailsWithoutPlusTag()
+    {
+        // Arrange
+        const string route = "/SendEmail";
+        var notificationRequest = _notificationRequestFaker.WithEmailAddress("test.email@email.com").Generate();
+        var notificationResponse = new NotificationResponse { StatusCode = HttpStatusCode.OK };
+        var featureFlags = new FeatureFlags { EnablePlusEmailStripping = true };
+
+        using var mockHttp = new MockHttpMessageHandler();
+        var expectedRequest = notificationRequest with
+        {
+            EmailAddress = "test.email@email.com"
+        };
+        mockHttp.Expect(HttpMethod.Post, route)
+            .WithJsonContent(expectedRequest, new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new BooleanConverter() } })
+            .Respond(HttpStatusCode.OK, "application/json", JsonSerializer.Serialize(notificationResponse));
+
+        var sut = BuildSut(mockHttp, route, featureFlags);
+
+        // Act
+        var response = await sut.SendEmailAsync(notificationRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<NotificationResponse>();
+        response.Should().BeEquivalentTo(notificationResponse);
+
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
     public async Task SendEmailAsync_WithPlusEmailStrippingFeatureFlagDisabled_DoesNotStripPlusTagFromEmail()
     {
         // Arrange

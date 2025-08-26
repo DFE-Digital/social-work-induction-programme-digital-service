@@ -24,7 +24,7 @@ public class NotificationOperations(HttpClient httpClient, NotificationRoutes ro
             var email = request.EmailAddress;
             var atIndex = email.IndexOf('@');
             var plusIndex = email.IndexOf('+', 0, atIndex);
-            request.EmailAddress = email[..plusIndex] + email[atIndex..];
+            if (plusIndex != -1) request.EmailAddress = email[..plusIndex] + email[atIndex..];
         }
 
         using var content = new StringContent(
