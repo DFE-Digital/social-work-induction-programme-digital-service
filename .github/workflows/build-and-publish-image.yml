@@ -72,7 +72,7 @@ jobs:
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     services:
       postgres:
-        image: postgres:17
+        image: postgres:15
         env:
           POSTGRES_USER: ${{ env.DB_USER }}
           POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
@@ -154,6 +154,8 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         env:
+          ASPNETCORE_ENVIRONMENT: Testing
+          DOTNET_ENVIRONMENT: Testing
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
         run: just ci-test
 
