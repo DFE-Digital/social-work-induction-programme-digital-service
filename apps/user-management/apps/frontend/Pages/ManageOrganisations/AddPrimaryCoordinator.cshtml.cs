@@ -1,5 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.Authorisation;
-using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -16,8 +15,7 @@ public class AddPrimaryCoordinator(
     EcfLinkGenerator linkGenerator
 ) : BasePageModel
 {
-    [BindProperty]
-    public AccountDetails AccountDetails { get; set; } = null!;
+    [BindProperty] public AccountDetails AccountDetails { get; set; } = null!;
 
     public PageResult OnGet()
     {
@@ -36,7 +34,6 @@ public class AddPrimaryCoordinator(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        AccountDetails.PhoneNumberRequired = true;
         var result = await validator.ValidateAsync(AccountDetails);
         if (!result.IsValid)
         {
