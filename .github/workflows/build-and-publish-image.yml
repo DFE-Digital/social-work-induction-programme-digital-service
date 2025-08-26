@@ -140,6 +140,11 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
+      - name: Check appsettings copied
+        run: |
+          find src -name "appsettings*.json" -maxdepth 3 -print
+          find src -path "*/bin/*/net*/appsettings*.json" -print
+
       - name: Wait for Postgres
         shell: bash
         run: |
@@ -154,8 +159,6 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         env:
-          ASPNETCORE_ENVIRONMENT: Testing
-          DOTNET_ENVIRONMENT: Testing
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
         run: just ci-test
 
