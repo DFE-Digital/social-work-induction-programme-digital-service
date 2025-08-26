@@ -12,22 +12,22 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageOrganisations;
 
 public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<EditPrimaryCoordinator>
 {
-    private EditPrimaryCoordinator Sut { get; }
-
     public EditPrimaryCoordinatorPageTests()
     {
         Sut = new EditPrimaryCoordinator(
             MockEditOrganisationJourneyService.Object,
             new FakeLinkGenerator(),
             new AccountDetailsValidator()
-            );
+        );
     }
+
+    private EditPrimaryCoordinator Sut { get; }
 
     [Fact]
     public async Task OnGetAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var organisation = OrganisationBuilder.Build();
 
@@ -73,7 +73,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
     public async Task OnGetReplaceChangeAsync_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var organisation = OrganisationBuilder.Build();
 
@@ -101,8 +101,6 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         var organisationId = Guid.NewGuid();
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber("07123123123")
-            .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
@@ -134,8 +132,6 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         var organisationId = Guid.NewGuid();
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber("07123123123")
-            .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
@@ -171,8 +167,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         {
             FirstName = string.Empty,
             LastName = string.Empty,
-            Email = string.Empty,
-            PhoneNumber = string.Empty
+            Email = string.Empty
         };
 
         MockEditOrganisationJourneyService.Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value));
@@ -185,7 +180,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
 
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
-        modelStateKeys.Count.Should().Be(4);
+        modelStateKeys.Count.Should().Be(3);
         modelStateKeys.Should().Contain("PrimaryCoordinator.FirstName");
         modelState["PrimaryCoordinator.FirstName"]!.Errors.Count.Should().Be(1);
         modelState["PrimaryCoordinator.FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
@@ -198,10 +193,6 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         modelState["PrimaryCoordinator.Email"]!.Errors.Count.Should().Be(1);
         modelState["PrimaryCoordinator.Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
-        modelStateKeys.Should().Contain("PrimaryCoordinator.PhoneNumber");
-        modelState["PrimaryCoordinator.PhoneNumber"]!.Errors.Count.Should().Be(1);
-        modelState["PrimaryCoordinator.PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
-
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -213,8 +204,6 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         var organisationId = Guid.NewGuid();
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber("07123123123")
-            .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 

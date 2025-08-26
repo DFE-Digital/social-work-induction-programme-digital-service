@@ -1,7 +1,5 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -58,8 +56,6 @@ public class EditPrimaryCoordinator(
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        PrimaryCoordinator.PhoneNumberRequired = true;
-
         var validationResult = await validator.ValidateAsync(PrimaryCoordinator);
         if (!validationResult.IsValid)
         {
