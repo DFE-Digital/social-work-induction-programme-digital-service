@@ -140,19 +140,13 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
-      - name: Where am I?
-        working-directory: ${{ inputs.working-dir }}   # e.g. apps/auth-service/Dfe.Sww.Ecf
-        run: |
-          echo "PWD=$(pwd)"
-          ls -la  
-
       - name: Test component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: |
           dotnet test --no-build --no-restore \
             -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}" \
-            apps/auth-service/Dfe.Sww.Ecf
+            Dfe.Sww.Ecf
 
       - name: Package component
         shell: bash
