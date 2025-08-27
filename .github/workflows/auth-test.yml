@@ -10,6 +10,10 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-22.04  # Important - later versions of ubuntu have a different .NET SDK which breaks trscli. Review on .NET 9 upgrade
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/auth-service
     strategy:
       fail-fast: false
       matrix:
@@ -76,12 +80,12 @@ jobs:
 
       - name: Build project
         run: dotnet build -c Release --no-restore
-        working-directory: Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
+        working-directory: apps/auth-service/Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
 
       - name: Run tests
         uses: ./.github/workflows/actions/test
         with:
-          test_project_path: Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
+          test_project_path: apps/auth-service/Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
           dotnet_test_args: >-
             --no-build
             -e ConnectionStrings__DefaultConnection="Host=localhost;Username=postgres;Password=swpdp;Database=swpdp"
