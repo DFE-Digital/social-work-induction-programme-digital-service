@@ -111,7 +111,13 @@ public class EditOrganisationJourneyService(
     {
         var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
-        // TODO update org here
+        var primaryCoordinator = editAccountJourneyModel?.PrimaryCoordinatorAccount;
+
+        if (primaryCoordinator is null)
+            throw new ArgumentNullException();
+
+        var account = AccountDetails.ToAccount(primaryCoordinator);
+        await _accountService.UpdateAsync(account);
 
         ResetEditOrganisationJourneyModel(organisationId);
 

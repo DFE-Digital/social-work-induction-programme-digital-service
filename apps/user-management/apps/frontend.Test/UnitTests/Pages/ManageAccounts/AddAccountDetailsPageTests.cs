@@ -130,9 +130,21 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(
-            x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            x =>
+                x.SetAccountDetails(
+                    It.Is<AccountDetails>(request =>
+                        request.FirstName == accountDetails.FirstName
+                        && request.MiddleNames == Sut.MiddleNames
+                        && request.LastName == Sut.LastName
+                        && request.Email == Sut.Email
+                        && request.SocialWorkEnglandNumber == Sut.SocialWorkEnglandNumber
+                        && request.IsStaff == Sut.IsStaff
+                        && request.Types == Sut.AccountTypes
+                    )
+                ),
             Times.Once
         );
+
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }

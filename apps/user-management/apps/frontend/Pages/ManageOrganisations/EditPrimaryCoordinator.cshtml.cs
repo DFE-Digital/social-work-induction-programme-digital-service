@@ -58,6 +58,12 @@ public class EditPrimaryCoordinator(
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
+        var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        if (primaryCoordinator is null)
+        {
+            return BadRequest();
+        }
+
         PrimaryCoordinator.PhoneNumberRequired = true;
 
         var validationResult = await validator.ValidateAsync(PrimaryCoordinator);
@@ -69,7 +75,13 @@ public class EditPrimaryCoordinator(
             return Page();
         }
 
-        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
+        primaryCoordinator.FirstName = PrimaryCoordinator.FirstName;
+        primaryCoordinator.MiddleNames = PrimaryCoordinator.MiddleNames;
+        primaryCoordinator.LastName = PrimaryCoordinator.LastName;
+        primaryCoordinator.Email = PrimaryCoordinator.Email;
+        primaryCoordinator.PhoneNumber = PrimaryCoordinator.PhoneNumber;
+
+        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, primaryCoordinator);
 
         return Redirect(
             IsReplace
