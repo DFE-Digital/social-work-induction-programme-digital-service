@@ -23,10 +23,8 @@ runs:
 
         cd $PROJECT_PATH
 
-        if [ "$(basename $PWD)" == "Dfe.Sww.Ecf.AuthorizeAccess.EndToEndTests" ]; then
-        else
-          dotnet test --blame-hang-timeout 10m --configuration Release ${{ inputs.dotnet_test_args }}
-        fi
+        dotnet test --blame-hang-timeout 10m --configuration Release ${{ inputs.dotnet_test_args }}
+        
       shell: bash
       env:
         PROJECT_PATH: ${{ inputs.test_project_path }}
