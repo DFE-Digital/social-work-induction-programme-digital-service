@@ -144,9 +144,11 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: |
-          dotnet test --no-build --no-restore \
-            -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}" \
-            Dfe.Sww.Ecf
+          dotnet test Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.AuthorizeAccess.Tests/Dfe.Sww.Ecf.AuthorizeAccess.Tests.csproj \
+          -c Release \
+          -e ASPNETCORE_ENVIRONMENT=Testing \
+          -e DOTNET_ENVIRONMENT=Testing \
+          -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
 
       - name: Package component
         shell: bash
