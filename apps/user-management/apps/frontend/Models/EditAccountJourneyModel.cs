@@ -11,6 +11,7 @@ public class EditAccountJourneyModel(Account account)
     public AccountDetails AccountDetails { get; set; } =
         new()
         {
+            Id = account.Id,
             Types = account.Types,
             FirstName = account.FirstName,
             LastName = account.LastName,
