@@ -15,6 +15,7 @@ public record CreateOrganisationRequest
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
     public string? Region { get; set; }
+    public string? PhoneNumber { get; init; }
 
     public required CreatePersonRequest CreatePersonRequest { get; set; }
 }
@@ -30,13 +31,13 @@ public static class CreateOrganisationRequestExtensions
             Type = request.Type,
             PrimaryCoordinatorId = request.PrimaryCoordinatorId,
             Region = request.Region,
+            PhoneNumber = request.PhoneNumber,
             PrimaryCoordinator = new()
             {
                 FirstName = request.CreatePersonRequest.FirstName,
                 LastName = request.CreatePersonRequest.LastName,
                 MiddleName = request.CreatePersonRequest.MiddleName,
                 EmailAddress = request.CreatePersonRequest.EmailAddress,
-                PhoneNumber = request.CreatePersonRequest.PhoneNumber,
                 Trn = request.CreatePersonRequest.SocialWorkEnglandNumber,
                 PersonRoles = request.CreatePersonRequest
                     .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })

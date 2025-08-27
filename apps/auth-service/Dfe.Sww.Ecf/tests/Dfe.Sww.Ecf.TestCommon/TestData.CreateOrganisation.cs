@@ -26,7 +26,8 @@ public partial class TestData
                 Type = OrganisationType.LocalAuthority,
                 LocalAuthorityCode = Faker.RandomNumber.Next(1, 1000),
                 PrimaryCoordinatorId = Guid.NewGuid(),
-                Region = Faker.Name.First()
+                Region = Faker.Name.First(),
+                PhoneNumber = Faker.Phone.Number()
             };
 
             dbContext.Organisations.Add(organisation);
