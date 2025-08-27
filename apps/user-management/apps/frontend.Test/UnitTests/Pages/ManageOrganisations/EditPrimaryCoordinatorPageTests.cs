@@ -168,7 +168,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
     public async Task OnPostAsync_WhenCalledWithInvalidData_ReturnsErrorsAndRedirectsToAddCoordinatorDetails()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var organisation = OrganisationBuilder.Build();
 
