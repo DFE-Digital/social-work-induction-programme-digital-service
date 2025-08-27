@@ -145,7 +145,10 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: |
           cd Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.AuthorizeAccess.Tests/
-          dotnet test -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
+          dotnet test \
+          -e ASPNETCORE_ENVIRONMENT=Testing \
+          -e DOTNET_ENVIRONMENT=Testing \
+          -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
 
       - name: Package component
         shell: bash
