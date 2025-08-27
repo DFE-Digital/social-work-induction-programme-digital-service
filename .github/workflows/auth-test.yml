@@ -10,10 +10,6 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-22.04  # Important - later versions of ubuntu have a different .NET SDK which breaks trscli. Review on .NET 9 upgrade
-    defaults:
-      run:
-        shell: bash
-        working-directory: apps/auth-service
     strategy:
       fail-fast: false
       matrix:
@@ -55,6 +51,7 @@ jobs:
 
       - name: Install tools
         run: just install-tools
+        working-directory: apps/auth-service
 
       - name: Restore cached packages
         id: cache-packages-restore
@@ -66,7 +63,8 @@ jobs:
           key: ${{ hashFiles('**/packages.lock.json', '**/libman.json') }}
 
       - name: Restore
-        run: just restore
+        run: just ci-restore
+        working-directory: apps/auth-service
 
       - name: Cache restored packages
         id: cache-packages-save
