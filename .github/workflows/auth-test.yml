@@ -1,0 +1,85 @@
+name: Auth test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-22.04  # Important - later versions of ubuntu have a different .NET SDK which breaks trscli. Review on .NET 9 upgrade
+    strategy:
+      fail-fast: false
+      matrix:
+        project_short_name:
+          - AuthorizeAccess.Tests
+          - Core.Tests
+          - UiCommon.Tests
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: swpdp
+          POSTGRES_DB: swpdp
+        options: >-
+          --name postgres
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Set postgres wal_level to logical
+        run: |
+          docker exec -i postgres bash << EOF
+          echo "wal_level = logical" >> /var/lib/postgresql/data/postgresql.conf
+          EOF
+
+          docker restart --time 0 postgres
+
+      - uses: actions/checkout@v5
+
+      - uses: extractions/setup-just@v3
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install tools
+        run: just install-tools
+
+      - name: Restore cached packages
+        id: cache-packages-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.local/share/.librarymanager/cache
+          key: ${{ hashFiles('**/packages.lock.json', '**/libman.json') }}
+
+      - name: Restore
+        run: just restore
+
+      - name: Cache restored packages
+        id: cache-packages-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.local/share/.librarymanager/cache
+          key: ${{ steps.cache-packages-restore.outputs.cache-primary-key }}
+        if: steps.cache-packages-restore.outputs.cache-hit != 'true'
+
+      - name: Build project
+        run: dotnet build -c Release --no-restore
+        working-directory: Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
+
+      - name: Run tests
+        uses: ./.github/workflows/actions/test
+        with:
+          test_project_path: Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
+          dotnet_test_args: >-
+            --no-build
+            -e ConnectionStrings__DefaultConnection="Host=localhost;Username=postgres;Password=swpdp;Database=swpdp"
+        timeout-minutes: 30

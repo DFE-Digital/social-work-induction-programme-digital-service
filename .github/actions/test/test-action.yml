@@ -1,0 +1,33 @@
+name: Run tests
+inputs:
+  test_project_path:
+    description: 'The path to the test project'
+    required: true
+  dotnet_test_args:
+    description: 'Additional arguments to pass to dotnet test'
+    required: false
+  config_json:
+    description: 'JSON configuration'
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run tests
+      run: |
+        if [ ! -d "$PROJECT_PATH" ]; then
+          echo "test_project_path must be a path to the directory containing the test project" >&2
+          exit 1
+        fi
+
+        cd $PROJECT_PATH
+
+        if [ "$(basename $PWD)" == "Dfe.Sww.Ecf.AuthorizeAccess.EndToEndTests" ]; then
+        else
+          dotnet test --blame-hang-timeout 10m --configuration Release ${{ inputs.dotnet_test_args }}
+        fi
+      shell: bash
+      env:
+        PROJECT_PATH: ${{ inputs.test_project_path }}
+        TEST_CONFIG_JSON: ${{ inputs.config_json }}
