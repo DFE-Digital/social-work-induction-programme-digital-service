@@ -64,8 +64,6 @@ public class EditPrimaryCoordinator(
             return BadRequest();
         }
 
-        PrimaryCoordinator.PhoneNumberRequired = true;
-
         var validationResult = await validator.ValidateAsync(PrimaryCoordinator);
         if (!validationResult.IsValid)
         {
@@ -75,13 +73,7 @@ public class EditPrimaryCoordinator(
             return Page();
         }
 
-        primaryCoordinator.FirstName = PrimaryCoordinator.FirstName;
-        primaryCoordinator.MiddleNames = PrimaryCoordinator.MiddleNames;
-        primaryCoordinator.LastName = PrimaryCoordinator.LastName;
-        primaryCoordinator.Email = PrimaryCoordinator.Email;
-        primaryCoordinator.PhoneNumber = PrimaryCoordinator.PhoneNumber;
-
-        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, primaryCoordinator);
+        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
 
         return Redirect(
             IsReplace
