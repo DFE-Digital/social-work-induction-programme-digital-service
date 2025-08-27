@@ -1,4 +1,4 @@
-name: Auth test
+name: Auth unit test
 
 on:
   workflow_dispatch:
