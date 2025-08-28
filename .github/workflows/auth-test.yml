@@ -33,14 +33,6 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Set postgres wal_level to logical
-        run: |
-          docker exec -i postgres bash << EOF
-          echo "wal_level = logical" >> /var/lib/postgresql/data/postgresql.conf
-          EOF
-
-          docker restart --time 0 postgres
-
       - uses: actions/checkout@v5
 
       - uses: extractions/setup-just@v3
