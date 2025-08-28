@@ -72,15 +72,19 @@ jobs:
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     services:
       postgres:
+        postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: swpdp
           POSTGRES_DB: swpdp
-        ports: ["5432:5432"]
         options: >-
-          --health-cmd="pg_isready -U $POSTGRES_USER"
-          --health-interval=10s --health-timeout=5s --health-retries=10 
+          --name postgres
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
       
     steps:
       - name: Checkout repository
