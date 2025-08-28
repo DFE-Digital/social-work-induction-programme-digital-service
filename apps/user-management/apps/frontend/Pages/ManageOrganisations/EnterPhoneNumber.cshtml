@@ -1,0 +1,20 @@
+@page
+@model EnterPhoneNumber
+
+@{
+    Model.Title = "What is the organisation's phone number?";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            <govuk-input for="PhoneNumber" input-class="govuk-!-width-two-thirds">
+                <govuk-input-label is-page-heading="true" class="govuk-label--l">What is the organisation's phone number?</govuk-input-label>
+                <govuk-input-hint>Enter a UK phone number</govuk-input-hint>
+                <govuk-input-error-message/>
+            </govuk-input>
+
+            <button type="submit" class="govuk-button">Continue</button>
+        </form>
+    </div>
+</div>

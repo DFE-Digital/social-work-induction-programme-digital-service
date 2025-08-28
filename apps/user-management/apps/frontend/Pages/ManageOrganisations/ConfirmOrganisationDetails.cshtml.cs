@@ -26,6 +26,6 @@ public class ConfirmOrganisationDetails(
 
     public IActionResult OnPost()
     {
-        return Redirect(linkGenerator.ManageOrganisations.AddPrimaryCoordinator());
+        return Redirect(linkGenerator.ManageOrganisations.EnterPhoneNumber());
     }
 }
