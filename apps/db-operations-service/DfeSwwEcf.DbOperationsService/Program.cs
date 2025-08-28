@@ -8,7 +8,6 @@ var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
 
 builder.Services
-    .ConfigureOpenApi()
     .AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights()
     .AddHealthChecks();
