@@ -16,6 +16,7 @@ public class OrganisationDto
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
     public string? Region { get; set; }
+    public string? PhoneNumber { get; set; }
 }
 
 public static class OrganisationDtoExtensions
@@ -31,6 +32,7 @@ public static class OrganisationDtoExtensions
             LocalAuthorityCode = organisation.LocalAuthorityCode,
             Type = organisation.Type,
             PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
-            Region = organisation.Region
+            Region = organisation.Region,
+            PhoneNumber = organisation.PhoneNumber
         };
 }

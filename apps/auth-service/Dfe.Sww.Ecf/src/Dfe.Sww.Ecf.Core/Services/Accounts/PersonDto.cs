@@ -81,7 +81,6 @@ public static class PersonDtoExtensions
             MiddleName = person.MiddleName,
             LastName = person.LastName,
             EmailAddress = person.EmailAddress,
-            PhoneNumber = person.PhoneNumber,
             Roles = person.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList() ?? [],
             Status = person.Status,
             ExternalUserId = person.ExternalUserId,

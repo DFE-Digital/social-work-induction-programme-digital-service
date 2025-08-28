@@ -124,13 +124,13 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                     LocalAuthorityCode = organisation.LocalAuthorityCode,
                     PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
                     Region = organisation.Region,
+                    PhoneNumber = organisation.PhoneNumber,
                     CreatePersonRequest = new CreatePersonRequest
                     {
                         FirstName = organisation.PrimaryCoordinator!.FirstName,
                         LastName = organisation.PrimaryCoordinator.LastName,
                         MiddleName = organisation.PrimaryCoordinator.MiddleName,
                         EmailAddress = organisation.PrimaryCoordinator.EmailAddress,
-                        PhoneNumber = organisation.PrimaryCoordinator.PhoneNumber,
                         SocialWorkEnglandNumber = organisation.PrimaryCoordinator.Trn,
                         Roles = organisation.PrimaryCoordinator.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList(),
                         Status = organisation.PrimaryCoordinator.Status,

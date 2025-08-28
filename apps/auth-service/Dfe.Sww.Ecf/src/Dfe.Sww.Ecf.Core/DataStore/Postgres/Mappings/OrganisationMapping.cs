@@ -15,5 +15,6 @@ public class OrganisationMapping : IEntityTypeConfiguration<Organisation>
         builder.Property(o => o.OrganisationName).HasMaxLength(255).IsRequired();
         builder.Property(o => o.CreatedOn).HasDefaultValueSql("now()");
         builder.Property(o => o.Region).HasMaxLength(255);
+        builder.Property(p => p.PhoneNumber).HasMaxLength(15).UseCollation("case_insensitive");
     }
 }
