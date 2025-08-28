@@ -160,13 +160,13 @@ jobs:
           overall=0
           for csproj in "${TEST_PROJECTS[@]}"; do
             echo "===> Testing $csproj"
-            if ! dotnet test "$proj_dir" \ 
+            if ! dotnet test "$csproj" \ 
                 -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD" 
             then
               echo "Tests failed in $csproj"
               overall=1
             else
-              echo "Tests passed: $csproj"
+              echo "Tests passed in $csproj"
             fi
           done
 

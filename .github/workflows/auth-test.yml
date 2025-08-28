@@ -2,9 +2,6 @@ name: Auth unit test
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - SWIP-905-fix-auth-service-unit-test-running-in-ci
 
 jobs:
   tests:
