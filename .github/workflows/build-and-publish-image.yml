@@ -103,28 +103,6 @@ jobs:
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
-      # Need to retrieve ACR_NAME in particular for next steps
-      - name: Load Terraform variables
-        uses: ./.github/actions/pre-process-terraform-variables
-        with:
-          environment: ${{ inputs.environment-instance }}
-          add-as-env-vars: true
-
-      - name: Extract the supplied docker build arguments
-        id: extract-docker-build-args
-        uses: ./.github/actions/extract-docker-build-args
-        with:
-          build-args: ${{ inputs.build-args }}
-          build-secrets: ${{ inputs.build-secrets }}
-
-      - name: Format Docker image tag
-        id: get-docker-image-tag
-        uses: ./.github/actions/get-standard-image-tag
-        with:
-          acr-name: ${{ env.ACR_NAME }}
-          base-image-version: ${{ inputs.base-image-version }}
-          docker-image-name: ${{ inputs.docker-image-name }}
-
       - name: Install just
         uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
 
@@ -146,6 +124,10 @@ jobs:
       - name: Discover and run tests sequentially (shared DB)
         shell: bash
         working-directory: ${{ inputs.working-dir }}
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          DOTNET_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=swpdp;Username=postgres;Password=swpdp
         run: |
           set -euo pipefail
 
@@ -158,9 +140,31 @@ jobs:
           for csproj in "${TEST_PROJECTS[@]}"; do
             proj_dir="$(dirname "$csproj")"
             echo "::group::dotnet test $proj_dir"
-            dotnet test "$proj_dir" -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=swpdp;Username=postgres;Password=swpdp"
+            dotnet test "$proj_dir" 
             echo "::endgroup::"
           done
+
+      # Need to retrieve ACR_NAME in particular for next steps
+      - name: Load Terraform variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment-instance }}
+          add-as-env-vars: true
+
+      - name: Extract the supplied docker build arguments
+        id: extract-docker-build-args
+        uses: ./.github/actions/extract-docker-build-args
+        with:
+          build-args: ${{ inputs.build-args }}
+          build-secrets: ${{ inputs.build-secrets }}
+
+      - name: Format Docker image tag
+        id: get-docker-image-tag
+        uses: ./.github/actions/get-standard-image-tag
+        with:
+          acr-name: ${{ env.ACR_NAME }}
+          base-image-version: ${{ inputs.base-image-version }}
+          docker-image-name: ${{ inputs.docker-image-name }}    
 
       - name: Package component
         shell: bash
