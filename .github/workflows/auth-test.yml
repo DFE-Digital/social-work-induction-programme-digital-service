@@ -3,20 +3,13 @@ name: Auth unit test
 on:
   workflow_dispatch:
   push:
-    branches: 
+    branches:
       - SWIP-905-fix-auth-service-unit-test-running-in-ci
 
 jobs:
   tests:
-    name: Tests
+    name: Tests (shared DB)
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        project_short_name:
-          - AuthorizeAccess.Tests
-          - Core.Tests
-          - UiCommon.Tests
     services:
       postgres:
         image: postgres:15
@@ -31,9 +24,15 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+    env:
+      CONNECTION_STRING: Host=localhost;Username=postgres;Password=swpdp;Database=swpdp
 
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
       - uses: extractions/setup-just@v3
 
@@ -45,9 +44,21 @@ jobs:
         run: just ci-restore
         working-directory: apps/auth-service
 
-      - name: Run tests
+      - name: Discover and run tests sequentially (shared DB)
         shell: bash
-        working-directory: apps/auth-service/Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
+        working-directory: apps/auth-service
         run: |
-          dotnet test -e ConnectionStrings__DefaultConnection="Host=localhost;Username=postgres;Password=swpdp;Database=swpdp"
-        timeout-minutes: 30
+          set -euo pipefail
+
+          # Find all *Tests.csproj under the tests folder
+          mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*Tests.csproj" | sort)
+
+          echo "Found test projects:"
+          printf ' - %s\n' "${TEST_PROJECTS[@]}"
+
+          for csproj in "${TEST_PROJECTS[@]}"; do
+            proj_dir="$(dirname "$csproj")"
+            echo "::group::dotnet test $proj_dir"
+            dotnet test "$proj_dir" -e ConnectionStrings__DefaultConnection="$CONNECTION_STRING"
+            echo "::endgroup::"
+          done
