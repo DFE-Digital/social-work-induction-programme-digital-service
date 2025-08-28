@@ -9,7 +9,7 @@ on:
 jobs:
   tests:
     name: Tests
-    runs-on: ubuntu-24.04  # Important - later versions of ubuntu have a different .NET SDK which breaks trscli. Review on .NET 9 upgrade
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -37,10 +37,6 @@ jobs:
 
       - uses: extractions/setup-just@v3
 
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x 
-
       - name: Install tools
         run: just install-tools
         working-directory: apps/auth-service
@@ -49,14 +45,9 @@ jobs:
         run: just ci-restore
         working-directory: apps/auth-service
 
-      - name: Build project
-        run: dotnet build --no-restore
-        working-directory: apps/auth-service/Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
-
       - name: Run tests
         shell: bash
         working-directory: apps/auth-service/Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.${{ matrix.project_short_name }}
         run: |
-          dotnet test --no-build \
-            -e ConnectionStrings__DefaultConnection="Host=localhost;Username=postgres;Password=swpdp;Database=swpdp"
+          dotnet test -e ConnectionStrings__DefaultConnection="Host=localhost;Username=postgres;Password=swpdp;Database=swpdp"
         timeout-minutes: 30
