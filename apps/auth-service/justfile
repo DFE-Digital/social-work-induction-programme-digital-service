@@ -44,9 +44,9 @@ build-project project:
 # Test the .NET solution
 # TODO Rename recipe "test-auth" to "test" once auth tests are passing locally and input "run-auth-tests" is set to true 
 # in build-and-optionally-deloy-auth-service.yml; remove "test: @true" recipe as this is a placeholder in the interim
-test: 
+test-auth: 
   @true
-test-auth:
+test:
   #!/bin/bash
   set -uo pipefail
 
@@ -75,13 +75,15 @@ test-auth:
 
   echo "Waiting for Postgres to become ready…"
   for i in {1..40}; do
-    if docker exec "$DB_CONTAINER" pg_isready -U "$DB_USER" >/dev/null 2>&1; then
+    if docker exec -e PGPASSWORD="$DB_PASSWORD" "$DB_CONTAINER" \
+        pg_isready -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1; then
       break
     fi
     sleep 2
   done
-  if ! docker exec "$DB_CONTAINER" pg_isready -U "$DB_USER" >/dev/null 2>&1; then
-    echo "ERROR: Postgres did not become healthy in time." >&2
+  if ! docker exec -e PGPASSWORD="$DB_PASSWORD" "$DB_CONTAINER" \
+        pg_isready -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1; then
+    echo "ERROR: Postgres (DB '$DB_NAME') did not become healthy in time." >&2
     exit 1
   fi
 
