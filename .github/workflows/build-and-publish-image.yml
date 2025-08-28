@@ -129,20 +129,31 @@ jobs:
           DOTNET_ENVIRONMENT: Testing
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=swpdp;Username=postgres;Password=swpdp
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
-          # Find all *Tests.csproj under the tests folder
           mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*.Tests.csproj" | sort)
+
+          if (( ${#TEST_PROJECTS[@]} == 0 )); then
+            echo "No test projects found!" >&2
+            exit 1
+          fi
 
           echo "Found test projects:"
           printf ' - %s\n' "${TEST_PROJECTS[@]}"
 
+          overall=0
           for csproj in "${TEST_PROJECTS[@]}"; do
-            proj_dir="$(dirname "$csproj")"
-            echo "::group::dotnet test $proj_dir"
-            dotnet test "$proj_dir" 
+            echo "::group::dotnet test $csproj"
+            if ! dotnet test "$csproj" --no-build 
+              echo "::error title=Tests failed::$csproj"
+              overall=1
+            else
+              echo "Tests passed in $csproj"
+            fi
             echo "::endgroup::"
           done
+
+          exit $overall
 
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
