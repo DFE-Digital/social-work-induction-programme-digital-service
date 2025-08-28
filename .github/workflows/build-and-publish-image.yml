@@ -74,9 +74,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: swpdp
+          POSTGRES_DB: swpdp
         ports: ["5432:5432"]
         options: >-
           --health-cmd="pg_isready -U $POSTGRES_USER"
@@ -140,13 +140,37 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
-      - name: Test component
+      - name: Discover and run tests sequentially (shared DB)
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: |
-          cd Dfe.Sww.Ecf/tests/Dfe.Sww.Ecf.AuthorizeAccess.Tests/
-          dotnet test \
-          -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
+          set -uo pipefail
+
+          # Find all *Tests.csproj under the tests folder
+          mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*.Tests.csproj" | sort)
+
+          if (( ${#TEST_PROJECTS[@]} == 0 )); then
+            echo "No test projects found!" >&2
+            exit 1
+          fi
+
+          echo "Found test projects:"
+          printf ' - %s\n' "${TEST_PROJECTS[@]}"
+
+          overall=0
+          for csproj in "${TEST_PROJECTS[@]}"; do
+            echo "===> Testing $csproj"
+            if ! dotnet test "$proj_dir" \ 
+                -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD" 
+            then
+              echo "Tests failed in $csproj"
+              overall=1
+            else
+              echo "Tests passed: $csproj"
+            fi
+          done
+
+          exit $overall
 
       - name: Package component
         shell: bash
