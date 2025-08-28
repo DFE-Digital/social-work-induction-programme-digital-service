@@ -36,7 +36,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         // Assert
         Sut.AccountDetails.Should().BeEquivalentTo(accountDetails);
-        Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
+        Sut.BackLinkPath.Should().Be("/manage-organisations/enter-phone-number");
         result.Should().BeOfType<PageResult>();
 
         MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);

@@ -1,5 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -9,19 +8,23 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
-public class AddPrimaryCoordinator(
+public class EnterPhoneNumber(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
-    IValidator<AccountDetails> validator,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IValidator<EnterPhoneNumber> validator
 ) : BasePageModel
 {
-    [BindProperty] public AccountDetails AccountDetails { get; set; } = null!;
+    [BindProperty] public string? PhoneNumber { get; set; }
 
     public PageResult OnGet()
     {
-        AccountDetails = createOrganisationJourneyService.GetPrimaryCoordinatorAccountDetails() ?? new AccountDetails();
-        SetBackLinkPath();
+        var phoneNumber = createOrganisationJourneyService.GetPhoneNumber();
+        if (phoneNumber is not null)
+        {
+            PhoneNumber = phoneNumber;
+        }
 
+        SetBackLinkPath();
         return Page();
     }
 
@@ -34,18 +37,21 @@ public class AddPrimaryCoordinator(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var result = await validator.ValidateAsync(AccountDetails);
+        var result = await validator.ValidateAsync(this);
         if (!result.IsValid)
         {
-            result.AddToModelState(ModelState, nameof(AccountDetails));
+            result.AddToModelState(ModelState);
             SetBackLinkPath();
             return Page();
         }
 
-        AccountDetails.Types = new List<AccountType> { AccountType.Coordinator };
-        createOrganisationJourneyService.SetPrimaryCoordinatorAccountDetails(AccountDetails);
+        createOrganisationJourneyService.SetPhoneNumber(PhoneNumber);
 
-        return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswers());
+        return Redirect(
+            FromChangeLink
+                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                : linkGenerator.ManageOrganisations.AddPrimaryCoordinator()
+        );
     }
 
     public async Task<IActionResult> OnPostChangeAsync()
@@ -59,6 +65,6 @@ public class AddPrimaryCoordinator(
     {
         BackLinkPath ??= FromChangeLink
             ? linkGenerator.ManageOrganisations.CheckYourAnswers()
-            : linkGenerator.ManageOrganisations.EnterPhoneNumber();
+            : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
     }
 }
