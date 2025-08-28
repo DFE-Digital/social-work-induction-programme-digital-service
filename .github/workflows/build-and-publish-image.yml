@@ -125,8 +125,8 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         env:
-          ASPNETCORE_ENVIRONMENT: Development
-          DOTNET_ENVIRONMENT: Development
+          ASPNETCORE_ENVIRONMENT: Testing
+          DOTNET_ENVIRONMENT: Testing
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=swpdp;Username=postgres;Password=swpdp
         run: |
           set -euo pipefail
