@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
 
           # Find all *Tests.csproj under the tests folder
-          mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*Tests.csproj" | sort)
+          mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*.Tests.csproj" | sort)
 
           echo "Found test projects:"
           printf ' - %s\n' "${TEST_PROJECTS[@]}"
