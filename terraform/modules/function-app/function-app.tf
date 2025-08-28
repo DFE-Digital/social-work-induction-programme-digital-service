@@ -90,11 +90,3 @@ resource "azurerm_key_vault_access_policy" "kv_policy" {
     "List",
   ]
 }
-
-# Move
-# data "azurerm_function_app_host_keys" "function_keys" {
-#   name                = azurerm_linux_function_app.function_app.name
-#   resource_group_name = var.resource_group
-
-#   depends_on = [azurerm_linux_function_app.function_app]
-# }
