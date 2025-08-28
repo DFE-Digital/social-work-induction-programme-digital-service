@@ -37,6 +37,10 @@ on:
         required: true
         type: boolean
         description: Whether to publish the Docker image to the registry
+      run-auth-tests:
+        type: boolean
+        default: false
+        description: "Run auth tests with a local Postgres via just"  
 
     outputs:
       docker-image-tag:
@@ -63,25 +67,9 @@ jobs:
       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
       AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
       AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      # Used for database required for testing 
-      DB_USER: ${{ secrets.TEST_DB_USER }}
-      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-      DB_NAME: ecf_test_${{ github.run_id }} 
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-          POSTGRES_DB: ${{ env.DB_NAME }}
-        options: >-
-          --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
-          --health-interval=10s --health-timeout=5s --health-retries=10
-        ports:
-          - 5432:5432
       
     steps:
       - name: Checkout repository
@@ -119,40 +107,18 @@ jobs:
         working-directory: ${{ inputs.working-dir }}
         run: just ci-build
 
-      - name: Discover and run tests sequentially (shared DB)
+      - name: Run tests
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        env:
-          ASPNETCORE_ENVIRONMENT: Testing
-          DOTNET_ENVIRONMENT: Testing
-          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
         run: |
-          set -uo pipefail
-
-          mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*.Tests.csproj" | sort)
-
-          if (( ${#TEST_PROJECTS[@]} == 0 )); then
-            echo "No test projects found!" >&2
-            exit 1
+          set -euo pipefail
+          if [[ "${{ inputs.run-auth-tests }}" == 'true' ]]; then
+            export DB_USER="${{ secrets.TEST_DB_USER }}"
+            export DB_PASSWORD="${{ secrets.TEST_DB_PASSWORD }}"
+            export DB_NAME="ecf_test_${{ github.run_id }}"
           fi
-
-          echo "Found test projects:"
-          printf ' - %s\n' "${TEST_PROJECTS[@]}"
-
-          overall=0
-          for csproj in "${TEST_PROJECTS[@]}"; do
-            echo "::group::dotnet test $csproj"
-            if ! dotnet test "$csproj" --no-build
-            then
-              echo "::error title=Tests failed::$csproj"
-              overall=1
-            else
-              echo "Tests passed in $csproj"
-            fi
-            echo "::endgroup::"
-          done
-
-          exit $overall
+        
+          just ci-test
 
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
