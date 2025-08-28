@@ -113,8 +113,8 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "${{ inputs.run-auth-tests }}" == 'true' ]]; then
-            export DB_USER="${{ secrets.TEST_DB_USER }}"
-            export DB_PASSWORD="${{ secrets.TEST_DB_PASSWORD }}"
+            export DB_USER='${{ secrets.TEST_DB_USER }}'
+            export DB_PASSWORD='${{ secrets.TEST_DB_PASSWORD }}' # use single quotes in case password include $
             export DB_NAME="ecf_test_${{ github.run_id }}"
           fi
         
