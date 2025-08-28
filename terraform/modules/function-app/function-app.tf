@@ -36,13 +36,14 @@ resource "azurerm_linux_function_app" "function_app" {
   app_settings = merge({
     "DOCKER_REGISTRY_SERVER_URL"            = "https://${var.acr_name}.azurecr.io"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
-    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "FUNCTIONS_WORKER_RUNTIME"              = var.function_worker_runtime
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
     "DOCKER_REGISTRY_SERVER_USERNAME"       = ""
     "DOCKER_REGISTRY_SERVER_PASSWORD"       = ""
     DOCKER_ENABLE_CI                        = "false" # Github will control CI, not Azure
   }, var.app_settings)
 
+  tags = var.tags
 
   lifecycle {
     ignore_changes = [
@@ -59,8 +60,6 @@ resource "azurerm_linux_function_app" "function_app" {
       virtual_network_subnet_id
     ]
   }
-
-  tags = var.tags
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
@@ -92,9 +91,10 @@ resource "azurerm_key_vault_access_policy" "kv_policy" {
   ]
 }
 
-data "azurerm_function_app_host_keys" "function_keys" {
-  name                = azurerm_linux_function_app.function_app.name
-  resource_group_name = var.resource_group
+# Move
+# data "azurerm_function_app_host_keys" "function_keys" {
+#   name                = azurerm_linux_function_app.function_app.name
+#   resource_group_name = var.resource_group
 
-  depends_on = [azurerm_linux_function_app.function_app]
-}
+#   depends_on = [azurerm_linux_function_app.function_app]
+# }

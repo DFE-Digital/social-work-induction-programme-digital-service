@@ -123,3 +123,13 @@ output "subnet_functionapp_id" {
   description = "The ID of the function app subnet"
   value       = azurerm_subnet.sn_function_app.id
 }
+
+output "subnet_functionapp_privateendpoint_id" {
+  description = "The ID of the function app private endpoint subnet"
+  value       = azurerm_subnet.private_endpoint.id
+}
+
+output "private_dns_zone_id" {
+  description = "The ID of the function app private DNS zone"
+  value       = azurerm_private_dns_zone.pvt_dns_zone.id
+}

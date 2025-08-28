@@ -82,7 +82,7 @@ variable "subnet_functionapp_id" {
 }
 
 variable "app_settings" {
-  description = "App settings for the web app"
+  description = "App settings for the function app"
   type        = map(string)
 }
 
@@ -98,5 +98,20 @@ variable "virtual_network_id" {
 
 variable "key_vault_id" {
   description = "ID of the Key Vault to grant access to"
+  type        = string
+}
+
+variable "function_worker_runtime" {
+  description = "The runtime worker type of the function"
+  type        = string
+}
+
+variable "subnet_functionapp_privateendpoint_id" {
+  description = "The ID of the function app private endpoint subnet"
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "The ID of the private DNS zone"
   type        = string
 }

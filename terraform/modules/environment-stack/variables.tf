@@ -110,7 +110,7 @@ variable "email_support_address" {
 }
 
 variable "asp_sku_notification" {
-  description = "The app service plan SKU"
+  description = "The app service plan SKU for the notification service"
   type        = string
 }
 
@@ -187,5 +187,10 @@ variable "log_analytics_sku" {
 
 variable "db_backup_blob_sa_name" {
   description = "DB backup blob storage account name"
+  type        = string
+}
+
+variable "asp_sku_db_jobs" {
+  description = "The app service plan SKU for the DB Jobs"
   type        = string
 }
