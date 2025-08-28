@@ -10,14 +10,6 @@ resource "azurerm_key_vault_secret" "govnotify_api_key" {
   #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
-resource "azurerm_key_vault_secret" "function_key" {
-  name         = "NotificationService-FunctionKey"
-  value        = module.notification-service.function_app_key
-  key_vault_id = module.stack.kv_id
-  content_type = "function app key"
-  #checkov:skip=CKV_AZURE_41:No expiry date
-}
-
 module "notification-service" {
   source                                = "./modules/function-app"
   environment                           = var.environment
@@ -52,4 +44,12 @@ data "azurerm_function_app_host_keys" "function_keys" {
   resource_group_name = module.stack.resource_group_name
 
   #depends_on = [azurerm_linux_function_app.function_app]
+}
+
+resource "azurerm_key_vault_secret" "function_key" {
+  name         = "NotificationService-FunctionKey"
+  value        = azurerm_function_app_host_keys.function_keys.default_function_key
+  key_vault_id = module.stack.kv_id
+  content_type = "function app key"
+  #checkov:skip=CKV_AZURE_41:No expiry date
 }

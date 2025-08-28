@@ -133,3 +133,8 @@ output "private_dns_zone_id" {
   description = "The ID of the function app private DNS zone"
   value       = azurerm_private_dns_zone.pvt_dns_zone.id
 }
+
+output "db_jobs_service_plan_id" {
+  description = "The ID of the app service"
+  value       = azurerm_service_plan.asp_db_jobs.id
+}
