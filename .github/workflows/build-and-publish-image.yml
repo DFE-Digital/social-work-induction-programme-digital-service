@@ -74,14 +74,12 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: swpdp
-          POSTGRES_DB: swpdp
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
         options: >-
-          --name postgres
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+          --health-interval=10s --health-timeout=5s --health-retries=10
         ports:
           - 5432:5432
       
@@ -127,7 +125,7 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           DOTNET_ENVIRONMENT: Testing
-          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=swpdp;Username=postgres;Password=swpdp
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD
         run: |
           set -uo pipefail
 
@@ -144,7 +142,8 @@ jobs:
           overall=0
           for csproj in "${TEST_PROJECTS[@]}"; do
             echo "::group::dotnet test $csproj"
-            if ! dotnet test "$csproj" --no-build 
+            if ! dotnet test "$csproj" --no-build
+            then
               echo "::error title=Tests failed::$csproj"
               overall=1
             else
