@@ -24,6 +24,11 @@ concurrency:
   group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
   cancel-in-progress: true
 
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+
 jobs:
   build-and-publish-db-operations-service-image:
     name: Build and Publish DB Operations Service Image
