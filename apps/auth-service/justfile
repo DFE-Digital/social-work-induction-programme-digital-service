@@ -44,9 +44,9 @@ build-project project:
 # Test the .NET solution
 # TODO Rename recipe "test-auth" to "test" once auth tests are passing locally and input "run-auth-tests" is set to true 
 # in build-and-optionally-deloy-auth-service.yml; remove "test: @true" recipe as this is a placeholder in the interim
-test-auth: 
+test: 
   @true
-test:
+test-auth:
   #!/bin/bash
   set -uo pipefail
 
