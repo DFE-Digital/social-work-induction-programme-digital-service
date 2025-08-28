@@ -2,6 +2,9 @@ name: Auth unit test
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - SWIP-905-fix-auth-service-unit-test-running-in-ci
 
 jobs:
   tests:
@@ -26,10 +29,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
 
       - uses: extractions/setup-just@v3
 

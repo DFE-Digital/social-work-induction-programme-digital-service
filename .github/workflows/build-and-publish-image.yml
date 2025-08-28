@@ -155,7 +155,7 @@ jobs:
           for csproj in "${TEST_PROJECTS[@]}"; do
             proj_dir="$(dirname "$csproj")"
             echo "::group::dotnet test $proj_dir"
-            dotnet test "$proj_dir" -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
+            dotnet test "$proj_dir" -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=postgres;Username=swpdp;Password=swpdp"
             echo "::endgroup::"
           done
 
