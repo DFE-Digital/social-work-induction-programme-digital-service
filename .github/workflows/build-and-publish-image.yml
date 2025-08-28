@@ -125,7 +125,7 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
           DOTNET_ENVIRONMENT: Testing
-          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${{ env.DB_NAME }};Username=${{ env.DB_USER }};Password=${{ env.DB_PASSWORD }}
         run: |
           set -uo pipefail
 
