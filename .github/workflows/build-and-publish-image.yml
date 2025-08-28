@@ -74,9 +74,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: swpdp
           POSTGRES_PASSWORD: swpdp
-          POSTGRES_DB: swpdp
+          POSTGRES_DB: postgres
         ports: ["5432:5432"]
         options: >-
           --health-cmd="pg_isready -U $POSTGRES_USER"
