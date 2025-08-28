@@ -144,33 +144,20 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working-dir }}
         run: |
-          set -uo pipefail
+          set -euo pipefail
 
           # Find all *Tests.csproj under the tests folder
           mapfile -t TEST_PROJECTS < <(find . -path "./Dfe.Sww.Ecf/tests/*/*.Tests.csproj" | sort)
 
-          if (( ${#TEST_PROJECTS[@]} == 0 )); then
-            echo "No test projects found!" >&2
-            exit 1
-          fi
-
           echo "Found test projects:"
           printf ' - %s\n' "${TEST_PROJECTS[@]}"
 
-          overall=0
           for csproj in "${TEST_PROJECTS[@]}"; do
-            echo "===> Testing $csproj"
-            if ! dotnet test "$csproj" \
-                -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD" 
-            then
-              echo "Tests failed in $csproj"
-              overall=1
-            else
-              echo "Tests passed in $csproj"
-            fi
+            proj_dir="$(dirname "$csproj")"
+            echo "::group::dotnet test $proj_dir"
+            dotnet test "$proj_dir" -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD"
+            echo "::endgroup::"
           done
-
-          exit $overall
 
       - name: Package component
         shell: bash
