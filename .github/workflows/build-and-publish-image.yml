@@ -160,7 +160,7 @@ jobs:
           overall=0
           for csproj in "${TEST_PROJECTS[@]}"; do
             echo "===> Testing $csproj"
-            if ! dotnet test "$csproj" \ 
+            if ! dotnet test "$csproj" \
                 -e ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=$DB_NAME;Username=$DB_USER;Password=$DB_PASSWORD" 
             then
               echo "Tests failed in $csproj"
