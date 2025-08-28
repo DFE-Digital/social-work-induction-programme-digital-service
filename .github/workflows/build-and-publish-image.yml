@@ -72,7 +72,6 @@ jobs:
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
     services:
       postgres:
-        postgres:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: swpdp
