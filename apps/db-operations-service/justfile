@@ -34,3 +34,7 @@ package-component:
 
 ci-package-component:
   @just package-component
+
+# Test the .net solution
+ci-test:
+  echo 'Skipped'
