@@ -19,7 +19,7 @@ jobs:
           - UiCommon.Tests
     services:
       postgres:
-        image: postgres:17
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: swpdp
           POSTGRES_DB: swpdp
