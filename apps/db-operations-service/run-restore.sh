@@ -2,6 +2,11 @@
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
+set -x
+
+echo "Authenticating with Azure using Managed Identity..."
+az login --identity
+echo "Authentication successful."
 
 ## --- Configuration ---
 # This script expects the following environment variables to be set:
