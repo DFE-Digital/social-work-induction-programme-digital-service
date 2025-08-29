@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libffi-dev \
     python3-dev && \
-    pip3 install azure-cli && \
+    pip3 install --break-system-packages azure-cli && \
     apt-get remove -y build-essential libffi-dev python3-dev && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
