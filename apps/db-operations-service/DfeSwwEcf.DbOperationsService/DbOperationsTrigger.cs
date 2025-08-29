@@ -54,11 +54,13 @@ namespace DfeSwwEcf.DbOperationsService
 
                 if (exitCode != 0)
                 {
-                    _logger.LogError($"Script failed with exit code {exitCode}.\nSTDERR: {error}");
-                    return await CreateResponse(req, HttpStatusCode.InternalServerError, $"Script execution failed.\n\nError:\n{error}");
+                    _logger.LogError($"Script failed with exit code {exitCode}.");
+                    _logger.LogError($"STDOUT: {output}");
+                    _logger.LogError($"STDERR: {error}");
+                    return await CreateResponse(req, HttpStatusCode.InternalServerError, $"Script execution failed. See logs for details.");
                 }
 
-                _logger.LogInformation($"Action '{data.Action}' completed successfully.");
+                _logger.LogInformation($"Action '{data.Action}' completed successfully.\nSTDOUT: {output}");
                 return await CreateResponse(req, HttpStatusCode.OK, $"Action '{data.Action}' completed successfully.\n\nOutput:\n{output}");
             }
             catch (Exception ex)
