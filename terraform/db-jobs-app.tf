@@ -18,8 +18,12 @@ module "db-jobs-app" {
   virtual_network_name                  = module.stack.vnet_name
   virtual_network_id                    = module.stack.vnet_id
   key_vault_id                          = module.stack.kv_id
-  app_settings                          = var.db_jobs_app_settings
   function_worker_runtime               = "dotnet-isolated"
   subnet_functionapp_privateendpoint_id = module.stack.subnet_functionapp_privateendpoint_id
   private_dns_zone_id                   = module.stack.private_dns_zone_id
+  app_settings = merge({
+    "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
+    "STORAGECONNECTIONSTRING"              = "https://${module.stack.db_backup_blob_storage_account_name}.blob.core.windows.net/[SA_REPLACE_CONTAINER]"
+    "DB_PASSWORD"                          = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
+  }, var.db_jobs_app_settings)
 }
