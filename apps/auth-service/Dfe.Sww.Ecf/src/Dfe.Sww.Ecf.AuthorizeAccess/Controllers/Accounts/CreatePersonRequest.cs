@@ -11,7 +11,6 @@ public record CreatePersonRequest
     public string? MiddleName { get; init; }
     public required string LastName { get; init; }
     public required string? EmailAddress { get; init; }
-    public string? PhoneNumber { get; init; }
     public string? SocialWorkEnglandNumber { get; init; }
     public PersonStatus? Status { get; init; }
     public ImmutableList<RoleType> Roles { get; init; } = [];
@@ -31,7 +30,6 @@ public static class CreatePersonRequestExtensions
             LastName = request.LastName,
             MiddleName = request.MiddleName,
             EmailAddress = request.EmailAddress,
-            PhoneNumber = request.PhoneNumber,
             Trn = request.SocialWorkEnglandNumber,
             PersonRoles = request
                 .Roles.Select(roleType => new PersonRole { RoleId = (int)roleType })

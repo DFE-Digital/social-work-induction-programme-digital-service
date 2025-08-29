@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
@@ -11,6 +10,7 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
@@ -19,7 +19,7 @@ public class ConfirmAccountDetails(
     IEditAccountJourneyService editAccountJourneyService,
     IMoodleServiceClient moodleServiceClient,
     EcfLinkGenerator linkGenerator,
-    FeatureFlags featureFlags
+    IOptions<FeatureFlags> featureFlags
 ) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
@@ -148,7 +148,7 @@ public class ConfirmAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         if (accountDetails is null) return BadRequest();
 
-        if (featureFlags.EnableMoodleIntegration)
+        if (featureFlags.Value.EnableMoodleIntegration)
         {
             var moodleRequest = new CreateMoodleUserRequest
             {

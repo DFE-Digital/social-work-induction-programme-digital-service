@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -7,6 +8,7 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
@@ -29,6 +31,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
     private protected Mock<IEmailService> MockEmailService { get; } = new();
     private protected Mock<IAuthServiceClient> MockAuthServiceClient { get; } = new();
     private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; } = new();
+    private protected Mock<IOptions<FeatureFlags>> MockFeatureFlags { get; } = new();
 
     private protected void VerifyAllNoOtherCalls()
     {

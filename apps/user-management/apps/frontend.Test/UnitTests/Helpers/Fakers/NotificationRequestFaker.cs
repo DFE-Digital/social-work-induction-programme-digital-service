@@ -12,4 +12,10 @@ public sealed class NotificationRequestFaker : Faker<NotificationRequest>
         RuleFor(a => a.Reference, f => f.Random.String());
         RuleFor(a => a.EmailReplyToId, f => f.Random.Guid());
     }
+
+    public NotificationRequestFaker WithEmailAddress(string emailAddress)
+    {
+        RuleFor(a => a.EmailAddress, _ => emailAddress);
+        return this;
+    }
 }

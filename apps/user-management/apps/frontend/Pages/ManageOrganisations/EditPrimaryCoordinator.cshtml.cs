@@ -58,7 +58,11 @@ public class EditPrimaryCoordinator(
 
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
-        PrimaryCoordinator.PhoneNumberRequired = true;
+        var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
+        if (primaryCoordinator is null)
+        {
+            return BadRequest();
+        }
 
         var validationResult = await validator.ValidateAsync(PrimaryCoordinator);
         if (!validationResult.IsValid)

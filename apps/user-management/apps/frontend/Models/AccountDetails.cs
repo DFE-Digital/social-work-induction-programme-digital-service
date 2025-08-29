@@ -6,6 +6,8 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public class AccountDetails
 {
+    public Guid Id { get; set; }
+
     [Display(Name = "First name")] public string? FirstName { get; set; }
 
     [Display(Name = "Middle names")] public string? MiddleNames { get; set; }
@@ -92,6 +94,7 @@ public class AccountDetails
     {
         return new AccountDetails
         {
+            Id = account.Id,
             FirstName = account.FirstName,
             MiddleNames = account.MiddleNames,
             LastName = account.LastName,
@@ -133,6 +136,7 @@ public class AccountDetails
     {
         return new Account
         {
+            Id = accountDetails.Id,
             FirstName = accountDetails.FirstName,
             MiddleNames = accountDetails.MiddleNames,
             LastName = accountDetails.LastName,

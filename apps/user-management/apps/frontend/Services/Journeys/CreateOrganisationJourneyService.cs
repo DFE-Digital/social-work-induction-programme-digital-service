@@ -44,6 +44,19 @@ public class CreateOrganisationJourneyService(
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
+    public string? GetPhoneNumber()
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        return createOrganisationJourneyModel.PhoneNumber;
+    }
+
+    public void SetPhoneNumber(string? phoneNumber)
+    {
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        createOrganisationJourneyModel.PhoneNumber = phoneNumber;
+        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
+    }
+
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();

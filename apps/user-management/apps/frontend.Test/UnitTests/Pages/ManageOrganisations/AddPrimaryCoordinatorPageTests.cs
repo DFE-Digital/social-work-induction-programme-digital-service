@@ -12,22 +12,22 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageOrganisations;
 
 public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<AddPrimaryCoordinator>
 {
-    private AddPrimaryCoordinator Sut { get; }
-
     public AddPrimaryCoordinatorPageTests()
     {
         Sut = new AddPrimaryCoordinator(
             MockCreateOrganisationJourneyService.Object,
             new AccountDetailsValidator(),
             new FakeLinkGenerator()
-            );
+        );
     }
+
+    private AddPrimaryCoordinator Sut { get; }
 
     [Fact]
     public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
@@ -36,7 +36,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         // Assert
         Sut.AccountDetails.Should().BeEquivalentTo(accountDetails);
-        Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
+        Sut.BackLinkPath.Should().Be("/manage-organisations/enter-phone-number");
         result.Should().BeOfType<PageResult>();
 
         MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
@@ -47,7 +47,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
     public void OnGetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.WithPhoneNumber("07123123123").Build();
+        var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountDetails()).Returns(accountDetails);
 
@@ -69,8 +69,6 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber("07123123123")
-            .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
@@ -101,8 +99,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         {
             FirstName = string.Empty,
             LastName = string.Empty,
-            Email = string.Empty,
-            PhoneNumber = string.Empty
+            Email = string.Empty
         };
 
         // Act
@@ -113,7 +110,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         var modelState = Sut.ModelState;
         var modelStateKeys = modelState.Keys.ToList();
-        modelStateKeys.Count.Should().Be(4);
+        modelStateKeys.Count.Should().Be(3);
         modelStateKeys.Should().Contain("AccountDetails.FirstName");
         modelState["AccountDetails.FirstName"]!.Errors.Count.Should().Be(1);
         modelState["AccountDetails.FirstName"]!.Errors[0].ErrorMessage.Should().Be("Enter a first name");
@@ -126,10 +123,6 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         modelState["AccountDetails.Email"]!.Errors.Count.Should().Be(1);
         modelState["AccountDetails.Email"]!.Errors[0].ErrorMessage.Should().Be("Enter an email address");
 
-        modelStateKeys.Should().Contain("AccountDetails.PhoneNumber");
-        modelState["AccountDetails.PhoneNumber"]!.Errors.Count.Should().Be(1);
-        modelState["AccountDetails.PhoneNumber"]!.Errors[0].ErrorMessage.Should().Be("Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192");
-
         VerifyAllNoOtherCalls();
     }
 
@@ -139,8 +132,6 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
         // Arrange
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()
-            .WithPhoneNumber("07123123123")
-            .WithPhoneNumberRequired(true)
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
 

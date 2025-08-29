@@ -49,7 +49,7 @@ public class ConfirmOrganisationDetailsPageTests : ManageOrganisationsPageTestBa
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator");
+        redirectResult!.Url.Should().Be("/manage-organisations/enter-phone-number");
 
         VerifyAllNoOtherCalls();
     }

@@ -30,7 +30,7 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
             { "wsfunction", FunctionNameConstants.CreateUser },
             { "moodlewsrestformat", "json" },
             { "users[0][auth]", "oidc" },
-            { "users[0][username]", request.Email },
+            { "users[0][username]", request.Email.ToLower() },
             { "users[0][firstname]", request.FirstName },
             { "users[0][lastname]", request.LastName },
             { "users[0][email]", request.Email }
