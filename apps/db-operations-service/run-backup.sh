@@ -23,11 +23,11 @@ echo "Starting backup for database '$DATABASE_NAME'..."
 
 # --- Resolve Password from Key Vault ---
 # Uses the app's managed identity to get the secret.
-ACTUAL_DB_PASSWORD=$(az keyvault secret show --name "$DB_PASSWORD" --vault-name "$KEY_VAULT_NAME" --query value -o tsv)
-if [ -z "$ACTUAL_DB_PASSWORD" ]; then
-    echo "Error: Failed to retrieve password from Key Vault." >&2
-    exit 1
-fi
+# ACTUAL_DB_PASSWORD=$(az keyvault secret show --name "$DB_PASSWORD" --vault-name "$KEY_VAULT_NAME" --query value -o tsv)
+# if [ -z "$ACTUAL_DB_PASSWORD" ]; then
+#     echo "Error: Failed to retrieve password from Key Vault." >&2
+#     exit 1
+# fi
 
 # --- Parse Connection String ---
 # Extracts Host and Username from the key-value format.
@@ -35,7 +35,7 @@ DB_HOST=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Host=[^;]*' | 
 DB_USER=$(echo "$CONNECTIONSTRINGS__DEFAULTCONNECTION" | grep -o 'Username=[^;]*' | cut -d'=' -f2)
 
 # --- 1. Execute Backup ---
-export PGPASSWORD=$ACTUAL_DB_PASSWORD
+export PGPASSWORD=$DB_PASSWORD
 pg_dump -F c --verbose -h "$DB_HOST" -U "$DB_USER" -d "$DATABASE_NAME" > "$BACKUP_FILE"
 unset PGPASSWORD
 echo "Local backup created at $BACKUP_FILE."
