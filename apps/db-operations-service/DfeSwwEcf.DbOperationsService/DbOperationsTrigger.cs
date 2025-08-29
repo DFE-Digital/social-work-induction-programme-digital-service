@@ -24,6 +24,9 @@ namespace DfeSwwEcf.DbOperationsService
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+                _logger.LogInformation($"Received raw request body: {requestBody}");
+
                 var data = JsonSerializer.Deserialize<JobRequest>(requestBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                 if (data == null || string.IsNullOrEmpty(data.Action))
