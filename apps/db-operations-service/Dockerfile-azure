@@ -8,9 +8,20 @@ EXPOSE 8080
 
 COPY DfeSwwEcf.DbOperationsService/bin/Release/net8.0/publish/ .
 
+# RUN apt-get update && apt-get install -y \
+#     postgresql-client \
+#     && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && apt-get install -y \
     postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+    python3-pip \
+    build-essential \
+    libffi-dev \
+    python3-dev && \
+    pip3 install azure-cli && \
+    apt-get remove -y build-essential libffi-dev python3-dev && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY run-backup.sh /app/scripts/
 COPY run-restore.sh /app/scripts/
