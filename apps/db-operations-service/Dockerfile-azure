@@ -19,6 +19,9 @@ RUN chmod +x /app/scripts/*.sh
 # Update PATH to include the scripts directory
 ENV PATH="${PATH}:/app/scripts"
 
+# Update PATH to include the location of 'az'
+ENV PATH="${PATH}:/usr/local/bin"
+
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
     FUNCTIONS_WORKER_RUNTIME=dotnet-isolated \
