@@ -2,6 +2,10 @@
 set -e
 set -x
 
+echo "Authenticating with Azure using Managed Identity..."
+az login --identity
+echo "Authentication successful."
+
 # --- Input Validation ---
 # Checks for exactly 3 arguments.
 if [ -z "$3" ]; then
