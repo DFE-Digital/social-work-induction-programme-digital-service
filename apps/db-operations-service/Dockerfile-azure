@@ -30,14 +30,6 @@ RUN chmod +x /app/scripts/*.sh
 # Update PATH to include the scripts directory
 ENV PATH="${PATH}:/app/scripts"
 
-# Update PATH to include the location of 'az'
-RUN AZ_PATH=$(find / -type f -name az | head -n 1) && \
-    if [ -n "$AZ_PATH" ]; then \
-    ln -s $AZ_PATH /usr/local/bin/az; \
-    else \
-    echo "Azure CLI executable not found." && exit 1; \
-    fi
-
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
     FUNCTIONS_WORKER_RUNTIME=dotnet-isolated \
