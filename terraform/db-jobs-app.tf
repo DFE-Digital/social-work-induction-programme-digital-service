@@ -23,7 +23,7 @@ module "db-jobs-app" {
   private_dns_zone_id                   = module.stack.private_dns_zone_id
   app_settings = merge({
     "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
-    "STORAGECONNECTIONSTRING"              = "https://${module.stack.db_backup_blob_storage_account_name}.blob.core.windows.net/[SA_REPLACE_CONTAINER]"
+    "STORAGECONNECTIONSTRING"              = "@Microsoft.KeyVault(SecretUri=${module.stack.full_backup_storage_connectionstring_uri})"
     "DB_PASSWORD"                          = "@Microsoft.KeyVault(SecretUri=${module.stack.full_postgres_secret_password_uri})"
   }, var.db_jobs_app_settings)
 }

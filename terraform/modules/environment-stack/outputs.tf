@@ -143,3 +143,8 @@ output "db_backup_blob_storage_account_name" {
   description = "The name of the blob storage for backups"
   value       = azurerm_storage_account.sa_db_backup_blob_storage.name
 }
+
+output "full_backup_storage_connectionstring_uri" {
+  description = "The full Key Vault URI for the backup blob storage connection string"
+  value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.db_backup_blob_storage_connection_string.name}"
+}
