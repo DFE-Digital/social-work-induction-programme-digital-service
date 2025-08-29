@@ -48,7 +48,7 @@ echo "Downloading backup file '$BACKUP_FILE' from container '$CONTAINER_NAME'...
 
 # This command assumes the server has a Managed Identity with the 'Storage Blob Data Contributor' role.
 az storage blob download \
-  --connection-string "$DbBackupBlobStorage-ConnectionString" \
+  --connection-string "$STORAGECONNECTIONSTRING" \
   --container-name "$CONTAINER_NAME" \
   --name "$BACKUP_FILE" \
   --file "$BACKUP_FILE" \

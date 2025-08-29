@@ -42,7 +42,7 @@ echo "Local backup created at $BACKUP_FILE."
 
 # --- 2. Upload to Azure Blob Storage ---
 az storage blob upload \
-  --connection-string "$DbBackupBlobStorage-ConnectionString" \
+  --connection-string "$STORAGECONNECTIONSTRING" \
   --container-name "$CONTAINER_NAME" \
   --file "$BACKUP_FILE" \
   --name "$(basename "$BACKUP_FILE")"
