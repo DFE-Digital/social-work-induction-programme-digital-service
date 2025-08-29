@@ -138,3 +138,8 @@ output "db_jobs_service_plan_id" {
   description = "The ID of the app service"
   value       = azurerm_service_plan.asp_db_jobs.id
 }
+
+output "db_backup_blob_storage_account_name" {
+  description = "The name of the blob storage for backups"
+  value       = azurerm_storage_account.sa_db_backup_blob_storage.name
+}
