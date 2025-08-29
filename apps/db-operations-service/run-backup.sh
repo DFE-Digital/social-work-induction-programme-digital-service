@@ -42,11 +42,10 @@ echo "Local backup created at $BACKUP_FILE."
 
 # --- 2. Upload to Azure Blob Storage ---
 az storage blob upload \
-  --account-name "$STORAGE_ACCOUNT" \
+  --connection-string "$DbBackupBlobStorage-ConnectionString" \
   --container-name "$CONTAINER_NAME" \
   --file "$BACKUP_FILE" \
-  --name "$(basename "$BACKUP_FILE")" \
-  --auth-mode login
+  --name "$(basename "$BACKUP_FILE")"
 echo "Upload to blob storage successful."
 
 # --- 3. Clean Up ---
