@@ -42,11 +42,7 @@ build-project project:
   @dotnet build {{solution-root}}/src/{{project}}
 
 # Test the .NET solution
-# TODO Rename recipe "test-auth" to "test" once auth tests are passing locally and input "run-auth-tests" is set to true 
-# in build-and-optionally-deloy-auth-service.yml; remove "test: @true" recipe as this is a placeholder in the interim
-test: 
-  @true
-test-auth:
+test:
   #!/bin/bash
   set -uo pipefail
 
@@ -116,6 +112,7 @@ test-auth:
   
   exit $overall
 
+# TODO replace "@true" with "@just test" once auth tests are passing and tests can start running in CI
 ci-test:
   @just test
 
