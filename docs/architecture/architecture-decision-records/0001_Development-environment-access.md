@@ -47,7 +47,7 @@ We scored each option against criteria from 1 (poor) to 5 (excellent):
 
 We will implement **Option 5 (“magic links”)**.
 
-This will use Azure Front Door Rules Engine to enforce access based on a token provided as a query string. When a user first visits via a magic link, Front Door will validate the token, set a secure cookie (e.g. `dev_auth=ok`), and redirect the user to the same page without the query string. This allows access to persist across multiple pages without appending the querystring repeatedly.
+This will use Azure Front Door Rules Engine to enforce access based on a token provided as a query string. When a user first visits via a magic link, Front Door will validate the token, set a secure cookie (e.g. `dev_auth=<token>`), and redirect the user to the same page without the query string. This allows access to persist across multiple pages without appending the querystring repeatedly.
 
 Tokens will be managed as Terraform variables, with a GitHub Actions workflow generating new random tokens on demand. Research facilitators will be able to request a token, either by triggering the workflow directly or with support from the dev team, obtain a temporary link, and share it with participants.
 As a further improvement, as part of the workflow, we could store the current generated link with token in Confluence, post it to Teams, or share it elsewhere for easy reference in future.
