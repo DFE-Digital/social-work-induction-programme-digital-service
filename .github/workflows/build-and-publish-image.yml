@@ -85,6 +85,33 @@ jobs:
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
+      - name: Install just
+        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
+
+      - name: Restore tools
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just ci-install-tools
+
+      - name: Restore packages / files
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just ci-restore
+
+      - name: Build component
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        run: just ci-build
+
+      - name: Run tests
+        shell: bash
+        working-directory: ${{ inputs.working-dir }}
+        env:
+          DB_USER: ${{ secrets.TEST_DB_USER }}
+          DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          DB_NAME: ecf_test_${{ github.run_id }}
+        run: just ci-test
+
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
         uses: ./.github/actions/pre-process-terraform-variables
@@ -105,30 +132,7 @@ jobs:
         with:
           acr-name: ${{ env.ACR_NAME }}
           base-image-version: ${{ inputs.base-image-version }}
-          docker-image-name: ${{ inputs.docker-image-name }}
-
-      - name: Install just
-        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
-
-      - name: Restore tools
-        shell: bash
-        working-directory: ${{ inputs.working-dir }}
-        run: just ci-install-tools
-
-      - name: Restore packages / files
-        shell: bash
-        working-directory: ${{ inputs.working-dir }}
-        run: just ci-restore
-
-      - name: Build component
-        shell: bash
-        working-directory: ${{ inputs.working-dir }}
-        run: just ci-build
-
-      - name: Test component
-        shell: bash
-        working-directory: ${{ inputs.working-dir }}
-        run: just ci-test
+          docker-image-name: ${{ inputs.docker-image-name }}    
 
       - name: Package component
         shell: bash
