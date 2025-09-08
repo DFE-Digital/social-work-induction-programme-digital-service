@@ -12,7 +12,7 @@ namespace DfeSwwEcf.DbOperationsService
         private readonly ILogger _logger = loggerFactory.CreateLogger<DbOperationsFunction>();
 
         [Function("DbOperationsFunction")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req, CancellationToken cancellationToken)
         {
             _logger.LogInformation("HTTP trigger function received a job request.");
 
@@ -21,7 +21,7 @@ namespace DfeSwwEcf.DbOperationsService
                 string requestBody;
                 using (var reader = new StreamReader(req.Body))
                 {
-                    requestBody = await reader.ReadToEndAsync();
+                    requestBody = await reader.ReadToEndAsync(cancellationToken);
                 }
 
                 _logger.LogInformation("Received raw request body: {RequestBody}", requestBody);
@@ -60,7 +60,7 @@ namespace DfeSwwEcf.DbOperationsService
                 }
 
                 // Execute the shell script
-                var (exitCode, output, error) = await ExecuteShellScript(scriptPath, arguments);
+                var (exitCode, output, error) = await ExecuteShellScript(scriptPath, arguments, cancellationToken);
 
                 if (exitCode != 0)
                 {
@@ -76,7 +76,22 @@ namespace DfeSwwEcf.DbOperationsService
                 return await CreateResponse(req, HttpStatusCode.OK,
                     $"Action '{data.Action}' completed successfully.\n\nOutput:\n{output}");
             }
-            catch (Exception ex)
+            catch (JsonException jsonEx)
+            {
+                _logger.LogError(jsonEx, "Failed to deserialize request body.");
+                return await CreateResponse(req, HttpStatusCode.BadRequest, "Invalid JSON format in request body.");
+            }
+            catch (IOException ioEx)
+            {
+                _logger.LogError(ioEx, "Failed to read request body.");
+                return await CreateResponse(req, HttpStatusCode.BadRequest, "Failed to read request body.");
+            }
+            catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogWarning(ex, "Operation was canceled.");
+                throw;
+            }
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogError(ex, "An unexpected error occurred.");
                 return await CreateResponse(req, HttpStatusCode.InternalServerError,
@@ -84,8 +99,8 @@ namespace DfeSwwEcf.DbOperationsService
             }
         }
 
-        private async Task<(int ExitCode, string Output, string Error)> ExecuteShellScript(string scriptPath,
-            List<string> args)
+        private static async Task<(int ExitCode, string Output, string Error)> ExecuteShellScript(string scriptPath,
+            List<string> args, CancellationToken cancellationToken)
         {
             using var process = new Process();
             process.StartInfo = new ProcessStartInfo
@@ -103,9 +118,28 @@ namespace DfeSwwEcf.DbOperationsService
             }
 
             process.Start();
-            var output = await process.StandardOutput.ReadToEndAsync();
-            var error = await process.StandardError.ReadToEndAsync();
-            await process.WaitForExitAsync();
+
+            await using var registration = cancellationToken.Register(static state =>
+            {
+                var p = (Process)state!;
+                try
+                {
+                    if (!p.HasExited)
+                    {
+                        p.Kill(entireProcessTree: true);
+                    }
+                }
+                catch
+                {
+                    // Best-effort: the process may have already exited or become non-accessible.
+                    // // Do not throw from a cancellation callback.
+                }
+            }, process);
+
+
+            var output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var error = await process.StandardError.ReadToEndAsync(cancellationToken);
+            await process.WaitForExitAsync(cancellationToken);
 
             return (process.ExitCode, output, error);
         }
