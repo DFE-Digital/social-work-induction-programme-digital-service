@@ -59,10 +59,10 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.origin_group.id
   enabled                        = true
   certificate_name_check_enabled = false
-  host_name                      = module.function_app_name.function_app_default_hostname
+  host_name                      = module.db-jobs-app.function_app_default_hostname
   http_port                      = 80
   https_port                     = 443
-  origin_host_header             = module.function_app_name.function_app_default_hostname
+  origin_host_header             = module.db-jobs-app.function_app_default_hostname
   priority                       = 1
   weight                         = 1
   name                           = "${var.resource_name_prefix}-fd-origin-web-fa-db-operations"
@@ -70,9 +70,9 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
 
 resource "azurerm_cdn_frontdoor_route" "route" {
   name                          = "${var.resource_name_prefix}-fd-route-web-fa-db-operations"
-  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.front_door_endpoint_web.id
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.front_door_origin_group_web.id
-  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.front_door_origin_web.id]
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.fd_endpoint.id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.origin_group.id
+  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.origin.id]
 
   forwarding_protocol    = "MatchRequest"
   https_redirect_enabled = true
