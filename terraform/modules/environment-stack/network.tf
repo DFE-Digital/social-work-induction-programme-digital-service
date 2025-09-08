@@ -78,7 +78,7 @@ resource "azurerm_subnet_network_security_group_association" "private_endpoint_n
 }
 
 resource "azurerm_private_dns_zone" "pvt_dns_zone" {
-  name                = "${var.resource_name_prefix}-dns-zone-privatelink"
+  name                = "privatelink.azurewebsites.net"
   resource_group_name = azurerm_resource_group.rg_primary.name
 }
 
