@@ -63,7 +63,7 @@ resource "azurerm_subnet_network_security_group_association" "funcapp_nsg_assoc"
 }
 
 resource "azurerm_subnet" "private_endpoint" {
-  name                 = "endpoint-subnet"
+  name                 = "${var.resource_name_prefix}-sn-funcapp-endpoint"
   resource_group_name  = azurerm_resource_group.rg_primary.name
   virtual_network_name = azurerm_virtual_network.vnet_stack.name
   address_prefixes     = ["10.0.7.0/24"]
@@ -78,7 +78,7 @@ resource "azurerm_subnet_network_security_group_association" "private_endpoint_n
 }
 
 resource "azurerm_private_dns_zone" "pvt_dns_zone" {
-  name                = "privatelink.azurewebsites.net"
+  name                = "${var.resource_name_prefix}-dns-zone-privatelink"
   resource_group_name = azurerm_resource_group.rg_primary.name
 }
 
