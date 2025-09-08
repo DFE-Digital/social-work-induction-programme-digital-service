@@ -30,7 +30,7 @@ module "db-jobs-app" {
 
 # Front Door route for this function app only
 resource "azurerm_cdn_frontdoor_endpoint" "fd_endpoint" {
-  name                     = "fd-ops-trigger-${random_string.suffix.result}"
+  name                     = "${var.resource_name_prefix}-fd-ops-trigger"
   cdn_frontdoor_profile_id = module.stack.front_door_profile_web_id
   tags                     = local.common_tags
 
@@ -59,10 +59,10 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.origin_group.id
   enabled                        = true
   certificate_name_check_enabled = false
-  host_name                      = module.function_app.function_app_default_hostname
+  host_name                      = module.function_app_name.function_app_default_hostname
   http_port                      = 80
   https_port                     = 443
-  origin_host_header             = module.function_app.function_app_default_hostname
+  origin_host_header             = module.function_app_name.function_app_default_hostname
   priority                       = 1
   weight                         = 1
   name                           = "${var.resource_name_prefix}-fd-origin-web-fa-db-operations"
