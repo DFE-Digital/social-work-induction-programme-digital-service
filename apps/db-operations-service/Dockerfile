@@ -15,7 +15,7 @@ COPY . ./
 FROM build AS publish
 RUN dotnet publish DfeSwwEcf.DbOperationsService/DfeSwwEcf.DbOperationsService.csproj -c Release -o /app/publish /p:UseAppHost=false
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
