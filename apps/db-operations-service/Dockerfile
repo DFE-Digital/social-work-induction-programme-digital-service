@@ -31,3 +31,6 @@ COPY --from=publish /app/publish .
 ENV PATH="${PATH}:/app/scripts"
 
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot
+
+# Switch to non-root user for security
+USER app
