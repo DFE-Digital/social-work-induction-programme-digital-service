@@ -23,7 +23,11 @@ namespace DfeSwwEcf.DbOperationsService
 
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                string requestBody;
+                using (var reader = new StreamReader(req.Body))
+                {
+                    requestBody = await reader.ReadToEndAsync();
+                }
 
                 _logger.LogInformation($"Received raw request body: {requestBody}");
 
