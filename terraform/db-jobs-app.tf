@@ -21,6 +21,7 @@ module "db-jobs-app" {
   function_worker_runtime               = "dotnet-isolated"
   subnet_functionapp_privateendpoint_id = module.stack.subnet_functionapp_privateendpoint_id
   private_dns_zone_id                   = module.stack.private_dns_zone_id
+  public_network_access_enabled         = true
   app_settings = merge({
     "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
     "STORAGECONNECTIONSTRING"              = "@Microsoft.KeyVault(SecretUri=${module.stack.full_backup_storage_connectionstring_uri})"
@@ -67,11 +68,12 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   weight                         = 1
   name                           = "${var.resource_name_prefix}-fd-origin-web-fa-db-operations"
 
-  private_link {
-    location               = var.azure_region
-    private_link_target_id = module.db-jobs-app.function_app_id
-    target_type            = "sites"
-  }
+  # Private links require premium frontdoor sku
+  # private_link {
+  #   location               = var.azure_region
+  #   private_link_target_id = module.db-jobs-app.function_app_id
+  #   target_type            = "sites"
+  # }
 }
 
 resource "azurerm_cdn_frontdoor_route" "route" {

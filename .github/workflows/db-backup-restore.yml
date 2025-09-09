@@ -48,28 +48,6 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Get Front Door Endpoint Hostname
-        run: |
-          # Construct resource names based on the instance
-          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
-          RESOURCE_NAME_PREFIX="s205${{ inputs.instance }}"
-
-          # Query Azure Front Door for the endpoint hostname
-          FRONT_DOOR_HOSTNAME=$(az afd endpoint list \
-            --resource-group "$RESOURCE_GROUP" \
-            --profile-name "$RESOURCE_NAME_PREFIX-fd-profile-web" \
-            --query "[?name=='$RESOURCE_NAME_PREFIX-fd-ops-trigger'].hostName | [0]" \
-            --output tsv)
-
-          if [ -z "$FRONT_DOOR_HOSTNAME" ]; then
-            echo "ERROR: Could not find Front Door endpoint hostname"
-            exit 1
-          fi
-
-          # Set the hostname as an environment variable for use in subsequent steps
-          echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
-          echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
-
       - name: Get Function Key from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
@@ -98,7 +76,8 @@ jobs:
 
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
-          ENDPOINT="https://$FRONT_DOOR_HOSTNAME/api/DbOperationsFunction"
+          FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
+          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
 
@@ -113,6 +92,7 @@ jobs:
           )
 
           echo "DB Operation: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Using Function App: $FUNCTION_APP_NAME"
           echo "Endpoint: $ENDPOINT"
 
           RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
@@ -150,28 +130,6 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Get Front Door Endpoint Hostname
-        run: |
-          # Construct resource names based on the instance
-          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
-          RESOURCE_NAME_PREFIX="s205${{ inputs.instance }}"
-
-          # Query Azure Front Door for the endpoint hostname
-          FRONT_DOOR_HOSTNAME=$(az afd endpoint list \
-            --resource-group "$RESOURCE_GROUP" \
-            --profile-name "$RESOURCE_NAME_PREFIX-fd-profile-web" \
-            --query "[?name=='$RESOURCE_NAME_PREFIX-fd-ops-trigger'].hostName | [0]" \
-            --output tsv)
-
-          if [ -z "$FRONT_DOOR_HOSTNAME" ]; then
-            echo "ERROR: Could not find Front Door endpoint hostname"
-            exit 1
-          fi
-
-          # Set the hostname as an environment variable for use in subsequent steps
-          echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
-          echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
-
       - name: Get Function Key from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
@@ -200,7 +158,8 @@ jobs:
 
       - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
-          ENDPOINT="https://$FRONT_DOOR_HOSTNAME/api/DbOperationsFunction"
+          FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
+          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
 
@@ -216,6 +175,7 @@ jobs:
           )
 
           echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Using Function App: $FUNCTION_APP_NAME"
           echo "Endpoint: $ENDPOINT"
 
           RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
