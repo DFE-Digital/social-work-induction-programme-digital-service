@@ -1,119 +1,47 @@
 name: "Backup or Restore a database"
-run-name: "${{ inputs.action == 'backup' && 'Backup' || 'Restore' }} ${{ inputs.db-name }} database on ${{ inputs.instance }}"
 
 on:
   workflow_dispatch:
     inputs:
       action:
-        description: "Action to perform (backup, restore)"
+        description: "Choose the action to perform"
         required: true
         type: choice
         options:
           - backup
           - restore
-      backup-file-name:
-        description: "The name of the backup file in Blob Storage to restore (required for restore)"
-        required: false
-        type: string
-      db-name:
-        description: "The name of the database to backup/restore"
+      db_name:
+        description: "Select the database to operate on"
         required: true
         type: choice
         options:
           - moodle
           - usermanagement
+      backup_file_name:
+        description: "Specify the backup file name to restore from (only required for restore action)"
+        required: false
+        type: string
       instance:
-        description: "Environment instance"
+        description: "Select the environment instance"
         required: true
         type: choice
         options:
           - d01
           - d02
           - d03
-  # Uncomment the schedule below to enable daily automated backups
-  # schedule:
-  #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
-
-permissions:
-  id-token: write
-  contents: read
 
 jobs:
-  # Scheduled backup job - currently disabled
-  # Uncomment the schedule trigger above and remove '&& false' to enable
-  scheduled-backup:
-    if: github.event_name == 'schedule' && false
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        instance: [d01, d02, d03]
-        db_name: [moodle, usermanagement]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github/actions/db-operation/
-          path: ./
-
-      - name: Backup ${{ matrix.db_name }} database on ${{ matrix.instance }}
-        uses: ./.github/actions/db-operation
-        env:
-          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-        with:
-          instance: ${{ matrix.instance }}
-          db-name: ${{ matrix.db_name }}
-          action: backup
-
-  backup:
-    if: inputs.action == 'backup'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github/actions/db-operation/
-          path: ./
-
-      - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
-        uses: ./.github/actions/db-operation
-        env:
-          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-        with:
-          instance: ${{ inputs.instance }}
-          db-name: ${{ inputs.db-name }}
-          action: backup
-
-  restore:
-    if: inputs.action == 'restore'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github/actions/db-operation/
-          path: ./
-
-      - name: Validate backup file name
-        if: inputs.backup-file-name == ''
-        run: |
-          echo "Error: backup-file-name is required for restore operation"
-          exit 1
-
-      - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
-        uses: ./.github/actions/db-operation
-        env:
-          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-        with:
-          instance: ${{ inputs.instance }}
-          db-name: ${{ inputs.db-name }}
-          action: restore
-          backup-file-name: ${{ inputs.backup-file-name }}
+  db-backup-restore:
+    uses: ./.github/workflows/db-backup-restore.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      action: ${{ github.event.inputs.action }}
+      db-name: ${{ github.event.inputs.db_name }}
+      backup-file-name: ${{ github.event.inputs.backup_file_name }}
+      instance: ${{ github.event.inputs.instance }}
+    secrets:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}

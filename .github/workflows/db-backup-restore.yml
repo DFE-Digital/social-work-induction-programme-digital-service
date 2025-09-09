@@ -1,0 +1,177 @@
+name: DB backup and restore
+
+on:
+  workflow_call:
+    inputs:
+      action:
+        description: "The action to perform (backup or restore)"
+        required: true
+        type: string
+      db-name:
+        description: "The name of the database to backup or restore (e.g., moodle, usermanagement)"
+        required: true
+        type: string
+      backup-file-name:
+        description: "The name of the backup file in Blob Storage to restore from (required when action is 'restore')"
+        required: false
+        type: string
+      instance:
+        description: "The environment instance to operate on (e.g., d01, d02, d03)"
+        required: true
+        type: string
+    secrets:
+      AZ_CLIENT_ID:
+        required: true
+      AZ_TENANT_ID:
+        required: true
+      AZ_SUBSCRIPTION_ID:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  backup:
+    if: inputs.action == 'backup'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Get Function Key from Key Vault
+        run: |
+          FUNCTION_KEY=$(az keyvault secret show \
+            --name "DbOperationsService-FunctionKey" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
+          echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
+
+      - name: Validate inputs
+        run: |
+          # Validate action parameter
+          if [ "${{ inputs.action }}" != "backup" ] && [ "${{ inputs.action }}" != "restore" ]; then
+            echo "Error: Invalid action '${{ inputs.action }}'. Must be 'backup' or 'restore'."
+            exit 1
+          fi
+
+          # Validate that backup operations don't have a backup file name (should be empty)
+          if [ "${{ inputs.action }}" = "backup" ] && [ -n "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name should not be provided when action is 'backup'"
+            exit 1
+          fi
+
+      - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        run: |
+          ENDPOINT="https://s205${{ inputs.instance }}-fd-ops-trigger.azurefd.net/api/DbOperationsFunction"
+          STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
+
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "action": "backup",
+            "databaseName": "${{ inputs.db-name }}",
+            "storageAccount": "$STORAGE_ACCOUNT",
+            "containerName": "$CONTAINER"
+          }
+          EOF
+          )
+
+          echo "DB Operation: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Endpoint: $ENDPOINT"
+
+          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD" \
+            -w "\nHTTP_STATUS:%{http_code}")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          RESPONSE_BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/d')
+
+          echo "Response status: $HTTP_STATUS"
+          echo "Response body: $RESPONSE_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "DB operation failed: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
+            exit 1
+          fi
+
+  restore:
+    if: inputs.action == 'restore'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate backup file name
+        run: |
+          if [ -z "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name is required when action is 'restore'"
+            exit 1
+          fi
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Get Function Key from Key Vault
+        run: |
+          FUNCTION_KEY=$(az keyvault secret show \
+            --name "DbOperationsService-FunctionKey" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
+          echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
+
+      - name: Validate inputs
+        run: |
+          # Validate action parameter
+          if [ "${{ inputs.action }}" != "backup" ] && [ "${{ inputs.action }}" != "restore" ]; then
+            echo "Error: Invalid action '${{ inputs.action }}'. Must be 'backup' or 'restore'."
+            exit 1
+          fi
+
+          # Validate that restore operations have a backup file name
+          if [ "${{ inputs.action }}" = "restore" ] && [ -z "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name is required when action is 'restore'"
+            exit 1
+          fi
+
+      - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        run: |
+          ENDPOINT="https://s205${{ inputs.instance }}-fd-ops-trigger.azurefd.net/api/DbOperationsFunction"
+          STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
+
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "action": "restore",
+            "databaseName": "${{ inputs.db-name }}",
+            "storageAccount": "$STORAGE_ACCOUNT",
+            "containerName": "$CONTAINER",
+            "backupFileName": "${{ inputs.backup-file-name }}"
+          }
+          EOF
+          )
+
+          echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Endpoint: $ENDPOINT"
+
+          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD" \
+            -w "\nHTTP_STATUS:%{http_code}")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          RESPONSE_BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/d')
+
+          echo "Response status: $HTTP_STATUS"
+          echo "Response body: $RESPONSE_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "DB operation failed: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+            exit 1
+          fi
