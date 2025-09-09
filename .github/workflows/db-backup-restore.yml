@@ -54,6 +54,10 @@ jobs:
             --name "DbOperationsService-FunctionKey" \
             --vault-name "s205${{ inputs.instance }}-kv-primary" \
             --query value -o tsv)
+
+          # Mask the secret to prevent it from appearing in logs
+          echo "::add-mask::$FUNCTION_KEY"
+
           echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
 
       - name: Validate inputs
@@ -130,6 +134,10 @@ jobs:
             --name "DbOperationsService-FunctionKey" \
             --vault-name "s205${{ inputs.instance }}-kv-primary" \
             --query value -o tsv)
+
+          # Mask the secret to prevent it from appearing in logs
+          echo "::add-mask::$FUNCTION_KEY"
+
           echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
 
       - name: Validate inputs
