@@ -1,0 +1,40 @@
+set shell := ["bash", "-e", "-o", "pipefail", "-c"]
+
+solution-root := "."
+
+default:
+  @just --list
+
+# Install local tools
+install-tools:
+  @cd {{solution-root}} && dotnet tool restore
+  # We need to copy the bin folder, the .dockerignore makes it inaccessible
+  @rm .dockerignore
+
+ci-install-tools:
+  @just install-tools
+
+# Restore dependencies
+restore:
+  @cd {{solution-root}} && dotnet restore
+  
+ci-restore:
+  @just restore
+
+# Build the .NET solution
+build:
+  @cd {{solution-root}} && dotnet build --no-restore
+
+ci-build:
+  @just build
+
+# Publish the project
+package-component:
+  @dotnet publish {{solution-root}} -c Release --no-restore
+
+ci-package-component:
+  @just package-component
+
+# Test the .net solution
+ci-test:
+  echo 'Skipped'

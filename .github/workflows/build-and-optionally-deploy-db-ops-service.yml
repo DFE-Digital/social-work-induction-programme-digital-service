@@ -39,7 +39,7 @@ jobs:
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
       working-dir: ./apps/db-operations-service
       # Path is in relation to the working directory
-      docker-build-file: Dockerfile
+      docker-build-file: Dockerfile-azure
       docker-image-name: db-operations-service
       build-args: "AZURE_KUDU_SSH_USER=${{ vars.AZURE_KUDU_SSH_USER }}"
       build-secrets: "AZURE_KUDU_SSH_PASSWORD"

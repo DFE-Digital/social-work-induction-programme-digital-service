@@ -15,6 +15,7 @@ asp_sku_moodle                    = "B2"
 asp_sku_maintenance               = "B2"
 asp_sku_services                  = "B1"
 asp_sku_notification              = "B1"
+asp_sku_db_jobs                   = "B1"
 days_to_expire                    = "365"
 kv_purge_protection_enabled       = false
 postgresql_sku                    = "B_Standard_B1ms"
@@ -42,7 +43,7 @@ moodle_app_settings = {
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
-  "BASIC_AUTH_ENABLED" = "true"
+  "BASIC_AUTH_ENABLED"                     = "true"
   "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
 }
 moodle_max_data_storage_size_in_gb = 5

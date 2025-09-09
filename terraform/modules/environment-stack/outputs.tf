@@ -123,3 +123,28 @@ output "subnet_functionapp_id" {
   description = "The ID of the function app subnet"
   value       = azurerm_subnet.sn_function_app.id
 }
+
+output "subnet_functionapp_privateendpoint_id" {
+  description = "The ID of the function app private endpoint subnet"
+  value       = azurerm_subnet.private_endpoint.id
+}
+
+output "private_dns_zone_id" {
+  description = "The ID of the function app private DNS zone"
+  value       = azurerm_private_dns_zone.pvt_dns_zone.id
+}
+
+output "db_jobs_service_plan_id" {
+  description = "The ID of the app service"
+  value       = azurerm_service_plan.asp_db_jobs.id
+}
+
+output "db_backup_blob_storage_account_name" {
+  description = "The name of the blob storage for backups"
+  value       = azurerm_storage_account.sa_db_backup_blob_storage.name
+}
+
+output "full_backup_storage_connectionstring_uri" {
+  description = "The full Key Vault URI for the backup blob storage connection string"
+  value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.db_backup_blob_storage_connection_string.name}"
+}
