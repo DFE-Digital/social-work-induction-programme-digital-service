@@ -48,6 +48,18 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
+      - name: Get Front Door Endpoint Hostname
+        run: |
+          # Get the actual Front Door endpoint hostname from the deployed resource
+          FRONT_DOOR_HOSTNAME=$(az cdn endpoint show \
+            --name "s205${{ inputs.instance }}-fd-ops-trigger" \
+            --profile-name "s205${{ inputs.instance }}-fd-profile-web" \
+            --resource-group "s205${{ inputs.instance }}-swip-rg" \
+            --query hostName -o tsv)
+
+          echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
+          echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
+
       - name: Get Function Key from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
@@ -76,7 +88,7 @@ jobs:
 
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
-          ENDPOINT="https://s205${{ inputs.instance }}-fd-ops-trigger.azurefd.net/api/DbOperationsFunction"
+          ENDPOINT="https://$FRONT_DOOR_HOSTNAME/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
 
@@ -128,6 +140,18 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
+      - name: Get Front Door Endpoint Hostname
+        run: |
+          # Get the actual Front Door endpoint hostname from the deployed resource
+          FRONT_DOOR_HOSTNAME=$(az cdn endpoint show \
+            --name "s205${{ inputs.instance }}-fd-ops-trigger" \
+            --profile-name "s205${{ inputs.instance }}-fd-profile-web" \
+            --resource-group "s205${{ inputs.instance }}-swip-rg" \
+            --query hostName -o tsv)
+
+          echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
+          echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
+
       - name: Get Function Key from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
@@ -156,7 +180,7 @@ jobs:
 
       - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
-          ENDPOINT="https://s205${{ inputs.instance }}-fd-ops-trigger.azurefd.net/api/DbOperationsFunction"
+          ENDPOINT="https://$FRONT_DOOR_HOSTNAME/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
 
