@@ -82,7 +82,7 @@ resource "azurerm_cdn_frontdoor_route" "route" {
 
 # Retrieve the default function key from the deployed function app
 data "azurerm_function_app_host_keys" "db_operations_keys" {
-  name                = module.db-jobs-app.function_app_name
+  name                = "${var.resource_name_prefix}-fa-db-jobs"
   resource_group_name = module.stack.resource_group_name
 
   depends_on = [module.db-jobs-app]
