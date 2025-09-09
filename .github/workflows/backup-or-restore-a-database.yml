@@ -38,11 +38,6 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-  AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-
 jobs:
   # Scheduled backup job - currently disabled
   # Uncomment the schedule trigger above and remove '&& false' to enable
