@@ -50,13 +50,23 @@ jobs:
 
       - name: Get Front Door Endpoint Hostname
         run: |
-          # Get the actual Front Door endpoint hostname from the deployed resource
-          FRONT_DOOR_HOSTNAME=$(az cdn endpoint show \
-            --name "s205${{ inputs.instance }}-fd-ops-trigger" \
-            --profile-name "s205${{ inputs.instance }}-fd-profile-web" \
-            --resource-group "s205${{ inputs.instance }}-swip-rg" \
-            --query hostName -o tsv)
+          # Construct resource names based on the instance
+          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
+          RESOURCE_NAME_PREFIX="s205${{ inputs.instance }}"
 
+          # Query Azure Front Door for the endpoint hostname
+          FRONT_DOOR_HOSTNAME=$(az afd endpoint list \
+            --resource-group "$RESOURCE_GROUP" \
+            --profile-name "$RESOURCE_NAME_PREFIX-fd-profile-web" \
+            --query "[?name=='$RESOURCE_NAME_PREFIX-fd-ops-trigger'].hostName | [0]" \
+            --output tsv)
+
+          if [ -z "$FRONT_DOOR_HOSTNAME" ]; then
+            echo "ERROR: Could not find Front Door endpoint hostname"
+            exit 1
+          fi
+
+          # Set the hostname as an environment variable for use in subsequent steps
           echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
           echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
 
@@ -142,13 +152,23 @@ jobs:
 
       - name: Get Front Door Endpoint Hostname
         run: |
-          # Get the actual Front Door endpoint hostname from the deployed resource
-          FRONT_DOOR_HOSTNAME=$(az cdn endpoint show \
-            --name "s205${{ inputs.instance }}-fd-ops-trigger" \
-            --profile-name "s205${{ inputs.instance }}-fd-profile-web" \
-            --resource-group "s205${{ inputs.instance }}-swip-rg" \
-            --query hostName -o tsv)
+          # Construct resource names based on the instance
+          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
+          RESOURCE_NAME_PREFIX="s205${{ inputs.instance }}"
 
+          # Query Azure Front Door for the endpoint hostname
+          FRONT_DOOR_HOSTNAME=$(az afd endpoint list \
+            --resource-group "$RESOURCE_GROUP" \
+            --profile-name "$RESOURCE_NAME_PREFIX-fd-profile-web" \
+            --query "[?name=='$RESOURCE_NAME_PREFIX-fd-ops-trigger'].hostName | [0]" \
+            --output tsv)
+
+          if [ -z "$FRONT_DOOR_HOSTNAME" ]; then
+            echo "ERROR: Could not find Front Door endpoint hostname"
+            exit 1
+          fi
+
+          # Set the hostname as an environment variable for use in subsequent steps
           echo "FRONT_DOOR_HOSTNAME=$FRONT_DOOR_HOSTNAME" >> $GITHUB_ENV
           echo "Using Front Door endpoint: $FRONT_DOOR_HOSTNAME"
 
