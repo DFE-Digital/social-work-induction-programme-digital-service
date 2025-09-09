@@ -8,6 +8,7 @@ resource "azurerm_private_endpoint" "function_app_endpoint" {
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.subnet_functionapp_privateendpoint_id
+  tags                = var.tags
 
   # Create the necessary DNS 'A' record.
   private_dns_zone_group {
@@ -21,5 +22,9 @@ resource "azurerm_private_endpoint" "function_app_endpoint" {
     is_manual_connection           = false
     private_connection_resource_id = azurerm_linux_function_app.function_app.id
     subresource_names              = ["sites"]
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
