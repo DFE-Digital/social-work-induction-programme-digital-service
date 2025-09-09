@@ -79,3 +79,23 @@ resource "azurerm_cdn_frontdoor_route" "route" {
   patterns_to_match      = ["/*"]
   supported_protocols    = ["Http", "Https"]
 }
+
+# Retrieve the default function key from the deployed function app
+data "azurerm_function_app_host_keys" "db_operations_keys" {
+  name                = module.db-jobs-app.function_app_name
+  resource_group_name = module.stack.resource_group_name
+
+  depends_on = [module.db-jobs-app]
+}
+
+# Store the function key in Key Vault for workflow retrieval
+resource "azurerm_key_vault_secret" "db_operations_function_key" {
+  name         = "DbOperationsService-FunctionKey"
+  value        = data.azurerm_function_app_host_keys.db_operations_keys.default_function_key
+  key_vault_id = module.stack.kv_id
+  content_type = "function app key"
+
+  depends_on = [data.azurerm_function_app_host_keys.db_operations_keys]
+
+  #checkov:skip=CKV_AZURE_41:Function key doesn't need expiry date
+}
