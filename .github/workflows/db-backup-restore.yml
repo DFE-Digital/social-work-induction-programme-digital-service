@@ -19,13 +19,6 @@ on:
         description: "The environment instance to operate on (e.g., d01, d02, d03)"
         required: true
         type: string
-    secrets:
-      AZ_CLIENT_ID:
-        required: true
-      AZ_TENANT_ID:
-        required: true
-      AZ_SUBSCRIPTION_ID:
-        required: true
 
 permissions:
   id-token: write

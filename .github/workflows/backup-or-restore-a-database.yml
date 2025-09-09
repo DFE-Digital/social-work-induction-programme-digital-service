@@ -46,10 +46,7 @@ jobs:
       db-name: ${{ github.event.inputs.db_name }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       instance: ${{ github.event.inputs.instance }}
-    secrets:
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+    secrets: inherit
 
   # Scheduled backup job - currently disabled
   # Uncomment the schedule trigger above and remove '&& false' to enable
@@ -67,7 +64,4 @@ jobs:
       action: backup
       db-name: ${{ matrix.db_name }}
       instance: ${{ matrix.instance }}
-    secrets:
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+    secrets: inherit
