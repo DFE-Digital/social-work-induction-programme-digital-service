@@ -3,83 +3,92 @@ name: "Backup or Restore a database"
 on:
   workflow_dispatch:
     inputs:
-      job_to_run:
-        description: "The job to run (backup or restore)"
+      job-to-run:
+        description: "The job to run"
         required: true
         type: choice
         options:
           - backup
           - restore
-      db_name:
+      backup-file-name:
+        description: "The name of the backup file in Blob Storage to restore (required for restore)"
+        required: false
+        type: string
+      db-name:
         description: "The name of the database to backup/restore"
         required: true
         type: choice
         options:
           - moodle
-          - authservice
-      backup_file_name:
-        description: "The name of the backup file in Blob Storage to restore (only for restore jobs)"
-        required: false
-        type: string
+          - usermanagement
       instance:
         description: "Environment instance"
         required: true
-        default: None
         type: choice
         options:
-          - None
           - d01
           - d02
           - d03
+  # Uncomment the schedule below to enable daily automated backups
+  # schedule:
+  #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  fetch_secrets:
+  # Scheduled backup job - currently disabled
+  # Uncomment the schedule trigger above and remove '&& false' to enable
+  scheduled-backup:
+    if: github.event_name == 'schedule' && false
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    outputs:
-      db_user: ${{ steps.get_secrets.outputs.db_user }}
-      db_password: ${{ steps.get_secrets.outputs.db_password }}
-      db_instance: ${{ steps.map_name.outputs.db_name }}
-
+    strategy:
+      matrix:
+        instance: [d01, d02, d03]
+        db_name: [moodle, usermanagement]
     steps:
-      - name: Log in to Azure
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+      - name: Backup ${{ matrix.db_name }} database on ${{ matrix.instance }}
+        uses: ./.github/actions/db-operation
         with:
+          instance: ${{ matrix.instance }}
+          db-name: ${{ matrix.db_name }}
+          action: backup
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Fetch DB credentials from Key Vault
-        run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
-        shell: bash
+  backup:
+    if: inputs.job-to-run == 'backup'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        uses: ./.github/actions/db-operation
+        with:
+          instance: ${{ inputs.instance }}
+          db-name: ${{ inputs.db-name }}
+          action: backup
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Map service to actual DB instance
-        id: map_name
+  restore:
+    if: inputs.job-to-run == 'restore'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate backup file name
+        if: inputs.backup-file-name == ''
         run: |
-          DB_INSTANCE = ""
-          case "${{ github.event.inputs.db_name }}" in
-            moodle)
-              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_moodle_primary"
-              ;;
-            authservice)
-              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_auth_service"
-              ;;
-          esac
-          echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
+          echo "Error: backup-file-name is required for restore operation"
+          exit 1
 
-  db-backup-restore:
-    uses: ./.github/workflows/db-backup-restore.yml
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      job_to_run: ${{ github.event.inputs.job_to_run }}
-      db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
-      backup_file_name: ${{ github.event.inputs.backup_file_name }}
-    secrets: inherit
+      - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        uses: ./.github/actions/db-operation
+        with:
+          instance: ${{ inputs.instance }}
+          db-name: ${{ inputs.db-name }}
+          action: restore
+          backup-file-name: ${{ inputs.backup-file-name }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
