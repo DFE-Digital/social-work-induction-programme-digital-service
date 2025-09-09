@@ -72,10 +72,6 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
     private_link_target_id = module.db-jobs-app.function_app_id
     target_type            = "sites"
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "azurerm_cdn_frontdoor_route" "route" {
