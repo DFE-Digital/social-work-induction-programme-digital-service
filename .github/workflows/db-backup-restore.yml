@@ -35,13 +35,17 @@ jobs:
   backup:
     if: inputs.action == 'backup'
     runs-on: ubuntu-latest
+    env:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
     steps:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZ_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZ_TENANT_ID }}
-          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+          client-id: ${{ env.AZ_CLIENT_ID }}
+          tenant-id: ${{ env.AZ_TENANT_ID }}
+          subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
       - name: Get Function Key from Key Vault
         run: |
@@ -103,6 +107,10 @@ jobs:
   restore:
     if: inputs.action == 'restore'
     runs-on: ubuntu-latest
+    env:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
     steps:
       - name: Validate backup file name
         run: |
@@ -114,9 +122,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZ_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZ_TENANT_ID }}
-          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+          client-id: ${{ env.AZ_CLIENT_ID }}
+          tenant-id: ${{ env.AZ_TENANT_ID }}
+          subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
       - name: Get Function Key from Key Vault
         run: |
