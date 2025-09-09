@@ -12,3 +12,8 @@ output "function_app_default_hostname" {
   description = "The hostname of the function app"
   value       = azurerm_linux_function_app.function_app.default_hostname
 }
+
+output "function_app_id" {
+  description = "The resource ID of the function app"
+  value       = azurerm_linux_function_app.function_app.id
+}

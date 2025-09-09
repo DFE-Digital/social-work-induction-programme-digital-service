@@ -66,6 +66,12 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
   priority                       = 1
   weight                         = 1
   name                           = "${var.resource_name_prefix}-fd-origin-web-fa-db-operations"
+
+  private_link {
+    location               = var.azure_region
+    private_link_target_id = module.db-jobs-app.function_app_id
+    target_type            = "sites"
+  }
 }
 
 resource "azurerm_cdn_frontdoor_route" "route" {
