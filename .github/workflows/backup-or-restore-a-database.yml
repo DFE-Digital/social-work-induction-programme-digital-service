@@ -62,13 +62,17 @@ jobs:
 
       - name: Backup ${{ matrix.db_name }} database on ${{ matrix.instance }}
         uses: ./.github/actions/db-operation
+        env:
+          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
         with:
           instance: ${{ matrix.instance }}
           db-name: ${{ matrix.db_name }}
           action: backup
 
   backup:
-    if: inputs.job-to-run == 'backup'
+    if: inputs.action == 'backup'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -80,13 +84,17 @@ jobs:
 
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         uses: ./.github/actions/db-operation
+        env:
+          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
         with:
           instance: ${{ inputs.instance }}
           db-name: ${{ inputs.db-name }}
           action: backup
 
   restore:
-    if: inputs.job-to-run == 'restore'
+    if: inputs.action == 'restore'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -104,6 +112,10 @@ jobs:
 
       - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         uses: ./.github/actions/db-operation
+        env:
+          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
         with:
           instance: ${{ inputs.instance }}
           db-name: ${{ inputs.db-name }}
