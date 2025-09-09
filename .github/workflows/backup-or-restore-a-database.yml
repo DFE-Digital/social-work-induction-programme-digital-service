@@ -48,6 +48,13 @@ jobs:
         instance: [d01, d02, d03]
         db_name: [moodle, usermanagement]
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/db-operation/
+          path: ./
+
       - name: Backup ${{ matrix.db_name }} database on ${{ matrix.instance }}
         uses: ./.github/actions/db-operation
         with:
@@ -62,6 +69,13 @@ jobs:
     if: inputs.job-to-run == 'backup'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/db-operation/
+          path: ./
+
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         uses: ./.github/actions/db-operation
         with:
@@ -76,6 +90,13 @@ jobs:
     if: inputs.job-to-run == 'restore'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions/db-operation/
+          path: ./
+
       - name: Validate backup file name
         if: inputs.backup-file-name == ''
         run: |
