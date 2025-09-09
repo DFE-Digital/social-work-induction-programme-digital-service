@@ -1,10 +1,11 @@
 name: "Backup or Restore a database"
+run-name: "${{ inputs.action == 'backup' && 'Backup' || 'Restore' }} ${{ inputs.db-name }} database on ${{ inputs.instance }}"
 
 on:
   workflow_dispatch:
     inputs:
-      job-to-run:
-        description: "The job to run"
+      action:
+        description: "Action to perform (backup, restore)"
         required: true
         type: choice
         options:
