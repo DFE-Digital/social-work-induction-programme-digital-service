@@ -29,10 +29,15 @@ on:
           - d01
           - d02
           - d03
+  # Uncomment the schedule below to enable daily automated backups across all instances
+  # schedule:
+  #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
 
 jobs:
+  # Manual backup/restore job
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
+    if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
       contents: read
@@ -41,6 +46,27 @@ jobs:
       db-name: ${{ github.event.inputs.db_name }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       instance: ${{ github.event.inputs.instance }}
+    secrets:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+  # Scheduled backup job - currently disabled
+  # Uncomment the schedule trigger above and remove '&& false' to enable
+  scheduled-backup:
+    uses: ./.github/workflows/db-backup-restore.yml
+    if: github.event_name == 'schedule' && false
+    strategy:
+      matrix:
+        instance: [d01, d02, d03]
+        db_name: [moodle, usermanagement]
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      action: backup
+      db-name: ${{ matrix.db_name }}
+      instance: ${{ matrix.instance }}
     secrets:
       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
       AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
