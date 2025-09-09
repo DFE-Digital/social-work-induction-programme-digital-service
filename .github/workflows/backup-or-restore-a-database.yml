@@ -45,6 +45,7 @@ jobs:
       environment: Dev
       action: ${{ github.event.inputs.action }}
       db-name: ${{ github.event.inputs.db_name == 'moodle' && format('s205{0}_db_moodle_primary', github.event.inputs.instance) || github.event.inputs.db_name == 'usermanagement' && format('s205{0}_db_auth_service', github.event.inputs.instance) || github.event.inputs.db_name }}
+      container-suffix: ${{ github.event.inputs.db_name }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       instance: ${{ github.event.inputs.instance }}
     secrets:
@@ -68,6 +69,7 @@ jobs:
       environment: Dev
       action: backup
       db-name: ${{ matrix.db_name == 'moodle' && format('s205{0}_db_moodle_primary', matrix.instance) || matrix.db_name == 'usermanagement' && format('s205{0}_db_auth_service', matrix.instance) || matrix.db_name }}
+      container-suffix: ${{ matrix.db_name }}
       instance: ${{ matrix.instance }}
     secrets:
       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}

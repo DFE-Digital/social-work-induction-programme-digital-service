@@ -12,7 +12,11 @@ on:
         required: true
         type: string
       db-name:
-        description: "The name of the database to backup or restore (e.g., moodle, usermanagement)"
+        description: "The actual database name to backup or restore (e.g., s205d01_db_moodle_primary)"
+        required: true
+        type: string
+      container-suffix:
+        description: "The suffix to use for container naming (e.g., moodle, usermanagement)"
         required: true
         type: string
       backup-file-name:
@@ -79,7 +83,7 @@ jobs:
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
           ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
-          CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 
           JSON_PAYLOAD=$(cat <<EOF
           {
@@ -93,6 +97,7 @@ jobs:
 
           echo "DB Operation: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
           echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Container: $CONTAINER"
           echo "Endpoint: $ENDPOINT"
 
           RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
@@ -161,7 +166,7 @@ jobs:
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
           ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
-          CONTAINER="s205${{ inputs.instance }}-${{ inputs.db-name }}-backups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 
           JSON_PAYLOAD=$(cat <<EOF
           {
@@ -176,6 +181,7 @@ jobs:
 
           echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
           echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Container: $CONTAINER"
           echo "Endpoint: $ENDPOINT"
 
           RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
