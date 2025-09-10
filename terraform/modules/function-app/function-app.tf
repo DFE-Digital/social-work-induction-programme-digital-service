@@ -6,7 +6,8 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_name          = var.storage_account_name
   storage_account_access_key    = var.storage_account_access_key
   https_only                    = true
-  public_network_access_enabled = false
+  #checkov:skip=CKV_AZURE_221:IP Restrictions in place to only allow front door
+  public_network_access_enabled = var.public_network_access_enabled && var.frontdoor_traffic_only
 
   identity {
     type = "SystemAssigned"
@@ -19,6 +20,19 @@ resource "azurerm_linux_function_app" "function_app" {
     health_check_eviction_time_in_min       = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
     vnet_route_all_enabled                  = true
     container_registry_use_managed_identity = true
+
+    ip_restriction_default_action = var.frontdoor_traffic_only ? "Deny" : "Allow"
+
+    dynamic "ip_restriction" {
+      for_each = var.frontdoor_traffic_only ? [1] : []
+      content {
+        name        = "Allow Azure Front Door"
+        action      = "Allow"
+        priority    = 100
+        service_tag = "AzureFrontDoor.Backend"
+      }
+    }
+
     application_stack {
       docker {
         image_name   = var.docker_image_name

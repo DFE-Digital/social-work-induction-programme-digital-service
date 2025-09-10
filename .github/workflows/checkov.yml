@@ -29,3 +29,4 @@ jobs:
           directory: terraform/
           framework: terraform
           skip_check: CKV2_AZURE_33
+          quiet: true

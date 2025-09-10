@@ -21,6 +21,8 @@ module "db-jobs-app" {
   function_worker_runtime               = "dotnet-isolated"
   subnet_functionapp_privateendpoint_id = module.stack.subnet_functionapp_privateendpoint_id
   private_dns_zone_id                   = module.stack.private_dns_zone_id
+  public_network_access_enabled         = true
+  frontdoor_traffic_only                = true
   app_settings = merge({
     "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
     "STORAGECONNECTIONSTRING"              = "@Microsoft.KeyVault(SecretUri=${module.stack.full_backup_storage_connectionstring_uri})"
@@ -105,4 +107,16 @@ resource "azurerm_key_vault_secret" "db_operations_function_key" {
   depends_on = [data.azurerm_function_app_host_keys.db_operations_keys]
 
   #checkov:skip=CKV_AZURE_41:Function key doesn't need expiry date
+}
+
+# Store the Front Door hostname in Key Vault for workflow retrieval
+resource "azurerm_key_vault_secret" "db_operations_frontdoor_url" {
+  name         = "DbOperationsService-FrontDoorUrl"
+  value        = azurerm_cdn_frontdoor_endpoint.fd_endpoint.host_name
+  key_vault_id = module.stack.kv_id
+  content_type = "front door hostname"
+
+  depends_on = [azurerm_cdn_frontdoor_endpoint.fd_endpoint]
+
+  #checkov:skip=CKV_AZURE_41:URL doesn't need expiry date
 }
