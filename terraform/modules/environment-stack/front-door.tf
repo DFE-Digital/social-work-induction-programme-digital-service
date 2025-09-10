@@ -43,7 +43,7 @@ resource "azurerm_cdn_frontdoor_rule_set" "magic_link_rules" {
 
 resource "azurerm_cdn_frontdoor_rule" "token_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
-  name                      = "${var.resource_name_prefix}-fd-rule-token-validation"
+  name                      = "${var.resource_name_prefix}fdruletokenvalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
   order                     = 1
   behavior_on_match         = "Continue"
@@ -77,7 +77,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
 
 resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
-  name                      = "${var.resource_name_prefix}-fd-rule-cookie-validation"
+  name                      = "${var.resource_name_prefix}fdrulecookievalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
   order                     = 2
   behavior_on_match         = "Continue"
