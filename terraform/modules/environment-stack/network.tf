@@ -25,6 +25,18 @@ resource "azurerm_network_security_group" "funcapp_nsg" {
     source_address_prefix      = azurerm_subnet.sn_service_apps.address_prefixes[0]
     destination_address_prefix = azurerm_subnet.sn_function_app.address_prefixes[0]
   }
+
+  security_rule {
+    name                       = "${var.resource_name_prefix}-allow-aci-runners"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = azurerm_subnet.sn_aci_runner.address_prefixes[0]
+    destination_address_prefix = azurerm_subnet.sn_function_app.address_prefixes[0]
+  }
 }
 
 resource "azurerm_network_security_group" "private_endpoint_nsg" {
