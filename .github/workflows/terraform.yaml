@@ -139,9 +139,6 @@ jobs:
             -var='moodle_web_service_name=${{ vars.MOODLE_WEB_SERVICE_NAME }}' \
             -var='moodle_web_service_user=${{ vars.MOODLE_WEB_SERVICE_USER }}' \
             -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
-            -var='basic_auth_user=${{ vars.BASIC_AUTH_USER }}' \
-            -var='basic_auth_password_team_environments=${{ secrets.BASIC_AUTH_PASSWORD_TEAM_ENVIRONMENTS }}' \
-            -var='basic_auth_password_user_environments=${{ secrets.BASIC_AUTH_PASSWORD_USER_ENVIRONMENTS }}' \
             -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
             -var='govnotify_api_key=${{secrets.GOVNOTIFY_API_KEY}}' \
             || export exitcode=$?

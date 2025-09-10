@@ -39,11 +39,9 @@ one_login_client_id = "EsYDRVMBVfTviM3KcsszKUrL_Fw"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
-  "BASIC_AUTH_ENABLED"              = "true"
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
-  "BASIC_AUTH_ENABLED"                     = "true"
   "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
 }
 moodle_max_data_storage_size_in_gb = 5

@@ -13,8 +13,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | Secret Name | Usage | 
 | -------- | ------- | 
 | AZURE_KUDU_SSH_PASSWORD | Global password for the Azure Kudu (debugging) SSH user. This is required to configure Kudu for images and subsequently establish remote SSH sessions with app services in Github Actions |
-| BASIC_AUTH_PASSWORD_TEAM_ENVIRONMENTS | Global basic auth password for project team environments |
-| BASIC_AUTH_PASSWORD_USER_ENVIRONMENTS | Global basic auth password for environments oriented towards end users, e.g. for research and feedback |
 
 ## Environment Scoped Secrets
 
@@ -39,7 +37,6 @@ We use Terraform to declare secrets and subsequently store them in the environme
 | FileStorage-ConnectionString | Connection string required to connect to the Azure Files share |
 | Moodle-WebServicePassword | Password for the Moodle web service user |
 | Moodle-WebServiceToken | Authentication token generated for the web service user, from the user's name and password |
-| Sites-BasicAuthPassword | Basic auth password for the system websites - Moodle and User Management. This will either be the project team password `BASIC_AUTH_PASSWORD_TEAM_ENVIRONMENTS` or `BASIC_AUTH_PASSWORD_USER_ENVIRONMENTS` dependent on whether the environment is for use by the project team or end users |
 
 ## Terraform / Key Vault Certificates
 
