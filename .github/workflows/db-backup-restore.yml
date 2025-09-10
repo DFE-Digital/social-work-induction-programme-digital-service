@@ -161,7 +161,7 @@ jobs:
             exit 1
           fi
 
-      - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
+      - name: Start Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
           ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
@@ -174,12 +174,13 @@ jobs:
             "databaseName": "${{ inputs.db-name }}",
             "storageAccount": "$STORAGE_ACCOUNT",
             "containerName": "$CONTAINER",
-            "backupFileName": "${{ inputs.backup-file-name }}"
+            "backupFileName": "${{ inputs.backup-file-name }}",
+            "async": true
           }
           EOF
           )
 
-          echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Starting async restore of ${{ inputs.db-name }} on ${{ inputs.instance }}"
           echo "Using Function App: $FUNCTION_APP_NAME"
           echo "Container: $CONTAINER"
           echo "Endpoint: $ENDPOINT"
@@ -195,7 +196,81 @@ jobs:
           echo "Response status: $HTTP_STATUS"
           echo "Response body: $RESPONSE_BODY"
 
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "DB operation failed: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          if [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "Failed to start async restore: $RESPONSE_BODY"
             exit 1
           fi
+
+          # Extract status URL from JSON response
+          STATUS_URL=$(echo "$RESPONSE_BODY" | jq -r '.statusUrl')
+          if [ -z "$STATUS_URL" ] || [ "$STATUS_URL" = "null" ]; then
+            echo "Could not extract status URL from response"
+            echo "Response: $RESPONSE_BODY"
+            exit 1
+          fi
+
+          echo "STATUS_URL=$STATUS_URL" >> $GITHUB_ENV
+          echo "Async restore started. Status URL: $STATUS_URL"
+
+      - name: Monitor Restore Progress
+        run: |
+          MAX_ATTEMPTS=240  # 4 hours with 1-minute intervals (adjust as needed)
+          ATTEMPT=0
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            echo "Checking status (attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
+
+            RESPONSE=$(curl -s "$STATUS_URL&code=$FUNCTION_KEY")
+            HTTP_STATUS=$?
+
+            if [ $HTTP_STATUS -ne 0 ]; then
+              echo "Failed to check status: HTTP $HTTP_STATUS"
+              sleep 60
+              ATTEMPT=$((ATTEMPT+1))
+              continue
+            fi
+
+            # Parse JSON response
+            STATUS=$(echo "$RESPONSE" | jq -r '.status')
+            MESSAGE=$(echo "$RESPONSE" | jq -r '.message')
+
+            case "$STATUS" in
+              "completed")
+                echo "✅ Restore completed successfully!"
+                echo "Message: $MESSAGE"
+                echo "Full response: $RESPONSE"
+                exit 0
+                ;;
+              "failed")
+                echo "❌ Restore failed!"
+                echo "Message: $MESSAGE"
+                echo "Full response: $RESPONSE"
+                exit 1
+                ;;
+              "running")
+                echo "⏳ Restore still running... (attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)"
+                echo "Message: $MESSAGE"
+                sleep 60
+                ATTEMPT=$((ATTEMPT+1))
+                ;;
+              "not_found")
+                echo "❌ Job not found!"
+                echo "Message: $MESSAGE"
+                exit 1
+                ;;
+              "error")
+                echo "❌ Status check error!"
+                echo "Message: $MESSAGE"
+                exit 1
+                ;;
+              *)
+                echo "⚠️  Unexpected status: $STATUS"
+                echo "Response: $RESPONSE"
+                sleep 60
+                ATTEMPT=$((ATTEMPT+1))
+                ;;
+            esac
+          done
+
+          echo "❌ Restore timed out after $MAX_ATTEMPTS attempts"
+          exit 1
