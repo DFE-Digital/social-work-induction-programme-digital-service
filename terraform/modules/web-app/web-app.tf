@@ -4,7 +4,7 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name = var.resource_group
   service_plan_id     = var.service_plan_id
   https_only          = true
-  
+
   identity {
     type = "SystemAssigned"
   }
@@ -38,14 +38,14 @@ resource "azurerm_linux_web_app" "webapp" {
     content {
       # storage_account.key is the map key (e.g., "moodledata")
       # storage_account.value is the object with all the settings
-      name           = storage_account.key
-      type           = storage_account.value.type
-      mount_path     = storage_account.value.mount_path
-      account_name   = storage_account.value.account_name
-      share_name     = storage_account.value.share_name
-      access_key     = var.storage_access_key
+      name         = storage_account.key
+      type         = storage_account.value.type
+      mount_path   = storage_account.value.mount_path
+      account_name = storage_account.value.account_name
+      share_name   = storage_account.value.share_name
+      access_key   = var.storage_access_key
     }
-  }  
+  }
 
   logs {
     detailed_error_messages = true
@@ -80,7 +80,7 @@ resource "azurerm_linux_web_app" "webapp" {
       # it back to null, removing the vnet / dbs integration. Then re-create it. 
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
-      virtual_network_subnet_id, 
+      virtual_network_subnet_id,
       logs
     ]
   }

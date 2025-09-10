@@ -70,12 +70,12 @@ variable "front_door_profile_web_id" {
 
 variable "subnet_webapps_id" {
   description = "The ID of the web apps subnet"
-  type = string
+  type        = string
 }
 
 variable "docker_image_name" {
   description = "The Docker image name to use for the web app"
-  type = string
+  type        = string
 }
 
 variable "health_check_path" {
@@ -115,4 +115,3 @@ variable "storage_access_key" {
   type        = string
   sensitive   = true
 }
-
