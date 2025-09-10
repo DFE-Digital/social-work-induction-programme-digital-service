@@ -37,9 +37,9 @@ on:
       AZ_SUBSCRIPTION_ID:
         required: true
 
-permissions: write-all
-  # id-token: write
-  # contents: read
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   # Deploy ACI runner in the VNet

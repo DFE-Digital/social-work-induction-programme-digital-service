@@ -39,9 +39,9 @@ jobs:
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
     if: github.event_name == 'workflow_dispatch'
-    permissions: write-all
-      # id-token: write
-      # contents: read
+    permissions:
+      id-token: write
+      contents: write
     with:
       environment: Dev
       action: ${{ github.event.inputs.action }}
