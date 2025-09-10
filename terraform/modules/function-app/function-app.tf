@@ -19,6 +19,19 @@ resource "azurerm_linux_function_app" "function_app" {
     health_check_eviction_time_in_min       = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
     vnet_route_all_enabled                  = true
     container_registry_use_managed_identity = true
+
+    ip_restriction_default_action = var.frontdoor_traffic_only ? "Deny" : "Allow"
+
+    dynamic "ip_restriction" {
+      for_each = var.frontdoor_traffic_only ? [1] : []
+      content {
+        name        = "Allow Azure Front Door"
+        action      = "Allow"
+        priority    = 100
+        service_tag = "AzureFrontDoor.Frontend"
+      }
+    }
+
     application_stack {
       docker {
         image_name   = var.docker_image_name

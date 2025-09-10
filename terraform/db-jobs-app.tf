@@ -22,6 +22,7 @@ module "db-jobs-app" {
   subnet_functionapp_privateendpoint_id = module.stack.subnet_functionapp_privateendpoint_id
   private_dns_zone_id                   = module.stack.private_dns_zone_id
   public_network_access_enabled         = true
+  frontdoor_traffic_only                = true
   app_settings = merge({
     "CONNECTIONSTRINGS__DEFAULTCONNECTION" = "Host=${module.stack.postgres_db_host};Username=${module.stack.postgres_username};"
     "STORAGECONNECTIONSTRING"              = "@Microsoft.KeyVault(SecretUri=${module.stack.full_backup_storage_connectionstring_uri})"

@@ -121,3 +121,9 @@ variable "public_network_access_enabled" {
   type        = bool
   default     = false
 }
+
+variable "frontdoor_traffic_only" {
+  description = "Whether to restrict access to only allow traffic from Azure Front Door"
+  type        = bool
+  default     = false
+}
