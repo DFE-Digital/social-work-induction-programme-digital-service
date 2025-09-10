@@ -66,7 +66,7 @@ jobs:
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
       - name: Terraform Format
-        run: terraform fmt -diff -check
+        run: terraform fmt -diff -check -recursive
 
       # Login to Azure using OIDC
       - name: Login to Azure CLI
