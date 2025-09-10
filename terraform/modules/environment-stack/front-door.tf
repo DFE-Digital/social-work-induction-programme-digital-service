@@ -92,7 +92,13 @@ resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
   }
 
   actions {
-
+    # Add a minimal action to prevent provider crash
+    # This rule is used for conditional matching only
+    request_header_action {
+      header_action = "Overwrite"
+      header_name   = "X-Magic-Link-Validated"
+      value         = "true"
+    }
   }
 
   depends_on = [azurerm_cdn_frontdoor_rule_set.magic_link_rules]
