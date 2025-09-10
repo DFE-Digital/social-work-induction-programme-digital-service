@@ -101,7 +101,7 @@ resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
 # Magic Link WAF Policy - Shared across all web apps
 resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
   count               = var.magic_links_enabled ? 1 : 0
-  name                = "${var.resource_name_prefix}-fd-magic-link-waf-policy"
+  name                = "${var.resource_name_prefix}fdmagiclinkwafpolicy"
   resource_group_name = azurerm_resource_group.rg_primary.name
   sku_name            = var.frontdoor_sku
   mode                = "Prevention"
