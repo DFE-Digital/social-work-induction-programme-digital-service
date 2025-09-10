@@ -52,17 +52,24 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Get Function Key from Key Vault
+      - name: Get Function Key and Front Door URL from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
             --name "DbOperationsService-FunctionKey" \
             --vault-name "s205${{ inputs.instance }}-kv-primary" \
             --query value -o tsv)
 
-          # Mask the secret to prevent it from appearing in logs
+          FRONTDOOR_HOSTNAME=$(az keyvault secret show \
+            --name "DbOperationsService-FrontDoorUrl" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
+
+          # Mask the secrets to prevent them from appearing in logs
           echo "::add-mask::$FUNCTION_KEY"
+          echo "::add-mask::$FRONTDOOR_HOSTNAME"
 
           echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
+          echo "FRONTDOOR_HOSTNAME=$FRONTDOOR_HOSTNAME" >> $GITHUB_ENV
 
       - name: Validate inputs
         run: |
@@ -81,7 +88,7 @@ jobs:
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
-          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          ENDPOINT="https://$FRONTDOOR_HOSTNAME/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 
@@ -135,17 +142,24 @@ jobs:
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Get Function Key from Key Vault
+      - name: Get Function Key and Front Door URL from Key Vault
         run: |
           FUNCTION_KEY=$(az keyvault secret show \
             --name "DbOperationsService-FunctionKey" \
             --vault-name "s205${{ inputs.instance }}-kv-primary" \
             --query value -o tsv)
 
-          # Mask the secret to prevent it from appearing in logs
+          FRONTDOOR_HOSTNAME=$(az keyvault secret show \
+            --name "DbOperationsService-FrontDoorUrl" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
+
+          # Mask the secrets to prevent them from appearing in logs
           echo "::add-mask::$FUNCTION_KEY"
+          echo "::add-mask::$FRONTDOOR_HOSTNAME"
 
           echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
+          echo "FRONTDOOR_HOSTNAME=$FRONTDOOR_HOSTNAME" >> $GITHUB_ENV
 
       - name: Validate inputs
         run: |
@@ -164,7 +178,7 @@ jobs:
       - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
-          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          ENDPOINT="https://$FRONTDOOR_HOSTNAME/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 

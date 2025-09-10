@@ -108,3 +108,15 @@ resource "azurerm_key_vault_secret" "db_operations_function_key" {
 
   #checkov:skip=CKV_AZURE_41:Function key doesn't need expiry date
 }
+
+# Store the Front Door hostname in Key Vault for workflow retrieval
+resource "azurerm_key_vault_secret" "db_operations_frontdoor_url" {
+  name         = "DbOperationsService-FrontDoorUrl"
+  value        = azurerm_cdn_frontdoor_endpoint.fd_endpoint.host_name
+  key_vault_id = module.stack.kv_id
+  content_type = "front door hostname"
+
+  depends_on = [azurerm_cdn_frontdoor_endpoint.fd_endpoint]
+
+  #checkov:skip=CKV_AZURE_41:URL doesn't need expiry date
+}
