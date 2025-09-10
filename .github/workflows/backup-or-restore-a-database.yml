@@ -41,7 +41,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
-      contents: write
+      contents: read
+      actions: write
     with:
       environment: Dev
       action: ${{ github.event.inputs.action }}
@@ -66,6 +67,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      actions: write
     with:
       environment: Dev
       action: backup

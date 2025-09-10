@@ -40,6 +40,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  actions: write  # Required for managing self-hosted runners
 
 jobs:
   # Deploy ACI runner in the VNet
