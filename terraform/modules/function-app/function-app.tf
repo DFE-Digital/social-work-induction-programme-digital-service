@@ -29,7 +29,7 @@ resource "azurerm_linux_function_app" "function_app" {
         name        = "Allow Azure Front Door"
         action      = "Allow"
         priority    = 100
-        service_tag = "AzureFrontDoor.Frontend"
+        service_tag = "AzureFrontDoor.Backend"
       }
     }
 
