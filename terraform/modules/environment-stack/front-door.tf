@@ -50,7 +50,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
 
   conditions {
     query_string_condition {
-      operator         = "Equal"
+      operator         = "Contains"
       match_values     = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
       negate_condition = false
     }
