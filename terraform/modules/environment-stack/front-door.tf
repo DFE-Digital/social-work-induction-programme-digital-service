@@ -45,7 +45,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
   name                      = "${var.resource_name_prefix}fdruletokenvalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
-  order                     = 1
+  order                     = 2
   behavior_on_match         = "Continue"
 
   conditions {
@@ -79,8 +79,8 @@ resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
   name                      = "${var.resource_name_prefix}fdrulecookievalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
-  order                     = 2
-  behavior_on_match         = "Continue"
+  order                     = 1
+  behavior_on_match         = "Stop"
 
   conditions {
     cookies_condition {
@@ -122,7 +122,6 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
       match_variable = "QueryString"
       operator       = "Contains"
       match_values   = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
-      # Note: selector cannot be used with QueryString match_variable
     }
   }
 
@@ -184,7 +183,6 @@ data "azurerm_cdn_frontdoor_endpoint" "user_management_endpoint" {
   depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
 }
 
-# Shared Security Policy - Uses data sources to avoid circular dependencies
 resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
   count = var.magic_links_enabled ? 1 : 0
   name  = "${var.resource_name_prefix}-fd-security-magic-link"
