@@ -34,8 +34,6 @@ on:
         required: true
       AZ_SUBSCRIPTION_ID:
         required: true
-      GITHUB_TOKEN:
-        required: true
 
 permissions:
   id-token: write
