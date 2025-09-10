@@ -1,11 +1,11 @@
 resource "azurerm_linux_function_app" "function_app" {
-  name                          = var.function_app_name
-  location                      = var.location
-  resource_group_name           = var.resource_group
-  service_plan_id               = var.service_plan_id
-  storage_account_name          = var.storage_account_name
-  storage_account_access_key    = var.storage_account_access_key
-  https_only                    = true
+  name                       = var.function_app_name
+  location                   = var.location
+  resource_group_name        = var.resource_group
+  service_plan_id            = var.service_plan_id
+  storage_account_name       = var.storage_account_name
+  storage_account_access_key = var.storage_account_access_key
+  https_only                 = true
   #checkov:skip=CKV_AZURE_221:IP Restrictions in place to only allow front door
   public_network_access_enabled = var.public_network_access_enabled && var.frontdoor_traffic_only
 
