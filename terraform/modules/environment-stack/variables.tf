@@ -195,8 +195,8 @@ variable "asp_sku_db_jobs" {
   type        = string
 }
 
-variable "front_door_endpoint_ids" {
-  description = "List of Front Door endpoint IDs for security policy association"
-  type        = list(string)
-  default     = []
+variable "moodle_instances" {
+  description = "The names of the moodle instances to be created"
+  type        = map(map(any))
+  default     = {}
 }

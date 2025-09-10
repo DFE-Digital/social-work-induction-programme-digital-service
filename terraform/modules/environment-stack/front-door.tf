@@ -155,9 +155,38 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
   # }
 }
 
-# Shared Security Policy - Only created when Magic Links enabled
+# Data sources to reference Front Door endpoints created by web-app modules
+# These avoid circular dependencies by referencing endpoints by name
+data "azurerm_cdn_frontdoor_endpoint" "moodle_endpoints" {
+  count               = var.magic_links_enabled ? length(var.moodle_instances) : 0
+  name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-moodle-${element(keys(var.moodle_instances), count.index)}"
+  profile_name        = azurerm_cdn_frontdoor_profile.front_door_profile_web.name
+  resource_group_name = azurerm_resource_group.rg_primary.name
+
+  depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
+}
+
+data "azurerm_cdn_frontdoor_endpoint" "auth_service_endpoint" {
+  count               = var.magic_links_enabled ? 1 : 0
+  name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-auth-service"
+  profile_name        = azurerm_cdn_frontdoor_profile.front_door_profile_web.name
+  resource_group_name = azurerm_resource_group.rg_primary.name
+
+  depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
+}
+
+data "azurerm_cdn_frontdoor_endpoint" "user_management_endpoint" {
+  count               = var.magic_links_enabled ? 1 : 0
+  name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-user-management"
+  profile_name        = azurerm_cdn_frontdoor_profile.front_door_profile_web.name
+  resource_group_name = azurerm_resource_group.rg_primary.name
+
+  depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
+}
+
+# Shared Security Policy - Uses data sources to avoid circular dependencies
 resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
-  count = var.magic_links_enabled && length(var.front_door_endpoint_ids) > 0 ? 1 : 0
+  count = var.magic_links_enabled ? 1 : 0
   name  = "${var.resource_name_prefix}-fd-security-magic-link"
 
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
@@ -167,7 +196,11 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
       cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.magic_link_waf[0].id
       association {
         dynamic "domain" {
-          for_each = var.front_door_endpoint_ids
+          for_each = concat(
+            [for endpoint in data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints : endpoint.id],
+            [for endpoint in data.azurerm_cdn_frontdoor_endpoint.auth_service_endpoint : endpoint.id],
+            [for endpoint in data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint : endpoint.id],
+          )
           content {
             cdn_frontdoor_domain_id = domain.value
           }
@@ -177,5 +210,10 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
     }
   }
 
-  depends_on = [azurerm_cdn_frontdoor_firewall_policy.magic_link_waf]
+  depends_on = [
+    azurerm_cdn_frontdoor_firewall_policy.magic_link_waf,
+    data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints,
+    data.azurerm_cdn_frontdoor_endpoint.auth_service_endpoint,
+    data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint,
+  ]
 }
