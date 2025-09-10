@@ -324,7 +324,7 @@ resource "azurerm_subnet" "sn_aci_runner" {
   name                              = "${var.resource_name_prefix}-sn-aci-runner"
   resource_group_name               = azurerm_resource_group.rg_primary.name
   virtual_network_name              = azurerm_virtual_network.vnet_stack.name
-  address_prefixes                  = ["10.0.7.0/24"]
+  address_prefixes                  = ["10.0.8.0/24"]
   private_endpoint_network_policies = "Disabled"
 
   delegation {
