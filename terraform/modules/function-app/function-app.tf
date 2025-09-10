@@ -6,7 +6,7 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_name          = var.storage_account_name
   storage_account_access_key    = var.storage_account_access_key
   https_only                    = true
-  public_network_access_enabled = var.public_network_access_enabled
+  public_network_access_enabled = false
 
   identity {
     type = "SystemAssigned"
