@@ -117,6 +117,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
   resource_group_name = azurerm_resource_group.rg_primary.name
   sku_name            = var.frontdoor_sku
   mode                = "Prevention"
+  tags                = var.tags
 
   custom_rule {
     name     = "AllowValidToken"
