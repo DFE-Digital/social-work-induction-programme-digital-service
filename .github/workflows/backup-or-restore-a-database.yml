@@ -1,4 +1,5 @@
 name: "Backup or Restore a database"
+run-name: "${{ github.event.inputs.action == 'backup' && 'Backup' || 'Restore' }} ${{ github.event.inputs.db_name }} database on ${{ github.event.inputs.instance }}"
 
 on:
   workflow_dispatch:

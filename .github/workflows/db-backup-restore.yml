@@ -1,5 +1,7 @@
 name: DB backup and restore
 
+run-name: "${{ inputs.action == 'backup' && 'Backup' || 'Restore' }} ${{ inputs.db-name }} on ${{ inputs.instance }}"
+
 on:
   workflow_call:
     inputs:
