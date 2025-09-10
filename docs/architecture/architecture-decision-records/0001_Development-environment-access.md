@@ -79,8 +79,8 @@ sequenceDiagram
 
     User->>FrontDoor: Request with ?token=abc123
     FrontDoor->>FrontDoor: Validate token
-    FrontDoor-->>User: Set-Cookie dev_auth=ok + redirect (no querystring)
-    User->>FrontDoor: Request with cookie dev_auth=ok
+    FrontDoor-->>User: Set-Cookie dev_auth=abc123 + redirect (no querystring)
+    User->>FrontDoor: Request with cookie dev_auth=abc123
     FrontDoor->>AppService: Forward request + header (optional transform)
     AppService-->>User: Serve app normally
 ```
