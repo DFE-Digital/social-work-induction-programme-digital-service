@@ -34,15 +34,76 @@ on:
         required: true
       AZ_SUBSCRIPTION_ID:
         required: true
+      GITHUB_TOKEN:
+        required: true
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  # Deploy ACI runner in the VNet
+  deploy-runner:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      runner-name: ${{ steps.deploy.outputs.runner-name }}
+    steps:
+      - name: Login to Azure
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Get GitHub Runner Registration Token
+        id: token
+        run: |
+          RUNNER_TOKEN=$(curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runners/registration-token \
+            | jq -r .token)
+          echo "::set-output name=token::$RUNNER_TOKEN"
+
+      - name: Deploy ACI Runner
+        id: deploy
+        run: |
+          RUNNER_NAME="aci-runner-${{ github.run_id }}"
+          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
+
+          # Deploy ACI with runner in the VNet
+          az container create \
+            --resource-group $RESOURCE_GROUP \
+            --name $RUNNER_NAME \
+            --image ghcr.io/actions/actions-runner:latest \
+            --cpu 1 \
+            --memory 2 \
+            --vnet s205${{ inputs.instance }}-vnet \
+            --subnet s205${{ inputs.instance }}-sn-funcapp \
+            --environment-variables \
+              RUNNER_NAME=$RUNNER_NAME \
+              RUNNER_TOKEN=${{ steps.token.outputs.token }} \
+              RUNNER_REPOSITORY_URL=https://github.com/${{ github.repository }} \
+              RUNNER_LABELS=self-hosted,db-operations \
+            --restart-policy Never \
+            --assign-identity \
+            --scope /subscriptions/${{ secrets.AZ_SUBSCRIPTION_ID }}/resourceGroups/$RESOURCE_GROUP
+
+          echo "::set-output name=runner-name::$RUNNER_NAME"
+          echo "runner-name=$RUNNER_NAME" >> $GITHUB_OUTPUT
+
+      - name: Wait for runner to be ready
+        run: |
+          echo "Waiting for ACI runner to register and become ready..."
+          sleep 60
+
+  # Backup job using self-hosted runner
   backup:
     if: inputs.action == 'backup'
-    runs-on: ubuntu-latest
+    needs: deploy-runner
+    runs-on:
+      labels: [self-hosted, db-operations]
     environment: ${{ inputs.environment }}
     steps:
       - name: Login to Azure
@@ -80,8 +141,9 @@ jobs:
 
       - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
+          # Use internal function app endpoint (accessible from VNet)
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
-          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          INTERNAL_ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 
@@ -97,10 +159,10 @@ jobs:
 
           echo "DB Operation: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
           echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Internal Endpoint: $INTERNAL_ENDPOINT"
           echo "Container: $CONTAINER"
-          echo "Endpoint: $ENDPOINT"
 
-          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+          RESPONSE=$(curl -X POST "$INTERNAL_ENDPOINT?code=$FUNCTION_KEY" \
             -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD" \
             -w "\nHTTP_STATUS:%{http_code}")
@@ -116,9 +178,12 @@ jobs:
             exit 1
           fi
 
+  # Restore job using self-hosted runner
   restore:
     if: inputs.action == 'restore'
-    runs-on: ubuntu-latest
+    needs: deploy-runner
+    runs-on:
+      labels: [self-hosted, db-operations]
     environment: ${{ inputs.environment }}
     steps:
       - name: Validate backup file name
@@ -163,8 +228,9 @@ jobs:
 
       - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
         run: |
+          # Use internal function app endpoint (accessible from VNet)
           FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
-          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          INTERNAL_ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
           STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
           CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
 
@@ -181,10 +247,10 @@ jobs:
 
           echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
           echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Internal Endpoint: $INTERNAL_ENDPOINT"
           echo "Container: $CONTAINER"
-          echo "Endpoint: $ENDPOINT"
 
-          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+          RESPONSE=$(curl -X POST "$INTERNAL_ENDPOINT?code=$FUNCTION_KEY" \
             -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD" \
             -w "\nHTTP_STATUS:%{http_code}")
@@ -199,3 +265,28 @@ jobs:
             echo "DB operation failed: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
             exit 1
           fi
+
+  # Cleanup: Remove ACI runner
+  cleanup:
+    needs: [deploy-runner, backup, restore]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: always()
+    steps:
+      - name: Login to Azure
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Remove ACI Runner
+        run: |
+          RESOURCE_GROUP="s205${{ inputs.instance }}-swip-rg"
+          RUNNER_NAME="${{ needs.deploy-runner.outputs.runner-name }}"
+
+          echo "Removing ACI runner: $RUNNER_NAME"
+          az container delete \
+            --resource-group $RESOURCE_GROUP \
+            --name $RUNNER_NAME \
+            --yes || echo "Runner cleanup completed"
