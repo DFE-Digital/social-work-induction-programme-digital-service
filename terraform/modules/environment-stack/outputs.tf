@@ -58,6 +58,11 @@ output "frontdoor_sku" {
   value       = var.frontdoor_sku
 }
 
+output "magic_links_enabled" {
+  description = "Whether Magic Links authentication is enabled"
+  value       = var.magic_links_enabled
+}
+
 output "magic_link_token_value" {
   description = "Shared magic link token value"
   value       = var.magic_links_enabled ? azurerm_key_vault_secret.magic_link_token[0].value : null

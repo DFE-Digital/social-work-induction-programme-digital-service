@@ -25,9 +25,9 @@ resource "azurerm_cdn_frontdoor_origin_group" "front_door_origin_group_web" {
   }
 }
 
-# Conditionally create security policy only if Magic Links are enabled
+# Create security policy only if Magic Links are enabled
 resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
-  for_each                 = var.magic_link_waf_policy_id != null ? { "enabled" = true } : {}
+  count                    = var.magic_links_enabled ? 1 : 0
   name                     = "${var.resource_name_prefix}-fd-security-magic-link-${var.web_app_short_name}"
   cdn_frontdoor_profile_id = var.front_door_profile_web_id
 
@@ -45,6 +45,14 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
   }
 
   depends_on = [azurerm_cdn_frontdoor_endpoint.front_door_endpoint_web]
+
+  # Only create if we have a WAF policy ID
+  lifecycle {
+    precondition {
+      condition     = var.magic_link_waf_policy_id != null
+      error_message = "Magic Links WAF policy ID must be provided when magic_links_enabled is true"
+    }
+  }
 }
 
 

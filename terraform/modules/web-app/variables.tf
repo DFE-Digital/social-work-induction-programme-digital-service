@@ -68,6 +68,12 @@ variable "front_door_profile_web_id" {
   type        = string
 }
 
+variable "magic_links_enabled" {
+  description = "Whether Magic Links authentication is enabled for this environment"
+  type        = bool
+  default     = false
+}
+
 variable "magic_link_token_value" {
   description = "Shared magic link token value"
   type        = string

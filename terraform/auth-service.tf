@@ -53,6 +53,7 @@ module "auth_service" {
   web_app_short_name        = "wa-auth-service"
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
+  magic_links_enabled       = module.stack.magic_links_enabled
   magic_link_token_value    = module.stack.magic_link_token_value
   magic_link_waf_policy_id  = module.stack.magic_link_waf_policy_id
   magic_link_rule_set_id    = module.stack.magic_link_rule_set_id
