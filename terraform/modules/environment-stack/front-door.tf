@@ -120,9 +120,9 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
 
     match_condition {
       match_variable = "QueryString"
-      selector       = "token"
-      operator       = "Equal"
-      match_values   = [azurerm_key_vault_secret.magic_link_token[0].value]
+      operator       = "Contains"
+      match_values   = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
+      # Note: selector cannot be used with QueryString match_variable
     }
   }
 
