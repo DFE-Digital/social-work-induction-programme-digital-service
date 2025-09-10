@@ -311,7 +311,6 @@ resource "azurerm_subnet" "sn_function_app" {
     }
   }
 
-  # New delegation for ACI containers
   delegation {
     name = "aci-delegation"
 
@@ -321,9 +320,9 @@ resource "azurerm_subnet" "sn_function_app" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [delegation]
-  }
+  # lifecycle {
+  #   ignore_changes = [delegation]
+  # }
 }
 
 resource "azurerm_service_plan" "asp_notification_service" {
