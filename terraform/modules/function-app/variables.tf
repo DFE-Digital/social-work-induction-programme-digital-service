@@ -115,3 +115,9 @@ variable "private_dns_zone_id" {
   description = "The ID of the private DNS zone"
   type        = string
 }
+
+variable "public_network_access_enabled" {
+  description = "Whether or not to allow public access to the function app"
+  type        = bool
+  default     = false
+}
