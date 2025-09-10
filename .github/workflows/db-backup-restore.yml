@@ -49,13 +49,6 @@ jobs:
     outputs:
       runner-name: ${{ steps.deploy.outputs.runner-name }}
     steps:
-      - name: Login to Azure
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
-        with:
-          client-id: ${{ secrets.AZ_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZ_TENANT_ID }}
-          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-
       - name: Get GitHub Runner Registration Token
         id: token
         run: |
@@ -94,6 +87,13 @@ jobs:
           # Use environment file instead of deprecated set-output
           echo "token=$RUNNER_TOKEN" >> $GITHUB_OUTPUT
           echo "✅ Runner token retrieved successfully (masked)"
+
+      - name: Login to Azure
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
       - name: Deploy ACI Runner
         id: deploy
