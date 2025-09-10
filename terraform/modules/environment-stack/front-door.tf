@@ -66,7 +66,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
     url_redirect_action {
       redirect_type        = "Found"
       destination_hostname = "{host}"
-      destination_path     = "{url_path}{url_filename}"
+      destination_path     = ""
       query_string         = ""
       redirect_protocol    = "Https"
     }
@@ -127,7 +127,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
     action   = "Allow"
 
     match_condition {
-      match_variable = "RequestCookie"
+      match_variable = "Cookies"
       selector       = "dev_auth"
       operator       = "Equal"
       match_values   = [azurerm_key_vault_secret.magic_link_token[0].value]
