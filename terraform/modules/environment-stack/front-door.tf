@@ -65,7 +65,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
 
     url_redirect_action {
       redirect_type        = "Found"
-      destination_hostname = "{host}"
+      destination_hostname = ""
       destination_path     = ""
       query_string         = ""
       redirect_protocol    = "Https"
