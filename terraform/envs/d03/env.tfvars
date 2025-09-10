@@ -49,3 +49,5 @@ user_management_app_settings = {
 }
 
 db_backup_blob_sa_name = "sabackups"
+
+magic_links_enabled = true

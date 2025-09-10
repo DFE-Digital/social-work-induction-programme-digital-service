@@ -55,7 +55,7 @@ variable "web_app_name" {
 
 variable "web_app_short_name" {
   description = "Unique short name for the app to aid in unique naming of app related resource for multiple apps"
-  type        = string  
+  type        = string
 }
 
 variable "app_settings" {
@@ -66,6 +66,30 @@ variable "app_settings" {
 variable "front_door_profile_web_id" {
   description = "The ID of the Front Door profile"
   type        = string
+}
+
+variable "frontdoor_sku" {
+  description = "Azure Front Door SKU"
+  type        = string
+}
+
+variable "magic_link_token_value" {
+  description = "Shared magic link token value"
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "magic_link_waf_policy_id" {
+  description = "ID of shared magic link WAF policy"
+  type        = string
+  default     = null
+}
+
+variable "magic_link_rule_set_id" {
+  description = "ID of shared magic link rule set"
+  type        = string
+  default     = null
 }
 
 variable "subnet_webapps_id" {

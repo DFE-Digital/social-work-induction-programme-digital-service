@@ -8,3 +8,143 @@ resource "azurerm_cdn_frontdoor_profile" "front_door_profile_web" {
     ignore_changes = [tags]
   }
 }
+
+# Magic Link Resources - Only created when enabled
+resource "random_password" "magic_link_token" {
+  count   = var.magic_links_enabled ? 1 : 0
+  length  = 32
+  special = false # URL-safe, no special characters
+  upper   = true
+  lower   = true
+  numeric = true
+}
+
+resource "azurerm_key_vault_secret" "magic_link_token" {
+  count           = var.magic_links_enabled ? 1 : 0
+  name            = "MagicLink-Token"
+  value           = random_password.magic_link_token[0].result
+  key_vault_id    = azurerm_key_vault.kv.id
+  content_type    = "text/plain"
+  expiration_date = timeadd(timestamp(), "24h")
+
+  lifecycle {
+    ignore_changes = [value] # Value will be updated by other workflows
+  }
+
+  depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
+}
+
+# Magic Link Authentication Rules Engine - Shared across all web apps
+resource "azurerm_cdn_frontdoor_rule_set" "magic_link_rules" {
+  count                    = var.magic_links_enabled ? 1 : 0
+  name                     = "${var.resource_name_prefix}-fd-rule-set-magic-link"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
+}
+
+resource "azurerm_cdn_frontdoor_rule" "token_validation" {
+  count                     = var.magic_links_enabled ? 1 : 0
+  name                      = "${var.resource_name_prefix}-fd-rule-token-validation"
+  cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
+  order                     = 1
+  behavior_on_match         = "Continue"
+
+  conditions {
+    query_string_condition {
+      operator         = "Equal"
+      match_values     = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
+      negate_condition = false
+    }
+  }
+
+  actions {
+    response_header_action {
+      header_action = "Overwrite"
+      header_name   = "Set-Cookie"
+      value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Strict"
+    }
+
+    url_redirect_action {
+      redirect_type        = "Found"
+      destination_hostname = "{host}"
+      destination_path     = "{url_path}{url_filename}"
+      query_string         = ""
+      redirect_protocol    = "Https"
+    }
+  }
+
+  depends_on = [azurerm_cdn_frontdoor_rule_set.magic_link_rules]
+}
+
+resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
+  count                     = var.magic_links_enabled ? 1 : 0
+  name                      = "${var.resource_name_prefix}-fd-rule-cookie-validation"
+  cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
+  order                     = 2
+  behavior_on_match         = "Continue"
+
+  conditions {
+    cookies_condition {
+      cookie_name      = "dev_auth"
+      operator         = "Equal"
+      match_values     = [azurerm_key_vault_secret.magic_link_token[0].value]
+      negate_condition = false
+    }
+  }
+
+  actions {
+
+  }
+
+  depends_on = [azurerm_cdn_frontdoor_rule_set.magic_link_rules]
+}
+
+# Magic Link WAF Policy - Shared across all web apps
+resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
+  count               = var.magic_links_enabled ? 1 : 0
+  name                = "${var.resource_name_prefix}-fd-magic-link-waf-policy"
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  sku_name            = "Standard_AzureFrontDoor"
+  mode                = "Prevention"
+
+  custom_rule {
+    name     = "AllowValidToken"
+    priority = 1
+    type     = "MatchRule"
+    action   = "Allow"
+
+    match_condition {
+      match_variable = "QueryString"
+      selector       = "token"
+      operator       = "Equal"
+      match_values   = [azurerm_key_vault_secret.magic_link_token[0].value]
+    }
+  }
+
+  custom_rule {
+    name     = "AllowValidCookie"
+    priority = 2
+    type     = "MatchRule"
+    action   = "Allow"
+
+    match_condition {
+      match_variable = "RequestCookie"
+      selector       = "dev_auth"
+      operator       = "Equal"
+      match_values   = [azurerm_key_vault_secret.magic_link_token[0].value]
+    }
+  }
+
+  # TODO: Re-enable once it's confirmed the above rules are working
+  # custom_rule {
+  #   name     = "BlockUnauthorized"
+  #   priority = 100
+  #   type     = "MatchRule"
+  #   action   = "Block"
+
+  #   match_condition {
+  #     match_variable = "RemoteAddr"
+  #     operator       = "IPMatch"
+  #     match_values   = ["0.0.0.0/0"]
+  #   }
+  # }
+}

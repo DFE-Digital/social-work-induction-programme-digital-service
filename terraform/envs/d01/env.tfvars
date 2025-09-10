@@ -51,3 +51,5 @@ blob_storage_account_tier          = "Standard"
 file_storage_account_tier = "Standard"
 
 db_backup_blob_sa_name = "sabackups"
+
+magic_links_enabled = true
