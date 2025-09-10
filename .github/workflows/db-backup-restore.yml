@@ -3,47 +3,36 @@ name: DB backup and restore
 on:
   workflow_call:
     inputs:
-      job-to-run:
-        description: "The job to run (backup or restore)"
+      environment:
+        description: "The GitHub environment to run the workflow against"
+        type: string
+        required: true
+      action:
+        description: "The action to perform (backup or restore)"
+        required: true
+        type: string
+      db-name:
+        description: "The actual database name to backup or restore (e.g., s205d01_db_moodle_primary)"
+        required: true
+        type: string
+      container-suffix:
+        description: "The suffix to use for container naming (e.g., moodle, usermanagement)"
         required: true
         type: string
       backup-file-name:
-        description: "The name of the backup file in Blob Storage to restore"
+        description: "The name of the backup file in Blob Storage to restore from (required when action is 'restore')"
         required: false
         type: string
-      db-name:
-        description: "The name of the database to backup/restore"
-        required: true
-        type: string
-      db-host-name:
-        description: The name of the database server
-        type: string
       instance:
-        description: "Environment instance"
+        description: "The environment instance to operate on (e.g., d01, d02, d03)"
+        required: true
         type: string
-      tunnel-remote-server-name:
-        description: Name of remote server to tunnel to, if tunnelling connection required
-        type: string
-      storage-account-name:
-        description: Name of the storage account where the backup files will be stored
-        type: string
-      storage-container-name:
-        description: Name of the storage container for backup files
-        type: string
-      
-
     secrets:
-      AZURE_CLIENT_ID:
+      AZ_CLIENT_ID:
         required: true
-      AZURE_TENANT_ID:
+      AZ_TENANT_ID:
         required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      KEY_VAULT_NAME:           # might not need this, on proxy server?
-        required: true
-      DB_USER_SECRET_NAME:      # might not need this, on proxy server?
-        required: true
-      DB_PASSWORD_SECRET_NAME:  # might not need this, on proxy server?
+      AZ_SUBSCRIPTION_ID:
         required: true
 
 permissions:
@@ -52,77 +41,161 @@ permissions:
 
 jobs:
   backup:
-    if: inputs.job-to-run == 'backup'
+    if: inputs.action == 'backup'
     runs-on: ubuntu-latest
-    env:
-      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      REMOTE_TUNNEL_HOST: ${{ inputs.tunnel-remote-server-name }}
-      # This will make the credentials available for remote tunnelling
-      AZURE_KUDU_SSH_USER: ${{ vars.AZURE_KUDU_SSH_USER }}
-      AZURE_KUDU_SSH_PASSWORD: ${{ secrets.AZURE_KUDU_SSH_PASSWORD }}
-
+    environment: ${{ inputs.environment }}
     steps:
-      - name: Log in to Azure
+      - name: Login to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Perform database backup
+      - name: Get Function Key from Key Vault
         run: |
-          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          BACKUP_FILE="${{ inputs.db-name }}_backup_${TIMESTAMP}.dump"
-          pg_dump -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db-name }} -F c -v -f $BACKUP_FILE
-          echo "BACKUP_FILE_NAME=${BACKUP_FILE}" >> $GITHUB_ENV
+          FUNCTION_KEY=$(az keyvault secret show \
+            --name "DbOperationsService-FunctionKey" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
 
-      - name: Upload backup to Azure Blob Storage
-        uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
-        with:
-          inlineScript: |
-            az storage blob upload --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --file ${{ env.BACKUP_FILE_NAME }} --name ${{ env.BACKUP_FILE_NAME }} --auth-mode login
+          # Mask the secret to prevent it from appearing in logs
+          echo "::add-mask::$FUNCTION_KEY"
+
+          echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
+
+      - name: Validate inputs
+        run: |
+          # Validate action parameter
+          if [ "${{ inputs.action }}" != "backup" ] && [ "${{ inputs.action }}" != "restore" ]; then
+            echo "Error: Invalid action '${{ inputs.action }}'. Must be 'backup' or 'restore'."
+            exit 1
+          fi
+
+          # Validate that backup operations don't have a backup file name (should be empty)
+          if [ "${{ inputs.action }}" = "backup" ] && [ -n "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name should not be provided when action is 'backup'"
+            exit 1
+          fi
+
+      - name: Backup ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        run: |
+          FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
+          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
+
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "action": "backup",
+            "databaseName": "${{ inputs.db-name }}",
+            "storageAccount": "$STORAGE_ACCOUNT",
+            "containerName": "$CONTAINER"
+          }
+          EOF
+          )
+
+          echo "DB Operation: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Container: $CONTAINER"
+          echo "Endpoint: $ENDPOINT"
+
+          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD" \
+            -w "\nHTTP_STATUS:%{http_code}")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          RESPONSE_BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/d')
+
+          echo "Response status: $HTTP_STATUS"
+          echo "Response body: $RESPONSE_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "DB operation failed: backup ${{ inputs.db-name }} on ${{ inputs.instance }}"
+            exit 1
+          fi
 
   restore:
-    if: inputs.job-to-run == 'restore'
+    if: inputs.action == 'restore'
     runs-on: ubuntu-latest
-
+    environment: ${{ inputs.environment }}
     steps:
-      - name: Check for backup-file-name
-        if: inputs.backup-file-name == ''
+      - name: Validate backup file name
         run: |
-          echo "Error: backup_file_name input is required for the restore job."
-          exit 1
-      - name: Log in to Azure
+          if [ -z "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name is required when action is 'restore'"
+            exit 1
+          fi
+
+      - name: Login to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-      - name: Fetch DB credentials from Key Vault
+      - name: Get Function Key from Key Vault
         run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_ENV
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
-        shell: bash
+          FUNCTION_KEY=$(az keyvault secret show \
+            --name "DbOperationsService-FunctionKey" \
+            --vault-name "s205${{ inputs.instance }}-kv-primary" \
+            --query value -o tsv)
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+          # Mask the secret to prevent it from appearing in logs
+          echo "::add-mask::$FUNCTION_KEY"
 
-      - name: Download backup from Azure Blob Storage
-        uses: azure/CLI@d7e8a34a277107b4de5d53b7f36e5aa0c1dc0592 # v2
-        with:
-          inlineScript: |
-            az storage blob download --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name ${{ secrets.STORAGE_CONTAINER_NAME }} --name ${{ inputs.backup-file-name }} --file ./restore.dump --auth-mode login
+          echo "FUNCTION_KEY=$FUNCTION_KEY" >> $GITHUB_ENV
 
-      - name: Restore database
+      - name: Validate inputs
         run: |
-          psql -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d postgres -c "DROP DATABASE IF EXISTS ${{ inputs.db-name }};"
-          psql -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d postgres -c "CREATE DATABASE ${{ inputs.db-name }};"
-          pg_restore -h ${{ secrets.AZURE_DB_HOST }} -U ${{ env.DB_USER }} -d ${{ inputs.db_name }} -v --no-owner --no-privileges ./restore.dump
+          # Validate action parameter
+          if [ "${{ inputs.action }}" != "backup" ] && [ "${{ inputs.action }}" != "restore" ]; then
+            echo "Error: Invalid action '${{ inputs.action }}'. Must be 'backup' or 'restore'."
+            exit 1
+          fi
+
+          # Validate that restore operations have a backup file name
+          if [ "${{ inputs.action }}" = "restore" ] && [ -z "${{ inputs.backup-file-name }}" ]; then
+            echo "Error: backup-file-name is required when action is 'restore'"
+            exit 1
+          fi
+
+      - name: Restore ${{ inputs.db-name }} database on ${{ inputs.instance }}
+        run: |
+          FUNCTION_APP_NAME="s205${{ inputs.instance }}-fa-db-jobs"
+          ENDPOINT="https://$FUNCTION_APP_NAME.azurewebsites.net/api/DbOperationsFunction"
+          STORAGE_ACCOUNT="s205${{ inputs.instance }}sabackups"
+          CONTAINER="s205${{ inputs.instance }}-${{ inputs.container-suffix }}-backups"
+
+          JSON_PAYLOAD=$(cat <<EOF
+          {
+            "action": "restore",
+            "databaseName": "${{ inputs.db-name }}",
+            "storageAccount": "$STORAGE_ACCOUNT",
+            "containerName": "$CONTAINER",
+            "backupFileName": "${{ inputs.backup-file-name }}"
+          }
+          EOF
+          )
+
+          echo "DB Operation: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+          echo "Using Function App: $FUNCTION_APP_NAME"
+          echo "Container: $CONTAINER"
+          echo "Endpoint: $ENDPOINT"
+
+          RESPONSE=$(curl -X POST "$ENDPOINT?code=$FUNCTION_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD" \
+            -w "\nHTTP_STATUS:%{http_code}")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          RESPONSE_BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/d')
+
+          echo "Response status: $HTTP_STATUS"
+          echo "Response body: $RESPONSE_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "DB operation failed: restore ${{ inputs.db-name }} on ${{ inputs.instance }}"
+            exit 1
+          fi

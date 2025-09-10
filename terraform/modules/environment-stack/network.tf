@@ -31,6 +31,7 @@ resource "azurerm_network_security_group" "private_endpoint_nsg" {
   name                = "${var.resource_name_prefix}-pe-nsg"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
 
   security_rule {
     name                       = "AllowVnetInbound"
@@ -54,6 +55,10 @@ resource "azurerm_network_security_group" "private_endpoint_nsg" {
     destination_port_range     = "*"
     source_address_prefix      = "AzureLoadBalancer"
     destination_address_prefix = "*"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }
 
@@ -80,6 +85,11 @@ resource "azurerm_subnet_network_security_group_association" "private_endpoint_n
 resource "azurerm_private_dns_zone" "pvt_dns_zone" {
   name                = "privatelink.azurewebsites.net"
   resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
@@ -87,4 +97,9 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   resource_group_name   = azurerm_resource_group.rg_primary.name
   private_dns_zone_name = azurerm_private_dns_zone.pvt_dns_zone.name
   virtual_network_id    = azurerm_virtual_network.vnet_stack.id
+  tags                  = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }

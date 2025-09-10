@@ -3,83 +3,75 @@ name: "Backup or Restore a database"
 on:
   workflow_dispatch:
     inputs:
-      job_to_run:
-        description: "The job to run (backup or restore)"
+      action:
+        description: "Choose the action to perform"
         required: true
         type: choice
         options:
           - backup
           - restore
       db_name:
-        description: "The name of the database to backup/restore"
+        description: "Select the database to operate on"
         required: true
         type: choice
         options:
           - moodle
-          - authservice
+          - usermanagement
       backup_file_name:
-        description: "The name of the backup file in Blob Storage to restore (only for restore jobs)"
+        description: "Specify the backup file name to restore from (only required for restore action)"
         required: false
         type: string
       instance:
-        description: "Environment instance"
+        description: "Select the environment instance"
         required: true
-        default: None
         type: choice
         options:
-          - None
           - d01
           - d02
           - d03
+  # Uncomment the schedule below to enable daily automated backups across all instances
+  # schedule:
+  #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
 
 jobs:
-  fetch_secrets:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    outputs:
-      db_user: ${{ steps.get_secrets.outputs.db_user }}
-      db_password: ${{ steps.get_secrets.outputs.db_password }}
-      db_instance: ${{ steps.map_name.outputs.db_name }}
-
-    steps:
-      - name: Log in to Azure
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Fetch DB credentials from Key Vault
-        run: |
-          DB_USER=$(az keyvault secret show --name "${{ secrets.DB_USER_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          DB_PASSWORD=$(az keyvault secret show --name "${{ secrets.DB_PASSWORD_SECRET_NAME }}" --vault-name "${{ secrets.KEY_VAULT_NAME }}" --query value -o tsv)
-          echo "DB_USER=$DB_USER" >> $GITHUB_OUTPUT
-          echo "PGPASSWORD=$DB_PASSWORD" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Map service to actual DB instance
-        id: map_name
-        run: |
-          DB_INSTANCE = ""
-          case "${{ github.event.inputs.db_name }}" in
-            moodle)
-              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_moodle_primary"
-              ;;
-            authservice)
-              DB_INSTANCE="s205${{ (github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}_db_auth_service"
-              ;;
-          esac
-          echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
-
+  # Manual backup/restore job
   db-backup-restore:
     uses: ./.github/workflows/db-backup-restore.yml
+    if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
       contents: read
     with:
-      job_to_run: ${{ github.event.inputs.job_to_run }}
-      db_name: ${{ needs.fetch_secrets.outputs.db_instance }}
-      backup_file_name: ${{ github.event.inputs.backup_file_name }}
-    secrets: inherit
+      environment: Dev
+      action: ${{ github.event.inputs.action }}
+      db-name: ${{ github.event.inputs.db_name == 'moodle' && format('s205{0}_db_moodle_primary', github.event.inputs.instance) || github.event.inputs.db_name == 'usermanagement' && format('s205{0}_db_auth_service', github.event.inputs.instance) || github.event.inputs.db_name }}
+      container-suffix: ${{ github.event.inputs.db_name }}
+      backup-file-name: ${{ github.event.inputs.backup_file_name }}
+      instance: ${{ github.event.inputs.instance }}
+    secrets:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+  # Scheduled backup job - currently disabled
+  # Uncomment the schedule trigger above and remove '&& false' to enable
+  scheduled-backup:
+    uses: ./.github/workflows/db-backup-restore.yml
+    if: github.event_name == 'schedule' && false
+    strategy:
+      matrix:
+        instance: [d01, d02, d03]
+        db_name: [moodle, usermanagement]
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      environment: Dev
+      action: backup
+      db-name: ${{ matrix.db_name == 'moodle' && format('s205{0}_db_moodle_primary', matrix.instance) || matrix.db_name == 'usermanagement' && format('s205{0}_db_auth_service', matrix.instance) || matrix.db_name }}
+      container-suffix: ${{ matrix.db_name }}
+      instance: ${{ matrix.instance }}
+    secrets:
+      AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+      AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
