@@ -20,15 +20,19 @@ resource "random_password" "magic_link_token" {
 }
 
 resource "azurerm_key_vault_secret" "magic_link_token" {
-  count           = var.magic_links_enabled ? 1 : 0
-  name            = "MagicLink-Token"
-  value           = random_password.magic_link_token[0].result
-  key_vault_id    = azurerm_key_vault.kv.id
-  content_type    = "text/plain"
-  expiration_date = timeadd(timestamp(), "24h")
+  count        = var.magic_links_enabled ? 1 : 0
+  name         = "MagicLink-Token"
+  value        = random_password.magic_link_token[0].result
+  key_vault_id = azurerm_key_vault.kv.id
+  content_type = "alphanumeric token string"
+  #checkov:skip=CKV_AZURE_41:Temp disable expiry until workflow automated
+  # expiration_date = timeadd(timestamp(), "24h")
 
   lifecycle {
-    ignore_changes = [value] # Value will be updated by other workflows
+    ignore_changes = [
+      value, # Token will be rotated by other workflows
+      # expiration_date
+    ]
   }
 
   depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
