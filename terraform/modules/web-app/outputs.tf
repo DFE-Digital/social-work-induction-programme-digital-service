@@ -17,3 +17,8 @@ output "front_door_app_url" {
   description = "Front Door HTTPS URL of the Linux web app"
   value       = "https://${azurerm_cdn_frontdoor_endpoint.front_door_endpoint_web.host_name}"
 }
+
+output "front_door_endpoint_id" {
+  description = "ID of the Front Door endpoint"
+  value       = azurerm_cdn_frontdoor_endpoint.front_door_endpoint_web.id
+}

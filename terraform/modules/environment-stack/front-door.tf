@@ -157,7 +157,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
 
 # Shared Security Policy - Only created when Magic Links enabled
 resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
-  count = var.magic_links_enabled ? 1 : 0
+  count = var.magic_links_enabled && length(var.front_door_endpoint_ids) > 0 ? 1 : 0
   name  = "${var.resource_name_prefix}-fd-security-magic-link"
 
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
@@ -166,8 +166,11 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
     firewall {
       cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.magic_link_waf[0].id
       association {
-        domain {
-          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
+        dynamic "domain" {
+          for_each = var.front_door_endpoint_ids
+          content {
+            cdn_frontdoor_domain_id = domain.value
+          }
         }
         patterns_to_match = ["/*"]
       }

@@ -194,3 +194,9 @@ variable "asp_sku_db_jobs" {
   description = "The app service plan SKU for the DB Jobs"
   type        = string
 }
+
+variable "front_door_endpoint_ids" {
+  description = "List of Front Door endpoint IDs for security policy association"
+  type        = list(string)
+  default     = []
+}
