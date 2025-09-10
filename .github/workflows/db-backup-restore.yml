@@ -59,12 +59,25 @@ jobs:
       - name: Get GitHub Runner Registration Token
         id: token
         run: |
+          # Use the built-in GITHUB_TOKEN
           RUNNER_TOKEN=$(curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/actions/runners/registration-token \
             | jq -r .token)
+
+          if [ "$RUNNER_TOKEN" = "null" ] || [ -z "$RUNNER_TOKEN" ]; then
+            echo "Failed to get runner token"
+            exit 1
+          fi
+
+          # Mask the token to prevent it from appearing in logs
+          echo "::add-mask::$RUNNER_TOKEN"
+
           echo "::set-output name=token::$RUNNER_TOKEN"
+          echo "Runner token retrieved successfully (masked)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy ACI Runner
         id: deploy
