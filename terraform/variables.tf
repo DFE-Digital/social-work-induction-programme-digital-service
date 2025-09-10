@@ -219,24 +219,6 @@ variable "moodle_web_service_user_email" {
   sensitive   = true
 }
 
-variable "basic_auth_user" {
-  description = "User ID for basic auth protected sites"
-  type        = string
-  sensitive   = true
-}
-
-variable "basic_auth_password_team_environments" {
-  description = "Password for basic auth protected sites in project team environments"
-  type        = string
-  sensitive   = true
-}
-
-variable "basic_auth_password_user_environments" {
-  description = "Password for basic auth protected sites in end user environments"
-  type        = string
-  sensitive   = true
-}
-
 variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string

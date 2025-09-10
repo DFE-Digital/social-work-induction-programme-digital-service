@@ -97,12 +97,6 @@ variable "assign_delivery_team_key_vault_permissions" {
   type        = bool
 }
 
-variable "basic_auth_password" {
-  description = "Password for basic auth protected sites"
-  type        = string
-  sensitive   = true
-}
-
 variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string
