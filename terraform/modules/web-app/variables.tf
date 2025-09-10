@@ -68,11 +68,6 @@ variable "front_door_profile_web_id" {
   type        = string
 }
 
-variable "frontdoor_sku" {
-  description = "Azure Front Door SKU"
-  type        = string
-}
-
 variable "magic_link_token_value" {
   description = "Shared magic link token value"
   type        = string

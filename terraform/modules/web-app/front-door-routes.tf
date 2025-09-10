@@ -25,9 +25,6 @@ resource "azurerm_cdn_frontdoor_origin_group" "front_door_origin_group_web" {
   }
 }
 
-# Shared resources are now managed in environment-stack module
-# This module only handles endpoint-specific configuration
-
 # Conditionally create security policy only if Magic Links are enabled
 resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
   count                    = var.magic_link_waf_policy_id != null ? 1 : 0
