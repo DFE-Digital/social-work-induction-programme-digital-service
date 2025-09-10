@@ -74,7 +74,8 @@ jobs:
           # Mask the token to prevent it from appearing in logs
           echo "::add-mask::$RUNNER_TOKEN"
 
-          echo "::set-output name=token::$RUNNER_TOKEN"
+          # Use environment file instead of deprecated set-output
+          echo "token=$RUNNER_TOKEN" >> $GITHUB_OUTPUT
           echo "Runner token retrieved successfully (masked)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -103,7 +104,6 @@ jobs:
             --assign-identity \
             --scope /subscriptions/${{ secrets.AZ_SUBSCRIPTION_ID }}/resourceGroups/$RESOURCE_GROUP
 
-          echo "::set-output name=runner-name::$RUNNER_NAME"
           echo "runner-name=$RUNNER_NAME" >> $GITHUB_OUTPUT
 
       - name: Wait for runner to be ready
