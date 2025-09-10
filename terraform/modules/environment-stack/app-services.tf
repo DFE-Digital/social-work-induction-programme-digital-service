@@ -291,7 +291,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "sqlfr_services" {
 }
 
 #############################################################################
-# App Service Plan for notification service
+# Dedicated subnet for function apps
 #############################################################################
 
 resource "azurerm_subnet" "sn_function_app" {
@@ -311,6 +311,22 @@ resource "azurerm_subnet" "sn_function_app" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [delegation]
+  }
+}
+
+#############################################################################
+# Dedicated subnet for ACI GitHub Actions runners
+#############################################################################
+
+resource "azurerm_subnet" "sn_aci_runner" {
+  name                              = "${var.resource_name_prefix}-sn-aci-runner"
+  resource_group_name               = azurerm_resource_group.rg_primary.name
+  virtual_network_name              = azurerm_virtual_network.vnet_stack.name
+  address_prefixes                  = ["10.0.7.0/24"]
+  private_endpoint_network_policies = "Disabled"
+
   delegation {
     name = "aci-delegation"
 
@@ -320,10 +336,14 @@ resource "azurerm_subnet" "sn_function_app" {
     }
   }
 
-  # lifecycle {
-  #   ignore_changes = [delegation]
-  # }
+  lifecycle {
+    ignore_changes = [delegation]
+  }
 }
+
+#############################################################################
+# App Service Plan for notification service
+#############################################################################
 
 resource "azurerm_service_plan" "asp_notification_service" {
   name                = "${var.resource_name_prefix}-asp-notification"
@@ -340,6 +360,10 @@ resource "azurerm_service_plan" "asp_notification_service" {
   #checkov:skip=CKV_AZURE_225:Ensure the App Service Plan is zone redundant
   #checkov:skip=CKV_AZURE_212:Ensure App Service has a minimum number of instances for failover
 }
+
+#############################################################################
+# App Service Plan for db operations service
+#############################################################################
 
 resource "azurerm_service_plan" "asp_db_jobs" {
   name                = "${var.resource_name_prefix}-asp-db-jobs"

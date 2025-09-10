@@ -93,7 +93,7 @@ jobs:
             --cpu 1 \
             --memory 2 \
             --vnet s205${{ inputs.instance }}-vnet \
-            --subnet s205${{ inputs.instance }}-sn-funcapp \
+            --subnet s205${{ inputs.instance }}-sn-aci-runner \
             --environment-variables \
               RUNNER_NAME=$RUNNER_NAME \
               RUNNER_TOKEN=${{ steps.token.outputs.token }} \
