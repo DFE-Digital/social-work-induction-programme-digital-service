@@ -53,24 +53,14 @@ jobs:
       - name: Get GitHub Runner Registration Token
         id: token
         run: |
-          # Debug: Check if GITHUB_TOKEN is available
-          if [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
-            echo "ERROR: GITHUB_TOKEN secret is not set"
-            exit 1
-          fi
-
           echo "Getting runner registration token..."
 
-          # Use the built-in GITHUB_TOKEN with better error handling
-          RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/runners/registration-token)
+          RESPONSE=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/actions/runners/registration-token)
 
-          # Debug: Show response (without sensitive data)
-          echo "API Response Status: $?"
-
-          # Extract token using jq
           RUNNER_TOKEN=$(echo "$RESPONSE" | jq -r '.token // empty')
 
           if [ -z "$RUNNER_TOKEN" ] || [ "$RUNNER_TOKEN" = "null" ]; then
@@ -88,6 +78,8 @@ jobs:
           # Use environment file instead of deprecated set-output
           echo "token=$RUNNER_TOKEN" >> $GITHUB_OUTPUT
           echo "✅ Runner token retrieved successfully (masked)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
