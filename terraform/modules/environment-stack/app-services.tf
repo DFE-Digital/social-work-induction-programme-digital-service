@@ -311,6 +311,16 @@ resource "azurerm_subnet" "sn_function_app" {
     }
   }
 
+  # New delegation for ACI containers
+  delegation {
+    name = "aci-delegation"
+
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+    }
+  }
+
   lifecycle {
     ignore_changes = [delegation]
   }
