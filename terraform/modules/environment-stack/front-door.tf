@@ -45,7 +45,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
   name                      = "${var.resource_name_prefix}fdruletokenvalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
-  order                     = 2
+  order                     = 1
   behavior_on_match         = "Continue"
 
   conditions {
@@ -53,6 +53,12 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
       operator         = "Contains"
       match_values     = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
       negate_condition = false
+    }
+    cookies_condition {
+      cookie_name      = "dev_auth"
+      operator         = "Equal"
+      match_values     = [azurerm_key_vault_secret.magic_link_token[0].value]
+      negate_condition = true
     }
   }
 
@@ -79,8 +85,8 @@ resource "azurerm_cdn_frontdoor_rule" "cookie_validation" {
   count                     = var.magic_links_enabled ? 1 : 0
   name                      = "${var.resource_name_prefix}fdrulecookievalidation"
   cdn_frontdoor_rule_set_id = azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id
-  order                     = 1
-  behavior_on_match         = "Stop"
+  order                     = 2
+  behavior_on_match         = "Continue"
 
   conditions {
     cookies_condition {
