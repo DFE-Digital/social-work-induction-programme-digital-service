@@ -37,7 +37,7 @@ resource "azurerm_key_vault_secret" "magic_link_token" {
 # Magic Link Authentication Rules Engine - Shared across all web apps
 resource "azurerm_cdn_frontdoor_rule_set" "magic_link_rules" {
   count                    = var.magic_links_enabled ? 1 : 0
-  name                     = "${var.resource_name_prefix}-fd-rule-set-magic-link"
+  name                     = "${var.resource_name_prefix}fdrulesetmagiclink"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
 }
 
