@@ -111,7 +111,6 @@ module "web_app_moodle" {
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   magic_links_enabled       = module.stack.magic_links_enabled
   magic_link_token_value    = module.stack.magic_link_token_value
-  magic_link_waf_policy_id  = module.stack.magic_link_waf_policy_id
   magic_link_rule_set_id    = module.stack.magic_link_rule_set_id
   subnet_webapps_id         = module.stack.subnet_moodle_id
   acr_id                    = local.acr_id

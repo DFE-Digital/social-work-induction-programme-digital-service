@@ -81,11 +81,7 @@ variable "magic_link_token_value" {
   default     = null
 }
 
-variable "magic_link_waf_policy_id" {
-  description = "ID of shared magic link WAF policy"
-  type        = string
-  default     = null
-}
+
 
 variable "magic_link_rule_set_id" {
   description = "ID of shared magic link rule set"
