@@ -98,9 +98,6 @@ jobs:
             -backend-config="container_name=$TF_STATE_CONTAINER_NAME" \
             -backend-config="key=$TF_STATE_KEY"
 
-          # Select/create workspace
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
-
           # Get Key Vault name from Terraform outputs
           KV_NAME=$(terraform output -raw key_vault_name 2>/dev/null)
           if [ -z "$KV_NAME" ]; then
