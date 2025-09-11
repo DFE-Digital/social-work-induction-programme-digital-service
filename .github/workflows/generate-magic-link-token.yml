@@ -194,6 +194,7 @@ jobs:
           echo "   🔧 Check the final step summary for recovery instructions"
 
       - name: Token Rotation Complete
+        if: always()
         run: |
           set -euo pipefail
 
