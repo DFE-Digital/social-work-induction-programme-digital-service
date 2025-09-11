@@ -334,5 +334,5 @@ variable "db_jobs_app_settings" {
 variable "magic_links_enabled" {
   description = "Whether to enable Magic Links authentication for web apps"
   type        = bool
-  default     = true
+  default     = false
 }

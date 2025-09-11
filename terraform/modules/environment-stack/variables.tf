@@ -172,7 +172,7 @@ variable "frontdoor_sku" {
 variable "magic_links_enabled" {
   description = "Whether to enable Magic Links authentication for web apps"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "key_vault_sku" {
