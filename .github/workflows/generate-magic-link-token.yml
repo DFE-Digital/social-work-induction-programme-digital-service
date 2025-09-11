@@ -122,6 +122,7 @@ jobs:
           echo "TF_STATE_STORAGE_ACCOUNT_NAME=${RESOURCE_NAME_PREFIX}swipsatfstate" >> $GITHUB_ENV
           echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
           echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
+          echo "TF_VAR_FILE=$TF_VAR_FILE" >> $GITHUB_ENV
 
       - name: Terraform Init
         run: |
@@ -145,7 +146,7 @@ jobs:
             -target=module.stack.azurerm_cdn_frontdoor_rule.cookie_validation \
             -target=module.stack.azurerm_cdn_frontdoor_firewall_policy.magic_link_waf \
             -target=module.stack.azurerm_cdn_frontdoor_security_policy.magic_link_security \
-            -var-file=envs/${{ inputs.environment }}/env.tfvars \
+            -var-file=$TF_VAR_FILE \
             -no-color \
             -out=tfplan-magic-link
 
