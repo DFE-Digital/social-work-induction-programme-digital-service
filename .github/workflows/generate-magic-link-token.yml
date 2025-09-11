@@ -1,0 +1,154 @@
+name: Generate Magic Link Token
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to rotate token for"
+        required: true
+        default: "d01"
+        type: choice
+        options:
+          - d01
+          - d02
+          - d03
+      reason:
+        description: "Reason for token rotation"
+        required: false
+        type: string
+        default: "Scheduled rotation"
+  schedule:
+    # Rotate tokens weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+  ARM_USE_OIDC: true
+  ARM_SKIP_PROVIDER_REGISTRATION: true
+
+jobs:
+  generate-token:
+    name: "Generate and Store Magic Link Token"
+    runs-on: ubuntu-latest
+    environment: Dev
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Login to Azure CLI
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment }}
+          add-as-env-vars: true
+
+      - name: Generate Terraform State Variables
+        shell: bash
+        run: |
+          export TF_VAR_FILE=/tmp/merged.tfvars
+          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
+          echo "TF_STATE_AZURE_REGION=$(awk -F'\"' '/azure_region/ {print $2}' $TF_VAR_FILE)" >> $GITHUB_ENV
+          echo "TF_STATE_RESOURCE_GROUP=$RESOURCE_NAME_PREFIX-swip-rg-tfstate" >> $GITHUB_ENV
+          echo "TF_STATE_STORAGE_ACCOUNT_NAME=${RESOURCE_NAME_PREFIX}swipsatfstate" >> $GITHUB_ENV
+          echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
+          echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
+
+      - name: Get Infrastructure Details from Terraform
+        id: infra
+        run: |
+          cd terraform
+
+          echo "🔍 Getting infrastructure details from Terraform..."
+
+          # Initialize Terraform with correct backend config (same as main terraform workflow)
+          terraform init \
+            -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
+            -backend-config="storage_account_name=$TF_STATE_STORAGE_ACCOUNT_NAME" \
+            -backend-config="container_name=$TF_STATE_CONTAINER_NAME" \
+            -backend-config="key=$TF_STATE_KEY"
+
+          # Select/create workspace
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
+
+          # Get Key Vault name from Terraform outputs
+          KV_NAME=$(terraform output -raw key_vault_name 2>/dev/null)
+          if [ -z "$KV_NAME" ]; then
+            echo "❌ Could not get Key Vault name from Terraform outputs"
+            echo "   Make sure the environment is deployed and outputs are available"
+            exit 1
+          fi
+
+          # Check if magic links are enabled
+          MAGIC_LINKS_ENABLED=$(terraform output -raw magic_links_enabled 2>/dev/null)
+          if [ "$MAGIC_LINKS_ENABLED" != "true" ]; then
+            echo "❌ Magic links are disabled for this environment"
+            echo "   Enable magic links in your Terraform configuration first"
+            exit 1
+          fi
+
+          echo "✅ Found Key Vault: ${KV_NAME}"
+
+          echo "kv_name=${KV_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Generate New Token
+        id: generate-token
+        run: |
+          # Generate URL-safe token (32 characters, hex)
+          NEW_TOKEN=$(openssl rand -hex 16)
+          echo "🔐 New magic link token generated successfully"
+          echo "new_token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
+
+          # Store token in environment variable for later use
+          echo "MAGIC_LINK_TOKEN=${NEW_TOKEN}" >> $GITHUB_ENV
+
+      - name: Update Key Vault Secret
+        run: |
+          echo "🔑 Updating Key Vault secret..."
+          echo "   Key Vault: ${{ steps.infra.outputs.kv_name }}"
+          echo "   Secret: MagicLink-Token"
+
+          # Update the secret in Key Vault with error handling
+          if ! az keyvault secret set \
+            --vault-name "${{ steps.infra.outputs.kv_name }}" \
+            --name "MagicLink-Token" \
+            --value "${MAGIC_LINK_TOKEN}" \
+            --output none; then
+            echo "❌ Failed to update Key Vault secret"
+            exit 1
+          fi
+
+          echo "✅ Token successfully updated in Key Vault"
+
+      - name: Token Rotation Complete
+        run: |
+          echo "✅ Magic Link Token Rotation Complete"
+          echo ""
+          echo "📊 Summary:"
+          echo "  • Environment: ${{ inputs.environment }}"
+          echo "  • Token Updated: ✅"
+          echo "  • Key Vault: ✅"
+          echo ""
+          echo "📋 Next Steps:"
+          echo "   1. Retrieve the new token from Key Vault:"
+          echo "      • Key Vault: ${{ steps.infra.outputs.kv_name }}"
+          echo "      • Secret Name: MagicLink-Token"
+          echo "   2. Update the Confluence environment access page:"
+          echo "      📄 https://dfedigital.atlassian.net/wiki/x/CIBSQwE"
+          echo "   3. Find the ${{ inputs.environment }} section and replace the old token in the links"
+          echo ""
+          echo "🔐 Security: Token is stored securely in Key Vault only"
+          echo "📅 Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"

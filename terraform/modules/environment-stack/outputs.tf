@@ -23,6 +23,11 @@ output "kv_vault_uri" {
   value       = azurerm_key_vault.kv.vault_uri
 }
 
+output "kv_name" {
+  description = "Name of the Key Vault"
+  value       = azurerm_key_vault.kv.name
+}
+
 output "db_server_id" {
   description = "The ID of the Postgresql database server"
   value       = azurerm_postgresql_flexible_server.swipdb.id
