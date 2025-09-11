@@ -9,6 +9,39 @@ resource "azurerm_cdn_frontdoor_profile" "front_door_profile_web" {
   }
 }
 
+# Moved blocks to handle resource relocation to magic-links submodule
+moved {
+  from = azurerm_key_vault_secret.magic_link_token
+  to   = module.magic-links[0].azurerm_key_vault_secret.magic_link_token
+}
+
+moved {
+  from = azurerm_cdn_frontdoor_rule_set.magic_link_rules
+  to   = module.magic-links[0].azurerm_cdn_frontdoor_rule_set.magic_link_rules
+}
+
+moved {
+  from = azurerm_cdn_frontdoor_rule.token_validation
+  to   = module.magic-links[0].azurerm_cdn_frontdoor_rule.token_validation
+}
+
+moved {
+  from = azurerm_cdn_frontdoor_rule.cookie_validation
+  to   = module.magic-links[0].azurerm_cdn_frontdoor_rule.cookie_validation
+}
+
+moved {
+  from = azurerm_cdn_frontdoor_firewall_policy.magic_link_waf
+  to   = module.magic-links[0].azurerm_cdn_frontdoor_firewall_policy.magic_link_waf
+}
+
+moved {
+  from = azurerm_cdn_frontdoor_security_policy.magic_link_security
+  to   = module.magic-links[0].azurerm_cdn_frontdoor_security_policy.magic_link_security
+}
+
+
+
 # Magic Links Module - Only created when enabled
 module "magic-links" {
   count  = var.magic_links_enabled ? 1 : 0
