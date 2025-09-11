@@ -21,7 +21,7 @@ ci-install-tools:
 restore:
   #!/bin/bash
   # The Moodle image build process requires these additional files to be sourced from the repo
-  PHP_CONFIG_FILE="../moodle-docker/config.php"
+  PHP_CONFIG_FILE="config.php"
   WEB_SERVICE_SETUP_FILE="../../scripts/setup_moodle_webservice.php"
   MOODLE_SCRIPTS_DIR="../moodle-ddev/.ddev/commands/web"
   DESTINATION_DIR="./"
