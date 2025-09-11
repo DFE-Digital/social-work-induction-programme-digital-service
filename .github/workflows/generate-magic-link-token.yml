@@ -20,7 +20,6 @@ on:
         type: string
         default: "Manual rotation"
   # schedule:
-  #   # Rotate tokens weekly on Mondays at 9 AM UTC
   #   - cron: '0 9 * * 1'
 
 permissions:
@@ -52,15 +51,14 @@ jobs:
 
       - name: Setup Infrastructure Details
         run: |
+          set -euo pipefail
           export TF_VAR_FILE=/tmp/merged.tfvars
           export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
 
-          # Construct Key Vault name directly from resource prefix
           KV_NAME="${RESOURCE_NAME_PREFIX}-kv-primary"
           echo "✅ Constructed Key Vault name: ${KV_NAME}"
           echo "kv_name=${KV_NAME}" >> $GITHUB_ENV
 
-          # Check magic_links_enabled from the actual configuration
           MAGIC_LINKS_ENABLED=$(awk -F'"' '/magic_links_enabled/ {print $2}' $TF_VAR_FILE 2>/dev/null || echo "false")
           if [ "$MAGIC_LINKS_ENABLED" != "true" ]; then
             echo "⚠️  Magic links are disabled in ${{ inputs.environment }}/env.tfvars"
@@ -73,43 +71,51 @@ jobs:
       - name: Generate New Token
         id: generate-token
         run: |
-          # Generate URL-safe token (32 characters, hex)
+          set -euo pipefail
           NEW_TOKEN=$(openssl rand -hex 16)
-          echo "🔐 New magic link token generated successfully"
 
           # Mask the token in log
           echo "::add-mask::${NEW_TOKEN}"
 
-          # Store token securely in step output (not environment variable)
+          echo "🔐 New magic link token generated successfully"
           echo "token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Update Key Vault Secret
+        id: update-secret
         run: |
+          set -euo pipefail
           echo "🔑 Updating Key Vault secret..."
           echo "   Key Vault: ${kv_name}"
           echo "   Secret: MagicLink-Token"
 
-          # Update the secret in Key Vault with error handling
-          if ! az keyvault secret set \
+          SECRET_INFO=$(az keyvault secret set \
             --vault-name "${kv_name}" \
             --name "MagicLink-Token" \
             --value "${{ steps.generate-token.outputs.token }}" \
             --content-type "alphanumeric token string" \
-            --output none; then
+            --only-show-errors \
+            -o json)
+
+          if [ -z "$SECRET_INFO" ]; then
             echo "❌ Failed to update Key Vault secret"
             exit 1
           fi
+
+          SECRET_VERSION=$(echo "$SECRET_INFO" | jq -r .id | awk -F'/' '{print $NF}')
+          echo "secret_version=${SECRET_VERSION}" >> $GITHUB_OUTPUT
 
           echo "✅ Token successfully updated in Key Vault"
 
       - name: Token Rotation Complete
         run: |
+          set -euo pipefail
           echo "✅ Magic Link Token Rotation Complete"
           echo ""
           echo "📊 Summary:"
           echo "  • Environment: ${{ inputs.environment }}"
           echo "  • Token Updated: ✅"
-          echo "  • Key Vault: ✅"
+          echo "  • Key Vault: ${kv_name}"
+          echo "  • Secret Version: ${{ steps.update-secret.outputs.secret_version }}"
           echo ""
           echo "📋 Next Steps:"
           echo "   1. Retrieve the new token from Key Vault:"
