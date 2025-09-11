@@ -131,6 +131,20 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
       match_values   = [azurerm_key_vault_secret.magic_link_token[0].value]
     }
   }
+
+  # TODO: Re-enable once it's confirmed the above rules are working
+  # custom_rule {
+  #   name     = "BlockUnauthorized"
+  #   priority = 100
+  #   type     = "MatchRule"
+  #   action   = "Block"
+
+  #   match_condition {
+  #     match_variable = "RemoteAddr"
+  #     operator       = "IPMatch"
+  #     match_values   = ["0.0.0.0/0"]
+  #   }
+  # }
 }
 
 # Data sources to reference Front Door endpoints created by web-app modules
