@@ -32,10 +32,10 @@ ci-build:
 test:
   @cd {{solution-root}} && dotnet test
 
-ci-test:
+ci-test-temp1:
   @true
 
-ci-test-temp:
+ci-test:
   pwd
   echo {{solution-root}}
   @cd {{solution-root}}/../notification-service-test && dotnet test
