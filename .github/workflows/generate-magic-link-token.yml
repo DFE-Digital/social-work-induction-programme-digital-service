@@ -184,7 +184,7 @@ jobs:
           echo "✅ Front Door rules updated successfully"
           echo "terraform_success=true" >> $GITHUB_OUTPUT
 
-      - name: Terraform Operation Failed
+      - name: Check if Terraform failed
         if: failure() && (steps.terraform-init.outcome == 'failure' || steps.terraform-plan.outcome == 'failure' || steps.terraform-apply.outcome == 'failure')
         run: |
           echo "❌ Terraform operation failed - see step summary for recovery details"
