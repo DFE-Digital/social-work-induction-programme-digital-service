@@ -113,12 +113,14 @@ jobs:
           echo "✅ Token successfully updated in Key Vault"
 
       - name: Setup Terraform
+        id: terraform-setup
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_version: 1.11.3
           terraform_wrapper: false
 
       - name: Generate Terraform State Variables
+        id: terraform-state-vars
         run: |
           set -euo pipefail
           export TF_VAR_FILE=/tmp/merged.tfvars
@@ -185,7 +187,14 @@ jobs:
           echo "terraform_success=true" >> $GITHUB_OUTPUT
 
       - name: Handle Terraform Failure
-        if: failure() && (steps.terraform-init.outcome == 'failure' || steps.terraform-plan.outcome == 'failure' || steps.terraform-apply.outcome == 'failure')
+        if: >
+          failure() && (
+            steps.terraform-setup.outcome == 'failure' ||
+            steps.terraform-state-vars.outcome == 'failure' ||
+            steps.terraform-init.outcome == 'failure' ||
+            steps.terraform-plan.outcome == 'failure' ||
+            steps.terraform-apply.outcome == 'failure'
+          )
         run: |
           cat << EOF >> $GITHUB_STEP_SUMMARY
           ## ❌ Terraform Operation Failed
@@ -203,7 +212,6 @@ jobs:
 
           ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
           EOF
-          exit 1
 
       - name: Workflow summary
         if: success()
