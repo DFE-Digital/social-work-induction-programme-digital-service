@@ -65,18 +65,18 @@ output "magic_links_enabled" {
 
 output "magic_link_token_value" {
   description = "Shared magic link token value"
-  value       = var.magic_links_enabled ? module.magic-links[0].azurerm_key_vault_secret.magic_link_token[0].value : null
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_token_value : null
   sensitive   = true
 }
 
 output "magic_link_waf_policy_id" {
   description = "ID of the shared magic link WAF policy"
-  value       = var.magic_links_enabled ? module.magic-links[0].azurerm_cdn_frontdoor_firewall_policy.magic_link_waf[0].id : null
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_waf_policy_id : null
 }
 
 output "magic_link_rule_set_id" {
   description = "ID of the shared magic link rule set"
-  value       = var.magic_links_enabled ? module.magic-links[0].azurerm_cdn_frontdoor_rule_set.magic_link_rules[0].id : null
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_rule_set_id : null
 }
 
 output "subnet_moodle_id" {
