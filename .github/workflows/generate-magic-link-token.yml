@@ -74,6 +74,16 @@ jobs:
           echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
           echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
 
+          # Check magic_links_enabled from the actual configuration
+          MAGIC_LINKS_ENABLED=$(awk -F'"' '/magic_links_enabled/ {print $2}' $TF_VAR_FILE 2>/dev/null || echo "false")
+          if [ "$MAGIC_LINKS_ENABLED" != "true" ]; then
+            echo "⚠️  Magic links are disabled in ${{ inputs.environment }}/env.tfvars"
+            echo "   The workflow will continue but magic links won't work in this environment"
+            echo "   To enable: set magic_links_enabled = true in your env.tfvars file"
+          else
+            echo "✅ Magic links are enabled for this environment"
+          fi
+
       - name: Get Infrastructure Details from Terraform
         id: infra
         run: |
@@ -96,14 +106,6 @@ jobs:
           if [ -z "$KV_NAME" ]; then
             echo "❌ Could not get Key Vault name from Terraform outputs"
             echo "   Make sure the environment is deployed and outputs are available"
-            exit 1
-          fi
-
-          # Check if magic links are enabled
-          MAGIC_LINKS_ENABLED=$(terraform output -raw magic_links_enabled 2>/dev/null)
-          if [ "$MAGIC_LINKS_ENABLED" != "true" ]; then
-            echo "❌ Magic links are disabled for this environment"
-            echo "   Enable magic links in your Terraform configuration first"
             exit 1
           fi
 
