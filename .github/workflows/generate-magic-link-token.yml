@@ -83,10 +83,9 @@ jobs:
           # Generate URL-safe token (32 characters, hex)
           NEW_TOKEN=$(openssl rand -hex 16)
           echo "🔐 New magic link token generated successfully"
-          echo "new_token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
 
-          # Store token in environment variable for later use
-          echo "MAGIC_LINK_TOKEN=${NEW_TOKEN}" >> $GITHUB_ENV
+          # Store token securely in step output (not environment variable)
+          echo "token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Update Key Vault Secret
         run: |
@@ -98,7 +97,7 @@ jobs:
           if ! az keyvault secret set \
             --vault-name "${kv_name}" \
             --name "MagicLink-Token" \
-            --value "${MAGIC_LINK_TOKEN}" \
+            --value "${{ steps.generate-token.outputs.token }}" \
             --output none; then
             echo "❌ Failed to update Key Vault secret"
             exit 1
