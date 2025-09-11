@@ -1,5 +1,7 @@
 name: Generate Magic Link Token
 
+run-name: "Generate Magic Link Token - ${{ inputs.environment }} (${{ inputs.reason || 'Scheduled' }})"
+
 on:
   workflow_dispatch:
     inputs:
