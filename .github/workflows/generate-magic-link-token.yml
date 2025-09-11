@@ -109,21 +109,25 @@ jobs:
       - name: Token Rotation Complete
         run: |
           set -euo pipefail
-          echo "✅ Magic Link Token Rotation Complete"
-          echo ""
-          echo "📊 Summary:"
-          echo "  • Environment: ${{ inputs.environment }}"
-          echo "  • Token Updated: ✅"
-          echo "  • Key Vault: ${kv_name}"
-          echo "  • Secret Version: ${{ steps.update-secret.outputs.secret_version }}"
-          echo ""
-          echo "📋 Next Steps:"
-          echo "   1. Retrieve the new token from Key Vault:"
-          echo "      • Key Vault: ${kv_name}"
-          echo "      • Secret Name: MagicLink-Token"
-          echo "   2. Update the Confluence environment access page:"
-          echo "      📄 https://dfedigital.atlassian.net/wiki/x/CIBSQwE"
-          echo "   3. Find the ${{ inputs.environment }} section and replace the old token in the links"
-          echo ""
-          echo "🔐 Security: Token is stored securely in Key Vault only"
-          echo "📅 Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+          ## ✅ Magic Link Token Rotation Complete
+
+          ### 📊 Summary
+          - Environment: ${{ inputs.environment }}
+          - Token Updated: ✅
+          - Key Vault: ${kv_name}
+          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}
+
+          ### 📋 Next Steps
+          1. Retrieve the new token from Key Vault:
+             - Key Vault: ${kv_name}
+             - Secret Name: MagicLink-Token
+          2. Update the Confluence environment access page:
+             - [Confluence Page](https://dfedigital.atlassian.net/wiki/x/CIBSQwE)
+          3. Find the **${{ inputs.environment }}** section and replace the old token in the links
+
+          ### 🔐 Security
+          - Token is stored securely in Key Vault only
+          - Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          EOF
+
