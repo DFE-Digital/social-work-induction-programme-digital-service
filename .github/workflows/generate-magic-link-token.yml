@@ -153,7 +153,6 @@ jobs:
           # Use dummy values for unused variables since we're only targeting magic link resources
           # These variables are required by Terraform validation but not used by our targeted resources
           terraform plan \
-            --invalid-option-to-test-workflow-failure \ 
             -target=module.stack.azurerm_key_vault_secret.magic_link_token \
             -target=module.stack.azurerm_cdn_frontdoor_rule.token_validation \
             -target=module.stack.azurerm_cdn_frontdoor_rule.cookie_validation \
