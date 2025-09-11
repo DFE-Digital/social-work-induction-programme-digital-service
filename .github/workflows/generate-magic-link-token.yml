@@ -106,6 +106,61 @@ jobs:
 
           echo "✅ Token successfully updated in Key Vault"
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.11.3
+          terraform_wrapper: false
+
+      - name: Generate Terraform State Variables
+        run: |
+          set -euo pipefail
+          export TF_VAR_FILE=/tmp/merged.tfvars
+          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
+          echo "TF_STATE_AZURE_REGION=$(awk -F'\"' '/azure_region/ {print $2}' $TF_VAR_FILE)" >> $GITHUB_ENV
+          echo "TF_STATE_RESOURCE_GROUP=$RESOURCE_NAME_PREFIX-swip-rg-tfstate" >> $GITHUB_ENV
+          echo "TF_STATE_STORAGE_ACCOUNT_NAME=${RESOURCE_NAME_PREFIX}swipsatfstate" >> $GITHUB_ENV
+          echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
+          echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        run: |
+          set -euo pipefail
+          cd terraform
+          terraform init \
+            -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
+            -backend-config="storage_account_name=$TF_STATE_STORAGE_ACCOUNT_NAME" \
+            -backend-config="container_name=$TF_STATE_CONTAINER_NAME" \
+            -backend-config="key=$TF_STATE_KEY"
+
+      - name: Plan Front Door Updates
+        run: |
+          set -euo pipefail
+          cd terraform
+          echo "📋 Planning Front Door rule updates..."
+
+          terraform plan \
+            -target=module.stack.azurerm_key_vault_secret.magic_link_token \
+            -target=module.stack.azurerm_cdn_frontdoor_rule.token_validation \
+            -target=module.stack.azurerm_cdn_frontdoor_rule.cookie_validation \
+            -target=module.stack.azurerm_cdn_frontdoor_firewall_policy.magic_link_waf \
+            -target=module.stack.azurerm_cdn_frontdoor_security_policy.magic_link_security \
+            -var-file=envs/${{ inputs.environment }}/env.tfvars \
+            -no-color \
+            -out=tfplan-magic-link
+
+          echo "✅ Plan generated successfully"
+
+      - name: Update Front Door Rules
+        run: |
+          set -euo pipefail
+          cd terraform
+          echo "🔄 Applying Front Door rule updates..."
+
+          terraform apply -auto-approve tfplan-magic-link
+
+          echo "✅ Front Door rules updated successfully"
+
       - name: Token Rotation Complete
         run: |
           set -euo pipefail
@@ -114,8 +169,9 @@ jobs:
 
           ### 📊 Summary
           - Environment: ${{ inputs.environment }}
-          - Token Updated: ✅
-          - Key Vault: ${kv_name}
+          - Token Generated: ✅
+          - Key Vault Updated: ✅
+          - Front Door Rules Updated: ✅
           - Secret Version: ${{ steps.update-secret.outputs.secret_version }}
 
           ### 📋 Next Steps
@@ -130,4 +186,3 @@ jobs:
           - Token is stored securely in Key Vault only
           - Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
           EOF
-
