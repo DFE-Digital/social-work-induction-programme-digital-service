@@ -53,7 +53,6 @@ restore:
   fi
 
   echo "Copying additional files for Docker Moodle image build..."
-  cp "$PHP_CONFIG_FILE" "$DESTINATION_DIR"
   cp "$WEB_SERVICE_SETUP_FILE" "$DESTINATION_DIR"
   cp "$MOODLE_SCRIPTS_DIR"/* "$DESTINATION_DIR"
 
