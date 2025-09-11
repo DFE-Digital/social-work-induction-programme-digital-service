@@ -70,7 +70,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
     response_header_action {
       header_action = "Overwrite"
       header_name   = "Set-Cookie"
-      value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Strict"
+      value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Strict; Path=/"
     }
 
     url_redirect_action {
@@ -176,15 +176,6 @@ data "azurerm_cdn_frontdoor_endpoint" "moodle_endpoints" {
   depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
 }
 
-data "azurerm_cdn_frontdoor_endpoint" "auth_service_endpoint" {
-  count               = var.magic_links_enabled ? 1 : 0
-  name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-auth-service"
-  profile_name        = azurerm_cdn_frontdoor_profile.front_door_profile_web.name
-  resource_group_name = azurerm_resource_group.rg_primary.name
-
-  depends_on = [azurerm_cdn_frontdoor_profile.front_door_profile_web]
-}
-
 data "azurerm_cdn_frontdoor_endpoint" "user_management_endpoint" {
   count               = var.magic_links_enabled ? 1 : 0
   name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-user-management"
@@ -207,7 +198,6 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
         dynamic "domain" {
           for_each = concat(
             [for endpoint in data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints : endpoint.id],
-            [for endpoint in data.azurerm_cdn_frontdoor_endpoint.auth_service_endpoint : endpoint.id],
             [for endpoint in data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint : endpoint.id],
           )
           content {
@@ -222,7 +212,6 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
   depends_on = [
     azurerm_cdn_frontdoor_firewall_policy.magic_link_waf,
     data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints,
-    data.azurerm_cdn_frontdoor_endpoint.auth_service_endpoint,
     data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint,
   ]
 }
