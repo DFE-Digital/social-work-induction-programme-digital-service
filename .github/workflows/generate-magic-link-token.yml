@@ -34,7 +34,7 @@ env:
 
 jobs:
   generate-token:
-    name: "Generate and Store Magic Link Token"
+    name: "Rotate Magic Link Token and update Front Door rules"
     runs-on: ubuntu-latest
     environment: Dev
 
@@ -184,68 +184,39 @@ jobs:
           echo "✅ Front Door rules updated successfully"
           echo "terraform_success=true" >> $GITHUB_OUTPUT
 
-      - name: Check if Terraform failed
+      - name: Handle Terraform Failure
         if: failure() && (steps.terraform-init.outcome == 'failure' || steps.terraform-plan.outcome == 'failure' || steps.terraform-apply.outcome == 'failure')
         run: |
-          echo "❌ Terraform operation failed - see step summary for recovery details"
-          echo "📋 Key details:"
-          echo "   ✅ Token saved to Key Vault: ${kv_name} > MagicLink-Token"
-          echo "   ❌ Front Door rules NOT updated"
-          echo "   🔧 Check the final step summary for recovery instructions"
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## ❌ Terraform Operation Failed
+
+          A Terraform operation failed during the workflow execution. This means:
+          - ✅ Token is safely stored in Key Vault: ${kv_name} > MagicLink-Token
+          - ❌ Front Door rules were NOT updated to use the new token
+          - 🔧 Magic links may not work correctly until rules are updated
+
+          ### Recovery Options:
+          1. **Review error messages** above for specific failure details
+          2. **Fix the Terraform issue** (configuration, permissions, etc.)
+          3. **Re-run this workflow** after resolving the problem
+          4. **Manual update** (if needed): Azure Portal → Front Door → WAF Policy
+
+          ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
+          EOF
           exit 1
 
       - name: Workflow summary
-        if: always()
+        if: success()
         run: |
-          set -euo pipefail
-
-          # Determine workflow status and build summary message
-          if [ "${{ steps.terraform-init.outcome }}" = "success" ] && \
-             [ "${{ steps.terraform-plan.outcome }}" = "success" ] && \
-             [ "${{ steps.terraform-apply.outcome }}" = "success" ]; then
-            STATUS_ICON="✅"
-            STATUS_TITLE="Magic Link Token Rotation Complete"
-            FRONT_DOOR_STATUS="✅"
-            CRITICAL_SECTION=""
-            RECOVERY_SECTION=""
-            WARNING_SECTION=""
-          else
-            STATUS_ICON="⚠️"
-            STATUS_TITLE="Magic Link Token Rotation Incomplete"
-            FRONT_DOOR_STATUS="❌ FAILED"
-            CRITICAL_SECTION="
-          ### 🚨 CRITICAL ISSUE
-          The new token has been generated and stored in Key Vault, but the Front Door rules
-          were NOT updated. This means magic links may not work correctly until the rules
-          are updated to use the new token.
-
-          ### 🔧 IMMEDIATE ACTION REQUIRED
-          1. Review the Terraform error messages above
-          2. Fix any configuration issues
-          3. Re-run the workflow or manually update Front Door rules
-          4. Test magic links in the environment
-
-          ### 📋 RECOVERY STEPS
-          - New token is available in Key Vault: ${kv_name} > MagicLink-Token
-          - Update Front Door WAF policy rules to reference the new token
-          - Verify magic link functionality after updates"
-            WARNING_SECTION="
-          ### ⚠️ IMPORTANT WARNING
-          Manual changes in Azure Portal will cause Terraform state to become
-          unsynchronized. Future Terraform operations may fail or overwrite
-          your manual changes. Consider re-running this workflow instead!"
-          fi
-
-          # Generate unified summary with summary content
           cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
-          ## ${STATUS_ICON} ${STATUS_TITLE}
+          ## ✅ Magic Link Token Rotation Complete
 
           ### 📊 Summary
           - Environment: ${{ inputs.environment }}
           - Token Generated: ✅
           - Key Vault Updated: ✅
-          - Front Door Rules Updated: ${FRONT_DOOR_STATUS}
-          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}${CRITICAL_SECTION}${RECOVERY_SECTION}${WARNING_SECTION}
+          - Front Door Rules Updated: ✅
+          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}
 
           ### 📋 Next Steps
           1. Retrieve the new token from Key Vault:
