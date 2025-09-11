@@ -1,6 +1,6 @@
 name: Generate Magic Link Token
 
-run-name: "Generate Magic Link Token - ${{ inputs.environment }} (${{ inputs.reason || 'Scheduled' }})"
+run-name: "Generate Magic Link Token - ${{ inputs.environment }} (${{ inputs.reason }})"
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ on:
         description: "Reason for token rotation"
         required: false
         type: string
-        default: "Scheduled rotation"
+        default: "Manual rotation"
   # schedule:
   #   # Rotate tokens weekly on Mondays at 9 AM UTC
   #   - cron: '0 9 * * 1'
