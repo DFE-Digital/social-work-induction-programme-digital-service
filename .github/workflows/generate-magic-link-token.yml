@@ -131,6 +131,7 @@ jobs:
           echo "TF_VAR_FILE=$TF_VAR_FILE" >> $GITHUB_ENV
 
       - name: Terraform Init
+        id: terraform-init
         run: |
           set -euo pipefail
           cd terraform
@@ -141,6 +142,7 @@ jobs:
             -backend-config="key=$TF_STATE_KEY"
 
       - name: Plan Front Door Updates
+        id: terraform-plan
         run: |
           set -euo pipefail
           cd terraform
@@ -170,6 +172,7 @@ jobs:
           echo "✅ Plan generated successfully"
 
       - name: Update Front Door Rules
+        id: terraform-apply
         run: |
           set -euo pipefail
           cd terraform
@@ -178,19 +181,68 @@ jobs:
           terraform apply -auto-approve tfplan-magic-link
 
           echo "✅ Front Door rules updated successfully"
+          echo "terraform_success=true" >> $GITHUB_OUTPUT
+
+      - name: Terraform Operation Failed
+        if: failure() && (steps.terraform-init.outcome == 'failure' || steps.terraform-plan.outcome == 'failure' || steps.terraform-apply.outcome == 'failure')
+        run: |
+          echo "❌ Terraform operation failed - see step summary for recovery details"
+          echo "📋 Key details:"
+          echo "   ✅ Token saved to Key Vault: ${kv_name} > MagicLink-Token"
+          echo "   ❌ Front Door rules NOT updated"
+          echo "   🔧 Check the final step summary for recovery instructions"
 
       - name: Token Rotation Complete
         run: |
           set -euo pipefail
+
+          # Determine workflow status and build summary message
+          if [ "${{ steps.terraform-init.outcome }}" = "success" ] && \
+             [ "${{ steps.terraform-plan.outcome }}" = "success" ] && \
+             [ "${{ steps.terraform-apply.outcome }}" = "success" ]; then
+            STATUS_ICON="✅"
+            STATUS_TITLE="Magic Link Token Rotation Complete"
+            FRONT_DOOR_STATUS="✅"
+            CRITICAL_SECTION=""
+            RECOVERY_SECTION=""
+            WARNING_SECTION=""
+          else
+            STATUS_ICON="⚠️"
+            STATUS_TITLE="Magic Link Token Rotation Incomplete"
+            FRONT_DOOR_STATUS="❌ FAILED"
+            CRITICAL_SECTION="
+          ### 🚨 CRITICAL ISSUE
+          The new token has been generated and stored in Key Vault, but the Front Door rules
+          were NOT updated. This means magic links may not work correctly until the rules
+          are updated to use the new token.
+
+          ### 🔧 IMMEDIATE ACTION REQUIRED
+          1. Review the Terraform error messages above
+          2. Fix any configuration issues
+          3. Re-run the workflow or manually update Front Door rules
+          4. Test magic links in the environment
+
+          ### 📋 RECOVERY STEPS
+          - New token is available in Key Vault: ${kv_name} > MagicLink-Token
+          - Update Front Door WAF policy rules to reference the new token
+          - Verify magic link functionality after updates"
+            WARNING_SECTION="
+          ### ⚠️ IMPORTANT WARNING
+          Manual changes in Azure Portal will cause Terraform state to become
+          unsynchronized. Future Terraform operations may fail or overwrite
+          your manual changes. Consider re-running this workflow instead!"
+          fi
+
+          # Generate unified summary with summary content
           cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
-          ## ✅ Magic Link Token Rotation Complete
+          ## ${STATUS_ICON} ${STATUS_TITLE}
 
           ### 📊 Summary
           - Environment: ${{ inputs.environment }}
           - Token Generated: ✅
           - Key Vault Updated: ✅
-          - Front Door Rules Updated: ✅
-          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}
+          - Front Door Rules Updated: ${FRONT_DOOR_STATUS}
+          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}${CRITICAL_SECTION}${RECOVERY_SECTION}${WARNING_SECTION}
 
           ### 📋 Next Steps
           1. Retrieve the new token from Key Vault:
