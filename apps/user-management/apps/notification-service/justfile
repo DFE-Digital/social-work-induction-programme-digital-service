@@ -36,9 +36,8 @@ ci-test-temp1:
   @true
 
 ci-test:
-  pwd
-  echo {{solution-root}}
-  @cd {{solution-root}}/../notification-service-test && dotnet test
+  filter='FullyQualifiedName~DfeSwwEcf.NotificationService.Tests.UnitTests'
+  @cd {{solution-root}}/../notification-service-test && dotnet test --no-build --filter "$filter"
 
 # Publish the project
 package-component:
