@@ -84,6 +84,9 @@ jobs:
           NEW_TOKEN=$(openssl rand -hex 16)
           echo "🔐 New magic link token generated successfully"
 
+          # Mask the token in log
+          echo "::add-mask::${NEW_TOKEN}"
+
           # Store token securely in step output (not environment variable)
           echo "token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
 
