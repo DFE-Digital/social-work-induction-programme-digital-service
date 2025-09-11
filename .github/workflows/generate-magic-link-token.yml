@@ -50,7 +50,7 @@ jobs:
           client-id: ${{ secrets.AZ_CLIENT_ID }}
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
           subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
@@ -99,16 +99,27 @@ jobs:
             -backend-config="key=$TF_STATE_KEY"
 
           # Get Key Vault name from Terraform outputs
-          KV_NAME=$(terraform output -raw key_vault_name 2>/dev/null)
-          if [ -z "$KV_NAME" ]; then
+          if KV_NAME=$(terraform output -raw key_vault_name 2>/dev/null); then
+            if [ -n "$KV_NAME" ] && [ "$KV_NAME" != "null" ]; then
+              echo "✅ Found Key Vault: ${KV_NAME}"
+              echo "kv_name=${KV_NAME}" >> $GITHUB_OUTPUT
+            else
+              echo "❌ Key Vault name output is empty"
+              echo "   This might mean the environment hasn't been deployed yet"
+              exit 1
+            fi
+          else
             echo "❌ Could not get Key Vault name from Terraform outputs"
-            echo "   Make sure the environment is deployed and outputs are available"
+            echo "   This usually means:"
+            echo "   1. The environment hasn't been deployed yet"
+            echo "   2. The terraform state doesn't exist"
+            echo "   3. The outputs aren't defined in the configuration"
+            echo ""
+            echo "   To fix this:"
+            echo "   1. Deploy the environment first using the main terraform workflow"
+            echo "   2. Or check that your terraform configuration has the required outputs"
             exit 1
           fi
-
-          echo "✅ Found Key Vault: ${KV_NAME}"
-
-          echo "kv_name=${KV_NAME}" >> $GITHUB_OUTPUT
 
       - name: Generate New Token
         id: generate-token
