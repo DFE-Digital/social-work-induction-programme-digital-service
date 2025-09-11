@@ -27,13 +27,6 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  ARM_USE_OIDC: true
-  ARM_SKIP_PROVIDER_REGISTRATION: true
-
 jobs:
   generate-token:
     name: "Generate and Store Magic Link Token"
@@ -45,7 +38,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Login to Azure CLI
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3
         with:
           client-id: ${{ secrets.AZ_CLIENT_ID }}
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
