@@ -101,6 +101,7 @@ jobs:
             --vault-name "${kv_name}" \
             --name "MagicLink-Token" \
             --value "${{ steps.generate-token.outputs.token }}" \
+            --content-type "alphanumeric token string" \
             --output none; then
             echo "❌ Failed to update Key Vault secret"
             exit 1
