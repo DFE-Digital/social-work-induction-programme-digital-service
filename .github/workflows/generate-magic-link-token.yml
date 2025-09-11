@@ -140,6 +140,8 @@ jobs:
           cd terraform
           echo "📋 Planning Front Door rule updates..."
 
+          # Use dummy values for unused variables since we're only targeting magic link resources
+          # These variables are required by Terraform validation but not used by our targeted resources
           terraform plan \
             -target=module.stack.azurerm_key_vault_secret.magic_link_token \
             -target=module.stack.azurerm_cdn_frontdoor_rule.token_validation \
@@ -147,15 +149,15 @@ jobs:
             -target=module.stack.azurerm_cdn_frontdoor_firewall_policy.magic_link_waf \
             -target=module.stack.azurerm_cdn_frontdoor_security_policy.magic_link_security \
             -var-file=$TF_VAR_FILE \
-            -var='moodle_admin_password=${{ secrets.MOODLE_ADMIN_PASSWORD }}' \
-            -var='moodle_admin_email=${{ vars.MOODLE_ADMIN_EMAIL }}' \
-            -var='moodle_admin_user=${{ vars.MOODLE_ADMIN_USER }}' \
-            -var='auth_service_client_id=${{ vars.AUTH_SERVICE_CLIENT_ID }}' \
-            -var='moodle_web_service_name=${{ vars.MOODLE_WEB_SERVICE_NAME }}' \
-            -var='moodle_web_service_user=${{ vars.MOODLE_WEB_SERVICE_USER }}' \
-            -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
-            -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
-            -var='govnotify_api_key=${{secrets.GOVNOTIFY_API_KEY}}' \
+            -var='moodle_admin_password=dummy' \
+            -var='moodle_admin_email=dummy@example.com' \
+            -var='moodle_admin_user=dummy' \
+            -var='auth_service_client_id=dummy' \
+            -var='moodle_web_service_name=dummy' \
+            -var='moodle_web_service_user=dummy' \
+            -var='moodle_web_service_user_email=dummy@example.com' \
+            -var='email_support_address=dummy@example.com' \
+            -var='govnotify_api_key=dummy' \
             -no-color \
             -out=tfplan-magic-link
 
