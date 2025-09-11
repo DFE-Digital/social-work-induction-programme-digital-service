@@ -25,8 +25,7 @@ on:
 
 permissions:
   id-token: write
-  contents: write
-  issues: write
+  contents: read
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
