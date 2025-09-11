@@ -56,7 +56,6 @@ Should be deployed first in a new environment!
   - Start the SSH service for Kudu assisted troubleshooting / deployment
   - Environment variable `IS_CRON_JOB_ONLY` is set `false` indicating the container will serve the main Moodle website (rather than executing the periodic Moodle cron job)
   - Saves a copy of the non-sensitive environment variables locally, so these can be reused by the Moodle SSH deployment process
-  - Checks if basic auth is enabled, if so creates Apache basic auth config
   - If the attached Azure Files share is populated with files, copies them over to the local `/var/wwww/moodledata` directory to ensure config / file persistence
   - If the attached Azure Files share is empty, it syncs from the local `/var/wwww/moodledata_ref` folder to the file share. This ensures that the share is initialised correctly in the first instance.
   - If environment variable `MOODLE_PERSISTED_FILE_SYNC` is set `true`, start a periodic background sync of files from `/var/wwww/moodledata` to the Azure Files share.

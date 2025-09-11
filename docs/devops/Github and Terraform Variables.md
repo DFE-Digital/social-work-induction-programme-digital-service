@@ -52,7 +52,6 @@ These can either be declared globally in https://github.com/DFE-Digital/social-w
 | environment | Environment type - development, test, production. Not currently used. Was used previously to determine certain app settings based on development / test, but this isn't a good pattern. |
 | resource_name_prefix | String to prefix resources with in Azure. Makes it easy to link resources to environments |
 | primary_resource_group | Resource group to add environment resources to |
-| environment_audience | team or user - these environments audiences have different basic auth passwords |
 | acr_name | Name of Azure container registry to use for app service / function images. Environments in different subscriptions can share container registries - e.g. dev / test |
 | acr_resource_group  | Resource group which Azure container registry resides in |
 | acr_sku | Azure SKU for container registry |

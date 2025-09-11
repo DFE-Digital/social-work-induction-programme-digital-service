@@ -230,20 +230,6 @@ variable "asp_sku_notification" {
   type        = string
 }
 
-variable "environment_audience" {
-  type        = string
-  description = "The type of environment. Must be one of: team, user."
-
-  validation {
-    condition = contains(
-      ["team", "user"],
-      var.environment_audience
-    )
-
-    error_message = "The specified environment_audience is not valid. Allowed values are: team, user."
-  }
-}
-
 variable "moodle_max_data_storage_size_in_gb" {
   type        = number
   description = "The provisioned size (quota) in GiB for the Moodle data file share. This directly impacts performance and cost for Premium shares."

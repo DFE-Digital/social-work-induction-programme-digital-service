@@ -6,7 +6,6 @@ azure_region           = "westeurope"
 environment            = "development"
 resource_name_prefix   = "${project_code}d03"
 primary_resource_group = "${project_code}d03-swip-rg"
-environment_audience   = "user"
 acr_name               = "${project_code}d01acr"
 # The container registry is shared from the d01 instance
 acr_resource_group                 = "${project_code}d01-swip-rg"
