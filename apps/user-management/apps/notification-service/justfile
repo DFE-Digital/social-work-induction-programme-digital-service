@@ -36,9 +36,12 @@ ci-test-temp1:
   @true
 
 ci-test:
-  @cd {{solution-root}}/../notification-service-test \
-    && dotnet test --no-build --filter "FullyQualifiedName~DfeSwwEcf.NotificationService.Tests.UnitTests"
-
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cd "{{solution-root}}/../notification-service-test"
+  filter='FullyQualifiedName~DfeSwwEcf.NotificationService.Tests.UnitTests'
+  dotnet test --no-build --filter "$filter"
+  
 # Publish the project
 package-component:
   @dotnet publish {{solution-root}} -c Release --no-restore
