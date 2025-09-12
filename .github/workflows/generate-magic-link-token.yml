@@ -1,6 +1,6 @@
 name: Generate Magic Link Token
 
-run-name: "Generate Magic Link Token - ${{ inputs.environment }} (${{ inputs.reason }})"
+run-name: "Magic Link Operation - ${{ inputs.environment }}${{ inputs.skip_token_generation && ' - no token rotation'}} (${{ inputs.reason }})"
 
 on:
   workflow_dispatch:
@@ -19,6 +19,11 @@ on:
         required: false
         type: string
         default: "Manual rotation"
+      skip_token_generation:
+        description: "Skip token generation and only run Terraform"
+        required: false
+        type: boolean
+        default: false
   # schedule:
   #   - cron: '0 9 * * 1'
 
@@ -75,6 +80,7 @@ jobs:
           fi
 
       - name: Generate New Token
+        if: inputs.skip_token_generation != true
         id: generate-token
         run: |
           set -euo pipefail
@@ -87,6 +93,7 @@ jobs:
           echo "token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
 
       - name: Update Key Vault Secret
+        if: inputs.skip_token_generation != true
         id: update-secret
         run: |
           set -euo pipefail
@@ -191,7 +198,25 @@ jobs:
             steps.terraform-apply.outcome == 'failure'
           )
         run: |
-          cat << EOF >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.skip_token_generation }}" = "true" ]; then
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## ❌ Terraform Operation Failed
+
+          A Terraform operation failed during the workflow execution. This means:
+          - ✅ Existing token remains in Key Vault: ${kv_name} > MagicLink-Token
+          - ❌ Front Door rules were NOT updated
+          - 🔧 Magic links may not work correctly until rules are updated
+
+          ### Recovery Options:
+          1. **Review error messages** above for specific failure details
+          2. **Fix the Terraform issue** (configuration, permissions, etc.)
+          3. **Re-run this workflow** after resolving the problem
+          4. **Manual update** (if needed): Azure Portal → Front Door → WAF Policy
+
+          ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
+          EOF
+          else
+            cat << EOF >> $GITHUB_STEP_SUMMARY
           ## ❌ Terraform Operation Failed
 
           A Terraform operation failed during the workflow execution. This means:
@@ -207,11 +232,31 @@ jobs:
 
           ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
           EOF
+          fi
 
       - name: Workflow summary
         if: success()
         run: |
-          cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.skip_token_generation }}" = "true" ]; then
+            cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+          ## ✅ Magic Link Front Door Rules Updated
+
+          ### 📊 Summary
+          - Environment: ${{ inputs.environment }}
+          - Token Generation: Skipped
+          - Key Vault Update: Skipped
+          - Front Door Rules Updated: ✅
+
+          ### 📋 Next Steps
+          1. No token rotation was performed
+          2. Front Door rules have been refreshed with existing token
+          3. Verify magic links are working correctly
+
+          ### 🔐 Security
+          - Existing token remains in Key Vault
+          EOF
+          else
+            cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
           ## ✅ Magic Link Token Rotation Complete
 
           ### 📊 Summary
@@ -233,3 +278,4 @@ jobs:
           - Token is stored securely in Key Vault only
           - Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
           EOF
+          fi
