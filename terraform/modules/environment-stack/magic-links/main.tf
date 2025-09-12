@@ -54,7 +54,7 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
     response_header_action {
       header_action = "Overwrite"
       header_name   = "Set-Cookie"
-      value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Strict; Path=/"
+      value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Lax; Path=/"
     }
   }
 
