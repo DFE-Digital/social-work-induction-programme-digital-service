@@ -40,8 +40,8 @@ ci-test:
   set -euo pipefail
   cd "{{solution-root}}/../notification-service-test"
   filter='FullyQualifiedName~DfeSwwEcf.NotificationService.Tests.UnitTests'
-  dotnet test --no-build --filter "$filter"
-  
+  dotnet test --filter "$filter"
+
 # Publish the project
 package-component:
   @dotnet publish {{solution-root}} -c Release --no-restore
