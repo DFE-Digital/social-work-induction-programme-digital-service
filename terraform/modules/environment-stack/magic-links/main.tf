@@ -116,6 +116,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
       operator       = "Contains"
       match_values   = ["token=${azurerm_key_vault_secret.magic_link_token[0].value}"]
     }
+    match_condition {
+      match_variable     = "Cookies"
+      selector           = "dev_auth"
+      operator           = "Equal"
+      match_values       = [azurerm_key_vault_secret.magic_link_token[0].value]
+      negation_condition = true
+    }
   }
 
   custom_rule {
