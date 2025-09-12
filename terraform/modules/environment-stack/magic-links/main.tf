@@ -56,14 +56,6 @@ resource "azurerm_cdn_frontdoor_rule" "token_validation" {
       header_name   = "Set-Cookie"
       value         = "dev_auth=${azurerm_key_vault_secret.magic_link_token[0].value}; Secure; HttpOnly; SameSite=Strict; Path=/"
     }
-
-    url_redirect_action {
-      redirect_type        = "Found"
-      destination_hostname = ""
-      destination_path     = ""
-      query_string         = ""
-      redirect_protocol    = "Https"
-    }
   }
 
   depends_on = [azurerm_cdn_frontdoor_rule_set.magic_link_rules]
