@@ -5,22 +5,7 @@
   </PropertyGroup>
 
   <Target Name="CompileSass" BeforeTargets="Build">
-    <Exec
-      Condition="'$(OS)'=='Windows_NT'"
-      Command="set PATH=%APPDATA%\npm;%PATH% &amp;&amp; sass -q wwwroot\Styles\site.scss wwwroot\Styles\site.css"
-    />
-    <Exec
-      Condition="'$(OS)'!='Windows_NT'"
-      Command='
-      export PATH="/opt/homebrew/bin/asdf:/home/linuxbrew/.linuxbrew/bin:$HOME/.asdf/shims:$PATH" &amp;&amp;
-      (
-        command -v sass &gt;/dev/null 2&gt;&amp;1 &amp;&amp; \
-        sass -q wwwroot/Styles/site.scss wwwroot/Styles/site.css
-      ) || (
-        echo "❌ ERROR: Sass not found in PATH or asdf shim." &amp;&amp; exit 1
-      )
-    '
-    />
+    <Exec Command="sass -q wwwroot/Styles/site.scss wwwroot/Styles/site.css" />
   </Target>
 
   <ItemGroup>

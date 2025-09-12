@@ -20,7 +20,8 @@ public class EditAccountJourneyModel(Account account)
             SocialWorkEnglandNumber = account.SocialWorkEnglandNumber,
             IsStaff = account.IsStaff,
             ProgrammeStartDate = account.ProgrammeStartDate,
-            ProgrammeEndDate = account.ProgrammeEndDate
+            ProgrammeEndDate = account.ProgrammeEndDate,
+            ExternalUserId = account.ExternalUserId
         };
 
     public bool? IsStaff { get; set; } = account.IsStaff;
@@ -37,7 +38,8 @@ public class EditAccountJourneyModel(Account account)
             Types = AccountDetails.Types?.ToImmutableList(),
             Status = AccountStatus,
             ProgrammeStartDate = AccountDetails.ProgrammeStartDate,
-            ProgrammeEndDate = AccountDetails.ProgrammeEndDate
+            ProgrammeEndDate = AccountDetails.ProgrammeEndDate,
+            ExternalUserId = AccountDetails.ExternalUserId
         };
     }
 }

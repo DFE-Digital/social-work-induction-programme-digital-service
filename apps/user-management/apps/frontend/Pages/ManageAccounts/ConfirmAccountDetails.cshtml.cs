@@ -150,7 +150,7 @@ public class ConfirmAccountDetails(
 
         if (featureFlags.Value.EnableMoodleIntegration)
         {
-            var moodleRequest = new CreateMoodleUserRequest
+            var moodleRequest = new MoodleUserRequest
             {
                 Username = accountDetails.Email,
                 Email = accountDetails.Email,
@@ -178,6 +178,22 @@ public class ConfirmAccountDetails(
 
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (accountDetails is null) return BadRequest();
+
+        if (featureFlags.Value.EnableMoodleIntegration)
+        {
+            var moodleRequest = new MoodleUserRequest
+            {
+                Id = accountDetails.ExternalUserId,
+                Username = accountDetails.Email,
+                Email = accountDetails.Email,
+                FirstName = accountDetails.FirstName,
+                LastName = accountDetails.LastName
+            };
+            var response = await moodleServiceClient.User.UpdateUserAsync(moodleRequest);
+            if (!response.Successful) return BadRequest();
+
+            createAccountJourneyService.SetExternalUserId(response.Id);
+        }
 
         await editAccountJourneyService.CompleteJourneyAsync(id);
 
