@@ -131,18 +131,18 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
     }
   }
 
-  # custom_rule {
-  #   name     = "BlockUnauthorized"
-  #   priority = 100
-  #   type     = "MatchRule"
-  #   action   = "Block"
+  custom_rule {
+    name     = "BlockUnauthorized"
+    priority = 100
+    type     = "MatchRule"
+    action   = "Block"
 
-  #   match_condition {
-  #     match_variable = "RemoteAddr"
-  #     operator       = "IPMatch"
-  #     match_values   = ["0.0.0.0/0"]
-  #   }
-  # }
+    match_condition {
+      match_variable = "RemoteAddr"
+      operator       = "IPMatch"
+      match_values   = ["0.0.0.0/0"]
+    }
+  }
 }
 
 # Data sources to reference Front Door endpoints created by web-app modules
