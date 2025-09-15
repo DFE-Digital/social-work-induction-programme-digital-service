@@ -11,4 +11,11 @@ $THEME->name = 'govuk_swpdp';
  */
 $THEME->parents = ['govuk','boost'];
 
+$THEME->parents_exclude_sheets = [
+    'govuk' => ['govuk'],
+];
+
+// append govuk styles as a post process for theme styles to take precedence over boost
+$THEME->csspostprocess = 'theme_govuk_swpdp_csspostprocess';
+
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
