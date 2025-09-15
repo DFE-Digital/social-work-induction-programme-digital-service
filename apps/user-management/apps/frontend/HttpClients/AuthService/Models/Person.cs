@@ -16,6 +16,7 @@ public class Person
     public required string LastName { get; set; }
     public string? EmailAddress { get; set; }
     public AccountStatus? Status { get; set; }
+    public int? ExternalUserId { get; init; }
     public ImmutableList<AccountType> Roles { get; set; } = [];
     public bool IsFunded { get; set; }
     public DateOnly? ProgrammeStartDate { get; set; }

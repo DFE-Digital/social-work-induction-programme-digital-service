@@ -1,9 +1,8 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+﻿namespace Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 
-namespace Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
-
-public class CreateMoodleUserRequest
+public class MoodleUserRequest
 {
+    public int? Id { get; set; }
     public string? Username { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }

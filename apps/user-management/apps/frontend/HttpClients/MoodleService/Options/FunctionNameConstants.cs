@@ -3,4 +3,5 @@
 public static class FunctionNameConstants
 {
     public const string CreateUser = "core_user_create_users";
+    public const string UpdateUser = "core_user_update_users";
 }
