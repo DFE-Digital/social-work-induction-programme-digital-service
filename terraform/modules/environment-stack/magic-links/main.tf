@@ -140,7 +140,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
     match_condition {
       match_variable = "RemoteAddr"
       operator       = "IPMatch"
-      match_values   = ["0.0.0.0/0"]
+      match_values   = ["0.0.0.0/0", "::/0"]
     }
   }
 }
