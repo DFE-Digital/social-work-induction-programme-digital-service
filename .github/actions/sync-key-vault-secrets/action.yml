@@ -21,23 +21,25 @@ runs:
   using: composite
   steps:
     - shell: bash
+      env:
+        VAULT: ${{ inputs.vault-name }}
+        NAMES: ${{ inputs.secret-names }}
+        VALUES: ${{ inputs.secret-values }}
       run: |
         set -euo pipefail
 
         # split the two newline-delimited inputs into parallel bash arrays
-        IFS=$'\n' read -d '' -r -a NAMES   <<< "${{ inputs.secret-names }}"$'\n'
-        IFS=$'\n' read -d '' -r -a VALUES  <<< "${{ inputs.secret-values }}"$'\n'
+        IFS=$'\n' read -d '' -r -a NAMES_ARRAY   <<< "$NAMES"$'\n'
+        IFS=$'\n' read -d '' -r -a VALUES_ARRAY  <<< "$VALUES"$'\n'
 
-        if [[ "${#NAMES[@]}" -ne "${#VALUES[@]}" ]]; then
+        if [[ "${#NAMES_ARRAY[@]}" -ne "${#VALUES_ARRAY[@]}" ]]; then
           echo "::error::secret-names and secret-values count mismatch"
           exit 1
         fi
 
-        VAULT="${{ inputs.vault-name }}"
-
-        for i in "${!NAMES[@]}"; do
-          NAME="${NAMES[$i]}"
-          VALUE="${VALUES[$i]}"
+        for i in "${!NAMES_ARRAY[@]}"; do
+          NAME="${NAMES_ARRAY[$i]}"
+          VALUE="${VALUES_ARRAY[$i]}"
 
           # Compare base64-encoded blobs to avoid newline / UTF-8 issues
           DESIRED_B64=$(printf '%s' "$VALUE" | base64 -w0)
