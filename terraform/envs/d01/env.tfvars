@@ -6,7 +6,6 @@ azure_region                      = "westeurope"
 environment                       = "development"
 resource_name_prefix              = "${project_code}d01"
 primary_resource_group            = "${project_code}d01-swip-rg"
-environment_audience              = "team"
 create_and_own_container_registry = true
 acr_name                          = "${project_code}d01acr"
 acr_sku                           = "Basic"
@@ -39,11 +38,9 @@ one_login_client_id = "EsYDRVMBVfTviM3KcsszKUrL_Fw"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
   "MOODLE_SWITCH_OFF_OAUTH"         = "false"
-  "BASIC_AUTH_ENABLED"              = "true"
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
-  "BASIC_AUTH_ENABLED"                     = "true"
   "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
 }
 moodle_max_data_storage_size_in_gb = 5
@@ -53,3 +50,5 @@ blob_storage_account_tier          = "Standard"
 file_storage_account_tier = "Standard"
 
 db_backup_blob_sa_name = "sabackups"
+
+magic_links_enabled = true

@@ -1,21 +1,3 @@
-resource "azurerm_key_vault_secret" "basic_auth_password" {
-  name         = "Sites-BasicAuthPassword"
-  value        = var.basic_auth_password
-  key_vault_id = azurerm_key_vault.kv.id
-  content_type = "password"
-
-  // TODO: Managed expiry of db passwords
-  //expiration_date = local.expiration_date
-
-  lifecycle {
-    ignore_changes = [expiration_date]
-  }
-
-  depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
-
-  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
-}
-
 ################################################
 # App Service Plan for Moodle application
 ################################################

@@ -8,14 +8,6 @@ set -eu
 echo "Starting SSH..."
 /usr/sbin/sshd
 
-if [ "$BASIC_AUTH_ENABLED" = 'true' ]; then
-    # Configure basic auth to restrict access / prevent user management from being indexed
-    echo "Configuring basic auth..."
-    htpasswd -b -c /etc/nginx/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
-    cp /App/nginx-basic-auth.conf /etc/nginx/http.d/default.conf
-    chown root:root /etc/nginx/http.d/default.conf
-fi
-
 # Launch user management with app user privileges
 su-exec app dotnet Dfe.Sww.Ecf.Frontend.dll &
 

@@ -55,7 +55,7 @@ variable "web_app_name" {
 
 variable "web_app_short_name" {
   description = "Unique short name for the app to aid in unique naming of app related resource for multiple apps"
-  type        = string  
+  type        = string
 }
 
 variable "app_settings" {
@@ -68,14 +68,35 @@ variable "front_door_profile_web_id" {
   type        = string
 }
 
+variable "magic_links_enabled" {
+  description = "Whether Magic Links authentication is enabled for this environment"
+  type        = bool
+  default     = false
+}
+
+variable "magic_link_token_value" {
+  description = "Shared magic link token value"
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+
+
+variable "magic_link_rule_set_id" {
+  description = "ID of shared magic link rule set"
+  type        = string
+  default     = null
+}
+
 variable "subnet_webapps_id" {
   description = "The ID of the web apps subnet"
-  type = string
+  type        = string
 }
 
 variable "docker_image_name" {
   description = "The Docker image name to use for the web app"
-  type = string
+  type        = string
 }
 
 variable "health_check_path" {
@@ -115,4 +136,3 @@ variable "storage_access_key" {
   type        = string
   sensitive   = true
 }
-

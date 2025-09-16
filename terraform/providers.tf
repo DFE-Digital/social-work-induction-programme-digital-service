@@ -5,15 +5,15 @@ terraform {
     # updated regularly
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "= 4.26.0"
+      version = "= 4.43.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "= 3.7.1"
+      version = "= 3.7.2"
     }
     external = {
       source  = "hashicorp/external"
-      version = "= 2.3.4"
+      version = "= 2.3.5"
     }
   }
 

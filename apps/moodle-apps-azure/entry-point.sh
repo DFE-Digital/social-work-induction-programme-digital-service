@@ -40,12 +40,6 @@ else
     /app/save-env.sh /app/env.txt POSTGRES_PASSWORD MOODLE_ADMIN_PASSWORD FILE_STORAGE_ACCESS_KEY
 
     log "This will be a full Moodle instance..."
-    if [[ "$BASIC_AUTH_ENABLED" == 'true' ]]; then
-        # Configure basic auth to restrict access / prevent Moodle from being indexed
-        log "Configuring basic auth..."
-        htpasswd -b -c /etc/apache2/.htpasswd "$BASIC_AUTH_USER" "$BASIC_AUTH_PASSWORD" > /dev/null 2>&1
-        cp /app/apache-config-moodle-basic-auth.conf /etc/apache2/sites-available/000-default.conf
-    fi
     rsync -av --ignore-existing /var/www/moodledata_ref/ /var/www/moodledata/
     log "Initially copying reference Moodle data to moodledata..."
     if [ -z "$(ls -A '/var/www/moodledata_share')" ]; then

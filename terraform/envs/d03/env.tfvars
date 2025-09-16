@@ -6,7 +6,6 @@ azure_region           = "westeurope"
 environment            = "development"
 resource_name_prefix   = "${project_code}d03"
 primary_resource_group = "${project_code}d03-swip-rg"
-environment_audience   = "user"
 acr_name               = "${project_code}d01acr"
 # The container registry is shared from the d01 instance
 acr_resource_group                 = "${project_code}d01-swip-rg"
@@ -41,13 +40,13 @@ one_login_client_id = "kxYIW8mpUue-vHUFygaIBBHsNYY"
 moodle_app_settings = {
   "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "true" # Should be false for prod environment
   "MOODLE_SWITCH_OFF_OAUTH"         = "true" # Should be false for prod environment
-  "BASIC_AUTH_ENABLED"              = "true" # Should be false for prod environment
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 
 user_management_app_settings = {
-  "BASIC_AUTH_ENABLED"                     = "true"
   "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
 }
 
 db_backup_blob_sa_name = "sabackups"
+
+magic_links_enabled = true

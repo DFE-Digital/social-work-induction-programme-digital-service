@@ -53,6 +53,32 @@ output "front_door_profile_web_id" {
   value       = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
 }
 
+output "frontdoor_sku" {
+  description = "Azure Front Door SKU"
+  value       = var.frontdoor_sku
+}
+
+output "magic_links_enabled" {
+  description = "Whether Magic Links authentication is enabled"
+  value       = var.magic_links_enabled
+}
+
+output "magic_link_token_value" {
+  description = "Shared magic link token value"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_token_value : null
+  sensitive   = true
+}
+
+output "magic_link_waf_policy_id" {
+  description = "ID of the shared magic link WAF policy"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_waf_policy_id : null
+}
+
+output "magic_link_rule_set_id" {
+  description = "ID of the shared magic link rule set"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_rule_set_id : null
+}
+
 output "subnet_moodle_id" {
   description = "The ID of the Moodle subnet"
   value       = azurerm_subnet.sn_moodle_app.id

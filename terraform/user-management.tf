@@ -14,6 +14,9 @@ module "user_management" {
   web_app_short_name        = "wa-user-management"
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
+  magic_links_enabled       = module.stack.magic_links_enabled
+  magic_link_token_value    = module.stack.magic_link_token_value
+  magic_link_rule_set_id    = module.stack.magic_link_rule_set_id
   subnet_webapps_id         = module.stack.subnet_services_id
   acr_id                    = local.acr_id
   acr_name                  = var.acr_name
@@ -38,8 +41,6 @@ module "user_management" {
     "MOODLECLIENTOPTIONS__APITOKEN"           = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.web_service_token.name})"
     "NOTIFICATIONCLIENTOPTIONS__BASEURL"      = module.notification-service.function_app_url
     "NOTIFICATIONCLIENTOPTIONS__FUNCTIONKEY"  = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.function_key.name})"
-    "BASIC_AUTH_USER"                         = var.basic_auth_user
-    "BASIC_AUTH_PASSWORD"                     = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"   = module.stack.appinsights_connection_string
     DOCKER_ENABLE_CI                          = "false" # Github will control CI, not Azure
   }, var.user_management_app_settings)
