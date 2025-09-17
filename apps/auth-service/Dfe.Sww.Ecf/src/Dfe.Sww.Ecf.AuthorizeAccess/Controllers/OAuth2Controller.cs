@@ -245,11 +245,6 @@ public class OAuth2Controller(
                 "The OpenID Connect request cannot be retrieved."
             );
 
-        if (request.IdTokenHint is null)
-        {
-            return BadRequest();
-        }
-
         var authenticateResult = await HttpContext.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
         );
