@@ -166,7 +166,6 @@ COPY entry-point.sh /app/entry-point.sh
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
-COPY apache-config-moodle-basic-auth.conf /app/apache-config-moodle-basic-auth.conf
 RUN chmod +x /app/*.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script

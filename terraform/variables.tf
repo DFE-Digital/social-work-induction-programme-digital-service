@@ -219,24 +219,6 @@ variable "moodle_web_service_user_email" {
   sensitive   = true
 }
 
-variable "basic_auth_user" {
-  description = "User ID for basic auth protected sites"
-  type        = string
-  sensitive   = true
-}
-
-variable "basic_auth_password_team_environments" {
-  description = "Password for basic auth protected sites in project team environments"
-  type        = string
-  sensitive   = true
-}
-
-variable "basic_auth_password_user_environments" {
-  description = "Password for basic auth protected sites in end user environments"
-  type        = string
-  sensitive   = true
-}
-
 variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string
@@ -244,22 +226,8 @@ variable "email_support_address" {
 }
 
 variable "asp_sku_notification" {
-  description = "The app service SKU"
+  description = "The app service SKU for Notification Service"
   type        = string
-}
-
-variable "environment_audience" {
-  type        = string
-  description = "The type of environment. Must be one of: team, user."
-
-  validation {
-    condition = contains(
-      ["team", "user"],
-      var.environment_audience
-    )
-
-    error_message = "The specified environment_audience is not valid. Allowed values are: team, user."
-  }
 }
 
 variable "moodle_max_data_storage_size_in_gb" {
@@ -336,4 +304,21 @@ variable "log_analytics_sku" {
 variable "db_backup_blob_sa_name" {
   description = "DB backup blob storage account name"
   type        = string
+}
+
+variable "asp_sku_db_jobs" {
+  description = "The app service SKU for DB Jobs"
+  type        = string
+}
+
+variable "db_jobs_app_settings" {
+  description = "Environment specific db jobs app settings"
+  type        = map(string)
+  default     = {}
+}
+
+variable "magic_links_enabled" {
+  description = "Whether to enable Magic Links authentication for web apps"
+  type        = bool
+  default     = false
 }

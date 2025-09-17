@@ -15,7 +15,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.MoodleServiceClientTest
 
 public class MoodleOperationsTests
 {
-    private readonly CreateMoodleUserRequestFaker _createMoodleUserRequestFaker = new();
+    private readonly MoodleUserRequestFaker _moodleUserRequestFaker = new();
     private readonly Guid _apikey = Guid.NewGuid();
     private readonly Mock<IOptions<MoodleClientOptions>> _mockOptions = new();
 
@@ -23,15 +23,15 @@ public class MoodleOperationsTests
     public async Task CreateUserAsync_SuccessfulRequest_ReturnsCorrectResponse()
     {
         // Arrange
-        var createUserRequest = _createMoodleUserRequestFaker.Generate();
-        var createUserResponse = new CreateMoodleUserResponse
+        var createUserRequest = _moodleUserRequestFaker.Generate();
+        var createUserResponse = new MoodleUserResponse
         {
             Id = 1,
             Username = createUserRequest.Username,
             Successful = true
         };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<CreateMoodleUserResponse> { createUserResponse });
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<MoodleUserResponse> { createUserResponse });
 
         var sut = BuildSut(mockHttp);
 
@@ -40,7 +40,7 @@ public class MoodleOperationsTests
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeOfType<CreateMoodleUserResponse>();
+        response.Should().BeOfType<MoodleUserResponse>();
         response.Should().BeEquivalentTo(createUserResponse);
 
         mockHttp.GetMatchCount(request).Should().Be(1);
@@ -52,8 +52,8 @@ public class MoodleOperationsTests
     public async Task CreateUserAsync_WithUpperCaseUsername_SetsMoodleUsernameParamToLowerCase()
     {
         // Arrange
-        var createUserRequest = _createMoodleUserRequestFaker.Generate();
-        var createUserResponse = new CreateMoodleUserResponse
+        var createUserRequest = _moodleUserRequestFaker.Generate();
+        var createUserResponse = new MoodleUserResponse
         {
             Id = 1,
             Username = createUserRequest.Username,
@@ -72,7 +72,7 @@ public class MoodleOperationsTests
             { "users[0][email]", createUserRequest.Email! }
         };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<CreateMoodleUserResponse> { createUserResponse }, parameters);
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<MoodleUserResponse> { createUserResponse }, parameters);
 
         var sut = BuildSut(mockHttp);
 
@@ -81,7 +81,7 @@ public class MoodleOperationsTests
 
         // Assert
         response.Should().NotBeNull();
-        response.Should().BeOfType<CreateMoodleUserResponse>();
+        response.Should().BeOfType<MoodleUserResponse>();
         response.Should().BeEquivalentTo(createUserResponse);
 
         mockHttp.GetMatchCount(request).Should().Be(1);
@@ -93,10 +93,10 @@ public class MoodleOperationsTests
     public async Task CreateUserAsync_WhenErrorResponseReturned_ReturnsErrorResponse()
     {
         // Arrange
-        var createUserRequest = _createMoodleUserRequestFaker.Generate();
-        var createUserResponse = new CreateMoodleUserResponse { Successful = false };
+        var createUserRequest = _moodleUserRequestFaker.Generate();
+        var createUserResponse = new MoodleUserResponse { Successful = false };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, new List<CreateMoodleUserResponse> { createUserResponse });
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, new List<MoodleUserResponse> { createUserResponse });
 
         var sut = BuildSut(mockHttp);
 
@@ -124,16 +124,16 @@ public class MoodleOperationsTests
     )
     {
         // Arrange
-        var createUserRequest = new CreateMoodleUserRequest
+        var createUserRequest = new MoodleUserRequest
         {
             FirstName = firstName,
             LastName = lastName,
             Email = email,
             Username = username
         };
-        var createUserResponse = new CreateMoodleUserResponse { Successful = false };
+        var createUserResponse = new MoodleUserResponse { Successful = false };
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, new List<CreateMoodleUserResponse> { createUserResponse });
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, new List<MoodleUserResponse> { createUserResponse });
 
         var sut = BuildSut(mockHttp);
 
@@ -173,7 +173,7 @@ public class MoodleOperationsTests
         MockedRequest MockedRequest
         ) GenerateMockClient(
             HttpStatusCode statusCode,
-            IList<CreateMoodleUserResponse> response,
+            IList<MoodleUserResponse> response,
             IDictionary<string, string>? expectedFormParams = null)
     {
         using var mockHttp = new MockHttpMessageHandler();
@@ -194,5 +194,34 @@ public class MoodleOperationsTests
             .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
 
         return (mockHttp, request);
+    }
+
+    [Fact]
+    public async Task UpdateUserAsync_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var updateUserRequest = _moodleUserRequestFaker.Generate();
+        var updateUserResponse = new MoodleUserResponse
+        {
+            Id = updateUserRequest.Id,
+            Username = updateUserRequest.Email?.ToLower(),
+            Successful = true
+        };
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<MoodleUserResponse> { updateUserResponse });
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.User.UpdateUserAsync(updateUserRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<MoodleUserResponse>();
+        response.Should().BeEquivalentTo(updateUserResponse);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
     }
 }

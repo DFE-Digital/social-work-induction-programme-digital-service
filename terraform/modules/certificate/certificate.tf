@@ -25,7 +25,7 @@ resource "azurerm_key_vault_certificate" "kv_cert" {
       subject            = "CN=${var.common_name}"
       validity_in_months = var.validity_in_months
       extended_key_usage = [
-        "1.3.6.1.5.5.7.3.1"   # TLS server auth
+        "1.3.6.1.5.5.7.3.1" # TLS server auth
       ]
       key_usage = [
         "cRLSign",
@@ -34,7 +34,7 @@ resource "azurerm_key_vault_certificate" "kv_cert" {
         "keyAgreement",
         "keyCertSign",
         "keyEncipherment",
-      ]      
+      ]
     }
 
     lifetime_action {

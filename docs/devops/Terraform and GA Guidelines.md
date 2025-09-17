@@ -34,7 +34,7 @@ resource "azurerm_container_registry" "acr" {
 
 5. When declaring variables in Terraform, remember to flag them as sensitive if they relate to credentials, so that Terraform doesn't echo them to the logs. This is especially true if, for instance, secrets are maintained outside of Github Actions but are still accessed by workflows.
 
-6. In general, prefer key vaults for storing secrets. With key vaults, team members are still able to view secret contents if necessary, unlike Github Actions. Github Actions secrets should be used for more 'static' secrets, such as the basic auth password for user facing sites, or the Kudu SSH password for containers.
+6. In general, prefer key vaults for storing secrets. With key vaults, team members are still able to view secret contents if necessary, unlike Github Actions. Github Actions secrets should be used for more 'static' secrets, such as the Kudu SSH password for containers.
 
 7. If accessing a key vault secret in a Github Actions workflow, remember to use the `echo "::add-mask::$VAL"` statement to mask the secret value in log output.
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace Dfe.Sww.Ecf.Frontend.Helpers;
 
 public static class HtmlHelpers

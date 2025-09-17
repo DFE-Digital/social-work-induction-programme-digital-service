@@ -30,16 +30,12 @@ ci-build:
 
 # Test the .NET solution
 test:
-  @cd {{solution-root}} && dotnet test
+  @cd {{solution-root}}/../notification-service-test \
+    && dotnet test --filter "FullyQualifiedName~DfeSwwEcf.NotificationService.Tests.UnitTests"
 
 ci-test:
-  @true
-
-ci-test-temp:
-  pwd
-  echo {{solution-root}}
-  @cd {{solution-root}}/../notification-service-test && dotnet test
-
+  @just test
+  
 # Publish the project
 package-component:
   @dotnet publish {{solution-root}} -c Release --no-restore

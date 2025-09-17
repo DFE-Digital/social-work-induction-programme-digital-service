@@ -68,29 +68,11 @@ jobs:
             echo "FULL_EXTERNAL_WEB_DOMAIN_NAME=$FRONT_DOOR_HOST_NAME" >> "$GITHUB_ENV"
           fi
 
-      - name: Get authentication header
-        shell: bash
-        env:
-          BASIC_AUTH_USER: ${{ vars.BASIC_AUTH_USER }}
-          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
-        run: |
-          set -euo pipefail
-          BASIC_AUTH_HEADER_VALUE=$(echo -n "$BASIC_AUTH_USER:$BASIC_AUTH_PASSWORD" | base64)
-          echo "::add-mask::$BASIC_AUTH_HEADER_VALUE"
-          echo "BASIC_AUTH_HEADER_VALUE=$BASIC_AUTH_HEADER_VALUE" >> "$GITHUB_ENV"
-
-      - name: ZAP scan (without basic auth)
+      - name: ZAP scan
         uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
         with:
           target: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}
           allow_issue_writing: false
-          artifact_name: full_scan_no_basic_auth_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
+          artifact_name: full_scan_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
 
-      - name: ZAP Scan (with basic auth)
-        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed
-        env:
-          ZAP_AUTH_HEADER_VALUE: ${{ env.BASIC_AUTH_HEADER_VALUE }}
-        with:
-          target: https://${{ env.FULL_EXTERNAL_WEB_DOMAIN_NAME }}
-          allow_issue_writing: false
-          artifact_name: full_scan_basic_auth_${{ matrix.web-app-name }}_${{ github.event.inputs.instance == '' && 'd01' || github.event.inputs.instance }}
+      # TODO: Update ZAP scans to support magic link authentication

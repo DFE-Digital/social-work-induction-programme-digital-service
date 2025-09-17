@@ -25,6 +25,10 @@ resource "azurerm_cdn_frontdoor_origin_group" "front_door_origin_group_web" {
   }
 }
 
+# Security policy is now managed centrally in environment-stack module
+# This module only handles endpoint-specific configuration
+
+
 resource "azurerm_cdn_frontdoor_origin" "front_door_origin_web" {
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.front_door_origin_group_web.id
   certificate_name_check_enabled = false
@@ -36,6 +40,8 @@ resource "azurerm_cdn_frontdoor_origin" "front_door_origin_web" {
   weight                         = 1
   name                           = "${var.resource_name_prefix}-fd-origin-web-${var.web_app_short_name}"
   enabled                        = true
+
+  depends_on = [azurerm_cdn_frontdoor_origin_group.front_door_origin_group_web]
 }
 
 resource "azurerm_cdn_frontdoor_route" "front_door_route_web" {
@@ -44,8 +50,17 @@ resource "azurerm_cdn_frontdoor_route" "front_door_route_web" {
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.front_door_origin_group_web.id
   cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.front_door_origin_web.id]
 
+  # Conditionally use shared rule set only if Magic Links are enabled
+  cdn_frontdoor_rule_set_ids = var.magic_link_rule_set_id != null ? [var.magic_link_rule_set_id] : []
+
   forwarding_protocol    = "MatchRequest"
   https_redirect_enabled = true
   patterns_to_match      = ["/*"]
   supported_protocols    = ["Http", "Https"]
+
+  depends_on = [
+    azurerm_cdn_frontdoor_endpoint.front_door_endpoint_web,
+    azurerm_cdn_frontdoor_origin_group.front_door_origin_group_web,
+    azurerm_cdn_frontdoor_origin.front_door_origin_web
+  ]
 }

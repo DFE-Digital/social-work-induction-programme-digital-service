@@ -56,14 +56,13 @@ RUN --mount=type=secret,id=AZURE_KUDU_SSH_PASSWORD \
 ENV ASPNETCORE_HTTP_PORTS=5000
 ENV ASPNETCORE_URLS=http://+:5000
 
-# Install nginx and htpasswd tool for basic auth
+# Install nginx and htpasswd tool
 RUN apk update && \
     apk add --no-cache \
     nginx \
     apache2-utils
 
 COPY nginx.conf /etc/nginx/http.d/default.conf
-COPY nginx-basic-auth.conf /App/nginx-basic-auth.conf
 
 RUN chown -R app:app /App
 

@@ -97,12 +97,6 @@ variable "assign_delivery_team_key_vault_permissions" {
   type        = bool
 }
 
-variable "basic_auth_password" {
-  description = "Password for basic auth protected sites"
-  type        = string
-  sensitive   = true
-}
-
 variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string
@@ -110,7 +104,7 @@ variable "email_support_address" {
 }
 
 variable "asp_sku_notification" {
-  description = "The app service plan SKU"
+  description = "The app service plan SKU for the notification service"
   type        = string
 }
 
@@ -175,6 +169,12 @@ variable "frontdoor_sku" {
   type        = string
 }
 
+variable "magic_links_enabled" {
+  description = "Whether to enable Magic Links authentication for web apps"
+  type        = bool
+  default     = false
+}
+
 variable "key_vault_sku" {
   description = "Azure Key Vault SKU"
   type        = string
@@ -188,4 +188,15 @@ variable "log_analytics_sku" {
 variable "db_backup_blob_sa_name" {
   description = "DB backup blob storage account name"
   type        = string
+}
+
+variable "asp_sku_db_jobs" {
+  description = "The app service plan SKU for the DB Jobs"
+  type        = string
+}
+
+variable "moodle_instances" {
+  description = "The names of the moodle instances to be created"
+  type        = map(map(any))
+  default     = {}
 }

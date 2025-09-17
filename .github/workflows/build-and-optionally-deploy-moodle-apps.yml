@@ -29,11 +29,10 @@ on:
           - d03
   pull_request:
     branches:
-      - main
+      - development
     paths:
       - "apps/moodle-apps-azure/**"
       - "apps/moodle-ddev/**"
-      - "apps/moodle-docker/**"
 
 concurrency:
   # Unique group for workflow_dispatch AND unique group for each PR

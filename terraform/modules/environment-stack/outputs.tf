@@ -23,6 +23,11 @@ output "kv_vault_uri" {
   value       = azurerm_key_vault.kv.vault_uri
 }
 
+output "kv_name" {
+  description = "Name of the Key Vault"
+  value       = azurerm_key_vault.kv.name
+}
+
 output "db_server_id" {
   description = "The ID of the Postgresql database server"
   value       = azurerm_postgresql_flexible_server.swipdb.id
@@ -46,6 +51,32 @@ output "full_postgres_secret_password_uri" {
 output "front_door_profile_web_id" {
   description = "The ID of the Front Door profile"
   value       = azurerm_cdn_frontdoor_profile.front_door_profile_web.id
+}
+
+output "frontdoor_sku" {
+  description = "Azure Front Door SKU"
+  value       = var.frontdoor_sku
+}
+
+output "magic_links_enabled" {
+  description = "Whether Magic Links authentication is enabled"
+  value       = var.magic_links_enabled
+}
+
+output "magic_link_token_value" {
+  description = "Shared magic link token value"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_token_value : null
+  sensitive   = true
+}
+
+output "magic_link_waf_policy_id" {
+  description = "ID of the shared magic link WAF policy"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_waf_policy_id : null
+}
+
+output "magic_link_rule_set_id" {
+  description = "ID of the shared magic link rule set"
+  value       = var.magic_links_enabled ? module.magic-links[0].magic_link_rule_set_id : null
 }
 
 output "subnet_moodle_id" {
@@ -122,4 +153,29 @@ output "appinsights_connection_string" {
 output "subnet_functionapp_id" {
   description = "The ID of the function app subnet"
   value       = azurerm_subnet.sn_function_app.id
+}
+
+output "subnet_functionapp_privateendpoint_id" {
+  description = "The ID of the function app private endpoint subnet"
+  value       = azurerm_subnet.private_endpoint.id
+}
+
+output "private_dns_zone_id" {
+  description = "The ID of the function app private DNS zone"
+  value       = azurerm_private_dns_zone.pvt_dns_zone.id
+}
+
+output "db_jobs_service_plan_id" {
+  description = "The ID of the app service"
+  value       = azurerm_service_plan.asp_db_jobs.id
+}
+
+output "db_backup_blob_storage_account_name" {
+  description = "The name of the blob storage for backups"
+  value       = azurerm_storage_account.sa_db_backup_blob_storage.name
+}
+
+output "full_backup_storage_connectionstring_uri" {
+  description = "The full Key Vault URI for the backup blob storage connection string"
+  value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.db_backup_blob_storage_connection_string.name}"
 }

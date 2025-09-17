@@ -13,7 +13,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | Variable Name | Usage | 
 | -------- | ------- | 
 | AZURE_KUDU_SSH_USER | Global name of user required by Kudu to SSH to app service containers |
-| BASIC_AUTH_USER | Global name of user name required for basic auth on end user facing sites (e.g. for user research) |
 | MOODLE_OIDC_PLUGIN_RELEASE_URL | Global url of OIDC plugin to use when building Moodle images |
 
 ## Environment Scoped Variables
@@ -53,7 +52,6 @@ These can either be declared globally in https://github.com/DFE-Digital/social-w
 | environment | Environment type - development, test, production. Not currently used. Was used previously to determine certain app settings based on development / test, but this isn't a good pattern. |
 | resource_name_prefix | String to prefix resources with in Azure. Makes it easy to link resources to environments |
 | primary_resource_group | Resource group to add environment resources to |
-| environment_audience | team or user - these environments audiences have different basic auth passwords |
 | acr_name | Name of Azure container registry to use for app service / function images. Environments in different subscriptions can share container registries - e.g. dev / test |
 | acr_resource_group  | Resource group which Azure container registry resides in |
 | acr_sku | Azure SKU for container registry |
@@ -66,5 +64,5 @@ These can either be declared globally in https://github.com/DFE-Digital/social-w
 | moodle_instances | Originally, this was added to support multiple Moodle instances per environment. However, there are two many Moodle dependent services for this to be viable now, so each environment simply implements a single primary Moodle instance. |
 | auth_service_app_settings | Environment specific app settings to merge with the auth service app settings. FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE, whether or not to enable the developer exception page in .NET. FEATUREFLAGS__ENABLESWAGGER, whether or not to enable swagger.  |
 | one_login_client_id | The Onelogin client ID either obtained from the admin integration site environment config, or the production environment config received from the central Onelogin team. Note that when creating a new environment, this can be left empty until the Onelogin config has been created / received. |
-| moodle_app_settings | Environment specific app settings to merge with the Moodle app settings. MOODLE_SWITCH_OFF_GOVUK_THEMING, whether or not to switch off the GovUK theming, to make admin easier in the dev and test environments. MOODLE_SWITCH_OFF_OAUTH, whether or not to switch of OAUTH, again to make admin easier. BASIC_AUTH_ENABLED, whether or not basic auth is enabled for the environment. (It should be for all non-test environments.) |
-| user_management_app_settings | Environment specific app settings to merge with the user management app settings. BASIC_AUTH_ENABLED, whether or not basic auth is enabled for the environment. (It should be for all non-test environments.) |
+| moodle_app_settings | Environment specific app settings to merge with the Moodle app settings. MOODLE_SWITCH_OFF_GOVUK_THEMING, whether or not to switch off the GovUK theming, to make admin easier in the dev and test environments. MOODLE_SWITCH_OFF_OAUTH, whether or not to switch of OAUTH, again to make admin easier. |
+| user_management_app_settings | Environment specific app settings to merge with the user management app settings. |

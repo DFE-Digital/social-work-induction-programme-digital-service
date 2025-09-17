@@ -47,9 +47,6 @@ $CFG->admin = getenv('MOODLE_ADMIN_USER');
 
 $CFG->directorypermissions = 02777;
 
-if (getenv('MOODLE_SWITCH_OFF_GOVUK_THEMING') !== 'true') {
-  $CFG->theme = 'govuk'; 
-}
 if (getenv('MOODLE_SWITCH_OFF_OAUTH') === 'true') {
   $CFG->auth = 'manual'; 
 }

@@ -4,7 +4,7 @@ This repository houses the core digital service for the Social Work Induction pr
 
 ## Local development setup
 
-The `apps/moodle-docker` project provides a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
+The `apps/moodle-ddev` project provides a consistent local environment for running Moodle. Custom DDEV commands have been created to automate common tasks such as installing Moodle and setting up the govuk theme.
 
 The primary custom command, install-moodle, bundles all installation steps into a single command. It performs the following tasks:
 

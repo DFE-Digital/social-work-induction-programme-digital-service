@@ -109,6 +109,9 @@ module "web_app_moodle" {
   web_app_short_name        = each.value.web_app_short_name
   docker_image_name         = "dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
+  magic_links_enabled       = module.stack.magic_links_enabled
+  magic_link_token_value    = module.stack.magic_link_token_value
+  magic_link_rule_set_id    = module.stack.magic_link_rule_set_id
   subnet_webapps_id         = module.stack.subnet_moodle_id
   acr_id                    = local.acr_id
   acr_name                  = var.acr_name
@@ -129,8 +132,6 @@ module "web_app_moodle" {
     "AUTH_SERVICE_END_POINT"                = local.auth_service_end_point
     "AUTH_SERVICE_TOKEN_END_POINT"          = local.auth_service_token_end_point
     "AUTH_SERVICE_LOGOUT_URI"               = local.auth_service_logout_uri
-    "BASIC_AUTH_USER"                       = var.basic_auth_user
-    "BASIC_AUTH_PASSWORD"                   = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/Sites-BasicAuthPassword)"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = module.stack.appinsights_connection_string
   }, var.moodle_app_settings, local.moodle_shared_app_settings)
 

@@ -1,6 +1,6 @@
 ﻿namespace Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users
 {
-    public class CreateMoodleUserResponse
+    public class MoodleUserResponse
     {
         public int? Id { get; set; }
         public string? Username { get; set; }

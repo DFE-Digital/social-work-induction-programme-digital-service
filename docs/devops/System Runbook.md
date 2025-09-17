@@ -8,7 +8,7 @@
 
 ### Authentication
 
-1. Site access / basic auth: Use this link pattern to clear the saved site basic authentication credentials from a browser. https://clear:clear@SiteDomain, e.g. https://clear:clear@s205d03-fd-endpoint-web-wa-moodle-primary-b3ayfzapfahtavhp.a01.azurefd.net
+1. Site access: Use this link pattern to clear the saved site authentication credentials from a browser. https://clear:clear@SiteDomain, e.g. https://clear:clear@s205d03-fd-endpoint-web-wa-moodle-primary-b3ayfzapfahtavhp.a01.azurefd.net
 
 ### Upgrading
 

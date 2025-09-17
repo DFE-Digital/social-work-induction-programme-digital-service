@@ -1,12 +1,13 @@
 resource "azurerm_linux_function_app" "function_app" {
-  name                          = var.function_app_name
-  location                      = var.location
-  resource_group_name           = var.resource_group
-  service_plan_id               = var.service_plan_id
-  storage_account_name          = var.storage_account_name
-  storage_account_access_key    = var.storage_account_access_key
-  https_only                    = true
-  public_network_access_enabled = false
+  name                       = var.function_app_name
+  location                   = var.location
+  resource_group_name        = var.resource_group
+  service_plan_id            = var.service_plan_id
+  storage_account_name       = var.storage_account_name
+  storage_account_access_key = var.storage_account_access_key
+  https_only                 = true
+  #checkov:skip=CKV_AZURE_221:IP Restrictions in place to only allow front door
+  public_network_access_enabled = var.public_network_access_enabled && var.frontdoor_traffic_only
 
   identity {
     type = "SystemAssigned"
@@ -19,6 +20,19 @@ resource "azurerm_linux_function_app" "function_app" {
     health_check_eviction_time_in_min       = var.health_check_path == "" ? 2 : var.health_check_eviction_time_in_min
     vnet_route_all_enabled                  = true
     container_registry_use_managed_identity = true
+
+    ip_restriction_default_action = var.frontdoor_traffic_only ? "Deny" : "Allow"
+
+    dynamic "ip_restriction" {
+      for_each = var.frontdoor_traffic_only ? [1] : []
+      content {
+        name        = "Allow Azure Front Door"
+        action      = "Allow"
+        priority    = 100
+        service_tag = "AzureFrontDoor.Backend"
+      }
+    }
+
     application_stack {
       docker {
         image_name   = var.docker_image_name
@@ -36,13 +50,14 @@ resource "azurerm_linux_function_app" "function_app" {
   app_settings = merge({
     "DOCKER_REGISTRY_SERVER_URL"            = "https://${var.acr_name}.azurecr.io"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.appinsights_connection_string
-    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "FUNCTIONS_WORKER_RUNTIME"              = var.function_worker_runtime
     "WEBSITES_ENABLE_APP_SERVICE_STORAGE"   = "false"
     "DOCKER_REGISTRY_SERVER_USERNAME"       = ""
     "DOCKER_REGISTRY_SERVER_PASSWORD"       = ""
     DOCKER_ENABLE_CI                        = "false" # Github will control CI, not Azure
   }, var.app_settings)
 
+  tags = var.tags
 
   lifecycle {
     ignore_changes = [
@@ -59,8 +74,6 @@ resource "azurerm_linux_function_app" "function_app" {
       virtual_network_subnet_id
     ]
   }
-
-  tags = var.tags
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
@@ -90,11 +103,4 @@ resource "azurerm_key_vault_access_policy" "kv_policy" {
     "Get",
     "List",
   ]
-}
-
-data "azurerm_function_app_host_keys" "function_keys" {
-  name                = azurerm_linux_function_app.function_app.name
-  resource_group_name = var.resource_group
-
-  depends_on = [azurerm_linux_function_app.function_app]
 }

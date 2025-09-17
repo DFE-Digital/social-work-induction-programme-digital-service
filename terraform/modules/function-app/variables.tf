@@ -82,7 +82,7 @@ variable "subnet_functionapp_id" {
 }
 
 variable "app_settings" {
-  description = "App settings for the web app"
+  description = "App settings for the function app"
   type        = map(string)
 }
 
@@ -99,4 +99,31 @@ variable "virtual_network_id" {
 variable "key_vault_id" {
   description = "ID of the Key Vault to grant access to"
   type        = string
+}
+
+variable "function_worker_runtime" {
+  description = "The runtime worker type of the function"
+  type        = string
+}
+
+variable "subnet_functionapp_privateendpoint_id" {
+  description = "The ID of the function app private endpoint subnet"
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "The ID of the private DNS zone"
+  type        = string
+}
+
+variable "public_network_access_enabled" {
+  description = "Whether or not to allow public access to the function app"
+  type        = bool
+  default     = false
+}
+
+variable "frontdoor_traffic_only" {
+  description = "Whether to restrict access to only allow traffic from Azure Front Door"
+  type        = bool
+  default     = false
 }

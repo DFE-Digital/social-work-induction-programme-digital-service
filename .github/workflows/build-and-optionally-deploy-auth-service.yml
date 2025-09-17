@@ -16,7 +16,7 @@ on:
           - d03
   pull_request:
     branches:
-      - main
+      - development
     paths:
       - "apps/auth-service/**"
 

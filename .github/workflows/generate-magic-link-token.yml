@@ -1,0 +1,281 @@
+name: Generate Magic Link Token
+
+run-name: "Magic Link Operation - ${{ inputs.environment }}${{ inputs.skip_token_generation && ' - no token rotation' || ''}} (${{ inputs.reason }})"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to rotate token for"
+        required: true
+        default: "d01"
+        type: choice
+        options:
+          - d01
+          - d02
+          - d03
+      reason:
+        description: "Reason for token rotation"
+        required: false
+        type: string
+        default: "Manual rotation"
+      skip_token_generation:
+        description: "Skip token generation and only run Terraform"
+        required: false
+        type: boolean
+        default: false
+  # schedule:
+  #   - cron: '0 9 * * 1'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+  ARM_USE_OIDC: true
+
+jobs:
+  generate-token:
+    name: "Rotate Magic Link Token and update Front Door rules"
+    runs-on: ubuntu-latest
+    environment: Dev
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Login to Azure CLI
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+
+      - name: Load Terraform Variables
+        uses: ./.github/actions/pre-process-terraform-variables
+        with:
+          environment: ${{ inputs.environment }}
+          add-as-env-vars: true
+
+      - name: Setup Infrastructure Details
+        run: |
+          set -euo pipefail
+          export TF_VAR_FILE=/tmp/merged.tfvars
+          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
+
+          KV_NAME="${RESOURCE_NAME_PREFIX}-kv-primary"
+          echo "✅ Constructed Key Vault name: ${KV_NAME}"
+          echo "kv_name=${KV_NAME}" >> $GITHUB_ENV
+
+          MAGIC_LINKS_ENABLED=$(awk -F'"' '/magic_links_enabled/ {print $2}' $TF_VAR_FILE 2>/dev/null || echo "false")
+          if [ "$MAGIC_LINKS_ENABLED" != "true" ]; then
+            echo "⚠️  Magic links are disabled in ${{ inputs.environment }}/env.tfvars"
+            echo "   The workflow will continue but magic links won't work in this environment"
+            echo "   To enable: set magic_links_enabled = true in your env.tfvars file"
+          else
+            echo "✅ Magic links are enabled for this environment"
+          fi
+
+      - name: Generate New Token
+        if: inputs.skip_token_generation != true
+        id: generate-token
+        run: |
+          set -euo pipefail
+          NEW_TOKEN=$(openssl rand -hex 16)
+
+          # Mask the token in log
+          echo "::add-mask::${NEW_TOKEN}"
+
+          echo "🔐 New magic link token generated successfully"
+          echo "token=${NEW_TOKEN}" >> $GITHUB_OUTPUT
+
+      - name: Update Key Vault Secret
+        if: inputs.skip_token_generation != true
+        id: update-secret
+        run: |
+          set -euo pipefail
+          echo "🔑 Updating Key Vault secret..."
+          echo "   Key Vault: ${kv_name}"
+          echo "   Secret: MagicLink-Token"
+
+          SECRET_INFO=$(az keyvault secret set \
+            --vault-name "${kv_name}" \
+            --name "MagicLink-Token" \
+            --value "${{ steps.generate-token.outputs.token }}" \
+            --content-type "alphanumeric token string" \
+            --only-show-errors \
+            -o json)
+
+          if [ -z "$SECRET_INFO" ]; then
+            echo "❌ Failed to update Key Vault secret"
+            exit 1
+          fi
+
+          SECRET_VERSION=$(echo "$SECRET_INFO" | jq -r .id | awk -F'/' '{print $NF}')
+          echo "secret_version=${SECRET_VERSION}" >> $GITHUB_OUTPUT
+
+          echo "✅ Token successfully updated in Key Vault"
+
+      - name: Setup Terraform
+        id: terraform-setup
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.11.3
+          terraform_wrapper: false
+
+      - name: Generate Terraform State Variables
+        id: terraform-state-vars
+        run: |
+          set -euo pipefail
+          export TF_VAR_FILE=/tmp/merged.tfvars
+          export RESOURCE_NAME_PREFIX=$(awk -F'"' '/resource_name_prefix/ {print $2}' $TF_VAR_FILE)
+          echo "TF_STATE_AZURE_REGION=$(awk -F'\"' '/azure_region/ {print $2}' $TF_VAR_FILE)" >> $GITHUB_ENV
+          echo "TF_STATE_RESOURCE_GROUP=$RESOURCE_NAME_PREFIX-swip-rg-tfstate" >> $GITHUB_ENV
+          echo "TF_STATE_STORAGE_ACCOUNT_NAME=${RESOURCE_NAME_PREFIX}swipsatfstate" >> $GITHUB_ENV
+          echo "TF_STATE_CONTAINER_NAME=${RESOURCE_NAME_PREFIX}swipconttfstate" >> $GITHUB_ENV
+          echo "TF_STATE_KEY=$RESOURCE_NAME_PREFIX-swip-tfstate" >> $GITHUB_ENV
+          echo "TF_VAR_FILE=$TF_VAR_FILE" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        id: terraform-init
+        run: |
+          set -euo pipefail
+          cd terraform
+          terraform init \
+            -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
+            -backend-config="storage_account_name=$TF_STATE_STORAGE_ACCOUNT_NAME" \
+            -backend-config="container_name=$TF_STATE_CONTAINER_NAME" \
+            -backend-config="key=$TF_STATE_KEY"
+
+      - name: Plan Front Door Updates
+        id: terraform-plan
+        run: |
+          set -euo pipefail
+          cd terraform
+          echo "📋 Planning Front Door rule updates..."
+
+          # Use dummy values for unused variables since we're only targeting magic link resources
+          # These variables are required by Terraform validation but not used by our targeted resources
+          terraform plan \
+            -target=module.stack.module.magic-links \
+            -var-file=$TF_VAR_FILE \
+            -var='moodle_admin_password=dummy' \
+            -var='moodle_admin_email=dummy@example.com' \
+            -var='moodle_admin_user=dummy' \
+            -var='auth_service_client_id=dummy' \
+            -var='moodle_web_service_name=dummy' \
+            -var='moodle_web_service_user=dummy' \
+            -var='moodle_web_service_user_email=dummy@example.com' \
+            -var='email_support_address=dummy@example.com' \
+            -var='govnotify_api_key=dummy' \
+            -no-color \
+            -out=tfplan-magic-link
+
+          echo "✅ Plan generated successfully"
+
+      - name: Update Front Door Rules
+        id: terraform-apply
+        run: |
+          set -euo pipefail
+          cd terraform
+          echo "🔄 Applying Front Door rule updates..."
+
+          terraform apply -auto-approve tfplan-magic-link
+
+          echo "✅ Front Door rules updated successfully"
+          echo "terraform_success=true" >> $GITHUB_OUTPUT
+
+      - name: Handle Terraform Failure
+        if: >
+          failure() && (
+            steps.terraform-setup.outcome == 'failure' ||
+            steps.terraform-state-vars.outcome == 'failure' ||
+            steps.terraform-init.outcome == 'failure' ||
+            steps.terraform-plan.outcome == 'failure' ||
+            steps.terraform-apply.outcome == 'failure'
+          )
+        run: |
+          if [ "${{ inputs.skip_token_generation }}" = "true" ]; then
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## ❌ Terraform Operation Failed
+
+          A Terraform operation failed during the workflow execution. This means:
+          - ✅ Existing token remains in Key Vault: ${kv_name} > MagicLink-Token
+          - ❌ Front Door rules were NOT updated
+          - 🔧 Magic links may not work correctly until rules are updated
+
+          ### Recovery Options:
+          1. **Review error messages** above for specific failure details
+          2. **Fix the Terraform issue** (configuration, permissions, etc.)
+          3. **Re-run this workflow** after resolving the problem
+          4. **Manual update** (if needed): Azure Portal → Front Door → WAF Policy
+
+          ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
+          EOF
+          else
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          ## ❌ Terraform Operation Failed
+
+          A Terraform operation failed during the workflow execution. This means:
+          - ✅ Token is safely stored in Key Vault: ${kv_name} > MagicLink-Token
+          - ❌ Front Door rules were NOT updated to use the new token
+          - 🔧 Magic links may not work correctly until rules are updated
+
+          ### Recovery Options:
+          1. **Review error messages** above for specific failure details
+          2. **Fix the Terraform issue** (configuration, permissions, etc.)
+          3. **Re-run this workflow** after resolving the problem
+          4. **Manual update** (if needed): Azure Portal → Front Door → WAF Policy
+
+          ⚠️ **Important:** Manual Azure Portal changes will cause Terraform state desynchronization
+          EOF
+          fi
+
+      - name: Workflow summary
+        if: success()
+        run: |
+          if [ "${{ inputs.skip_token_generation }}" = "true" ]; then
+            cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+          ## ✅ Magic Link Front Door Rules Updated
+
+          ### 📊 Summary
+          - Environment: ${{ inputs.environment }}
+          - Token Generation: Skipped
+          - Key Vault Update: Skipped
+          - Front Door Rules Updated: ✅
+
+          ### 📋 Next Steps
+          1. No token rotation was performed
+          2. Front Door rules have been refreshed with existing token
+          3. Verify magic links are working correctly
+
+          ### 🔐 Security
+          - Existing token remains in Key Vault
+          EOF
+          else
+            cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+          ## ✅ Magic Link Token Rotation Complete
+
+          ### 📊 Summary
+          - Environment: ${{ inputs.environment }}
+          - Token Generated: ✅
+          - Key Vault Updated: ✅
+          - Front Door Rules Updated: ✅
+          - Secret Version: ${{ steps.update-secret.outputs.secret_version }}
+
+          ### 📋 Next Steps
+          1. Retrieve the new token from Key Vault:
+             - Key Vault: ${kv_name}
+             - Secret Name: MagicLink-Token
+          2. Update the Confluence environment access page:
+             - [Confluence Page](https://dfedigital.atlassian.net/wiki/x/CIBSQwE)
+          3. Find the **${{ inputs.environment }}** section and replace the old token in the links
+
+          ### 🔐 Security
+          - Token is stored securely in Key Vault only
+          - Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          EOF
+          fi

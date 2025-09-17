@@ -1,21 +1,3 @@
-resource "azurerm_key_vault_secret" "basic_auth_password" {
-  name         = "Sites-BasicAuthPassword"
-  value        = var.basic_auth_password
-  key_vault_id = azurerm_key_vault.kv.id
-  content_type = "password"
-
-  // TODO: Managed expiry of db passwords
-  //expiration_date = local.expiration_date
-
-  lifecycle {
-    ignore_changes = [expiration_date]
-  }
-
-  depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
-
-  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
-}
-
 ################################################
 # App Service Plan for Moodle application
 ################################################
@@ -322,6 +304,22 @@ resource "azurerm_service_plan" "asp_notification_service" {
   resource_group_name = azurerm_resource_group.rg_primary.name
   os_type             = "Linux"
   sku_name            = var.asp_sku_notification
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
+  #checkov:skip=CKV_AZURE_225:Ensure the App Service Plan is zone redundant
+  #checkov:skip=CKV_AZURE_212:Ensure App Service has a minimum number of instances for failover
+}
+
+resource "azurerm_service_plan" "asp_db_jobs" {
+  name                = "${var.resource_name_prefix}-asp-db-jobs"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  os_type             = "Linux"
+  sku_name            = var.asp_sku_db_jobs
   tags                = var.tags
 
   lifecycle {

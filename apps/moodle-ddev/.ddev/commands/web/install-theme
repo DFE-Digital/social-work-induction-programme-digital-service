@@ -40,14 +40,6 @@ mv /tmp/theme/govuk/ /var/www/html/public/theme/govuk
 rm -rf /tmp/govuk-moodle-theme.zip /tmp/theme
 echo "Govuk theme updated to release ${RELEASE}."
 
-echo "Updating config.php to set theme to govuk..."
-CONFIG_FILE="/var/www/html/public/config.php"
-if grep -q "\$CFG->theme" "$CONFIG_FILE"; then
-  sed -i "s/\(\$CFG->theme\s*=\s*\).*/\1'govuk';/" "$CONFIG_FILE"
-else
-  echo "\$CFG->theme = 'govuk';" >> "$CONFIG_FILE"
-fi
-
 # For Azure, we want the ability to copy the theme but delay the upgrade til deployment
 if [[ "$2" != "--copy-only" ]]; then
   echo "Running Moodle upgrade..."

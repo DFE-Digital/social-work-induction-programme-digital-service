@@ -1,10 +1,10 @@
 name: Checkov
 on:
-  # Only run the terraform linting on PR to main - otherwise wastes build resources
+  # Only run the terraform linting on PR to development - otherwise wastes build resources
   # as it also runs as part of terraform deploy on any branch
   pull_request:
     branches:
-      - main
+      - development
     paths:
       - 'terraform/**'
 
@@ -29,3 +29,4 @@ jobs:
           directory: terraform/
           framework: terraform
           skip_check: CKV2_AZURE_33
+          quiet: true
