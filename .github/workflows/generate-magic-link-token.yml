@@ -1,6 +1,6 @@
 name: Generate Magic Link Token
 
-run-name: "Magic Link Operation - ${{ inputs.environment }}${{ inputs.skip_token_generation && ' - no token rotation'}} (${{ inputs.reason }})"
+run-name: "Magic Link Operation - ${{ inputs.environment }}${{ inputs.skip_token_generation && ' - no token rotation' || ''}} (${{ inputs.reason }})"
 
 on:
   workflow_dispatch:
