@@ -82,6 +82,7 @@ public class SocialWorkersOperations(
             });
         }
         catch (Exception e)
+        catch (Exception)
         {
             return null;
         }
