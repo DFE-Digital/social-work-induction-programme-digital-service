@@ -106,7 +106,7 @@ public class PerformanceTest
                 { "grant_type", "client_credentials" }
             };
 
-            var encodedContent = new FormUrlEncodedContent(parameters);
+            using var encodedContent = new FormUrlEncodedContent(parameters);
             var response = await client.PostAsync(tokenEndpoint, encodedContent);
 
             if (!response.IsSuccessStatusCode)
