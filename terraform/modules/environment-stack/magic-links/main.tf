@@ -132,6 +132,19 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
   }
 
   custom_rule {
+    name     = "AllowHealthChecks"
+    priority = 50
+    type     = "MatchRule"
+    action   = "Allow"
+
+    match_condition {
+      match_variable = "RequestUri"
+      operator       = "Contains"
+      match_values   = ["/version.txt", "/api/health"]
+    }
+  }
+
+  custom_rule {
     name     = "BlockUnauthorized"
     priority = 100
     type     = "MatchRule"
