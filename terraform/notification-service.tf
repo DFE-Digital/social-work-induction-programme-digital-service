@@ -42,6 +42,8 @@ module "notification-service" {
 data "azurerm_function_app_host_keys" "function_keys" {
   name                = "${var.resource_name_prefix}-fa-notification-service"
   resource_group_name = module.stack.resource_group_name
+
+  depends_on = [module.notification-service]
 }
 
 resource "azurerm_key_vault_secret" "function_key" {
