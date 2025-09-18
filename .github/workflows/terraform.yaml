@@ -130,6 +130,7 @@ jobs:
         id: tf-plan
         run: |
           # Only import the variables we need
+          export TF_LOG=INFO 
           export exitcode=0
           terraform plan -detailed-exitcode -no-color -out tfplan \
             -var-file=$TF_VAR_FILE \
