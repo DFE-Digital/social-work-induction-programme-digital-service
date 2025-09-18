@@ -235,16 +235,6 @@ public class OAuth2Controller(
     [HttpGet("~/oauth2/logout")]
     public async Task<IActionResult> Logout()
     {
-        // Although the spec allows for logout requests without an id_token_hint, we require one so we can
-        // a) extract the One Login ID token and;
-        // b) know which authentication scheme to sign out with.
-
-        var request =
-            HttpContext.GetOpenIddictServerRequest()
-            ?? throw new InvalidOperationException(
-                "The OpenID Connect request cannot be retrieved."
-            );
-
         var authenticateResult = await HttpContext.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
         );
