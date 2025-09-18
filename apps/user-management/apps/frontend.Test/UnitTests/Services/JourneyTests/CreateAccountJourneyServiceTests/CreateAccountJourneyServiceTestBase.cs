@@ -13,7 +13,7 @@ public abstract class CreateAccountJourneyServiceTestBase
 {
     private protected const string CreateAccountSessionKey = "_createAccount";
 
-    private protected CreateAccountJourneyService Sut;
+    private protected readonly CreateAccountJourneyService Sut;
 
     protected CreateAccountJourneyServiceTestBase()
     {
