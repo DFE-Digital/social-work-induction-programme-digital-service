@@ -130,6 +130,6 @@ public sealed class SocialWorkEnglandRecord
 
     public override string ToString()
     {
-        return $"{_socialWorkEnglandNumber.ToString()}";
+        return $"{_socialWorkEnglandNumber}";
     }
 }

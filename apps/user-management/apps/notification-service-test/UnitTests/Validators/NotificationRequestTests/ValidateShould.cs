@@ -6,7 +6,7 @@ namespace DfeSwwEcf.NotificationService.Tests.UnitTests.Validators.NotificationR
 
 public class ValidateShould
 {
-    private NotificationRequestValidator _validator;
+    private readonly NotificationRequestValidator _validator;
 
     public ValidateShould()
     {
