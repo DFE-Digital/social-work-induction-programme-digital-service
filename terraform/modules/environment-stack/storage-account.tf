@@ -169,3 +169,39 @@ resource "azurerm_key_vault_secret" "db_backup_blob_storage_connection_string" {
 
   #checkov:skip=CKV_AZURE_41:Connection string dont need expiry date
 }
+
+resource "azurerm_storage_account" "sa_moodle_data" {
+  name                            = "${var.resource_name_prefix}samoodledata"
+  resource_group_name             = azurerm_resource_group.rg_primary.name
+  location                        = var.location
+  account_tier                    = "Premium"
+  account_kind                    = "FileStorage"
+  account_replication_type        = "LRS"
+  is_hns_enabled                  = true
+  allow_nested_items_to_be_public = false
+  nfsv3_enabled                   = false
+
+  tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags["Environment"],
+      tags["Product"],
+      tags["Service Offering"]
+    ]
+  }
+}
+
+resource "azurerm_storage_share" "moodle_data_share" {
+  name               = "${var.resource_name_prefix}-ss-moodle-data"
+  storage_account_id = azurerm_storage_account.sa_moodle_data.id
+  quota              = 100
+  enabled_protocol   = "NFS"
+
+  acl {
+    id = "default"
+    access_policy {
+      permissions = "rwdl" # Read Write Delete List
+    }
+  }
+}

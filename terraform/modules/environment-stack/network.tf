@@ -103,3 +103,22 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
     ignore_changes = [tags]
   }
 }
+
+resource "azurerm_private_endpoint" "moodle_data_private_endpoint" {
+  name                = "${azurerm_storage_account.sa_moodle_data.name}-pe"
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  location            = var.location
+  subnet_id           = azurerm_subnet.private_endpoint.id
+
+  private_dns_zone_group {
+    name                 = "default"
+    private_dns_zone_ids = [azurerm_private_dns_zone.pvt_dns_zone.id]
+  }
+
+  private_service_connection {
+    name                           = "${azurerm_storage_account.sa_moodle_data.name}-psc"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_storage_account.sa_moodle_data.id
+    subresource_names              = ["file"]
+  }
+}
