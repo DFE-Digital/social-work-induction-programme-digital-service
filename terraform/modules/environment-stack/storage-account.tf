@@ -177,7 +177,6 @@ resource "azurerm_storage_account" "sa_moodle_data" {
   account_tier                    = "Premium"
   account_kind                    = "FileStorage"
   account_replication_type        = "LRS"
-  is_hns_enabled                  = true
   allow_nested_items_to_be_public = false
   nfsv3_enabled                   = false
 
