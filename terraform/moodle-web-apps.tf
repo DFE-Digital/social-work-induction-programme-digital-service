@@ -148,7 +148,7 @@ module "web_app_moodle" {
 
   storage_mounts = {
     "moodledata" = {
-      type         = "AzureFile"
+      type         = "AzureFiles"
       account_name = module.stack.moodle_data_storage_account_name
       share_name   = module.stack.moodle_data_share_name
       mount_path   = "/var/www/moodledata"
