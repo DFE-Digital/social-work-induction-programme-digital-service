@@ -43,7 +43,7 @@ resource "azurerm_linux_web_app" "webapp" {
       mount_path   = storage_account.value.mount_path
       account_name = storage_account.value.account_name
       share_name   = storage_account.value.share_name
-      access_key   = var.storage_access_key
+      access_key   = storage_account.value.access_key
     }
   }
 
