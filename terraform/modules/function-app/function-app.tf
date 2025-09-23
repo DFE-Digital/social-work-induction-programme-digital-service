@@ -61,9 +61,7 @@ resource "azurerm_linux_function_app" "function_app" {
 
   lifecycle {
     ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"],
+      tags,
       # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
@@ -71,7 +69,9 @@ resource "azurerm_linux_function_app" "function_app" {
       # it back to null, removing the vnet / dbs integration. Then re-create it. 
       # Then set it to null...So the behaviour will alternate on each GA workflow run.
       # Hence we ignore any changes to virtual_network_subnet_id.
-      virtual_network_subnet_id
+      virtual_network_subnet_id,
+      app_service_logs,
+      site_config.0.application_insights_connection_string
     ]
   }
 }

@@ -131,4 +131,12 @@ resource "azurerm_private_endpoint" "moodle_data_private_endpoint" {
     private_connection_resource_id = azurerm_storage_account.sa_moodle_data.id
     subresource_names              = ["file"]
   }
+
+  tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
