@@ -104,6 +104,16 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   }
 }
 
+resource "azurerm_private_dns_zone" "pvt_storage_dns_zone" {
+  name                = "privatelink.file.core.windows.net"
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_private_endpoint" "moodle_data_private_endpoint" {
   name                = "${azurerm_storage_account.sa_moodle_data.name}-pe"
   resource_group_name = azurerm_resource_group.rg_primary.name
@@ -112,7 +122,7 @@ resource "azurerm_private_endpoint" "moodle_data_private_endpoint" {
 
   private_dns_zone_group {
     name                 = "default"
-    private_dns_zone_ids = [azurerm_private_dns_zone.pvt_dns_zone.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.pvt_storage_dns_zone.id]
   }
 
   private_service_connection {
