@@ -107,7 +107,7 @@ module "web_app_moodle" {
   resource_name_prefix      = var.resource_name_prefix
   web_app_name              = each.value.webapp_name
   web_app_short_name        = each.value.web_app_short_name
-  docker_image_name         = "dfe-digital/nothing:latest"
+  docker_image_name         = "nginx:latest" #"dfe-digital/nothing:latest"
   front_door_profile_web_id = module.stack.front_door_profile_web_id
   magic_links_enabled       = module.stack.magic_links_enabled
   magic_link_token_value    = module.stack.magic_link_token_value
