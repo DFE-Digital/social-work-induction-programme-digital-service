@@ -114,6 +114,18 @@ resource "azurerm_private_dns_zone" "pvt_storage_dns_zone" {
   }
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_storage" {
+  name                  = "${azurerm_virtual_network.vnet_stack.name}-storage-dns-link"
+  resource_group_name   = azurerm_resource_group.rg_primary.name
+  private_dns_zone_name = azurerm_private_dns_zone.pvt_storage_dns_zone.name
+  virtual_network_id    = azurerm_virtual_network.vnet_stack.id
+  tags                  = var.tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
 resource "azurerm_private_endpoint" "moodle_data_private_endpoint" {
   name                = "${azurerm_storage_account.sa_moodle_data.name}-pe"
   resource_group_name = azurerm_resource_group.rg_primary.name

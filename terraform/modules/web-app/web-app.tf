@@ -70,9 +70,7 @@ resource "azurerm_linux_web_app" "webapp" {
 
   lifecycle {
     ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"],
+      tags,
       # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the
