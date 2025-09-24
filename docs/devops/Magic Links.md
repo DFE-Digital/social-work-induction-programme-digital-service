@@ -337,7 +337,7 @@ The following endpoints are currently configured as exceptions and remain access
 - `https://your-domain.com/version.txt` - Version information endpoint
 - `https://your-domain.com/api/health` - Health check endpoint
 
-### Adding Additional Exception Paths
+### Adding Additional Exceptions
 
 If you need to add more exception paths to the firewall rules:
 
