@@ -1,4 +1,0 @@
-#page-header .page-context-header.mb-2:has(.page-header-headings > h1.h2.mb-0:empty) {
-  padding: 0;
-  margin-bottom: 0 !important; 
-}

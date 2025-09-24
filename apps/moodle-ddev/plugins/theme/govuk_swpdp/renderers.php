@@ -21,6 +21,7 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
     public function header(): string {
         if ($this->page->pagetype === 'mod-data-view') {
             $this->page->set_heading('');
+            $this->page->add_body_class('db-noheading');
         }
         return parent::header();
     }    
