@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="theme/govuk_swpdp/db" VERSION="2025092300" COMMENT="Portfolio section mapping for theme_govuk_swpdp">
+    <TABLES>
+        <TABLE NAME="theme_govuk_swpdp_portfolio" COMMENT="Stores portfolio target section per course">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="sectionid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseuniq" TYPE="unique" FIELDS="courseid"/>
+            </KEYS>
+        </TABLE>
+    </TABLES>
+</XMLDB>
