@@ -11,12 +11,12 @@ class primary_nav {
     public static function extend(primary_extend $hook): void {
         global $USER, $PAGE, $COURSE, $DB, $CFG;
 
+        if (during_initial_install()) return;
         if (!isloggedin() || isguestuser()) return;
+        if (self::is_staff_like($USER->id)) return; // Do not change nav for admins or staff
 
-        if (self::is_staff_like($USER->id)) {
-            // Do not change nav for admins or staff
-            return;
-        }
+        $conf = get_config('theme_govuk_swpdp');
+        if (empty($conf->enablelearnercustomnav)) { return; }
 
         $primary_view = $hook->get_primaryview();
 
