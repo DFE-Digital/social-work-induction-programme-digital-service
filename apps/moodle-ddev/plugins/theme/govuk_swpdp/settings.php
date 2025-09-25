@@ -17,4 +17,10 @@ if ($hassiteconfig) {
         $setting->set_updatedcallback('theme_reset_all_caches');
         $settings->add($setting);
     }
+    
+    $settings->add(new admin_setting_heading(
+        'theme_govuk_swpdp/portfolioheading',
+        get_string('portfolioheading', 'theme_govuk_swpdp'),
+        get_string('portfolioheading_desc', 'theme_govuk_swpdp')
+    ));
 }
