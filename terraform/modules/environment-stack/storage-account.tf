@@ -179,6 +179,7 @@ resource "azurerm_storage_account" "sa_moodle_data" {
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
   nfsv3_enabled                   = false
+  https_traffic_only_enabled      = false # When mounting an NFS share, you'll need to ensure that Secure Transfer Required is disabled on the storage account. App Service doesn't support mounting NFS shares when this is enabled. It uses port 2409 and virtual network integration and private endpoints as the security measure.
 
   tags = var.tags
 
