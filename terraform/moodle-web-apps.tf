@@ -153,8 +153,10 @@ module "web_app_moodle" {
       share_name   = module.stack.moodle_data_share_name
       mount_path   = "/var/www/moodledata"
       access_key   = module.stack.moodle_data_share_access_key
+      #mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770" # Make www-data owner of the mount
     }
   }
+  storage_access_key = module.stack.file_storage_access_key
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.moodle_db

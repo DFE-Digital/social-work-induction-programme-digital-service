@@ -193,4 +193,5 @@ output "moodle_data_share_name" {
 output "moodle_data_share_access_key" {
   description = "The access key for the Moodle data share"
   value       = azurerm_storage_account.sa_moodle_data.primary_access_key
+  sensitive   = true
 }
