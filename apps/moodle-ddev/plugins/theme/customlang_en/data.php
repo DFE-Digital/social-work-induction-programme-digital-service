@@ -25,4 +25,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['add'] = 'Add new evidence';
+$string['add'] = 'Add new direct observation';
