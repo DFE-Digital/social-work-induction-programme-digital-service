@@ -26,6 +26,23 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         return parent::header();
     }    
 
+    /* Remove the h2 on the database add/edit page */
+    public function heading($text, $level = 2, $classes = 'main', $id = null) {
+        if ($this->page->url->compare(new \moodle_url('/mod/data/edit.php'), URL_MATCH_BASE)) {
+            $headings = [
+                get_string('newentry', 'mod_data'),
+                get_string('editentry', 'mod_data')
+            ];
+            $plain = trim(strip_tags((string)$text));
+            foreach ($headings as $t) {
+                if ($plain === trim($t)) {
+                    return '';
+                }
+            }
+        }
+        return parent::heading($text, $level, $classes, $id);
+    }
+
     /* Hide groups dropdown on database view page for non staff */
     protected function render_single_select(single_select $select): string {
         if (!$this->is_staff_viewing_database()) {
