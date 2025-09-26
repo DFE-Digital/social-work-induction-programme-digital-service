@@ -29,13 +29,13 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
     /* Remove the h2 on the database add/edit page */
     public function heading($text, $level = 2, $classes = 'main', $id = null) {
         if ($this->page->url->compare(new \moodle_url('/mod/data/edit.php'), URL_MATCH_BASE)) {
-            $headings = [
+            $headingstomatch = [
                 get_string('newentry', 'mod_data'),
                 get_string('editentry', 'mod_data')
             ];
-            $plain = trim(strip_tags((string)$text));
-            foreach ($headings as $t) {
-                if ($plain === trim($t)) {
+            $headingcontent = trim(strip_tags((string)$text));
+            foreach ($headingstomatch as $target) {
+                if ($headingcontent === trim($target)) {
                     return '';
                 }
             }
