@@ -1,4 +1,4 @@
-# social-worker-workforce-early-careers-framework
+# Social Work Practice Development Programme Digital Service - Authentication Service
 
 Note: Any diagrams in .jpg files can be rendered using the [.dsl files and https://structurizr.com/dsl](docs/c4-diagrams-as-code/)
 
@@ -24,6 +24,7 @@ To setup PowerShell on a MacOS machine, use you can follow [this guide](https://
 #### asdf
 
 If using [asdf](https://asdf-vm.com/), a `.tool-versions` file has been created to simplify the installation of these dependencies. Simply run the following:
+
 ```
 asdf plugin add just
 asdf plugin add powershell-core
@@ -39,8 +40,6 @@ asdf install
   - Note: If using `asdf`, you may need to run `asdf reshim` after you have run `install-tools` in order to make `sass` available to the cli
 - `just restore`
 - `just build`
-
-
 
 ### Database
 
@@ -95,10 +94,13 @@ Run `just cli migrate-db -h` for more information on the `migrate-db` command.
 You can also run `just ef ...` to invoke the dotnet entity framework CLI directly.
 
 #### Manual Database Updates
+
 ##### Post database setup
+
 This section only needs to be done once when creating the database. Once the database migrations have successfully completed you need to add a person into the `person` table.
 
 You can use the following script:
+
 ```sql
 INSERT INTO public.persons (person_id, created_on, updated_on, deleted_on, trn, first_name, middle_name, last_name, date_of_birth, email_address, national_insurance_number) VALUES ('<GUID_HERE>', NOW(), null, null, '<SOCIAL_WORK_ENGLAND_ID>', '<FIRST_NAME>', ' ', '<LAST_NAME>', '<DATE_OF_BIRTH>', null, null);
 ```
@@ -108,6 +110,7 @@ Once a person has been added you need to link the person record with the record 
 You also need to create an entry in the `organisations` table and insert a row in the `person_organisations` with the ID of the organisation and ID of the person as the foreign keys `person_id` and `organisation_id`.
 
 ##### Applying migrations
+
 If changes have been made in the repo that include migrations, these need to be applied locally. You should be able to use the following command in the terminal while in the Core project:
 `dotnet ef database update`
 
@@ -128,7 +131,7 @@ After this, you can simply run `just onelogin-sim start` to start the simulator.
 
 `just onelogin-sim stop` can be used to stop the simulator.
 
-Note: The simulator does *not* emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
+Note: The simulator does _not_ emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
 
 #### Integration environment
 
@@ -158,6 +161,7 @@ just set-tests-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamp
 By default, the auth service is configured in the `appsettings.Development.json` to use an `aspnet-dev-cert.pfx` certificate file when running locally with HTTPS in order to support communication between apps running on the local machine and in docker as the default devcerts only allow communication on `localhost`. You will need to create this certificate locally with the correct values to ensure the auth-service can communicate with other apps running on the host machine.
 
 To do this, in the `/Dfe.Sww.Ecf` directory, run the following:
+
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout aspnet-dev-cert.key \
@@ -169,6 +173,54 @@ openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in a
 ```
 
 You will need to ensure this cert is added to your trusted root certs in order to allow apps to communicate with the auth service via SSL. The process for doing this differs based on your OS so lookup how to do this for your system.
+
+## Feature Flags
+
+The auth service uses feature flags to control various functionality. Feature flags are configured in the `appsettings.json` files and can be overridden using environment variables or other configuration sources.
+
+### Available Feature Flags
+
+| Flag                                    | Description                                                                                                                      | Default Value                                |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `SupportEndToEndTesting`                | Enables end-to-end testing support and configuration                                                                             | `true` in Development, `false` in Production |
+| `RequiresDbConnection`                  | Controls whether database connection is required for the service                                                                 | `false` in Development, `true` in Production |
+| `EnableDeveloperExceptionPage`          | Enables detailed error pages in development for debugging                                                                        | `true` in Development, `false` in Production |
+| `EnableMigrationsEndpoint`              | Enables database migration endpoints for development                                                                             | `true` in Development, `false` in Production |
+| `EnableErrorExceptionHandler`           | Enables global error exception handler                                                                                           | `true` in Development, `false` in Production |
+| `EnableContentSecurityPolicyWorkaround` | Enables Content Security Policy workaround for ASP.NET Core auto refresh (see https://github.com/dotnet/aspnetcore/issues/33068) | `true` in Development, `false` in Production |
+| `EnableDfeAnalytics`                    | Enables DfE analytics tracking                                                                                                   | `false`                                      |
+| `EnableSwagger`                         | Enables Swagger API documentation                                                                                                | `true` in Development, `false` in Production |
+| `EnableSentry`                          | Enables Sentry error tracking and monitoring                                                                                     | `false`                                      |
+| `EnableHttpStrictTransportSecurity`     | Enables HSTS security headers                                                                                                    | `false` in Development, `true` in Production |
+| `EnableForwardedHeaders`                | Enables forwarded headers middleware for proxy support                                                                           | `true`                                       |
+| `EnableMsDotNetDataProtectionServices`  | Enables .NET data protection services                                                                                            | `true`                                       |
+| `EnableOpenIdCertificates`              | Enables OpenID certificate validation                                                                                            | `true`                                       |
+| `EnableOneLoginCertificateRotation`     | Enables OneLogin certificate rotation                                                                                            | `true`                                       |
+| `EnableDevelopmentOpenIdCertificates`   | Enables development OpenID certificates                                                                                          | `true`                                       |
+
+### Configuration
+
+Feature flags can be configured in several ways:
+
+1. **Environment-specific configuration files** (e.g., `appsettings.Development.json`, `appsettings.Production.json`)
+2. **Environment variables** (prefixed with the configuration section)
+3. **Azure App Configuration** (in production environments)
+4. **User secrets** (for local development)
+
+Example configuration in `appsettings.Development.json`:
+
+```json
+{
+  "FeatureFlags": {
+    "SupportEndToEndTesting": true,
+    "RequiresDbConnection": false,
+    "EnableDeveloperExceptionPage": true,
+    "EnableMigrationsEndpoint": true,
+    "EnableSwagger": true,
+    "EnableHttpStrictTransportSecurity": false
+  }
+}
+```
 
 ## Formatting
 

@@ -19,3 +19,8 @@ $string['enablelearnercustomnav_desc'] = 'When enabled, learners see the custom 
 
 $string['saveprogress'] = 'Save progress';
 $string['submitforreview'] = 'Submit for review';
+
+$string['settingssaved'] = 'Settings saved';
+$string['portfolioheading'] = 'Portfolio settings';
+$string['portfolioheading_desc'] = 'Configure where the My Portfolio nav item points.';
+$string['chooseportfoliosection'] = 'Portfolio section';
