@@ -80,19 +80,6 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         $isadd = $rid == 0;
 
         if ($isdataedit && $isadd) {
-            // include cancel and save buttons
-            $backto = optional_param('backto', '', PARAM_LOCALURL);
-            if (!empty($backto)) {
-                $cancelurl = new \moodle_url($backto);
-            } else {
-                $cmid = $this->page->cm
-                    ? $this->page->cm->id
-                    : optional_param('id', 0, PARAM_INT);
-                $cancelurl = new \moodle_url('/mod/data/view.php', [
-                    'id' => $cmid,
-                ]);
-            }
-
             $data['stickycontent'] = html_writer::empty_tag('input', [
                 'type' => 'submit',
                 'name' => 'saveandview',
