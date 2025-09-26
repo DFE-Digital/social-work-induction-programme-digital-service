@@ -18,7 +18,7 @@ $string['enablelearnercustomnav'] = 'Enable custom navigation items for learners
 $string['enablelearnercustomnav_desc'] = 'When enabled, learners see the custom navigation menu instead of the default.';
 
 $string['saveprogress'] = 'Save progress';
-$string['submitforreview'] = 'Submit for review';
+$string['sendtoobserver'] = 'Send to observer';
 
 $string['settingssaved'] = 'Settings saved';
 $string['portfolioheading'] = 'Portfolio settings';
