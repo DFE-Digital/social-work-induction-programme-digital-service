@@ -40,7 +40,7 @@ class theme_govuk_swpdp_core_renderer extends core_renderer
             ]);
             $data['stickycontent'] .= html_writer::link(
                 '',
-                get_string('submitforreview', 'theme_govuk_swpdp'),
+                get_string('sendtoobserver', 'theme_govuk_swpdp'),
                 ['class' => 'govuk-button govuk-button--secondary', 'role' => 'button'],
             );
         }
