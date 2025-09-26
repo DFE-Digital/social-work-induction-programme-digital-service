@@ -11,11 +11,10 @@ $THEME->name = 'govuk_swpdp';
  */
 $THEME->parents = ['govuk','boost'];
 
-$THEME->parents_exclude_sheets = [
-    'govuk' => ['govuk'],
-];
-
-// append govuk styles as a post process for theme styles to take precedence over boost
-$THEME->csspostprocess = 'theme_govuk_swpdp_csspostprocess';
+$THEME->scss = function($theme) {
+    return theme_govuk_swpdp_get_main_scss_content($theme);
+};
+$THEME->prescsscallback   = 'theme_govuk_swpdp_get_pre_scss';
+$THEME->extrascsscallback = 'theme_govuk_swpdp_get_extra_scss';
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
