@@ -179,7 +179,12 @@ resource "azurerm_storage_account" "sa_moodle_data" {
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
   nfsv3_enabled                   = false
-  https_traffic_only_enabled      = false # When mounting an NFS share, you'll need to ensure that Secure Transfer Required is disabled on the storage account. App Service doesn't support mounting NFS shares when this is enabled. It uses port 2409 and virtual network integration and private endpoints as the security measure.
+
+  # When mounting an NFS share, you'll need to ensure that Secure Transfer Required 
+  # is disabled on the storage account. App Service doesn't support mounting NFS shares 
+  # when this is enabled. It uses port 2409 and virtual network integration and private 
+  # endpoints as the security measure.
+  https_traffic_only_enabled = false
 
   tags = var.tags
 
@@ -190,6 +195,16 @@ resource "azurerm_storage_account" "sa_moodle_data" {
       tags["Service Offering"]
     ]
   }
+
+  #checkov:skip=CKV_AZURE_206:GRS not required
+  #checkov:skip=CKV_AZURE_59:Argument has been deprecated
+  #checkov:skip=CKV2_AZURE_18:Microsoft Managed keys are sufficient
+  #checkov:skip=CKV2_AZURE_1:Microsoft Managed keys are sufficient
+  #checkov:skip=CKV2_AZURE_38:Soft-delete not required
+  #checkov:skip=CKV2_AZURE_33:VNet not configured
+  #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
+  #checkov:skip=CKV2_AZURE_40:Shared access key are sufficient
+  #checkov:skip=CKV_AZURE_33:Argument has been deprecated
 }
 
 resource "azurerm_storage_share" "moodle_data_share" {
