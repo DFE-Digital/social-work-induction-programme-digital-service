@@ -7,13 +7,19 @@ use core\hook\navigation\primary_extend;
 use context_course;
 use moodle_url;
 
+use theme_govuk_swpdp\helpers\common_helpers as Helpers;
+
+/**
+ * Customise the primary navigation for non staff users 
+ * if enabled in theme settings
+ */
 class primary_nav {
     public static function extend(primary_extend $hook): void {
         global $USER, $PAGE, $COURSE, $DB, $CFG;
 
         if (during_initial_install()) return;
         if (!isloggedin() || isguestuser()) return;
-        if (self::is_staff_like($USER->id)) return; // Do not change nav for admins or staff
+        if (Helpers::is_staff_like($USER->id)) return; // Do not change nav for admins or staff
 
         $conf = get_config('theme_govuk_swpdp');
         if (empty($conf->enablelearnercustomnav)) { return; }
@@ -84,40 +90,5 @@ class primary_nav {
                 $portfolio->make_active();
             }
         }
-    }
-
-    /**
-     * Detect whether a user is "staff-like" and should not see learner nav
-     */
-    private static function is_staff_like(int $userid): bool {
-        global $CFG, $DB;
-
-        $system = \context_system::instance();
-        if (is_siteadmin($userid) || has_any_capability([
-            'moodle/site:config',
-            'moodle/course:create',
-            'moodle/site:manageblocks'
-        ], $system, $userid)) {
-            return true;
-        }
-
-        require_once($CFG->libdir . '/enrollib.php');
-        $courses = enrol_get_users_courses($userid, true, 'id', 'sortorder ASC');
-        if (!$courses) { 
-            return false; 
-        }
-
-        $assessorcaps = [
-            'moodle/competency:usercompetencyview'
-        ];
-
-        foreach ($courses as $course) {
-            $context = \context_course::instance($course->id, IGNORE_MISSING);
-            if (has_any_capability($assessorcaps, $context, $userid)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
