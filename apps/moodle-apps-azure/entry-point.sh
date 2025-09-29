@@ -42,13 +42,13 @@ else
     log "This will be a full Moodle instance..."
     #rsync -av --ignore-existing /var/www/moodledata_ref/ /var/www/moodledata/
     #log "Initially copying reference Moodle data to moodledata..."
-    # if [ -z "$(ls -A '/var/www/moodledata_share')" ]; then
-    #     log "Azure file share is empty, seeding with moodledata reference data..."
-    #     rsync -av /var/www/moodledata_ref/ /var/www/moodledata_share/
-    # else
-    #     log "Azure file share is NOT empty, syncing to local Moodle data..."
-    #     rsync --chown=www-data:www-data -av --ignore-existing /var/www/moodledata_share/ /var/www/moodledata/
-    # fi
+    if [ -z "$(ls -A '/var/www/moodledata_share')" ]; then
+        log "Azure file share is empty, seeding with moodledata reference data..."
+        #rsync -av /var/www/moodledata_ref/ /var/www/moodledata_share/
+    else
+        log "Azure file share is NOT empty, syncing to local Moodle data..."
+        rsync --chown=www-data:www-data -av --ignore-existing /var/www/moodledata_share/ /var/www/moodledata/
+    fi
     # if [[ "$MOODLE_PERSISTED_FILE_SYNC" == 'true' ]]; then
     #     log "Starting background persisted file sync process..."
     #     (
