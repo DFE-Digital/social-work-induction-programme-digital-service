@@ -81,7 +81,7 @@ public class SocialWorkersOperations(
                 return httpResponse;
             });
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }

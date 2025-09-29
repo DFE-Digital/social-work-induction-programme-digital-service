@@ -11,7 +11,7 @@ set -e
 INSTALL_ACTIONS=${1:-"all"}
 OIDC_PLUGIN_RELEASE_URL=${2:-https://moodle.org/plugins/download.php/35133/auth_oidc_moodle45_2024100710.zip}
 AUTH_CLIENT_ID=${3:-dfe-sww-ecf-frontend-dev}
-AUTH_CLIENT_SECRET=${4:Devel0pm3ntSecr4t}
+AUTH_CLIENT_SECRET=${4:-Devel0pm3ntSecr4t}
 AUTH_END_POINT=${5:-"https://localhost:7236/oauth2/authorize"}
 AUTH_TOKEN_END_POINT=${6:-"https://host.docker.internal:7236/oauth2/token"}
 AUTH_LOGOUT_URI=${7:-"https://localhost:7236/oauth2/logout"}

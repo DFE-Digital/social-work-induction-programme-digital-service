@@ -1,0 +1,20 @@
+.db-noheading #page-header .page-context-header.mb-2, 
+#page-mod-data-edit #page-header .page-context-header.mb-2 {
+  padding: 0;
+  margin-bottom: 0 !important; 
+}
+
+// Style the h2 as a large heading when h1 is empty
+.db-noheading h2 {
+  @extend .govuk-heading-l !optional;
+}
+
+#page-mod-data-edit div.govuk-body[data-for="page-activity-header"]:empty{
+  margin-bottom: 0;
+}
+
+.path-mod-data #page-content .groupselector:empty { display: none !important; }
+
+.path-mod-data #page-content .mb-3:has(> .groupselector:empty) {
+  margin-bottom: 0 !important;
+}

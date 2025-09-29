@@ -16,3 +16,11 @@ $string['learningmaterials'] = 'Learning materials';
 $string['configtitle'] = 'GOVUK SWPDP theme settings';
 $string['enablelearnercustomnav'] = 'Enable custom navigation items for learners';
 $string['enablelearnercustomnav_desc'] = 'When enabled, learners see the custom navigation menu instead of the default.';
+
+$string['saveprogress'] = 'Save progress';
+$string['sendtoobserver'] = 'Send to observer';
+
+$string['settingssaved'] = 'Settings saved';
+$string['portfolioheading'] = 'Portfolio settings';
+$string['portfolioheading_desc'] = 'Configure where the My Portfolio nav item points.';
+$string['chooseportfoliosection'] = 'Portfolio section';
