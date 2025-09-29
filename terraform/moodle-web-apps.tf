@@ -143,12 +143,15 @@ module "web_app_moodle" {
       account_name = module.stack.moodle_data_storage_account_name
       share_name   = module.stack.moodle_data_share_name
       mount_path   = "/var/www/moodledata"
+      access_key   = module.stack.moodle_data_share_access_key
     },
     "moodledata_share" = {
       type         = "AzureFiles"
       account_name = module.stack.file_storage_account_name
       share_name   = azurerm_storage_share.moodle_content_share.name
       mount_path   = "/var/www/moodledata_share"
+      access_key   = module.stack.file_storage_access_key
+      #mount_options = "uid=33,gid=33,file_mode=0770,dir_mode=0770" # Make www-data owner of the mount
     }
   }
   storage_access_key = module.stack.file_storage_access_key
