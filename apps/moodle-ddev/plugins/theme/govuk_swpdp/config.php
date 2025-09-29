@@ -10,11 +10,6 @@ $THEME->name = 'govuk_swpdp';
  * govuk must be listed first
  */
 $THEME->parents = ['govuk','boost'];
-
-$THEME->scss = function($theme) {
-    return theme_govuk_swpdp_get_main_scss_content($theme);
-};
-$THEME->prescsscallback   = 'theme_govuk_swpdp_get_pre_scss';
-$THEME->extrascsscallback = 'theme_govuk_swpdp_get_extra_scss';
+$THEME->sheets = ['govuk_swpdp'];
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
