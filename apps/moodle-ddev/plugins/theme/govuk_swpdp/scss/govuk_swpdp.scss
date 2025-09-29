@@ -6,7 +6,7 @@
 
 // Style the h2 as a large heading when h1 is empty
 .db-noheading h2 {
-  @extend .govuk-heading-l;
+  @extend .govuk-heading-l !optional;
 }
 
 #page-mod-data-edit div.govuk-body[data-for="page-activity-header"]:empty{
