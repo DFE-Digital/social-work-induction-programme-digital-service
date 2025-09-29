@@ -122,7 +122,6 @@ variable "storage_mounts" {
     mount_path   = string
     account_name = string
     share_name   = string
-    access_key   = string
   }))
   description = "A map of storage mounts to be configured for the App Service. The key of the map is used as the mount's configuration name. An empty map creates no mounts."
   default     = {} # Default to an empty map, making it optional.
