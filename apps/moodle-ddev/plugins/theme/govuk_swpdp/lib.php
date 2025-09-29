@@ -1,6 +1,9 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Add the govuk css to the styles to ensure its precedence over boost styles
+ */
 function theme_govuk_swpdp_csspostprocess(string $css, theme_config $theme): string {
     global $CFG;
 
@@ -29,29 +32,4 @@ function theme_govuk_swpdp_extend_settings_navigation($settingsnav, $context) {
 
     $url = new moodle_url('/theme/govuk_swpdp/course_portfolio_settings.php', ['id' => $courseid]);
     $settingsnav->add(get_string('myportfolio', 'theme_govuk_swpdp'), $url);
-}
-
-/**
- * Main SCSS - add swpdp to govuk
- */
-function theme_govuk_swpdp_get_main_scss_content($theme): string {
-    $parentscss = theme_govuk_get_main_scss_content($theme);
-    $themescss = @file_get_contents(__DIR__ . '/scss/govuk_swpdp.scss') ?: '';
-    return $parentscss . "\n" . $themescss;
-}
-
-/**
- * SCSS to prepend
- */
-function theme_govuk_swpdp_get_pre_scss($theme): string {
-    return theme_govuk_get_pre_scss($theme) . "\n" .
-           (@file_get_contents(__DIR__ . '/scss/pre.scss') ?: '');
-}
-
-/**
- * SCSS to append (after main bundle)
- */
-function theme_govuk_swpdp_get_extra_scss($theme): string {
-    return theme_govuk_get_extra_scss($theme) . "\n" .
-           (@file_get_contents(__DIR__ . '/scss/post.scss') ?: '');
 }
