@@ -11,43 +11,35 @@
     />
     <Exec
       Condition="'$(OS)'!='Windows_NT'"
-      Command='
-      export PATH="/opt/homebrew/bin/asdf:/home/linuxbrew/.linuxbrew/bin:$HOME/.asdf/shims:$PATH" &amp;&amp;
-      (
-        command -v sass &gt;/dev/null 2&gt;&amp;1 &amp;&amp; \
-        sass -q wwwroot/Styles/site.scss wwwroot/Styles/site.css
-      ) || (
-        echo "❌ ERROR: Sass not found in PATH or asdf shim." &amp;&amp; exit 1
-      )
-    '
+      Command="chmod +x build-sass.sh &amp;&amp; ./build-sass.sh"
     />
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
-    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" />
-    <PackageReference Include="Azure.Security.KeyVault.Certificates" />
-    <PackageReference Include="Azure.Security.KeyVault.Secrets" />
-    <PackageReference Include="Dfe.Analytics" />
-    <PackageReference Include="GovUk.Frontend.AspNetCore" />
-    <PackageReference Include="GovUk.OneLogin.AspNetCore" />
-    <PackageReference Include="Humanizer.Core" />
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
-    <PackageReference Include="OpenIddict" />
-    <PackageReference Include="OpenIddict.AspNetCore" />
-    <PackageReference Include="OpenIddict.EntityFrameworkCore" />
-    <PackageReference Include="Sentry.AspNetCore" />
-    <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql"/>
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs"/>
+    <PackageReference Include="Azure.Security.KeyVault.Certificates"/>
+    <PackageReference Include="Azure.Security.KeyVault.Secrets"/>
+    <PackageReference Include="Dfe.Analytics"/>
+    <PackageReference Include="GovUk.Frontend.AspNetCore"/>
+    <PackageReference Include="GovUk.OneLogin.AspNetCore"/>
+    <PackageReference Include="Humanizer.Core"/>
+    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="Joonasw.AspNetCore.SecurityHeaders"/>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore"/>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"/>
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect"/>
+    <PackageReference Include="OpenIddict"/>
+    <PackageReference Include="OpenIddict.AspNetCore"/>
+    <PackageReference Include="OpenIddict.EntityFrameworkCore"/>
+    <PackageReference Include="Sentry.AspNetCore"/>
+    <PackageReference Include="Serilog.AspNetCore"/>
+    <PackageReference Include="Swashbuckle.AspNetCore"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj" />
-    <ProjectReference Include="..\Dfe.Sww.Ecf.UiCommon\Dfe.Sww.Ecf.UiCommon.csproj" />
+    <ProjectReference Include="..\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj"/>
+    <ProjectReference Include="..\Dfe.Sww.Ecf.UiCommon\Dfe.Sww.Ecf.UiCommon.csproj"/>
   </ItemGroup>
 
 </Project>
