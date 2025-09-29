@@ -96,7 +96,7 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         return $this->render_from_template('core/sticky_footer', $data);
     }
 
-    public function firstview_fakeblocks(): string {
-        return '';
+    public function firstview_fakeblocks(): bool {
+        return false;
     }
 }
