@@ -1,1 +1,58 @@
-.db-noheading #page-header .page-context-header.mb-2,#page-mod-data-edit #page-header .page-context-header.mb-2{padding:0;margin-bottom:0 !important}#page-mod-data-edit div.govuk-body[data-for=page-activity-header]:empty{margin-bottom:0}.path-mod-data #page-content .groupselector:empty{display:none !important}.path-mod-data #page-content .mb-3:has(>.groupselector:empty){margin-bottom:0 !important}/*# sourceMappingURL=govuk_swpdp.css.map */
+.db-noheading #page-header .page-context-header.mb-2, 
+#page-mod-data-edit #page-header .page-context-header.mb-2 {
+  padding: 0;
+  margin-bottom: 0 !important; 
+}
+
+#page-mod-data-edit div.govuk-body[data-for="page-activity-header"]:empty{
+  margin-bottom: 0;
+}
+
+.path-mod-data #page-content .groupselector:empty { display: none !important; }
+
+.path-mod-data #page-content .mb-3:has(> .groupselector:empty) {
+  margin-bottom: 0 !important;
+}
+
+/* Styles below intended as a temporary override of the h2 styles on the database actvity view pages
+*/ 
+.db-noheading h2 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.0416666667;
+    display: block;
+    margin-top: 0;
+    margin-bottom: 20px
+}
+
+@media print {
+    .db-noheading h2 {
+        color: #000
+    }
+}
+
+@media print {
+    .db-noheading h2 {
+        font-family: sans-serif
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .db-noheading h2 {
+        font-size:2.25rem;
+        line-height: 1.1111111111
+    }
+}
+
+@media print {
+    .db-noheading h2 {
+        font-size: 24pt;
+        line-height: 1.05
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .db-noheading h2 {
+        margin-bottom:30px
+    }
+}
