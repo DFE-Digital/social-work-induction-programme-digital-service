@@ -113,6 +113,13 @@ test:
 
   DOTNET_ARGS=("$@")
 
+  SUMMARY_CAPTURE=""
+  if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -n "${RUNNER_TEMP:-}" ]]; then
+    SUMMARY_CAPTURE="${RUNNER_TEMP%/}/auth-service-test-summary-$(date +%s)-$RANDOM.md"
+    : > "$SUMMARY_CAPTURE"
+    echo "TEST_SUMMARY_HTML=$SUMMARY_CAPTURE" >> "$GITHUB_ENV"
+  fi
+
   if [[ "${GITHUB_ACTIONS:-}" == "true" || "${CI:-{{ci}}}" == "true" ]]; then
     DOTNET_ARGS+=(--no-build)
     DOTNET_ARGS+=(--logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true")
@@ -121,12 +128,21 @@ test:
 
   overall=0
   for csproj in "${TEST_PROJECTS[@]}"; do
-    echo "::group::dotnet test $csproj ${DOTNET_ARGS[@]}"
-    if ! dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
-      echo "::error title=Tests failed::$csproj"
-      overall=1
+    echo "::group::dotnet test $csproj ${DOTNET_ARGS[*]}"
+    if [[ -n "$SUMMARY_CAPTURE" ]]; then
+      if ! GITHUB_STEP_SUMMARY="$SUMMARY_CAPTURE" dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
+        echo "::error title=Tests failed::$csproj"
+        overall=1
+      else
+        echo "Tests passed in $csproj"
+      fi
     else
-      echo "Tests passed in $csproj"
+      if ! dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
+        echo "::error title=Tests failed::$csproj"
+        overall=1
+      else
+        echo "Tests passed in $csproj"
+      fi
     fi
     echo "::endgroup::"
   done
