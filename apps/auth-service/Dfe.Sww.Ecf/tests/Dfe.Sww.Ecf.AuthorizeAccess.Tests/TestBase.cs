@@ -1,39 +1,38 @@
 using System.Security.Claims;
+using Bogus;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.UiCommon.FormFlow;
 using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
 using GovUk.OneLogin.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests;
 
-public abstract class TestBase : IDisposable
+public abstract class TestBase(HostFixture hostFixture) : IDisposable
 {
-    private readonly TestScopedServices _testServices;
+    private readonly TestScopedServices _testServices = TestScopedServices.Reset();
+    protected readonly Faker Faker = new("en_GB");
 
-    protected TestBase(HostFixture hostFixture)
+    protected HostFixture HostFixture { get; } = hostFixture;
+
+    protected TestableClock Clock => _testServices.Clock;
+
+    protected HttpClient HttpClient { get; } = hostFixture.CreateClient(new WebApplicationFactoryClientOptions
+        { AllowAutoRedirect = false });
+
+    protected TestData TestData => HostFixture.Services.GetRequiredService<TestData>();
+
+    public virtual void Dispose()
     {
-        HostFixture = hostFixture;
-
-        _testServices = TestScopedServices.Reset();
-
-        HttpClient = hostFixture.CreateClient(new() { AllowAutoRedirect = false });
+        HttpClient.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public HostFixture HostFixture { get; }
-
-    public CaptureEventObserver EventObserver => _testServices.EventObserver;
-
-    public TestableClock Clock => _testServices.Clock;
-
-    public HttpClient HttpClient { get; }
-
-    public TestData TestData => HostFixture.Services.GetRequiredService<TestData>();
-
-    public async Task<JourneyInstance<SignInJourneyState>> CreateJourneyInstance(
+    protected async Task<JourneyInstance<SignInJourneyState>> CreateJourneyInstance(
         SignInJourneyState state
     )
     {
@@ -44,7 +43,7 @@ public abstract class TestBase : IDisposable
 
         var keysDict = new Dictionary<string, StringValues>
         {
-            { Constants.UniqueKeyQueryParameterName, new StringValues(Guid.NewGuid().ToString()) },
+            { Constants.UniqueKeyQueryParameterName, new StringValues(Guid.NewGuid().ToString()) }
         };
 
         var instanceId = new JourneyInstanceId(journeyDescriptor.JourneyName, keysDict);
@@ -55,7 +54,7 @@ public abstract class TestBase : IDisposable
             instanceId,
             stateType,
             state,
-            properties: null
+            null
         );
         return (JourneyInstance<SignInJourneyState>)instance;
     }
@@ -73,9 +72,7 @@ public abstract class TestBase : IDisposable
         return (JourneyInstance<SignInJourneyState>)reloadedInstance!;
     }
 
-    public virtual void Dispose() { }
-
-    public virtual async Task<T> WithDbContext<T>(Func<EcfDbContext, Task<T>> action)
+    protected virtual async Task<T> WithDbContext<T>(Func<EcfDbContext, Task<T>> action)
     {
         var dbContextFactory = HostFixture.Services.GetRequiredService<
             IDbContextFactory<EcfDbContext>
@@ -84,17 +81,21 @@ public abstract class TestBase : IDisposable
         return await action(dbContext);
     }
 
-    public virtual Task WithDbContext(Func<EcfDbContext, Task> action) =>
-        WithDbContext(async dbContext =>
+    protected Task WithDbContext(Func<EcfDbContext, Task> action)
+    {
+        return WithDbContext(async dbContext =>
         {
             await action(dbContext);
             return 0;
         });
+    }
 
-    public SignInJourneyHelper GetSignInJourneyHelper() =>
-        HostFixture.Services.GetRequiredService<SignInJourneyHelper>();
+    protected SignInJourneyHelper GetSignInJourneyHelper()
+    {
+        return HostFixture.Services.GetRequiredService<SignInJourneyHelper>();
+    }
 
-    public AuthenticationTicket CreateOneLoginAuthenticationTicket(
+    protected AuthenticationTicket CreateOneLoginAuthenticationTicket(
         string vtr,
         string? sub = null,
         string? email = null,
@@ -105,9 +106,9 @@ public abstract class TestBase : IDisposable
     )
     {
         sub ??= TestData.CreateOneLoginUserSubject();
-        email ??= Faker.Internet.Email();
+        email ??= Faker.Person.Email;
 
-        var claims = new List<Claim>() { new("sub", sub), new("email", email) };
+        var claims = new List<Claim> { new("sub", sub), new("email", email) };
 
         createCoreIdentityVc ??=
             vtr == SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr;
@@ -122,9 +123,9 @@ public abstract class TestBase : IDisposable
                 );
             }
 
-            firstName ??= Faker.Name.First();
-            lastName ??= Faker.Name.Last();
-            dateOfBirth ??= DateOnly.FromDateTime(Faker.Identification.DateOfBirth());
+            firstName ??= Faker.Person.FirstName;
+            lastName ??= Faker.Person.LastName;
+            dateOfBirth ??= DateOnly.FromDateTime(Faker.Person.DateOfBirth);
 
             var vc = TestData.CreateOneLoginCoreIdentityVc(firstName, lastName, dateOfBirth.Value);
             claims.Add(new Claim("vc", vc.RootElement.ToString(), "JSON"));
@@ -132,9 +133,9 @@ public abstract class TestBase : IDisposable
 
         var identity = new ClaimsIdentity(
             claims,
-            authenticationType: "OneLogin",
-            nameType: "sub",
-            roleType: null
+            "OneLogin",
+            "sub",
+            null
         );
 
         var principal = new ClaimsPrincipal(identity);
@@ -143,19 +144,20 @@ public abstract class TestBase : IDisposable
         properties.SetVectorOfTrust(vtr);
         properties.StoreTokens(
             [
-                new AuthenticationToken()
+                new AuthenticationToken
                 {
                     Name = OpenIdConnectParameterNames.IdToken,
-                    Value = "dummy",
-                },
+                    Value = "dummy"
+                }
             ]
         );
 
-        return new AuthenticationTicket(principal, properties, authenticationScheme: "OneLogin");
+        return new AuthenticationTicket(principal, properties, "OneLogin");
     }
 
-    public AuthenticationTicket CreateOneLoginAuthenticationTicket(string vtr, OneLoginUser user) =>
-        CreateOneLoginAuthenticationTicket(
+    protected AuthenticationTicket CreateOneLoginAuthenticationTicket(string vtr, OneLoginUser user)
+    {
+        return CreateOneLoginAuthenticationTicket(
             vtr,
             user.Subject,
             user.Email,
@@ -163,9 +165,13 @@ public abstract class TestBase : IDisposable
             user.VerifiedNames?.First().Last(),
             user.VerifiedDatesOfBirth?.First()
         );
+    }
 
-    public static SignInJourneyState CreateNewState(
+    protected static SignInJourneyState CreateNewState(
         string redirectUri = "/",
         string? linkingToken = null
-    ) => new(redirectUri, serviceName: "Test Service", serviceUrl: "https://service", linkingToken);
+    )
+    {
+        return new SignInJourneyState(redirectUri, "Test Service", "https://service", linkingToken);
+    }
 }

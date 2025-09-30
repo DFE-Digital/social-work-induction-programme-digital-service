@@ -6,19 +6,27 @@ namespace Dfe.Sww.Ecf.TestCommon;
 
 public partial class TestData
 {
-    public Task<OneLoginUser> CreateOneLoginUser(CreatePersonResult createPersonResult, string? subject = null, string? email = null) =>
-        CreateOneLoginUser(
+    public Task<OneLoginUser> CreateOneLoginUser(CreatePersonResult createPersonResult, string? subject = null,
+        string? email = null)
+    {
+        return CreateOneLoginUser(
             createPersonResult.PersonId,
             subject,
             email,
-            verifiedInfo: ([createPersonResult.FirstName, createPersonResult.LastName], createPersonResult.DateOfBirth));
+            ([createPersonResult.FirstName, createPersonResult.LastName], createPersonResult.DateOfBirth));
+    }
 
-    public Task<OneLoginUser> CreateOneLoginUser(string? subject = null, string? email = null, bool verified = false) =>
-        CreateOneLoginUser(
-            personId: null,
+    public Task<OneLoginUser> CreateOneLoginUser(string? subject = null, string? email = null, bool verified = false)
+    {
+        return CreateOneLoginUser(
+            null,
             subject,
             email,
-            verifiedInfo: verified ? ([Faker.Name.First(), Faker.Name.Last()], DateOnly.FromDateTime(Faker.Identification.DateOfBirth())) : null);
+            verified
+                ? ([_faker.Person.FirstName, _faker.Person.LastName],
+                    DateOnly.FromDateTime(_faker.Person.DateOfBirth))
+                : null);
+    }
 
     public Task<OneLoginUser> CreateOneLoginUser(
         Guid? personId,
@@ -34,9 +42,9 @@ public partial class TestData
         return WithDbContext(async dbContext =>
         {
             subject ??= CreateOneLoginUserSubject();
-            email ??= Faker.Internet.Email();
+            email ??= _faker.Internet.Email();
 
-            var user = new OneLoginUser()
+            var user = new OneLoginUser
             {
                 Subject = subject,
                 Email = email,
@@ -49,8 +57,8 @@ public partial class TestData
             {
                 user.VerifiedOn = Clock.UtcNow;
                 user.VerificationRoute = OneLoginUserVerificationRoute.OneLogin;
-                user.VerifiedNames = [verifiedInfo!.Value.Name];
-                user.VerifiedDatesOfBirth = [verifiedInfo!.Value.DateOfBirth];
+                user.VerifiedNames = [verifiedInfo.Value.Name];
+                user.VerifiedDatesOfBirth = [verifiedInfo.Value.DateOfBirth];
             }
 
             dbContext.OneLoginUsers.Add(user);
@@ -61,10 +69,14 @@ public partial class TestData
         });
     }
 
-    public string CreateOneLoginUserSubject() => Guid.NewGuid().ToString("N");
+    public static string CreateOneLoginUserSubject()
+    {
+        return Guid.NewGuid().ToString("N");
+    }
 
-    public JsonDocument CreateOneLoginCoreIdentityVc(string firstName, string lastName, DateOnly dateOfBirth) =>
-        JsonDocument.Parse(
+    public static JsonDocument CreateOneLoginCoreIdentityVc(string firstName, string lastName, DateOnly dateOfBirth)
+    {
+        return JsonDocument.Parse(
             new JsonObject
             {
                 ["type"] = new JsonArray(
@@ -95,4 +107,5 @@ public partial class TestData
                         })
                 }
             }.ToString());
+    }
 }
