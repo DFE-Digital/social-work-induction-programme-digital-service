@@ -24,7 +24,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();
@@ -53,7 +54,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();
@@ -87,7 +89,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();
@@ -120,7 +123,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();
@@ -157,7 +161,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();
@@ -192,14 +197,15 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
 
         var subject = TestData.CreateOneLoginUserSubject();
         var email = Faker.Internet.Email();
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(subject, email, coreIdentityVc));
 
         var trnToken = Guid.NewGuid().ToString();
 
-        using (var idDbContext = HostFixture.Services.GetRequiredService<IdDbContext>())
+        await using (var idDbContext = HostFixture.Services.GetRequiredService<IdDbContext>())
         {
-            idDbContext.TrnTokens.Add(new IdTrnToken()
+            idDbContext.TrnTokens.Add(new IdTrnToken
             {
                 TrnToken = trnToken,
                 Trn = person.Trn!,
@@ -215,7 +221,7 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
         await using var context = await HostFixture.CreateBrowserContext();
         var page = await context.NewPageAsync();
 
-        await page.GoToTestStartPage(trnToken: trnToken);
+        await page.GoToTestStartPage(trnToken);
 
         await page.AssertSignedIn(person.Trn!);
     }
@@ -226,7 +232,8 @@ public class SignInTests(HostFixture hostFixture) : TestBase(hostFixture)
         var person = await TestData.CreatePerson(x => x.WithTrn());
         var oneLoginUser = await TestData.CreateOneLoginUser(person);
 
-        var coreIdentityVc = TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
+        var coreIdentityVc =
+            TestData.CreateOneLoginCoreIdentityVc(person.FirstName, person.LastName, person.DateOfBirth);
         SetCurrentOneLoginUser(OneLoginUserInfo.Create(oneLoginUser.Subject, oneLoginUser.Email, coreIdentityVc));
 
         await using var context = await HostFixture.CreateBrowserContext();

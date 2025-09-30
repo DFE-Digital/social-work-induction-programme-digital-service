@@ -1,6 +1,5 @@
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace Dfe.Sww.Ecf.TestCommon;
 
@@ -63,22 +62,22 @@ public partial class TestData
     public class CreatePersonBuilder
     {
         private DateOnly? _dateOfBirth;
-        private bool? _hasTrn;
-        private string? _firstName;
-        private string? _middleName;
-        private string? _lastName;
         private string? _email;
-        private string? _mobileNumber;
-        private bool? _hasNationalInsuranceNumber;
-        private string? _nationalInsuranceNumber;
-        private PersonStatus? _status;
-        private Guid _organisationId;
         private int _externalUserId;
+        private string? _firstName;
+        private bool? _hasNationalInsuranceNumber;
+        private bool? _hasTrn;
         private bool _isFunded;
-        private DateOnly? _programmeStartDate;
+        private string? _lastName;
+        private string? _middleName;
+        private string? _mobileNumber;
+        private string? _nationalInsuranceNumber;
+        private Guid _organisationId;
         private DateOnly? _programmeEndDate;
+        private DateOnly? _programmeStartDate;
+        private PersonStatus? _status;
 
-        public Guid PersonId { get; } = Guid.NewGuid();
+        private Guid PersonId { get; } = Guid.NewGuid();
 
         public CreatePersonBuilder WithDateOfBirth(DateOnly dateOfBirth)
         {
@@ -294,20 +293,20 @@ public partial class TestData
             var trn = hasTrn ? await testData.GenerateTrn() : null;
             var hasNationalInsuranceNumber = _hasNationalInsuranceNumber ?? false;
             var nationalInsuranceNumber = hasNationalInsuranceNumber
-                ? _nationalInsuranceNumber ?? testData.GenerateNationalInsuranceNumber()
+                ? _nationalInsuranceNumber ?? GenerateNationalInsuranceNumber()
                 : null;
-            var statedFirstName = _firstName ?? testData.GenerateFirstName();
-            var statedMiddleName = _middleName ?? testData.GenerateMiddleName();
+            var statedFirstName = _firstName ?? GenerateFirstName();
+            var statedMiddleName = _middleName ?? GenerateMiddleName();
             var firstAndMiddleNames = $"{statedFirstName} {statedMiddleName}".Split(
                 ' ',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
             var firstName = firstAndMiddleNames.First();
             var middleName = string.Join(" ", firstAndMiddleNames.Skip(1));
-            var lastName = _lastName ?? testData.GenerateLastName();
-            var dateOfBirth = _dateOfBirth ?? testData.GenerateDateOfBirth();
+            var lastName = _lastName ?? GenerateLastName();
+            var dateOfBirth = _dateOfBirth ?? GenerateDateOfBirth();
             var status = _status ?? PersonStatus.Active;
-            var personOrganisations = (_organisationId != Guid.Empty)
+            var personOrganisations = _organisationId != Guid.Empty
                 ?
                 [
                     new PersonOrganisation
@@ -318,11 +317,11 @@ public partial class TestData
                     }
                 ]
                 : new List<PersonOrganisation>();
-            var isFunded = true;
-            var programmeStartDate = _programmeStartDate ?? testData.GenerateDate(DateOnly.FromDateTime(DateTime.Now));
-            var programmeEndDate = _programmeEndDate ?? testData.GenerateDate(programmeStartDate);
+            const bool isFunded = true;
+            var programmeStartDate = _programmeStartDate ?? GenerateDate(DateOnly.FromDateTime(DateTime.Now));
+            var programmeEndDate = _programmeEndDate ?? GenerateDate(programmeStartDate);
 
-            return new CreatePersonResult()
+            return new CreatePersonResult
             {
                 PersonId = PersonId,
                 Trn = trn,
@@ -357,12 +356,13 @@ public partial class TestData
         public PersonStatus Status { get; init; }
         public List<PersonOrganisation> PersonOrganisations { get; init; } = [];
         public int? ExternalUserId { get; set; }
-        public bool IsFunded { get; set; }
+        public bool IsFunded { get; init; }
         public DateOnly? ProgrammeStartDate { get; init; }
         public DateOnly? ProgrammeEndDate { get; init; }
 
-        public Person ToPerson() =>
-            new Person
+        public Person ToPerson()
+        {
+            return new Person
             {
                 PersonId = PersonId,
                 Trn = Trn,
@@ -380,7 +380,11 @@ public partial class TestData
                 ProgrammeStartDate = ProgrammeStartDate,
                 ProgrammeEndDate = ProgrammeEndDate
             };
+        }
 
-        public PersonDto ToPersonDto() => ToPerson().ToDto();
+        public PersonDto ToPersonDto()
+        {
+            return ToPerson().ToDto();
+        }
     }
 }
