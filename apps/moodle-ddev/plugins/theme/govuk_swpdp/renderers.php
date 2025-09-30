@@ -62,7 +62,8 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
                     return '';
                 }
             }
-        }
+        } 
+
         return parent::heading($text, $level, $classes, $id);
     }
 
