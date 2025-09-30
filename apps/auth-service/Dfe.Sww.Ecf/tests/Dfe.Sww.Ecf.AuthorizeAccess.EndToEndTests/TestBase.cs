@@ -1,3 +1,4 @@
+using Bogus;
 using Dfe.Sww.Ecf.AuthorizeAccess.EndToEndTests.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 
@@ -5,6 +6,7 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.EndToEndTests;
 
 public abstract class TestBase(HostFixture hostFixture)
 {
+    protected readonly Faker Faker = new("en_GB");
     public HostFixture HostFixture { get; } = hostFixture;
 
     public IClock Clock => HostFixture.Services.GetRequiredService<IClock>();

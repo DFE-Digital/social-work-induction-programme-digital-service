@@ -7,20 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectCapability Remove="TestContainer" />
+    <ProjectCapability Remove="TestContainer"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Faker.Net" />
-    <PackageReference Include="FakeXrmEasy.v9" />
-    <PackageReference Include="Moq" />
-    <PackageReference Include="Respawn" />
-    <PackageReference Include="System.Linq.Async" />
-    <PackageReference Include="xunit.assert" />
+    <PackageReference Include="Bogus"/>
+    <PackageReference Include="FakeXrmEasy.v9"/>
+    <PackageReference Include="Moq"/>
+    <PackageReference Include="Respawn"/>
+    <PackageReference Include="System.Linq.Async"/>
+    <PackageReference Include="xunit.assert"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj" />
+    <ProjectReference Include="..\..\src\Dfe.Sww.Ecf.Core\Dfe.Sww.Ecf.Core.csproj"/>
   </ItemGroup>
 
 </Project>
