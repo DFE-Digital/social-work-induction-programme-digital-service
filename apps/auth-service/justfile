@@ -5,6 +5,7 @@ solution-dir := justfile_directory() / solution-root
 user-secrets-id := "Dfe.Sww.Ecf"
 cli-user-secrets-id := "Dfe.Sww.Ecf.Cli"
 test-user-secrets-id := "Dfe.Sww.EcfTests"
+ci := "false"
 
 mod onelogin-sim
 
@@ -63,11 +64,21 @@ test:
     postgres:15 >/dev/null
 
   cleanup() {
+    local exit_code=${1:-0}
+    echo "Cleaning up database container..."
+    docker rm -f "$DB_CONTAINER" >/dev/null 2>&1 || true
+    echo "Exiting..."
+    exit $exit_code
+  }
+  trap cleanup EXIT SIGINT SIGTERM
+
+  cleanup_fail() {
     echo "Logs from '$DB_CONTAINER' (tail):"
     docker logs "$DB_CONTAINER" --tail 100 || true
-    docker rm -f "$DB_CONTAINER" >/dev/null 2>&1 || true
+    cleanup 1
   }
-  trap cleanup EXIT INT TERM ERR
+  trap cleanup_fail SIGHUP ERR
+
 
   echo "Waiting for Postgres to become ready…"
   for i in {1..40}; do
@@ -82,6 +93,8 @@ test:
     echo "ERROR: Postgres (DB '$DB_NAME') did not become healthy in time." >&2
     exit 1
   fi
+
+  echo "Postgres (DB '$DB_NAME') ready!"
 
   cd "{{solution-dir}}"
 
@@ -98,10 +111,18 @@ test:
   export ASPNETCORE_ENVIRONMENT="${ASPNETCORE_ENVIRONMENT:-Testing}"
   export ConnectionStrings__DefaultConnection="Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
 
+  DOTNET_ARGS=("$@")
+
+  if [[ "${GITHUB_ACTIONS:-}" == "true" || "${CI:-{{ci}}}" == "true" ]]; then
+    DOTNET_ARGS+=(--no-build)
+    DOTNET_ARGS+=(--logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true")
+    DOTNET_ARGS+=(-- "RunConfiguration.CollectSourceInformation=true")
+  fi
+
   overall=0
   for csproj in "${TEST_PROJECTS[@]}"; do
-    echo "::group::dotnet test $csproj"
-    if ! dotnet test "$csproj" --no-build; then
+    echo "::group::dotnet test $csproj ${DOTNET_ARGS[@]}"
+    if ! dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
       echo "::error title=Tests failed::$csproj"
       overall=1
     else
@@ -113,7 +134,7 @@ test:
   exit $overall
 
 ci-test:
-  @just test
+  @just ci=true test
 
 # Format the .NET solution and Terraform code
 format:
