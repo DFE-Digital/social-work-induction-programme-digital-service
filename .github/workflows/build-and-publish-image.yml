@@ -78,6 +78,20 @@ jobs:
           GITHUB_INPUTS: ${{ toJSON(github.event.inputs) }}
         run: echo $GITHUB_INPUTS
 
+      - name: Initialise summary values
+        shell: bash
+        run: |
+          cat <<'EOF' >> "$GITHUB_ENV"
+          TOOLS_STATUS=⏳ Pending
+          RESTORE_STATUS=⏳ Pending
+          BUILD_STATUS=⏳ Pending
+          TEST_STATUS=⏳ Pending
+          PACKAGE_STATUS=⏳ Pending
+          DOCKER_BUILD_STATUS=⏳ Pending
+          DOCKER_PUSH_STATUS=🚫 Not requested
+          TEST_LOG_PATH=
+          EOF
+
       - name: Log in to Azure CLI
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
         with:
@@ -91,17 +105,32 @@ jobs:
       - name: Restore tools
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just ci-install-tools
+        run: |
+          set -euo pipefail
+          trap 'echo "TOOLS_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
+          just ci-install-tools
+          echo "TOOLS_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
 
       - name: Restore packages / files
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just ci-restore
+        run: |
+          set -euo pipefail
+          trap 'echo "RESTORE_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
+          just ci-restore
+          echo "RESTORE_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
 
       - name: Build component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just ci-build
+        run: |
+          set -euo pipefail
+          trap 'echo "BUILD_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
+          just ci-build
+          echo "BUILD_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
 
       - name: Run tests
         shell: bash
@@ -110,7 +139,21 @@ jobs:
           DB_USER: ${{ secrets.TEST_DB_USER }}
           DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
           DB_NAME: ecf_test_${{ github.run_id }}
-        run: just ci-test
+        run: |
+          set +e
+          set -o pipefail
+          TEST_LOG_PATH="${RUNNER_TEMP}/ci-test.log"
+          just ci-test | tee "$TEST_LOG_PATH"
+          TEST_EXIT=${PIPESTATUS[0]}
+          set -e
+          set +o pipefail
+          if [ $TEST_EXIT -eq 0 ]; then
+            echo "TEST_STATUS=✅ Passed" >> "$GITHUB_ENV"
+          else
+            echo "TEST_STATUS=❌ Failed" >> "$GITHUB_ENV"
+          fi
+          echo "TEST_LOG_PATH=$TEST_LOG_PATH" >> "$GITHUB_ENV"
+          exit $TEST_EXIT
 
       # Need to retrieve ACR_NAME in particular for next steps
       - name: Load Terraform variables
@@ -137,7 +180,12 @@ jobs:
       - name: Package component
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: just ci-package-component
+        run: |
+          set -euo pipefail
+          trap 'echo "PACKAGE_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
+          just ci-package-component
+          echo "PACKAGE_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
 
       - name: Azure Container Registry login
         shell: bash
@@ -155,6 +203,8 @@ jobs:
           BUILD_SECRETS: ${{ steps.extract-docker-build-args.outputs.secret-arg-string }}
           STANDARD_IMAGE_TAG: ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
         run: |
+          set -euo pipefail
+          trap 'echo "DOCKER_BUILD_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
           echo "Docker build: specified args - ${{ inputs.build-args }}, ${{ inputs.build-secrets }}"
           echo "Docker build: Using extracted build args - $BUILD_ARGS, secrets - $BUILD_SECRETS"
 
@@ -174,16 +224,31 @@ jobs:
             --target ${{ inputs.build-target }} \
             -t "$STANDARD_IMAGE_TAG" .
 
+          echo "DOCKER_BUILD_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
+
       - name: Docker image stats
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: docker image inspect ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
+        run: |
+          set -euo pipefail
+          docker image inspect "${{ steps.get-docker-image-tag.outputs.standard-image-tag }}" | python -c 'import json, sys; data=json.load(sys.stdin)[0]; size_mb=round(data.get("Size", 0)/1024/1024, 2); created=data.get("Created", "").rstrip("Z").replace("T", " "); image_id=data.get("Id", ""); repo_tags=", ".join(data.get("RepoTags", [])); print(f"IMAGE_SIZE_MB={size_mb}"); print(f"IMAGE_CREATED_AT={created}"); print(f"IMAGE_ID={image_id}"); print(f"IMAGE_REPO_TAGS={repo_tags}")' >> "$GITHUB_ENV"
 
       - name: Docker push
         if: inputs.publish-image == true
         shell: bash
         working-directory: ${{ inputs.working-dir }}
-        run: docker push "${{ steps.get-docker-image-tag.outputs.standard-image-tag }}"
+        run: |
+          set -euo pipefail
+          trap 'echo "DOCKER_PUSH_STATUS=❌ Failed" >> "$GITHUB_ENV"' ERR
+          docker push "${{ steps.get-docker-image-tag.outputs.standard-image-tag }}"
+          echo "DOCKER_PUSH_STATUS=✅ Success" >> "$GITHUB_ENV"
+          trap - ERR
+
+      - name: Record docker push skipped
+        if: inputs.publish-image != true
+        shell: bash
+        run: echo "DOCKER_PUSH_STATUS=🚫 Not requested" >> "$GITHUB_ENV"
 
       - name: Return outputs
         id: return
@@ -194,3 +259,42 @@ jobs:
           echo "docker-image-tag=$STANDARD_IMAGE_TAG" >> $GITHUB_OUTPUT
           # Returned as a convenience if the caller wants to subsequently deploy to dev
           echo "dev-resource-name-prefix=${{ env.RESOURCE_NAME_PREFIX }}" >> $GITHUB_OUTPUT
+
+      - name: Publish workflow summary
+        if: always()
+        shell: bash
+        env:
+          STANDARD_IMAGE_TAG: ${{ steps.get-docker-image-tag.outputs.standard-image-tag }}
+          ENVIRONMENT_NAME: ${{ inputs.environment }}
+          ENVIRONMENT_INSTANCE: ${{ inputs.environment-instance }}
+        run: |
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ## Build Summary
+
+          | Stage | Status | Details |
+          | --- | --- | --- |
+          | Tooling | ${TOOLS_STATUS:-Unknown} | \`just ci-install-tools\` |
+          | Restore | ${RESTORE_STATUS:-Unknown} | \`just ci-restore\` |
+          | Build | ${BUILD_STATUS:-Unknown} | \`just ci-build\` |
+          | Tests | ${TEST_STATUS:-Unknown} | \`just ci-test\` |
+          | Package | ${PACKAGE_STATUS:-Unknown} | \`just ci-package-component\` |
+          | Docker build | ${DOCKER_BUILD_STATUS:-Unknown} | Target: \`${{ inputs.build-target }}\` |
+          | Docker push | ${DOCKER_PUSH_STATUS:-Unknown} | Image: \`${STANDARD_IMAGE_TAG}\` |
+
+          ### Context
+
+          - Environment: ${ENVIRONMENT_NAME} (${ENVIRONMENT_INSTANCE})
+          - Image tag: \`${STANDARD_IMAGE_TAG}\`
+          - Image size: ${IMAGE_SIZE_MB:-unknown} MB
+          - Image created: ${IMAGE_CREATED_AT:-unknown}
+          - Image ID: ${IMAGE_ID:-unknown}
+          - Repo tags: ${IMAGE_REPO_TAGS:-unknown}
+          EOF
+
+          if [[ -n "${TEST_LOG_PATH:-}" && -f "${TEST_LOG_PATH}" ]]; then
+            {
+              echo
+              echo "### Test Output (last 20 lines)"
+              tail -n 20 "${TEST_LOG_PATH}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
