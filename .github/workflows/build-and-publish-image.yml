@@ -268,13 +268,6 @@ jobs:
           ENVIRONMENT_NAME: ${{ inputs.environment }}
           ENVIRONMENT_INSTANCE: ${{ inputs.environment-instance }}
         run: |
-          EXISTING_SUMMARY_FILE="$(mktemp)"
-          if [[ -f "$GITHUB_STEP_SUMMARY" ]]; then
-            cp "$GITHUB_STEP_SUMMARY" "$EXISTING_SUMMARY_FILE"
-          fi
-
-          : > "$GITHUB_STEP_SUMMARY"
-
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Build Summary
 
@@ -320,5 +313,3 @@ jobs:
               tail -n 20 "${TEST_LOG_PATH}"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-
-          rm -f "$EXISTING_SUMMARY_FILE"
