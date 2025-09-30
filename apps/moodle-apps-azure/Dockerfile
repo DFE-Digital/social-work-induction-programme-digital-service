@@ -75,8 +75,8 @@ RUN chmod +x install-moosh \
 # Required to run the install-oidc-plugin script
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        wget \
-        unzip
+    wget \
+    unzip
 
 RUN mkdir -p /app
 COPY install-oidc-plugin /app/install-oidc-plugin
@@ -84,7 +84,7 @@ COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
 RUN chmod +x /app/install-oidc-plugin \
     && cd public \
     && /app/install-oidc-plugin check,copy,upgrade \
-        ${MOODLE_OIDC_PLUGIN_RELEASE_URL}
+    ${MOODLE_OIDC_PLUGIN_RELEASE_URL}
 
 RUN rm install-*
 
@@ -108,10 +108,10 @@ WORKDIR /var/www/html/public
 # Mandatory tools for remote SSH + general mgmt and az for file sync
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        openssh-server \
-        postgresql-client \
-        apache2-utils \
-        rsync \
+    openssh-server \
+    postgresql-client \
+    apache2-utils \
+    rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # Support kudu tools SSH for remote debug
@@ -138,11 +138,11 @@ RUN echo "$FULL_TAG" > version.txt
 #COPY dmllib.trace.php ./lib/dmllib.php
 
 # We use the moodledata_ref directory as a reference to seed the Azure file share if empty
-RUN mv /var/www/moodledata /var/www/moodledata_ref \
-    && mkdir -p /var/www/moodledata \
-    && chown www-data:www-data /var/www/moodledata \
-    && mkdir -p /var/www/moodledata_share \
-    && chown www-data:www-data /var/www/moodledata_share
+# RUN mv /var/www/moodledata /var/www/moodledata_ref \
+#     && mkdir -p /var/www/moodledata \
+#     && chown www-data:www-data /var/www/moodledata \
+#     && mkdir -p /var/www/moodledata_share \
+#     && chown www-data:www-data /var/www/moodledata_share
 
 # Needs to run as root for various standard mount point permissions in Azure
 # Apache is configured to run as www-data
