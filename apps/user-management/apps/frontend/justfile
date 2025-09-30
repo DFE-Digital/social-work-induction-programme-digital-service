@@ -41,13 +41,24 @@ test:
 
   DOTNET_ARGS=("$@")
 
+  SUMMARY_CAPTURE=""
+  if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -n "${RUNNER_TEMP:-}" ]]; then
+    SUMMARY_CAPTURE="${RUNNER_TEMP%/}/frontend-test-summary-$(date +%s)-$RANDOM.md"
+    : > "$SUMMARY_CAPTURE"
+    echo "FRONTEND_TEST_SUMMARY_HTML=$SUMMARY_CAPTURE" >> "$GITHUB_ENV"
+  fi
+
   if [[ "${GITHUB_ACTIONS:-}" == "true" || "${CI:-{{ci}}}" == "true" ]]; then
     DOTNET_ARGS+=(--no-build)
     DOTNET_ARGS+=(--logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true")
     DOTNET_ARGS+=(-- "RunConfiguration.CollectSourceInformation=true")
   fi
 
-  dotnet test "${DOTNET_ARGS[@]}"
+  if [[ -n "$SUMMARY_CAPTURE" ]]; then
+    GITHUB_STEP_SUMMARY="$SUMMARY_CAPTURE" dotnet test "${DOTNET_ARGS[@]}"
+  else
+    dotnet test "${DOTNET_ARGS[@]}"
+  fi
 
 ci-test:
   @just ci=true test
