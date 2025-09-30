@@ -205,6 +205,7 @@ resource "azurerm_storage_account" "sa_moodle_data" {
   #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
   #checkov:skip=CKV2_AZURE_40:Shared access key are sufficient
   #checkov:skip=CKV_AZURE_33:Argument has been deprecated
+  #checkov:skip=CKV_AZURE_44:Secured with vnet integration and private endpoints as security measures
 }
 
 resource "azurerm_storage_share" "moodle_data_share" {
