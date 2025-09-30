@@ -89,7 +89,11 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
             $data['stickycontent'] .= html_writer::link(
                 '',
                 get_string('sendtoobserver', 'theme_govuk_swpdp'),
-                ['class' => 'govuk-button govuk-button--secondary', 'role' => 'button'],
+                [
+                    'class' => 'govuk-button govuk-button--secondary',
+                    'role' => 'button',
+                    'onclick' => 'return false;', // Makes the button have no functionality
+                ],
             );
         }
 
