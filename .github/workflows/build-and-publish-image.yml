@@ -268,13 +268,6 @@ jobs:
           ENVIRONMENT_NAME: ${{ inputs.environment }}
           ENVIRONMENT_INSTANCE: ${{ inputs.environment-instance }}
         run: |
-          EXISTING_SUMMARY_FILE="$(mktemp)"
-          if [[ -f "$GITHUB_STEP_SUMMARY" ]]; then
-            cp "$GITHUB_STEP_SUMMARY" "$EXISTING_SUMMARY_FILE"
-          fi
-
-          : > "$GITHUB_STEP_SUMMARY"
-
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Build Summary
 
@@ -298,10 +291,21 @@ jobs:
           - Repo tags: ${IMAGE_REPO_TAGS:-unknown}
           EOF
 
-          if [[ -s "$EXISTING_SUMMARY_FILE" ]]; then
+          SUMMARY_FILES=()
+          if [[ -n "${TEST_SUMMARY_HTML:-}" && -f "${TEST_SUMMARY_HTML}" ]]; then
+            SUMMARY_FILES+=("${TEST_SUMMARY_HTML}")
+          fi
+          if [[ -n "${FRONTEND_TEST_SUMMARY_HTML:-}" && -f "${FRONTEND_TEST_SUMMARY_HTML}" ]]; then
+            SUMMARY_FILES+=("${FRONTEND_TEST_SUMMARY_HTML}")
+          fi
+
+          if (( ${#SUMMARY_FILES[@]} > 0 )); then
             echo >> "$GITHUB_STEP_SUMMARY"
             echo "### Test Results" >> "$GITHUB_STEP_SUMMARY"
-            cat "$EXISTING_SUMMARY_FILE" >> "$GITHUB_STEP_SUMMARY"
+            for summary_file in "${SUMMARY_FILES[@]}"; do
+              cat "$summary_file" >> "$GITHUB_STEP_SUMMARY"
+              echo >> "$GITHUB_STEP_SUMMARY"
+            done
           elif [[ -n "${TEST_LOG_PATH:-}" && -f "${TEST_LOG_PATH}" ]]; then
             {
               echo
@@ -309,5 +313,3 @@ jobs:
               tail -n 20 "${TEST_LOG_PATH}"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
-
-          rm -f "$EXISTING_SUMMARY_FILE"
