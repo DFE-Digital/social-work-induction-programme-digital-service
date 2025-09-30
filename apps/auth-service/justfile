@@ -112,9 +112,8 @@ test:
   
   exit $overall
 
-# TODO replace "@true" with "@just test" once auth tests are passing and tests can start running in CI
 ci-test:
-  @true
+  @just test
 
 # Format the .NET solution and Terraform code
 format:
