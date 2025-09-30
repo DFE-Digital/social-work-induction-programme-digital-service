@@ -214,12 +214,21 @@ test:
 
   overall=0
   for csproj in "${TEST_PROJECTS[@]}"; do
-    echo "::group::dotnet test $csproj ${DOTNET_ARGS[@]}"
-    if ! dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
-      echo "::error title=Tests failed::$csproj"
-      overall=1
+    echo "::group::dotnet test $csproj ${DOTNET_ARGS[*]}"
+    if [[ -n "$SUMMARY_CAPTURE" ]]; then
+      if ! GITHUB_STEP_SUMMARY="$SUMMARY_CAPTURE" dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
+        echo "::error title=Tests failed::$csproj"
+        overall=1
+      else
+        echo "Tests passed in $csproj"
+      fi
     else
-      echo "Tests passed in $csproj"
+      if ! dotnet test "$csproj" "${DOTNET_ARGS[@]}"; then
+        echo "::error title=Tests failed::$csproj"
+        overall=1
+      else
+        echo "Tests passed in $csproj"
+      fi
     fi
     echo "::endgroup::"
   done
