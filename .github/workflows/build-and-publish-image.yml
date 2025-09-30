@@ -17,18 +17,18 @@ on:
         default: Dockerfile
       base-image-version:
         type: string
-        default: ''
+        default: ""
       docker-image-name:
         type: string
         required: true
-      build-args: 
+      build-args:
         type: string
         description: Semicolon separated list of build arguments (key1=value1;key2=value2)
-        default: ''
+        default: ""
       build-secrets:
         type: string
         description: Semicolon separated list of build secrets (secret1=secretname1;secret2=secretname2)
-        default: ''
+        default: ""
       build-target:
         type: string
         description: Dockerfile build target
@@ -66,10 +66,10 @@ jobs:
     outputs:
       docker-image-tag: ${{ steps.return.outputs.docker-image-tag }}
       dev-resource-name-prefix: ${{ steps.return.outputs.dev-resource-name-prefix }}
-      
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -93,14 +93,14 @@ jobs:
           EOF
 
       - name: Log in to Azure CLI
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
           client-id: ${{ env.AZ_CLIENT_ID }}
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
 
       - name: Install just
-        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff  # v3
+        uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff # v3
 
       - name: Restore tools
         shell: bash
@@ -175,7 +175,7 @@ jobs:
         with:
           acr-name: ${{ env.ACR_NAME }}
           base-image-version: ${{ inputs.base-image-version }}
-          docker-image-name: ${{ inputs.docker-image-name }}    
+          docker-image-name: ${{ inputs.docker-image-name }}
 
       - name: Package component
         shell: bash
@@ -268,6 +268,13 @@ jobs:
           ENVIRONMENT_NAME: ${{ inputs.environment }}
           ENVIRONMENT_INSTANCE: ${{ inputs.environment-instance }}
         run: |
+          EXISTING_SUMMARY_FILE="$(mktemp)"
+          if [[ -f "$GITHUB_STEP_SUMMARY" ]]; then
+            cp "$GITHUB_STEP_SUMMARY" "$EXISTING_SUMMARY_FILE"
+          fi
+
+          : > "$GITHUB_STEP_SUMMARY"
+
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Build Summary
 
@@ -291,10 +298,16 @@ jobs:
           - Repo tags: ${IMAGE_REPO_TAGS:-unknown}
           EOF
 
-          if [[ -n "${TEST_LOG_PATH:-}" && -f "${TEST_LOG_PATH}" ]]; then
+          if [[ -s "$EXISTING_SUMMARY_FILE" ]]; then
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo "### Test Results" >> "$GITHUB_STEP_SUMMARY"
+            cat "$EXISTING_SUMMARY_FILE" >> "$GITHUB_STEP_SUMMARY"
+          elif [[ -n "${TEST_LOG_PATH:-}" && -f "${TEST_LOG_PATH}" ]]; then
             {
               echo
               echo "### Test Output (last 20 lines)"
               tail -n 20 "${TEST_LOG_PATH}"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
+
+          rm -f "$EXISTING_SUMMARY_FILE"
