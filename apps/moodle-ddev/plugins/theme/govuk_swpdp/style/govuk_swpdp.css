@@ -56,3 +56,8 @@
         margin-bottom:30px
     }
 }
+
+/* Hide the text-only group info when .no-group-menu on view database */
+body.path-mod-data.no-group-menu .groupselector {
+  display: none !important;
+}
