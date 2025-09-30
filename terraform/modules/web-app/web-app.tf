@@ -43,7 +43,7 @@ resource "azurerm_linux_web_app" "webapp" {
       mount_path   = storage_account.value.mount_path
       account_name = storage_account.value.account_name
       share_name   = storage_account.value.share_name
-      access_key   = var.storage_access_key
+      access_key   = storage_account.value.access_key
     }
   }
 
@@ -70,9 +70,7 @@ resource "azurerm_linux_web_app" "webapp" {
 
   lifecycle {
     ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"],
+      tags,
       # Ignore changes to the currently deployed image - CD will be changing this
       site_config.0.application_stack,
       # This is particularly sneaky. When the swift network connection is set later on, the

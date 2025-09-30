@@ -179,3 +179,19 @@ output "full_backup_storage_connectionstring_uri" {
   description = "The full Key Vault URI for the backup blob storage connection string"
   value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.db_backup_blob_storage_connection_string.name}"
 }
+
+output "moodle_data_storage_account_name" {
+  description = "The name of the Moodle Data storage account"
+  value       = azurerm_storage_account.sa_moodle_data.name
+}
+
+output "moodle_data_share_name" {
+  description = "The name of the Moodle Data share"
+  value       = azurerm_storage_share.moodle_data_share.name
+}
+
+output "moodle_data_share_access_key" {
+  description = "The access key for the Moodle data share"
+  value       = azurerm_storage_account.sa_moodle_data.primary_access_key
+  sensitive   = true
+}

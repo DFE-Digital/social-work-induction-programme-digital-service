@@ -104,6 +104,12 @@ resource "azurerm_key_vault_secret" "db_operations_function_key" {
   key_vault_id = module.stack.kv_id
   content_type = "function app key"
 
+  tags = local.common_tags
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+
   depends_on = [data.azurerm_function_app_host_keys.db_operations_keys]
 
   #checkov:skip=CKV_AZURE_41:Function key doesn't need expiry date
