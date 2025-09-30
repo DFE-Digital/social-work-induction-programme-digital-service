@@ -1,6 +1,8 @@
 set shell := ["bash", "-e", "-o", "pipefail", "-c"]
 
 solution-root := "."
+test-solution-root := "../frontend.Test"
+ci := "false"
 
 default:
   @just --list
@@ -24,18 +26,30 @@ ci-restore:
 # Build the .NET solution
 build:
   @cd {{solution-root}} && dotnet build --no-restore
+  @cd {{test-solution-root}} && dotnet build --no-restore
 
 ci-build:
   @just build
 
 # Test the .NET solution
 test:
-  @cd {{solution-root}} && dotnet test
+  #!/bin/bash
+  set -euo pipefail
+
+  cd {{test-solution-root}}
+
+  DOTNET_ARGS=("$@")
+
+  if [[ "${GITHUB_ACTIONS:-}" == "true" || "${CI:-{{ci}}}" == "true" ]]; then
+    DOTNET_ARGS+=(--no-build)
+    DOTNET_ARGS+=(--logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true")
+    DOTNET_ARGS+=(-- "RunConfiguration.CollectSourceInformation=true")
+  fi
+
+  dotnet test "${DOTNET_ARGS[@]}"
 
 ci-test:
-  pwd
-  echo {{solution-root}}
-  @cd {{solution-root}}/../frontend.Test && dotnet test
+  @just ci=true test
 
 # Publish the project
 package-component:
