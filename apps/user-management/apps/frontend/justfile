@@ -19,6 +19,7 @@ ci-install-tools:
 # Restore dependencies
 restore:
   @cd {{solution-root}} && dotnet restore
+  @cd {{test-solution-root}} && dotnet restore
   
 ci-restore:
   @just restore
