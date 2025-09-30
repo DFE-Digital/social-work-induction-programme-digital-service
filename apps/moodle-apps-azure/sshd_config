@@ -10,3 +10,5 @@ PasswordAuthentication 	yes
 PermitEmptyPasswords 	no
 PermitRootLogin 	yes
 Subsystem sftp internal-sftp
+ClientAliveInterval 60
+ClientAliveCountMax 3

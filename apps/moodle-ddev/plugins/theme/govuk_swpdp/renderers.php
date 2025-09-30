@@ -17,11 +17,17 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         return parent::navbar();
     }
 
-    /* Empty header on view database page to hide course name */
+    /* Empty header on view database page to hide course name 
+    *  Add class for empty heading as css helper
+    *  Add class when non staff as css helper to hide group info 
+    */
     public function header(): string {
         if ($this->page->pagetype === 'mod-data-view') {
             $this->page->set_heading('');
             $this->page->add_body_class('db-noheading');
+            if (!$this->is_staff_viewing_database()) {
+                $this->page->add_body_class('no-group-menu');
+            }    
         }
         return parent::header();
     }    
@@ -39,7 +45,8 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
                     return '';
                 }
             }
-        }
+        } 
+
         return parent::heading($text, $level, $classes, $id);
     }
 
@@ -100,7 +107,7 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         return $this->render_from_template('core/sticky_footer', $data);
     }
 
-    public function firstview_fakeblocks(): string {
-        return '';
+    public function firstview_fakeblocks(): bool {
+        return false;
     }
 }

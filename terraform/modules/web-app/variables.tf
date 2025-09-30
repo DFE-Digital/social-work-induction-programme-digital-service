@@ -118,11 +118,11 @@ variable "support_action_group_id" {
 
 variable "storage_mounts" {
   type = map(object({
-    type          = string
-    mount_path    = string
-    account_name  = string
-    share_name    = string
-    mount_options = string
+    type         = string
+    mount_path   = string
+    account_name = string
+    share_name   = string
+    access_key   = string
   }))
   description = "A map of storage mounts to be configured for the App Service. The key of the map is used as the mount's configuration name. An empty map creates no mounts."
   default     = {} # Default to an empty map, making it optional.
