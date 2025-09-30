@@ -3,16 +3,22 @@ using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
-using FakeXrmEasy.Extensions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
-public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFixture)
+[Collection("Uses Database")]
+public class AccountsControllerTests : TestBase
 {
     private readonly AppInfo _appInfo = new();
+
+    public AccountsControllerTests(HostFixture hostFixture) : base(hostFixture)
+    {
+        var dbHelper = HostFixture.Services.GetRequiredService<DbHelper>();
+        dbHelper.ClearData().GetAwaiter().GetResult();
+    }
 
     [Fact]
     public async Task GetAllAsync_ReturnsOkResult_WhenAccountsExist()
@@ -21,8 +27,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         {
             // Arrange
             const int expectedCount = 5;
-            var organisationName = Faker.Address.City();
-            var organisation = await TestData.CreateOrganisation(organisationName);
+            var organisation = await TestData.CreateOrganisation();
 
             await TestData.CreatePersons(expectedCount, organisation.OrganisationId);
 
@@ -187,8 +192,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var organisationName = Faker.Address.City();
-            var organisation = await TestData.CreateOrganisation(organisationName);
+            var organisation = await TestData.CreateOrganisation();
             var expectedNewUser =
                 (await TestData
                     .CreatePerson(
@@ -198,7 +202,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 ).ToPersonDto();
             expectedNewUser.Roles = new List<RoleType>
             {
-                Faker.Enum.Random<RoleType>(),
+                Faker.Random.Enum<RoleType>()
             }.ToImmutableList();
 
             var accountsService = new AccountsService(dbContext, Clock);
@@ -248,7 +252,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             ).ToPersonDto();
             existingUser.Roles = new List<RoleType>
             {
-                Faker.Enum.Random<RoleType>(),
+                Faker.Random.Enum<RoleType>()
             }.ToImmutableList();
 
             var expectedUser = new PersonDto
@@ -265,7 +269,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
                 {
                     RoleType.Assessor,
                     RoleType.Coordinator,
-                    RoleType.EarlyCareerSocialWorker,
+                    RoleType.EarlyCareerSocialWorker
                 }.ToImmutableList(),
                 Status = PersonStatus.Inactive,
                 IsFunded = existingUser.IsFunded,
@@ -359,7 +363,7 @@ public class AccountsControllerTests(HostFixture hostFixture) : TestBase(hostFix
             ).ToPersonDto();
             existingUser.Roles = new List<RoleType>
             {
-                Faker.Enum.Random<RoleType>(),
+                Faker.Random.Enum<RoleType>()
             }.ToImmutableList();
 
             var accountsService = new AccountsService(dbContext, Clock);
