@@ -85,10 +85,8 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
         $data = $footer->export_for_template($this);
 
         $isdataedit = $this->page->pagetype === 'mod-data-edit';
-        $rid = optional_param('rid', 0, PARAM_INT);
-        $isadd = $rid == 0;
 
-        if ($isdataedit && $isadd) {
+        if ($isdataedit) {
             $data['stickycontent'] = html_writer::empty_tag('input', [
                 'type' => 'submit',
                 'name' => 'saveandview',
