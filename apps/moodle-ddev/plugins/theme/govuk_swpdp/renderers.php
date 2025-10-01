@@ -20,6 +20,7 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
     /* Empty header on view database page to hide course name 
     *  Add class for empty heading as css helper
     *  Add class when non staff as css helper to hide group info 
+    *  Call ESM javascript to convert author link to span
     */
     public function header(): string {
         if ($this->page->pagetype === 'mod-data-view') {
@@ -28,6 +29,7 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
             if (!$this->is_staff_viewing_database()) {
                 $this->page->add_body_class('no-group-menu');
             }    
+            $this->page->requires->js_call_amd('theme_govuk_swpdp/database_entry_author', 'init');
         }
         return parent::header();
     }    

@@ -21,9 +21,11 @@ Please ensure you have 'Powershell' installed.
 
 To setup PowerShell on a MacOS machine, use you can follow [this guide](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-macos?view=powershell-7.4). For Windows, you can follow [this guide](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4).
 
-#### asdf
+#### Tool manager
 
-If using [asdf](https://asdf-vm.com/), a `.tool-versions` file has been created to simplify the installation of these dependencies. Simply run the following:
+A `.tool-versions` file has been created to simplify the installation of these dependencies. This can be used by any tool manager that supports it. For example:
+
+[asdf](https://asdf-vm.com/):
 
 ```
 asdf plugin add just
@@ -32,6 +34,12 @@ asdf plugin add nodejs
 asdf plugin add dotnet
 asdf plugin add mkcert
 asdf install
+```
+
+[mise](https://mise.jdx.dev/):
+
+```
+mise install
 ```
 
 ### Setup

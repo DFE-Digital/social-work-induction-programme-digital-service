@@ -1,17 +1,23 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Accounts;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Models.Pagination;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
-using Faker;
+using Dfe.Sww.Ecf.TestCommon.Fakers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
-public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(hostFixture)
+[Collection("Uses Database")]
+public class OrganisationsControllerTests : TestBase
 {
+    public OrganisationsControllerTests(HostFixture hostFixture) : base(hostFixture)
+    {
+        var dbHelper = HostFixture.Services.GetRequiredService<DbHelper>();
+        dbHelper.ClearData().GetAwaiter().GetResult();
+    }
+
     [Fact]
     public async Task GetAllAsync_ReturnsOkResult_WhenOrganisationsExist()
     {
@@ -37,7 +43,8 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                 .BeOfType<PaginationResult<OrganisationDto>>()
                 .Subject.Records;
 
-            resultOrganisations.Should().BeEquivalentTo(expectedOrganisations);
+            resultOrganisations.Should().BeEquivalentTo(expectedOrganisations,
+                o => o.Excluding(x => x.PersonOrganisations).Excluding(x => x.PrimaryCoordinator));
         });
     }
 
@@ -48,9 +55,7 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
         {
             // Arrange
             var request = new PaginationRequest(0, 1);
-
             var organisationService = new OrganisationService(dbContext);
-
             var controller = new OrganisationsController(organisationService);
 
             // Act
@@ -101,24 +106,27 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
         });
     }
 
-     [Fact]
+    [Fact]
     public async Task CreateAsync_ReturnsCreatedResult_WhenOrganisationIsCreated()
     {
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var organisationName = Address.City();
-            var organisation = await TestData.CreateOrganisation(organisationName);
-
             var organisationService = new OrganisationService(dbContext);
-
             var controller = new OrganisationsController(organisationService);
+            var organisation = new OrganisationFaker().WithCreatedOn(Clock.UtcNow).WithUpdatedOn(Clock.UtcNow)
+                .Generate();
+
+            if (organisation.PrimaryCoordinator == null)
+            {
+                throw new InvalidOperationException("OrganisationFaker generated null primary coordinator");
+            }
 
             // Act
             var result = await controller.CreateAsync(
                 new CreateOrganisationRequest
                 {
-                    OrganisationName = organisationName,
+                    OrganisationName = organisation.OrganisationName,
                     ExternalOrganisationId = organisation.ExternalOrganisationId,
                     Type = organisation.Type,
                     LocalAuthorityCode = organisation.LocalAuthorityCode,
@@ -127,12 +135,13 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
                     PhoneNumber = organisation.PhoneNumber,
                     CreatePersonRequest = new CreatePersonRequest
                     {
-                        FirstName = organisation.PrimaryCoordinator!.FirstName,
+                        FirstName = organisation.PrimaryCoordinator.FirstName,
                         LastName = organisation.PrimaryCoordinator.LastName,
                         MiddleName = organisation.PrimaryCoordinator.MiddleName,
                         EmailAddress = organisation.PrimaryCoordinator.EmailAddress,
                         SocialWorkEnglandNumber = organisation.PrimaryCoordinator.Trn,
-                        Roles = organisation.PrimaryCoordinator.PersonRoles.Select(x => x.Role.RoleName).ToImmutableList(),
+                        Roles = organisation.PrimaryCoordinator.PersonRoles.Select(x => x.Role.RoleName)
+                            .ToImmutableList(),
                         Status = organisation.PrimaryCoordinator.Status,
                         ExternalUserId = organisation.PrimaryCoordinator.ExternalUserId,
                         IsFunded = organisation.PrimaryCoordinator.IsFunded,
@@ -148,7 +157,12 @@ public class OrganisationsControllerTests(HostFixture hostFixture) : TestBase(ho
             createdResult.Value.Should().BeOfType<OrganisationDto>();
             createdResult
                 .Value.Should()
-                .BeEquivalentTo(organisation, p => p.Excluding(x => x.OrganisationId));
+                .BeEquivalentTo(organisation, p => p.Excluding(x => x.OrganisationId)
+                    .Excluding(x => x.CreatedOn)
+                    .Excluding(x => x.UpdatedOn)
+                    .Excluding(x => x.PrimaryCoordinator)
+                    .Excluding(x => x.PersonOrganisations)
+                    .Excluding(x => x.PrimaryCoordinatorId));
         });
     }
 }

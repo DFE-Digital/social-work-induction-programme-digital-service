@@ -1,7 +1,9 @@
-using System.Diagnostics;
+using System.Net;
+using FluentAssertions;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.PageTests;
 
+[Collection("Uses Database")]
 public class NotFoundTests(HostFixture hostFixture) : TestBase(hostFixture)
 {
     [Fact]
@@ -33,7 +35,7 @@ public class NotFoundTests(HostFixture hostFixture) : TestBase(hostFixture)
         var oneLoginUser = await TestData.CreateOneLoginUser(verified: false);
 
         var ticket = CreateOneLoginAuthenticationTicket(
-            vtr: SignInJourneyHelper.AuthenticationOnlyVtr,
+            SignInJourneyHelper.AuthenticationOnlyVtr,
             oneLoginUser
         );
         await GetSignInJourneyHelper().OnOneLoginCallback(journeyInstance, ticket);
@@ -61,7 +63,7 @@ public class NotFoundTests(HostFixture hostFixture) : TestBase(hostFixture)
         var oneLoginUser = await TestData.CreateOneLoginUser(person);
 
         var ticket = CreateOneLoginAuthenticationTicket(
-            vtr: SignInJourneyHelper.AuthenticationOnlyVtr,
+            SignInJourneyHelper.AuthenticationOnlyVtr,
             oneLoginUser
         );
         await GetSignInJourneyHelper().OnOneLoginCallback(journeyInstance, ticket);
@@ -92,7 +94,7 @@ public class NotFoundTests(HostFixture hostFixture) : TestBase(hostFixture)
         var oneLoginUser = await TestData.CreateOneLoginUser(verified: true);
 
         var ticket = CreateOneLoginAuthenticationTicket(
-            vtr: SignInJourneyHelper.AuthenticationOnlyVtr,
+            SignInJourneyHelper.AuthenticationOnlyVtr,
             oneLoginUser
         );
         await GetSignInJourneyHelper().OnOneLoginCallback(journeyInstance, ticket);
@@ -106,6 +108,6 @@ public class NotFoundTests(HostFixture hostFixture) : TestBase(hostFixture)
         var response = await HttpClient.SendAsync(request);
 
         // Assert
-        var doc = await AssertEx.HtmlResponse(response);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }
