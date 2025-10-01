@@ -61,3 +61,10 @@
 body.path-mod-data.no-group-menu .groupselector {
   display: none !important;
 }
+
+/* Remove link styling for user profile anchor (minimise flicker until JS executes) */
+body.path-mod-data div > a[href*="user/view.php"] { 
+    text-decoration: inherit;
+    color: inherit;
+    cursor: auto;
+}
