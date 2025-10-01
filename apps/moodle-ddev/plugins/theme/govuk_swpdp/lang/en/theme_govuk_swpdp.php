@@ -10,7 +10,7 @@ $string['pluginname'] = 'GOV.UK SWPDP';
 $string['region-side-pre'] = 'Right';
 
 // nav hook strings
-$string['myportfolio'] = 'My portfolio';
+$string['myportfolio'] = 'My assessments';
 $string['learningmaterials'] = 'Learning materials';
 // custom nav setting
 $string['configtitle'] = 'GOVUK SWPDP theme settings';
