@@ -68,3 +68,18 @@ body.path-mod-data div > a[href*="user/view.php"] {
     color: inherit;
     cursor: auto;
 }
+
+#page-mod-data-view .tertiary-navigation .urlselect,
+#page-mod-data-view #viewactionselect,
+#page-mod-data-view #viewactionselect select,
+#page-mod-data-view #viewactionselect noscript {
+  display: none !important;
+}
+
+.path-mod-data .datapreferences form#options {
+    display: none;
+}
+
+.path-mod-data .datapreferences hr {
+    display: none;
+}
