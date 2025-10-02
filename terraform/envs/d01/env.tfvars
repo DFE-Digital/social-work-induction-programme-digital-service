@@ -29,6 +29,7 @@ moodle_instances = {
 # Enable dev friendly auth services features in dev environment
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
+  "FEATUREFLAGS__ENABLEERROREXCEPTIONHANDLER"  = "false"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
   "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
   "DATABASESEED__ROLEID"                       = 1000
