@@ -42,7 +42,8 @@ moodle_app_settings = {
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
-  "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
+  "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
+  "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING"     = "true"
 }
 moodle_max_data_storage_size_in_gb = 5
 storage_redundancy                 = "LRS"
