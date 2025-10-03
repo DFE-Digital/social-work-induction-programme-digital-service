@@ -67,10 +67,10 @@ public class ConfirmAccountDetails(
     [Display(Name = "Social Work England registration number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
-    [Display(Name = "What is their programme start date?")]
+    [Display(Name = "Programme start date")]
     public string? ProgrammeStartDate { get; set; }
 
-    [Display(Name = "What is their expected programme end date?")]
+    [Display(Name = "Expected programme end date")]
     public string? ProgrammeEndDate { get; set; }
 
     public AccountChangeLinks ChangeDetailsLinks { get; set; } = new();
