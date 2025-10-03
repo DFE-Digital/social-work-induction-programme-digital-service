@@ -249,9 +249,9 @@ resource "azapi_update_resource" "storage_share_rootsquash" {
   type        = "Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01"
   resource_id = azurerm_storage_share.moodle_data_share.id
 
-  body = jsonencode({
+  body = {
     properties = {
       rootSquash = "RootSquash"
     }
-  })
+  }
 }
