@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "= 4.43.0"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "2.7.0"
+    }
+  }
+}
+
 resource "azurerm_storage_account" "sa_app_blob_storage" {
   name                             = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
   resource_group_name              = azurerm_resource_group.rg_primary.name
