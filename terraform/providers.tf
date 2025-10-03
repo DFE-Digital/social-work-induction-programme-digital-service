@@ -15,6 +15,10 @@ terraform {
       source  = "hashicorp/external"
       version = "= 2.3.5"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "2.7.0"
+    }
   }
 
   # Terraform is version pinned within the Github Actions workflow file
