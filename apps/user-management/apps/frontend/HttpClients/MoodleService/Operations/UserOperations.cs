@@ -42,6 +42,7 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
             { "users[0][auth]", "oidc" },
             { "users[0][username]", request.Email.ToLower() },
             { "users[0][firstname]", request.FirstName },
+            { "users[0][middlename]", request.MiddleName ?? string.Empty },
             { "users[0][lastname]", request.LastName },
             { "users[0][email]", request.Email }
         };
