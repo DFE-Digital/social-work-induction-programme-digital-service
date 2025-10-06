@@ -21,12 +21,12 @@ resource "azurerm_linux_web_app" "webapp" {
     ip_restriction_default_action = "Deny"
 
     dynamic "ip_restriction" {
-      for_each = var.allow_web_apps_snet ? [1] : []
+      for_each = toset(var.allow_subnet_ids)
       content {
-        name                      = "Access from services subnet"
+        name                      = "Allow from subnet ${replace(element(split("/", ip_restriction.value), length(split("/", ip_restriction.value)) - 1), ".", "-")}"
         priority                  = 100
         action                    = "Allow"
-        virtual_network_subnet_id = var.subnet_webapps_id
+        virtual_network_subnet_id = ip_restriction.value
       }
     }
 

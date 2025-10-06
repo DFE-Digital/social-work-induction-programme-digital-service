@@ -94,11 +94,11 @@ variable "subnet_webapps_id" {
   type        = string
 }
 
-variable "allow_web_apps_snet" {
-  description = "Flag to allow web apps subnet traffic via access restriction rule"
-  type        = bool
-  default     = false
-}
+variable "allow_subnet_ids" {
+  description = "List of subnet IDs to allow via access restriction rules"
+  type        = list(string)
+  default     = []
+  }
 
 variable "docker_image_name" {
   description = "The Docker image name to use for the web app"
