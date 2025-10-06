@@ -23,7 +23,7 @@ resource "azurerm_linux_web_app" "webapp" {
     dynamic "ip_restriction" {
       for_each = toset(var.allow_subnet_ids)
       content {
-        name                      = "Allow from subnet ${replace(element(split("/", ip_restriction.value), length(split("/", ip_restriction.value)) - 1), ".", "-")}"
+        name                      = "Allow from subnet"
         priority                  = 100
         action                    = "Allow"
         virtual_network_subnet_id = ip_restriction.value
