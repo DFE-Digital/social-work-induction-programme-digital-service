@@ -54,6 +54,7 @@ public class ViewAccountDetails(
         var account = await accountService.GetByIdAsync(id);
         var organisation = await organisationService.GetByIdAsync(OrganisationId);
         if (account is null || organisation is null) return NotFound();
+
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,

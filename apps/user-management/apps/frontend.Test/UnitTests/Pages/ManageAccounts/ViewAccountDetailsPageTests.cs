@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
@@ -18,6 +20,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     {
         Sut = new ViewAccountDetails(
             MockAccountService.Object,
+            MockOrganisationService.Object,
             new FakeLinkGenerator(),
             MockEmailService.Object,
             MockEditAccountJourneyService.Object
@@ -120,10 +123,14 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     {
         // Arrange
         var account = AccountBuilder.Build();
+        var organisation = OrganisationBuilder.Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        MockOrganisationService.Setup(x => x.GetByIdAsync(organisation.OrganisationId!.Value)).ReturnsAsync(organisation);
         MockEmailService.Setup(x => x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>()))
             .Returns(Task.CompletedTask);
+
+        Sut.OrganisationId = organisation.OrganisationId!.Value;
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -147,9 +154,10 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         notificationMessage.Should().Be($"A new invitation to register has been sent to {account.FullName}, {account.Email}");
 
         MockAccountService.Verify(x => x.GetByIdAsync(account.Id), Times.Once);
+        MockOrganisationService.Verify(x => x.GetByIdAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
                 req.AccountId == account.Id &&
-                req.OrganisationName == "Test Organisation" &&
+                req.OrganisationName == organisation.OrganisationName &&
                 req.Role == account.Types!.Min())),
             Times.Once);
 
@@ -161,7 +169,11 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
     {
         // Arrange
         var id = Guid.Empty;
+        var orgId = Guid.Empty;
         MockAccountService.Setup(x => x.GetByIdAsync(id)).ReturnsAsync(default(Account));
+        MockOrganisationService.Setup(x => x.GetByIdAsync(orgId)).ReturnsAsync(default(Organisation));
+
+        Sut.OrganisationId = orgId;
 
         // Act
         var result = await Sut.OnPostAsync(id);
@@ -169,6 +181,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         // Assert
         result.Should().BeOfType<NotFoundResult>();
         MockAccountService.Verify(x => x.GetByIdAsync(id), Times.Once);
+        MockOrganisationService.Verify(x => x.GetByIdAsync(orgId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
