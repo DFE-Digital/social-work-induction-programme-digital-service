@@ -115,6 +115,7 @@ module "web_app_moodle" {
   magic_link_token_value    = module.stack.magic_link_token_value
   magic_link_rule_set_id    = module.stack.magic_link_rule_set_id
   subnet_webapps_id         = module.stack.subnet_moodle_id
+  allow_web_apps_snet       = true
   acr_id                    = local.acr_id
   acr_name                  = var.acr_name
   key_vault_id              = module.stack.kv_id

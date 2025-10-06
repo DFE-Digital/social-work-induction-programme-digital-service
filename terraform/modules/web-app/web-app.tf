@@ -20,11 +20,14 @@ resource "azurerm_linux_web_app" "webapp" {
 
     ip_restriction_default_action = "Deny"
 
-    ip_restriction {
-      name                      = "Access from services subnet"
-      priority                  = 100
-      action                    = "Allow"
-      virtual_network_subnet_id = module.stack.subnet_services_id
+    dynamic "ip_restriction" {
+      for_each = var.allow_web_apps_snet ? [1] : []
+      content {
+        name                      = "Access from services subnet"
+        priority                  = 100
+        action                    = "Allow"
+        virtual_network_subnet_id = var.subnet_webapps_id
+      }
     }
 
     ip_restriction {
