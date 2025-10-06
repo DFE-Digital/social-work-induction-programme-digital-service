@@ -296,6 +296,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             Username = updatedAccountDetails.Email,
             Email = updatedAccountDetails.Email,
             FirstName = updatedAccountDetails.FirstName,
+            MiddleName = updatedAccountDetails.MiddleNames,
             LastName = updatedAccountDetails.LastName
         };
         MockMoodleServiceClient
