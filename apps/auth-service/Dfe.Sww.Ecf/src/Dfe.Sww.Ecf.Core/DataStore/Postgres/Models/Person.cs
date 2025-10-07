@@ -18,11 +18,11 @@ public class Person
     public DateTime? UpdatedOn { get; set; }
     public DateTime? DeletedOn { get; set; }
 
-    [Required][MaxLength(100)] public string FirstName { get; set; } = string.Empty;
+    [Required] [MaxLength(100)] public string FirstName { get; set; } = string.Empty;
     [MaxLength(100)] public string? MiddleName { get; set; }
-    [Required][MaxLength(100)] public string LastName { get; set; } = string.Empty;
+    [Required] [MaxLength(100)] public string LastName { get; set; } = string.Empty;
 
-    [MaxLength(100)] public string? EmailAddress { get; set; }
+    [MaxLength(254)] public string? EmailAddress { get; set; }
     [MaxLength(9)] public string? NationalInsuranceNumber { get; set; }
     [MaxLength(7)] public string? Trn { get; set; }
 
