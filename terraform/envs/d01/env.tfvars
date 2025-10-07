@@ -12,7 +12,7 @@ acr_sku                           = "Basic"
 admin_enabled                     = false
 asp_sku_moodle                    = "B2"
 asp_sku_maintenance               = "B2"
-asp_sku_services                  = "B1"
+asp_sku_services                  = "B2"
 asp_sku_notification              = "B1"
 asp_sku_db_jobs                   = "B1"
 days_to_expire                    = "365"
@@ -29,6 +29,7 @@ moodle_instances = {
 # Enable dev friendly auth services features in dev environment
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
+  "FEATUREFLAGS__ENABLEERROREXCEPTIONHANDLER"  = "false"
   "FEATUREFLAGS__ENABLESWAGGER"                = "true"
   "DATABASESEED__PERSONID"                     = "00000000-0000-0000-0001-000000000001"
   "DATABASESEED__ROLEID"                       = 1000
@@ -41,7 +42,8 @@ moodle_app_settings = {
   "MOODLE_PERSISTED_FILE_SYNC"      = "true"
 }
 user_management_app_settings = {
-  "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING" = "true"
+  "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
+  "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING"     = "true"
 }
 moodle_max_data_storage_size_in_gb = 5
 storage_redundancy                 = "LRS"
