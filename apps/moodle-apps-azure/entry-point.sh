@@ -47,7 +47,8 @@ else
         #rsync -av /var/www/moodledata_ref/ /var/www/moodledata_share/
     else
         log "Azure file share is NOT empty, syncing to local Moodle data..."
-        rsync --chown=www-data:www-data -av --ignore-existing /var/www/moodledata_share/ /var/www/moodledata/
+        # rsync --chown=www-data:www-data -av --ignore-existing /var/www/moodledata_share/ /var/www/moodledata/
+        su www-data rsync -av --ignore-existing /var/www/moodledata_share/ /var/www/moodledata/
     fi
     # if [[ "$MOODLE_PERSISTED_FILE_SYNC" == 'true' ]]; then
     #     log "Starting background persisted file sync process..."
