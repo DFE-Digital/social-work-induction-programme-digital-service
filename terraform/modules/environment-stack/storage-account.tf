@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "= 4.43.0"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "2.7.0"
+    }
+  }
+}
+
 resource "azurerm_storage_account" "sa_app_blob_storage" {
   name                             = "${var.resource_name_prefix}${var.webapp_storage_account_name}"
   resource_group_name              = azurerm_resource_group.rg_primary.name
@@ -188,6 +201,11 @@ resource "azurerm_storage_account" "sa_moodle_data" {
 
   tags = var.tags
 
+  network_rules {
+    default_action = "Deny"
+    bypass         = ["AzureServices"]
+  }
+
   lifecycle {
     ignore_changes = [
       tags["Environment"],
@@ -214,10 +232,26 @@ resource "azurerm_storage_share" "moodle_data_share" {
   quota              = 100
   enabled_protocol   = "NFS"
 
+  # This setting is not available in the current terraform provider,
+  # we need to set it via the azapi statement below
+  # root_squash = "RootSquash"
+
   acl {
     id = "default"
     access_policy {
       permissions = "rwdl" # Read Write Delete List
+    }
+  }
+}
+
+# call azapi to set the root squash setting
+resource "azapi_update_resource" "storage_share_rootsquash" {
+  type        = "Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01"
+  resource_id = azurerm_storage_share.moodle_data_share.id
+
+  body = {
+    properties = {
+      rootSquash = "RootSquash"
     }
   }
 }
