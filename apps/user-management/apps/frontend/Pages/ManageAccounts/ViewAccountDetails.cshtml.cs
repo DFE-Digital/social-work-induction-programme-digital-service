@@ -11,6 +11,7 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ViewAccountDetails(
     IAccountService accountService,
+    IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
     IEmailService emailService,
     IEditAccountJourneyService editAccountJourneyService
@@ -51,11 +52,13 @@ public class ViewAccountDetails(
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
         var account = await accountService.GetByIdAsync(id);
-        if (account is null) return NotFound();
+        var organisation = await organisationService.GetByIdAsync(OrganisationId);
+        if (account is null || organisation is null) return NotFound();
+
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = "Test Organisation", // TODO: Get organisation name
+            OrganisationName = organisation.OrganisationName,
             Role = account.Types?.Min()
         });
 
