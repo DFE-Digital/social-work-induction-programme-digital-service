@@ -155,6 +155,7 @@ public class ConfirmAccountDetails(
                 Username = accountDetails.Email,
                 Email = accountDetails.Email,
                 FirstName = accountDetails.FirstName,
+                MiddleName = accountDetails.MiddleNames,
                 LastName = accountDetails.LastName
             };
             var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
@@ -187,6 +188,7 @@ public class ConfirmAccountDetails(
                 Username = accountDetails.Email,
                 Email = accountDetails.Email,
                 FirstName = accountDetails.FirstName,
+                MiddleName = accountDetails.MiddleNames,
                 LastName = accountDetails.LastName
             };
             var response = await moodleServiceClient.User.UpdateUserAsync(moodleRequest);
