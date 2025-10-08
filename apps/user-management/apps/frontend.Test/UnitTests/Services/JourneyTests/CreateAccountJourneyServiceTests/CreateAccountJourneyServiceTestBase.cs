@@ -1,4 +1,5 @@
 ﻿using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
@@ -20,12 +21,15 @@ public abstract class CreateAccountJourneyServiceTestBase
         Sut = new CreateAccountJourneyService(
             new HttpContextAccessor { HttpContext = HttpContext },
             MockAccountService.Object,
+            MockOrganisationService.Object,
             new FakeLinkGenerator(),
             MockEmailService.Object
         );
     }
 
     private protected AccountBuilder AccountBuilder { get; } = new();
+
+    private protected OrganisationBuilder OrganisationBuilder { get; } = new();
 
     private protected HttpContext HttpContext { get; } = new DefaultHttpContext
     {
@@ -34,6 +38,7 @@ public abstract class CreateAccountJourneyServiceTestBase
     };
 
     private protected Mock<IAccountService> MockAccountService { get; } = new();
+    private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
     private protected Mock<IEmailService> MockEmailService { get; } = new();
     private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; } = new();
 

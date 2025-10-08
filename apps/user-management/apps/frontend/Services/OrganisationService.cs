@@ -90,9 +90,10 @@ public class OrganisationService(
         return mapper.MapToBo(createdOrganisationDto);
     }
 
-    public async Task<Organisation?> GetByIdAsync(Guid id)
+    public async Task<Organisation?> GetByIdAsync(Guid? id = null)
     {
-        var organisation = await authServiceClient.Organisations.GetByIdAsync(id);
+        id ??= new Guid(authServiceClient.HttpContextService.GetOrganisationId());
+        var organisation = await authServiceClient.Organisations.GetByIdAsync(id.Value);
 
         return organisation is null ? null : mapper.MapToBo(organisation);
     }
