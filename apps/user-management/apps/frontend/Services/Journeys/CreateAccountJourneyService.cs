@@ -12,6 +12,7 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 public class CreateAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IAccountService accountService,
+    IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
     IEmailService emailService
 ) : ICreateAccountJourneyService
@@ -204,6 +205,8 @@ public class CreateAccountJourneyService(
 
     public async Task<Account> CompleteJourneyAsync(Guid? organisationId = null)
     {
+        var organisation = await organisationService.GetByIdAsync(organisationId);
+
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
 
         var account = createAccountJourneyModel.ToAccount();
@@ -213,7 +216,7 @@ public class CreateAccountJourneyService(
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = "Test Organisation", // TODO: Retrieve actual organization name
+            OrganisationName = organisation?.OrganisationName ?? string.Empty,
             Role = account.Types?.Min() // Get the highest ranking role - the lowest (int)enum
         });
 

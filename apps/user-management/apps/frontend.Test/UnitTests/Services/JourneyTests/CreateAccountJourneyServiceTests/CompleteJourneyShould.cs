@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -14,6 +15,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
     {
         // Arrange
         var account = AccountBuilder.WithId(Guid.Empty).Build();
+        var organisation = OrganisationBuilder.Build();
 
         HttpContext.Session.Set(
             CreateAccountSessionKey,
@@ -26,12 +28,13 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         );
 
         var expected = account with { Id = Guid.NewGuid() };
+        MockOrganisationService.Setup(x => x.GetByIdAsync(organisation.OrganisationId)).ReturnsAsync(organisation);
         MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
         InvitationEmailRequest? capturedEmailRequest = null;
         MockEmailService.Setup(x => x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>())).Callback<InvitationEmailRequest>(req => capturedEmailRequest = req);
 
         // Act
-        var result = await Sut.CompleteJourneyAsync();
+        var result = await Sut.CompleteJourneyAsync(organisation.OrganisationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -43,6 +46,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         );
         createAccountJourneyModel.Should().BeNull();
 
+        MockOrganisationService.Verify(x => x.GetByIdAsync(organisation.OrganisationId), Times.Once);
         MockAccountService.Verify(
             x =>
                 x.CreateAsync(
@@ -64,7 +68,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         capturedEmailRequest.Should().BeEquivalentTo(new InvitationEmailRequest
         {
             AccountId = expected.Id,
-            OrganisationName = "Test Organisation",
+            OrganisationName = organisation.OrganisationName,
             Role = expected.Types!.Min()
         });
 

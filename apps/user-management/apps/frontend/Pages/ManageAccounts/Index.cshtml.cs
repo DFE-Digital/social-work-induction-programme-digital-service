@@ -32,7 +32,7 @@ public class Index(IAccountService accountService, IOrganisationService organisa
             BackLinkPath = linkGenerator.ManageOrganisations.Index();
         }
 
-        Organisation = await organisationService.GetByIdAsync(OrganisationId ?? new Guid(authServiceClient.HttpContextService.GetOrganisationId()));
+        Organisation = await organisationService.GetByIdAsync(OrganisationId);
 
         var paginatedResults = await accountService.GetAllAsync(
             new PaginationRequest(Offset, PageSize),
