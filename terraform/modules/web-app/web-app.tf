@@ -20,8 +20,20 @@ resource "azurerm_linux_web_app" "webapp" {
 
     ip_restriction_default_action = "Deny"
 
+    dynamic "ip_restriction" {
+      for_each = toset(var.allow_subnet_ids)
+      content {
+        name                      = "Allow from subnet"
+        priority                  = 100
+        action                    = "Allow"
+        virtual_network_subnet_id = ip_restriction.value
+      }
+    }
+
     ip_restriction {
       name        = "Access from Front Door"
+      priority    = 200
+      action      = "Allow"
       service_tag = "AzureFrontDoor.Backend"
     }
 
