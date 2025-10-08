@@ -170,7 +170,7 @@ resource "azurerm_subnet" "sn_service_apps" {
   virtual_network_name              = azurerm_virtual_network.vnet_stack.name
   address_prefixes                  = ["10.0.5.0/24"]
   private_endpoint_network_policies = "Disabled"
-  service_endpoints                 = ["Microsoft.Sql"]
+  service_endpoints                 = ["Microsoft.Sql", "Microsoft.Web"]
 
   delegation {
     name = "delegation"
