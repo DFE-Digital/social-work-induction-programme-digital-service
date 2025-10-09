@@ -11,6 +11,7 @@ public sealed class MoodleUserRequestFaker : Faker<MoodleUserRequest>
         RuleFor(a => a.Username, f => f.Internet.UserName());
         RuleFor(a => a.Email, f => f.Internet.Email());
         RuleFor(a => a.FirstName, f => f.Name.FirstName());
+        RuleFor(a => a.MiddleName, f => f.Name.FirstName());
         RuleFor(a => a.LastName, f => f.Name.LastName());
     }
 }

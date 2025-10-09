@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.MoodleServiceClientTests;
 
-public class MoodleOperationsTests
+public class UserOperationsTests
 {
     private readonly MoodleUserRequestFaker _moodleUserRequestFaker = new();
     private readonly Guid _apikey = Guid.NewGuid();

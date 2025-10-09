@@ -2,6 +2,10 @@
 
 public static class FunctionNameConstants
 {
+    // User
     public const string CreateUser = "core_user_create_users";
     public const string UpdateUser = "core_user_update_users";
+
+    // Course
+    public const string EnrolUser = "enrol_manual_enrol_users";
 }
