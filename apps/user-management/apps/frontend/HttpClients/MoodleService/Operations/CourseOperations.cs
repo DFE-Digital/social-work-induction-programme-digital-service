@@ -20,7 +20,7 @@ public class CourseOperations(MoodleServiceClient moodleServiceClient) : ICourse
             { "enrolments[0][courseid]", request.CourseId.ToString() }
         };
 
-        var content = new FormUrlEncodedContent(parameters);
+        using var content = new FormUrlEncodedContent(parameters);
 
         var httpResponse = await _moodleServiceClient.HttpClient.PostAsync(string.Empty, content);
 
