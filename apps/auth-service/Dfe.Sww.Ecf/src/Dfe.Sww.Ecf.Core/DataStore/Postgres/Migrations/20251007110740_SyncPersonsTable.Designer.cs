@@ -4,6 +4,7 @@ using System.Text.Json;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
-    partial class EcfDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251007110740_SyncPersonsTable")]
+    partial class SyncPersonsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,8 +309,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("disability");
 
                     b.Property<string>("EmailAddress")
-                        .HasMaxLength(254)
-                        .HasColumnType("character varying(254)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("email_address")
                         .UseCollation("case_insensitive");
 
