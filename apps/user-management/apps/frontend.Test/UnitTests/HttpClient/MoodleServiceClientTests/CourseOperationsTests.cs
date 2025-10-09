@@ -23,20 +23,20 @@ public class CourseOperationsTests
     public async Task EnrolUserAsync_SuccessfulRequest_ReturnsCorrectResponse()
     {
         // Arrange
-        var createCourseRequest = _moodleCourseRequestFaker.Generate();
-        var createCourseResponse = new EnrolUserResponse();
+        var enrolUserRequest = _moodleCourseRequestFaker.Generate();
+        var enrolUserResponse = new EnrolUserResponse();
 
-        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, createCourseResponse);
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, enrolUserResponse);
 
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.Course.EnrolUserAsync(createCourseRequest);
+        var response = await sut.Course.EnrolUserAsync(enrolUserRequest);
 
         // Assert
         response.Should().NotBeNull();
         response.Should().BeOfType<EnrolUserResponse>();
-        response.Should().BeEquivalentTo(createCourseResponse);
+        response.Should().BeEquivalentTo(enrolUserResponse);
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
