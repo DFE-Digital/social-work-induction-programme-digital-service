@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [development]
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
 jobs:
   build:
@@ -15,21 +15,20 @@ jobs:
       actions: write
       security-events: write
     steps:
-
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4     
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Run Trivy file scan
-        uses: aquasecurity/trivy-action@6c175e9c4083a92bbca2f9724c8a5e33bc2d97a5
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 #v0.33.1
         with:
-          scan-type: 'fs'
-          skip-files: '**/terraform*'
-          skip-dirs: '**/terraform*' 
-          scan-ref: '.'          
+          scan-type: "fs"
+          skip-files: "**/terraform*"
+          skip-dirs: "**/terraform*"
+          scan-ref: "."
           ignore-unfixed: false
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM,LOW"
           exit-code: 0
           vuln-type: os,library
           scanners: vuln,secret,misconfig,license
@@ -37,4 +36,4 @@ jobs:
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
