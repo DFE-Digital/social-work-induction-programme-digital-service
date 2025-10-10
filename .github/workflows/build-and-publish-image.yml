@@ -193,10 +193,15 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
-      - name: Test Connectivity from Runner Host
+      - name: Debug Network and Certificate
         run: |
-          echo "## Testing connection to Alpine CDN from the runner host..."
-          curl -v https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
+          echo "--- Checking DNS Resolution ---"
+          nslookup dl-cdn.alpinelinux.org
+          
+          echo "--- Checking SSL Certificate ---"
+          sudo apt-get update
+          sudo apt-get install -y openssl ca-certificates
+          echo | openssl s_client -connect dl-cdn.alpinelinux.org:443 -servername dl-cdn.alpinelinux.org -showcerts
 
       - name: Docker build
         shell: bash
