@@ -2,7 +2,7 @@ name: Zap Security Scan
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       instance:
@@ -15,7 +15,7 @@ on:
           - d02
 jobs:
   zap-scan:
-    name: Scan web app 
+    name: Scan web app
     environment: Dev
     runs-on: ubuntu-latest
     # Permissions for OIDC Azure authentication (az login)
@@ -26,11 +26,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        web-app-name: [ 'wa-user-management', 'wa-moodle-primary' ]
+        web-app-name: ["wa-user-management", "wa-moodle-primary"]
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@37c927c24552caa0ef6040ab0876db729cc12754 # v1.0.2-beta7
 
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -41,7 +42,7 @@ jobs:
           add-as-env-vars: true
 
       - name: Log in to Azure CLI
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
           client-id: ${{ secrets.AZ_CLIENT_ID }}
           tenant-id: ${{ secrets.AZ_TENANT_ID }}
