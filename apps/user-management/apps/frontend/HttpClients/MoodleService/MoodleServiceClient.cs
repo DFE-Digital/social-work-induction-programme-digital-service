@@ -12,6 +12,7 @@ public class MoodleServiceClient : IMoodleServiceClient
         HttpClient = httpClient;
         Options = clientOptions.Value;
         User = new UserOperations(this);
+        Course = new CourseOperations(this);
     }
 
     internal HttpClient HttpClient { get; init; }
@@ -19,4 +20,6 @@ public class MoodleServiceClient : IMoodleServiceClient
     internal MoodleClientOptions Options { get; init; }
 
     public IUserOperations User { get; init; }
+
+    public ICourseOperations Course { get; init; }
 }
