@@ -28,6 +28,7 @@ COPY appsettings.Azure.json appsettings.json
 # icu-data-full drops in all of the locale tables (collation, calendars,
 # number/currency formats, etc.)
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org/g' /etc/apk/repositories
 RUN apk add --no-cache \
     tzdata \
     icu-data-full \
