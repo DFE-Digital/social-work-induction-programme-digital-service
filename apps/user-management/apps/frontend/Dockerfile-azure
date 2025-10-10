@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.18 AS user-management
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.22 AS user-management
 
 ARG AZURE_KUDU_SSH_USER
 ARG FULL_TAG
@@ -15,19 +15,20 @@ RUN rm appsettings.* \
     && echo "$VERSION" > wwwroot/version.txt
 COPY appsettings.Azure.json appsettings.json
 
-# The Microsoft‐published Alpine images do not come with the full International Components 
-# for Unicode data or the time-zone database pre-installed. They ship in “invariant globalization mode” 
+# The Microsoft‐published Alpine images do not come with the full International Components
+# for Unicode data or the time-zone database pre-installed. They ship in “invariant globalization mode”
 # by default on Alpine, which means:
 #
 #   You get the minimal .NET runtime binaries (compiled against musl)
-#   You don't get the icu-libs package baked in (so the runtime will crash 
-#       when looking for libicu*.so)    
+#   You don't get the icu-libs package baked in (so the runtime will crash
+#       when looking for libicu*.so)
 #   You don’t get the full ICU data (icu-data-full) nor the IANA zoneinfo files (tzdata).
 
 # tzdata gives you /usr/share/zoneinfo/... for real time-zone support
-# icu-data-full drops in all of the locale tables (collation, calendars, 
+# icu-data-full drops in all of the locale tables (collation, calendars,
 # number/currency formats, etc.)
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org/g' /etc/apk/repositories
 RUN apk add --no-cache \
     tzdata \
     icu-data-full \

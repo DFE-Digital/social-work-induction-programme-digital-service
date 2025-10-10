@@ -57,7 +57,7 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
             parameters.Add("users[0][id]", request.Id.Value.ToString());
         }
 
-        var content = new FormUrlEncodedContent(parameters);
+        using var content = new FormUrlEncodedContent(parameters);
 
         var httpResponse = await _moodleServiceClient.HttpClient.PostAsync(string.Empty, content);
 
