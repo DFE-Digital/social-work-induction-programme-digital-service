@@ -193,6 +193,15 @@ jobs:
         env:
           ACR_NAME: ${{ env.ACR_NAME }}
 
+      - name: Debug Network and Certificate
+        run: |
+          echo "--- Checking DNS Resolution ---"
+          nslookup dl-cdn.alpinelinux.org
+          
+          echo "--- Checking SSL Certificate ---"
+          apk add --no-cache openssl
+          openssl s_client -connect dl-cdn.alpinelinux.org:443 -showcerts </dev/null
+
       - name: Docker build
         shell: bash
         working-directory: ${{ inputs.working-dir }}
