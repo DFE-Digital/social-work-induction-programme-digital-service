@@ -195,13 +195,10 @@ jobs:
 
       - name: Debug Network and Certificate
         run: |
-          echo "--- Checking DNS Resolution ---"
-          nslookup dl-cdn.alpinelinux.org
-          
           echo "--- Checking SSL Certificate ---"
-          sudo apt-get update
-          sudo apt-get install -y openssl ca-certificates
-          echo | openssl s_client -connect dl-cdn.alpinelinux.org:443 -servername dl-cdn.alpinelinux.org -showcerts
+          
+          echo | openssl s_client -connect dl-cdn.alpinelinux.org:443 -servername dl-cdn.alpinelinux.org -showcerts 2>/dev/null \
+          | openssl x509 -noout -issuer -subject
 
       - name: Docker build
         shell: bash
