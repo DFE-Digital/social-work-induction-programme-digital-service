@@ -47,7 +47,7 @@ public class SelectUseCase(
             return Page();
         }
 
-        if (FromChangeLink)
+        if (FromChangeLink || Id.HasValue)
         {
             captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Id);
         }
