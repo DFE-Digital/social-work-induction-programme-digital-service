@@ -186,6 +186,8 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         Sut.Id = id;
         Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
 
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(new AccountDetails { SocialWorkEnglandNumber = "123" });
+
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -196,6 +198,33 @@ public class SelectUseCasePageTests : ManageAccountsPageTestBase<SelectUseCase>
         redirectResult!.Url.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=Update");
 
         MockEditAccountJourneyService.Verify(x => x.SetAccountTypesAsync(id, MoqHelpers.ShouldBeEquivalentTo(Sut.SelectedAccountTypes)), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenAssessorCalledWithIdAndNoSweNumber_RedirectsToEditAccountDetailsPage()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(new AccountDetails());
+
+        Sut.Id = id;
+        Sut.SelectedAccountTypes = new List<AccountType> { AccountType.Assessor };
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-accounts/edit-account-details/{id}");
+
+        MockEditAccountJourneyService.Verify(x => x.SetAccountTypesAsync(id, MoqHelpers.ShouldBeEquivalentTo(Sut.SelectedAccountTypes)), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
