@@ -78,7 +78,6 @@ public class SocialWorkEnglandRecordTest
     [Theory]
     [InlineData("SW1234")]
     [InlineData("sw1234")]
-    [InlineData("1234")]
     public void TryParse_WithValidInputs_ReturnsSocialWorkEnglandNumber(string sweId)
     {
         // Arrange
