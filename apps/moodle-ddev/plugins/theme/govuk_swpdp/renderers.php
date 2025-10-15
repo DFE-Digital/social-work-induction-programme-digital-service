@@ -32,7 +32,23 @@ class theme_govuk_swpdp_core_renderer extends theme_govuk_core_renderer
             $this->page->requires->js_call_amd('theme_govuk_swpdp/database_entry_author', 'init');
         }
         return parent::header();
-    }    
+    /* Remove the h2 on the database add/edit page */
+    public function heading($text, $level = 2, $classes = 'main', $id = null) {
+        if ($this->page->url->compare(new \moodle_url('/mod/data/edit.php'), URL_MATCH_BASE)) {
+            $headingstomatch = [
+                get_string('newentry', 'mod_data'),
+                get_string('editentry', 'mod_data')
+            ];
+            $headingcontent = trim(strip_tags((string)$text));
+            foreach ($headingstomatch as $target) {
+                if ($headingcontent === trim($target)) {
+                    return '';
+                }
+            }
+        } 
+
+        return parent::heading($text, $level, $classes, $id);
+    }
 
     /* Remove the h2 on the database add/edit page */
     public function heading($text, $level = 2, $classes = 'main', $id = null) {
