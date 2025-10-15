@@ -77,10 +77,13 @@ public sealed class SocialWorkEnglandRecord
             return false;
         }
 
-        if (sweId.StartsWith("SW", StringComparison.InvariantCultureIgnoreCase))
+        if (!sweId.StartsWith("SW", StringComparison.InvariantCultureIgnoreCase))
         {
-            sweId = sweId.Remove(0, 2);
+            socialWorkEnglandNumber = null;
+            return false;
         }
+
+        sweId = sweId.Remove(0, 2);
 
         var startWithZero = sweId.FirstOrDefault() == '0';
         if (startWithZero)
