@@ -84,7 +84,7 @@ public static class CommonValidators
                     context.AddFailure(
                         new ValidationFailure(
                             "SocialWorkEnglandNumber",
-                            "Enter a Social Work England registration number in the correct format, like SW1234",
+                            "Enter a Social Work England registration number in the correct format",
                             sweId
                         )
                     );

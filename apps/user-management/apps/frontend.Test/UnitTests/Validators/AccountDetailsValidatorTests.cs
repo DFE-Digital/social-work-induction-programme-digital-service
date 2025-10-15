@@ -107,7 +107,7 @@ public class AccountDetailsValidatorTests()
         // Assert
         result
             .ShouldHaveValidationErrorFor(person => person.SocialWorkEnglandNumber)
-            .WithErrorMessage("Enter a Social Work England registration number in the correct format, like SW1234");
+            .WithErrorMessage("Enter a Social Work England registration number in the correct format");
     }
 
     [Fact]
