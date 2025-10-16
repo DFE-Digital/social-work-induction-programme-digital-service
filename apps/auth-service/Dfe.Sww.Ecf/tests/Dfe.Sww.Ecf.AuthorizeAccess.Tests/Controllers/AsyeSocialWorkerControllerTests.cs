@@ -8,8 +8,6 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 [Collection("Uses Database")]
 public class AsyeSocialWorkerControllerTests : TestBase
 {
-    private readonly AppInfo _appInfo = new();
-
     public AsyeSocialWorkerControllerTests(HostFixture hostFixture) : base(hostFixture)
     {
         var dbHelper = HostFixture.Services.GetRequiredService<DbHelper>();
