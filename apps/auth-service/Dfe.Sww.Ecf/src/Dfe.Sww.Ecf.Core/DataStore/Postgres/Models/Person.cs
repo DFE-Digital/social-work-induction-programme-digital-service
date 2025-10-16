@@ -24,7 +24,7 @@ public class Person
 
     [MaxLength(254)] public string? EmailAddress { get; set; }
     [MaxLength(9)] public string? NationalInsuranceNumber { get; set; }
-    [MaxLength(8)] public string? Trn { get; set; }
+    [MaxLength(7)] public string? Trn { get; set; }
 
     public PersonStatus? Status { get; set; }
 
