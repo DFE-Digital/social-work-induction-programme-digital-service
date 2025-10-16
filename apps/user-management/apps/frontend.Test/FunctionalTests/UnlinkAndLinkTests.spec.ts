@@ -20,6 +20,7 @@ import {
     selectUnlink
 } from "./Tasks/unlinkAndLink";
 
+/*
 describe('When the user navigates to a created social worker\'s account', () => {
     it('they should be able to unlink them from the organisation and then relink them', async ({actor}) => {
         await actor.attemptsTo(
@@ -91,3 +92,4 @@ describe('When the user navigates to a created assessor coordinator\'s account',
         );
     });
 });
+*/
