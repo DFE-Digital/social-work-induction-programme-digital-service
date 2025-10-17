@@ -1,8 +1,9 @@
+/*
 import { describe, it } from '@serenity-js/playwright-test';
 import './Pages/dashboard';
 import { setAccountTypeTo, navigateToManageAccounts, verifyUpdatedAccountType, viewAccount } from './Tasks/accountManagement';
 import {authenticateAsAdmin} from "./Tasks/login";
-/*
+
 describe('Manage Accounts - Change Account Type', () => {
 
     it('should allow Alice to change the account type to Early career social worker', async ({ actor }) => {
