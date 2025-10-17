@@ -17,6 +17,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
     {
         Sut = new EligibilitySocialWorkEngland(
             MockCreateAccountJourneyService.Object,
+            MockAuthServiceClient.Object,
             new FakeLinkGenerator(),
             new EligibilitySocialWorkEnglandValidator()
         );
