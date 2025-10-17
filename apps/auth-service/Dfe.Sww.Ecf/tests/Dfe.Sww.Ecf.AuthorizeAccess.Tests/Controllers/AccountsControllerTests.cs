@@ -6,6 +6,7 @@ using Dfe.Sww.Ecf.Core.Services.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using System.ComponentModel.DataAnnotations;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
@@ -404,5 +405,91 @@ public class AccountsControllerTests : TestBase
             var response = result as BadRequestObjectResult;
             response!.Value.Should().Be("Account not found.");
         });
+    }
+
+    [Fact]
+    public async Task CheckEmailExistsAsync_ReturnsOkTrue_WhenUserExists()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var createdPerson = (await TestData.CreatePerson()).ToPerson();
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.CheckEmailExists(new CheckEmailRequest { Email = createdPerson.EmailAddress! });
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
+
+            resultAccounts.Should().Be(true);
+        });
+    }
+
+    [Fact]
+    public async Task CheckEmailExistsAsync_ReturnsOkFalse_WhenUserDoesNotExist()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var accountsService = new AccountsService(dbContext, Clock);
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                new MemoryCache(new MemoryCacheOptions())
+            );
+            var nonExistentEmail = $"nonexistent-{Guid.NewGuid()}@test.com";
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.CheckEmailExists(new CheckEmailRequest { Email = nonExistentEmail });
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
+
+            resultAccounts.Should().Be(false);
+        });
+    }
+
+    [Fact]
+    public void CheckEmailRequest_Validation_Fails_WhenEmailMissing()
+    {
+        // Arrange
+        var request = new CheckEmailRequest { Email = string.Empty };
+        var validationResults = new List<ValidationResult>();
+
+        // Act
+        var isValid = Validator.TryValidateObject(request, new ValidationContext(request), validationResults, validateAllProperties: true);
+
+        // Assert
+        isValid.Should().BeFalse();
+        validationResults.Should().ContainSingle(r =>
+            r.MemberNames.Contains(nameof(CheckEmailRequest.Email)) &&
+            r.ErrorMessage == "Email is required.");
+    }
+
+    [Fact]
+    public void CheckEmailRequest_Validation_Fails_WhenEmailInvalidFormat()
+    {
+        // Arrange
+        var request = new CheckEmailRequest { Email = "invalid email" };
+        var validationResults = new List<ValidationResult>();
+
+        // Act
+        var isValid = Validator.TryValidateObject(request, new ValidationContext(request), validationResults, validateAllProperties: true);
+
+        // Assert
+        isValid.Should().BeFalse();
+        validationResults.Should().ContainSingle(r =>
+            r.MemberNames.Contains(nameof(CheckEmailRequest.Email)) &&
+            r.ErrorMessage == "Email is not a valid format.");
     }
 }

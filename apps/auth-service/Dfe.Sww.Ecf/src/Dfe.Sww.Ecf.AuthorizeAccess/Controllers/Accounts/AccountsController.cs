@@ -113,6 +113,17 @@ public class AccountsController(
         return Ok(result);
     }
 
+
+    [HttpPost("check")]
+    [ActionName(nameof(CheckEmailExists))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> CheckEmailExists([FromBody] CheckEmailRequest checkEmailRequest)
+    {
+        var exists = await accountsService.PersonExistsWithEmailAsync(checkEmailRequest.Email);
+
+        return Ok(exists);
+    }
+
     [AllowAnonymous]
     [HttpGet("version")]
     [ActionName(nameof(GetVersion))]
