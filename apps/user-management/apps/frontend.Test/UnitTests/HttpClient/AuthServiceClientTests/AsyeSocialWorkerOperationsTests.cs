@@ -51,7 +51,7 @@ public class AsyeSocialWorkerOperationsTests
     }
 
     [Fact]
-    public async Task GetById_WhenErrorResponseReturned_ThrowsHttpRequestException()
+    public async Task ExistsAsync_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
         var socialWorkerId = "SW123";
