@@ -203,6 +203,7 @@ builder.Services
     .AddHostedService<OidcApplicationSeeder>()
     .AddScoped<IAccountsService, AccountsService>()
     .AddScoped<IOrganisationService, OrganisationService>()
+    .AddScoped<IAsyeSocialWorkerService, AsyeSocialWorkerService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
     .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value);
 
