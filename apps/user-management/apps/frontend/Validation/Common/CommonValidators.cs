@@ -83,7 +83,7 @@ public static class CommonValidators
                 {
                     context.AddFailure(
                         new ValidationFailure(
-                            "SocialWorkEnglandNumber",
+                            context.PropertyPath,
                             "Enter a Social Work England registration number in the correct format",
                             sweId
                         )

@@ -1,5 +1,6 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -11,11 +12,13 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class EligibilitySocialWorkEngland(
     ICreateAccountJourneyService createAccountJourneyService,
+    IAuthServiceClient authServiceClient,
     EcfLinkGenerator linkGenerator,
     IValidator<EligibilitySocialWorkEngland> validator)
     : ManageAccountsBasePageModel
 {
     [BindProperty] public bool? IsRegisteredWithSocialWorkEngland { get; set; }
+    [BindProperty] public string? SocialWorkerNumber { get; set; }
 
     public PageResult OnGet()
     {
@@ -27,7 +30,7 @@ public class EligibilitySocialWorkEngland(
     public async Task<IActionResult> OnPostAsync()
     {
         var validationResult = await validator.ValidateAsync(this);
-        if (IsRegisteredWithSocialWorkEngland is null || !validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
             BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
@@ -35,16 +38,32 @@ public class EligibilitySocialWorkEngland(
         }
 
         createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
-        if (FromChangeLink)
+
+        if (IsRegisteredWithSocialWorkEngland is false)
         {
-            if (IsRegisteredWithSocialWorkEngland == true)
-            {
-                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId));
-            }
-            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropoutChange(OrganisationId));
+            return Redirect(FromChangeLink
+                ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropoutChange(OrganisationId)
+                : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropout(OrganisationId));
         }
-        return Redirect(IsRegisteredWithSocialWorkEngland is false
-            ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropout(OrganisationId)
+
+        // Validated above but compiler complains if we don't check
+        if (string.IsNullOrWhiteSpace(SocialWorkerNumber))
+        {
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
+            return BadRequest();
+        }
+
+        createAccountJourneyService.SetAccountDetails(new AccountDetails { SocialWorkEnglandNumber = SocialWorkerNumber });
+
+        var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkerNumber);
+        if (isEnrolledInAsye)
+        {
+            createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
+            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
+        }
+
+        return Redirect(FromChangeLink
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId));
     }
 

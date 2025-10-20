@@ -46,6 +46,7 @@ public class ManageAccountLinks(EcfLinkGenerator ecfLinkGenerator)
     public string EligibilityInformation(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilityInformation", routeValues: new { organisationId });
     public string EligibilitySocialWorkEngland(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland", routeValues: new { organisationId });
     public string EligibilitySocialWorkEnglandChange(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEngland", handler: "Change", routeValues: new { organisationId });
+    public string EligibilitySocialWorkEnglandAsyeDropout(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandAsyeDropout", routeValues: new { organisationId });
     public string EligibilitySocialWorkEnglandDropout(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout", routeValues: new { organisationId });
     public string EligibilitySocialWorkEnglandDropoutChange(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandDropout", handler: "Change", routeValues: new { organisationId });
     public string EligibilityStatutoryWork(Guid? organisationId = null) => ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilityStatutoryWork", routeValues: new { organisationId });
