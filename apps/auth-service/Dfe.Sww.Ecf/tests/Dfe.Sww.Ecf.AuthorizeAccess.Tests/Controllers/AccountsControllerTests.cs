@@ -415,9 +415,10 @@ public class AccountsControllerTests : TestBase
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -440,9 +441,10 @@ public class AccountsControllerTests : TestBase
         {
             // Arrange
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
             var nonExistentEmail = $"nonexistent-{Guid.NewGuid()}@test.com";
 
