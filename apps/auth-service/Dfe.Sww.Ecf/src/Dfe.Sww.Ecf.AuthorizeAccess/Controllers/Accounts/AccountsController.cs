@@ -119,9 +119,8 @@ public class AccountsController(
     [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> CheckEmailExists([FromBody] CheckEmailRequest checkEmailRequest)
     {
-        var exists = await accountsService.PersonExistsWithEmailAsync(checkEmailRequest.Email);
-
-        return Ok(exists);
+        var user = await accountsService.GetByEmailAsync(checkEmailRequest.Email);
+        return Ok(user != null);
     }
 
     [AllowAnonymous]

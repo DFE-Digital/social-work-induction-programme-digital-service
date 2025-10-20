@@ -157,11 +157,11 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
         return account.ToDto();
     }
 
-    public async Task<bool> PersonExistsWithEmailAsync(string email)
+    public async Task<PersonDto?> GetByEmailAsync(string email)
     {
         var account = await dbContext
             .Persons
             .FirstOrDefaultAsync(p => p.EmailAddress == email);
-        return account != null;
+        return account?.ToDto();
     }
 }
