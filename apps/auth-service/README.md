@@ -139,6 +139,8 @@ After this, you can simply run `just onelogin-sim start` to start the simulator.
 
 `just onelogin-sim stop` can be used to stop the simulator.
 
+Ensure you comment out any local secrets for `OneLogin:ClientId` and `OneLogin:PrivateKeyPem` associated with the One Login integration environment when using the simulator. Secrets take precendence over variables specified in app settings.
+
 Note: The simulator does _not_ emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
 
 #### Integration environment
