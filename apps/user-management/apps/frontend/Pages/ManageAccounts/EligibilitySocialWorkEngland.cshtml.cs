@@ -57,9 +57,9 @@ public class EligibilitySocialWorkEngland(
         createAccountJourneyService.SetAccountDetails(new AccountDetails { SocialWorkEnglandNumber = SocialWorkerNumber });
 
         var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkerNumber);
+        createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
         if (isEnrolledInAsye)
         {
-            createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
             return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
         }
 

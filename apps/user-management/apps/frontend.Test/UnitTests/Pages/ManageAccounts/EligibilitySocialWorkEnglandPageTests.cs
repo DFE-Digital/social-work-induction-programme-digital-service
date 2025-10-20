@@ -36,6 +36,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
         Sut.FromChangeLink.Should().BeFalse();
         MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -56,6 +57,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.IsRegisteredWithSocialWorkEngland.Should().Be(isRegisteredWithSocialWorkEngland);
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -109,6 +111,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
         MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(false), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -197,6 +200,10 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
             isRegisteredWithSocialWorkEngland
                 ? Times.Once
                 : Times.Never);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(false),
+            isRegisteredWithSocialWorkEngland
+                ? Times.Once
+                : Times.Never);
 
         VerifyAllNoOtherCalls();
     }
@@ -213,6 +220,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
         Sut.FromChangeLink.Should().BeTrue();
         MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
