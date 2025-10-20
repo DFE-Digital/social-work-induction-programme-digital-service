@@ -24,6 +24,7 @@ public class EligibilitySocialWorkEngland(
     {
         BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
+        SocialWorkerNumber = createAccountJourneyService.GetAccountDetails()?.SocialWorkEnglandNumber;
         return Page();
     }
 
