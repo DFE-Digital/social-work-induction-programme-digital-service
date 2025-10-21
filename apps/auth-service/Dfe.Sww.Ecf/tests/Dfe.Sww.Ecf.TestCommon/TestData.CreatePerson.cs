@@ -304,6 +304,7 @@ public partial class TestData
             var firstName = firstAndMiddleNames.First();
             var middleName = string.Join(" ", firstAndMiddleNames.Skip(1));
             var lastName = _lastName ?? GenerateLastName();
+            var email = _email ?? GenerateEmail();
             var dateOfBirth = _dateOfBirth ?? GenerateDateOfBirth();
             var status = _status ?? PersonStatus.Active;
             var personOrganisations = _organisationId != Guid.Empty
@@ -329,7 +330,7 @@ public partial class TestData
                 FirstName = firstName,
                 MiddleName = middleName,
                 LastName = lastName,
-                Email = _email,
+                Email = email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
                 Status = status,

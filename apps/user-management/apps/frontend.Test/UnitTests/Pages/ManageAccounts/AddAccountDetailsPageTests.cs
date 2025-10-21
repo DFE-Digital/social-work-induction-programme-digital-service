@@ -95,7 +95,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     public async Task Post_WhenCalledWithValidData_RedirectsToCorrectPage(AccountType accountType, string redirectUrl)
     {
         // Arrange
-        var sweId = "1";
+        var sweId = "SW1";
         var isStaff = accountType != AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder
             .WithAddOrEditAccountDetailsData()

@@ -31,6 +31,8 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
+    void SetIsEnrolledInAsye(bool? isEnrolledInAsye);
+
     /// <summary>
     ///     Get property capturing whether the user has recently completed their social work qualification.
     /// </summary>

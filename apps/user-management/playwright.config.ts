@@ -58,6 +58,8 @@ const config: PlaywrightTestConfig = {
         crew: [
             // Take screenshots of failed Serenity/JS Activities, such as a failed assertion, or o failed interaction
             ['@serenity-js/web:Photographer', { strategy: 'TakePhotosOfFailures' }],
+            // Take screenshots of interactions - use locally to see screens on successful runs
+            //['@serenity-js/web:Photographer', { strategy: 'TakePhotosOfInteractions' }],
         ],
 
         /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */

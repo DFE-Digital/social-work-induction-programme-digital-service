@@ -141,7 +141,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName = account.LastName;
         Sut.Email = string.Empty;
         Sut.ShowSweInput = false;
-        Sut.SocialWorkEnglandNumber = "123";
+        Sut.SocialWorkEnglandNumber = "SW123";
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))

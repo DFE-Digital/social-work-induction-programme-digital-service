@@ -73,7 +73,7 @@ public static class CommonValidators
             {
                 if (string.IsNullOrWhiteSpace(sweId))
                 {
-                    context.AddFailure(new ValidationFailure("SocialWorkEnglandNumber", "Enter a Social Work England registration number", sweId));
+                    context.AddFailure(new ValidationFailure(context.PropertyPath, "Enter a Social Work England registration number", sweId));
                     return;
                 }
 
@@ -83,8 +83,8 @@ public static class CommonValidators
                 {
                     context.AddFailure(
                         new ValidationFailure(
-                            "SocialWorkEnglandNumber",
-                            "Enter a Social Work England registration number in the correct format, like SW1234",
+                            context.PropertyPath,
+                            "Enter a Social Work England registration number in the correct format",
                             sweId
                         )
                     );

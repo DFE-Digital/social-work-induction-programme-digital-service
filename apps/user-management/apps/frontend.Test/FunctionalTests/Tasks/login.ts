@@ -1,20 +1,18 @@
-﻿import { Ensure } from '@serenity-js/assertions';
+﻿import {Ensure, equals} from '@serenity-js/assertions';
 import { Task } from '@serenity-js/core';
-import {Click, isVisible, Navigate, Scroll} from '@serenity-js/web';
-import {continueToLogin, manageAccountsLink} from "../Pages";
-import {coordinatorJoeBloggs, logInAsWhoCaption, logInButton} from "../Pages/backdoor";
+import {Click, isVisible, Navigate, Scroll, Text} from '@serenity-js/web';
+import {continueToLogin, serviceNameHeading} from "../Pages";
+import {dashboardTitle} from "../Pages/dashboard";
 
-export const authenticateAsJoeBloggsCoordinator = () =>
-    Task.where(`#actor log in as the coordinator Joe Bloggs`,
+export const authenticateAsAdmin = () =>
+    Task.where(`#actor log in as the test admin user`,
         Navigate.to('/'),
+        Ensure.that(serviceNameHeading(), isVisible()),
+        Ensure.that(Text.of(serviceNameHeading()), equals('Social Work Induction Programme')),
+        Scroll.to(continueToLogin()),
         Ensure.that(continueToLogin(), isVisible()),
         Click.on(continueToLogin()),
-        Ensure.that(logInAsWhoCaption(), isVisible()),
-        Ensure.that(coordinatorJoeBloggs(), isVisible()),
-        Click.on(coordinatorJoeBloggs()),
-        Scroll.to(logInButton()),
-        Ensure.that(logInButton(), isVisible()),
-        Click.on(logInButton()),
-        Ensure.that(manageAccountsLink(), isVisible()),
+        Ensure.that(dashboardTitle(), isVisible()),
+        Ensure.that(Text.of(dashboardTitle()), equals('Dashboard')),
     );
 

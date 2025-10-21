@@ -75,6 +75,11 @@ public partial class TestData
         return _faker.Name.LastName();
     }
 
+    private static string GenerateEmail()
+    {
+        return _faker.Internet.Email();
+    }
+
     public Task<string> GenerateTrn()
     {
         return _generateTrn();

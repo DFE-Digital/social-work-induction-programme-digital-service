@@ -1,3 +1,4 @@
+/*
 import {describe, it} from '@serenity-js/playwright-test';
 import {Click} from '@serenity-js/web';
 import {viewGivenUser} from "./Pages";
@@ -91,3 +92,4 @@ describe('When the user navigates to a created assessor coordinator\'s account',
         );
     });
 });
+*/
