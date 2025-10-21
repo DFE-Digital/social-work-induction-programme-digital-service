@@ -58,7 +58,8 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodl
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
-    && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION}
+    && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION} \
+    && rm install-theme
 
 # PHP composer is a prerequisite for installing Moosh
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
@@ -76,17 +77,19 @@ RUN chmod +x install-moosh \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     wget \
-    unzip
-
-RUN mkdir -p /app
-COPY install-oidc-plugin /app/install-oidc-plugin
-COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
-RUN chmod +x /app/install-oidc-plugin \
+    unzip \
+    && mkdir -p /app \
+    && chmod +x /app \
     && cd public \
-    && /app/install-oidc-plugin check,copy,upgrade \
-    ${MOODLE_OIDC_PLUGIN_RELEASE_URL}
-
-RUN rm install-*
+    # We copy the scripts in and execute them here to keep the layer self-contained
+    && copy ../../install-oidc-plugin /app/install-oidc-plugin \
+    && copy ../../setup_moodle_webservice.php /app/setup_moodle_webservice.php \
+    && chmod +x /app/install-oidc-plugin \
+    && /app/install-oidc-plugin check,copy,upgrade ${MOODLE_OIDC_PLUGIN_RELEASE_URL} \
+    # Now, clean up the build dependencies
+    && apt-get purge -y --auto-remove wget unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /app
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
@@ -137,35 +140,23 @@ RUN echo "$FULL_TAG" > version.txt
 # Re-enable if DB connectivity tracing is required
 #COPY dmllib.trace.php ./lib/dmllib.php
 
-# We use the moodledata_ref directory as a reference to seed the Azure file share if empty
-# RUN mv /var/www/moodledata /var/www/moodledata_ref \
-#     && mkdir -p /var/www/moodledata \
-#     && chown www-data:www-data /var/www/moodledata \
-#     && mkdir -p /var/www/moodledata_share \
-#     && chown www-data:www-data /var/www/moodledata_share
-
 # Needs to run as root for various standard mount point permissions in Azure
 # Apache is configured to run as www-data
 USER root
 
 # PHP composer is a prerequisite for installing Moosh
-RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
-    && php composer-setup.php --version=${PHP_COMPOSER_VERSION} --install-dir=/usr/local/bin --filename=composer \
-    && rm composer-setup.php \
-    && composer --version
+COPY --from=full-moodle-builder /root/.composer /root/.composer
+COPY --from=full-moodle-builder /usr/local/bin/composer /usr/local/bin/composer
+ENV PATH="/root/.composer/vendor/bin:${PATH}"
 
-# Moosh is required to run the install-oidc-plugin script at deployment time
-COPY install-moosh install-moosh
-RUN chmod +x install-moosh \
-    && ./install-moosh \
-    && rm install-moosh
-
-COPY --from=full-moodle-builder /app/ /app
+# Copy the application scripts
 COPY entry-point.sh /app/entry-point.sh
-# The maintain moodle script allows us to upgrade the moodle database at deployment time
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
+# We can copy the oidc plugin script from the builder stage as well
+COPY --from=full-moodle-builder /app/install-oidc-plugin /app/install-oidc-plugin
+COPY --from=full-moodle-builder /app/setup_moodle_webservice.php /app/setup_moodle_webservice.php
 RUN chmod +x /app/*.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
