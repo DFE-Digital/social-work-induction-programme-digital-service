@@ -25,7 +25,10 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
     [InlineData(false, "/manage-accounts/eligibility-qualification")]
     public void OnGet_WhenCalled_LoadsTheViewWithCorrectBackLinks(bool isAgencyWorker, string expectedBackLink)
     {
+        var accountType = AccountType.EarlyCareerSocialWorker;
+
         MockCreateAccountJourneyService.Setup(x => x.GetIsAgencyWorker()).Returns(isAgencyWorker);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountTypes()).Returns([accountType]);
 
         // Act
         var result = Sut.OnGet();
@@ -35,6 +38,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
         Sut.BackLinkPath.Should().Be(expectedBackLink);
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -43,9 +47,11 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
     public void OnGet_WhenCalledAndSocialEnglandNumberNeedsCapturing_LoadsTheViewWithContinueToAccountDetailsPage()
     {
         // Arrange
+        var accountType = AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder.WithSocialWorkEnglandNumber(null).Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountTypes()).Returns([accountType]);
 
         // Act
         var result = Sut.OnGet();
@@ -55,6 +61,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
         Sut.NextPagePath.Should().Be("/manage-accounts/add-account-details");
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -62,11 +69,13 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
     public void OnGet_WhenCalledAndProgrammeDatesNeedCapturing_LoadsTheViewWithContinueToProgrammeDatesPage()
     {
         //Arrange
+        var accountType = AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder
-            .WithTypes([AccountType.EarlyCareerSocialWorker])
+            .WithTypes([accountType])
             .WithSocialWorkEnglandNumber("12343").Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountTypes()).Returns([accountType]);
         MockCreateAccountJourneyService.Setup(x => x.GetProgrammeStartDate()).Returns((DateOnly?)null);
 
         // Act
@@ -77,6 +86,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
         Sut.NextPagePath.Should().Be("/manage-accounts/social-worker-programme-dates");
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -85,11 +95,13 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
     public void OnGet_WhenCalledAndAllDetailsNeededAreAlreadyCaptured_LoadsTheViewWithContinueToConfirmDetailsPage()
     {
         //Arrange
+        var accountType = AccountType.EarlyCareerSocialWorker;
         var account = AccountBuilder
-            .WithTypes([AccountType.EarlyCareerSocialWorker])
+            .WithTypes([accountType])
             .WithSocialWorkEnglandNumber("12343").Build();
         var accountDetails = AccountDetails.FromAccount(account);
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountTypes()).Returns([accountType]);
         MockCreateAccountJourneyService.Setup(x => x.GetProgrammeStartDate()).Returns(DateOnly.FromDateTime(DateTime.Now));
 
         // Act
@@ -99,6 +111,7 @@ public class EligibilityFundingNotAvailablePageTests : ManageAccountsPageTestBas
         result.Should().BeOfType<PageResult>();
         Sut.NextPagePath.Should().Be("/manage-accounts/confirm-account-details");
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         VerifyAllNoOtherCalls();
