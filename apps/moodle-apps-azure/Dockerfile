@@ -58,7 +58,8 @@ COPY --from=base-moodle-install-builder --chown=www-data:www-data /var/www/moodl
 # Install the custom GOVUK theme
 COPY install-theme install-theme
 RUN chmod +x install-theme \
-    && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION}
+    && ./install-theme ${MOODLE_GOV_UK_THEME_VERSION} \
+    && rm install-theme
 
 # PHP composer is a prerequisite for installing Moosh
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
@@ -73,20 +74,19 @@ RUN chmod +x install-moosh \
     && rm install-moosh
 
 # Required to run the install-oidc-plugin script
+COPY install-oidc-plugin /app/install-oidc-plugin
+COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     wget \
-    unzip
-
-RUN mkdir -p /app
-COPY install-oidc-plugin /app/install-oidc-plugin
-COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
-RUN chmod +x /app/install-oidc-plugin \
+    unzip \
+    && chmod +x /app/install-oidc-plugin \
     && cd public \
-    && /app/install-oidc-plugin check,copy,upgrade \
-    ${MOODLE_OIDC_PLUGIN_RELEASE_URL}
-
-RUN rm install-*
+    && /app/install-oidc-plugin check,copy,upgrade ${MOODLE_OIDC_PLUGIN_RELEASE_URL} \
+    # Now, clean up the build dependencies
+    && apt-get purge -y --auto-remove wget unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
@@ -153,12 +153,14 @@ RUN chmod +x install-moosh \
     && ./install-moosh \
     && rm install-moosh
 
-COPY --from=full-moodle-builder /app/ /app
+# Copy the application scripts
 COPY entry-point.sh /app/entry-point.sh
-# The maintain moodle script allows us to upgrade the moodle database at deployment time
 COPY maintain-moodle.sh /app/maintain-moodle.sh
 COPY save-env.sh /app/save-env.sh
 COPY restore-env.sh /app/restore-env.sh
+# We can copy the oidc plugin script from the builder stage as well
+COPY --from=full-moodle-builder /app/install-oidc-plugin /app/install-oidc-plugin
+COPY --from=full-moodle-builder /app/setup_moodle_webservice.php /app/setup_moodle_webservice.php
 RUN chmod +x /app/*.sh
 
 # Default config is full-blown moodle instance - if not the case, the entry point script
