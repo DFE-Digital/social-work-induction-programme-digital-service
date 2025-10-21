@@ -33,7 +33,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         // Arrange
         var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        var expectedShowSweInput = (accountDetails.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountDetails.Types?.Contains(AccountType.Assessor) ?? false);
+        var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
 
         var isSwe = SocialWorkEnglandRecord.TryParse(account.SocialWorkEnglandNumber, out var swe);
         var socialWorkerId = isSwe ? swe?.GetNumber().ToString() : null;
@@ -55,7 +55,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         Sut.LastName.Should().Be(account.LastName);
         Sut.Email.Should().Be(account.Email);
         Sut.SocialWorkEnglandNumber.Should().Be(socialWorkerId);
-        Sut.ShowSweInput.Should().Be(expectedShowSweInput);
+        Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountType);
         Sut.BackLinkPath.Should().Be("/manage-accounts/view-account-details/" + account.Id);
 
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
@@ -89,7 +89,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
             .WithAddOrEditAccountDetailsData()
             .Build();
         var accountDetails = AccountDetails.FromAccount(account);
-        var expectedShowSweInput = (accountDetails.Types?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountDetails.Types?.Contains(AccountType.Assessor) ?? false);
+        var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
@@ -116,7 +116,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         redirectResult!
             .Url.Should()
             .Be("/manage-accounts/confirm-account-details/" + account.Id + "?handler=Update");
-        Sut.ShowSweInput.Should().Be(expectedShowSweInput);
+        Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountType);
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(
             x =>
@@ -136,11 +136,12 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         // Arrange
         var account = AccountBuilder.Build();
         var accountDetails = AccountDetails.FromAccount(account);
+        var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
 
         Sut.FirstName = account.FirstName;
         Sut.LastName = account.LastName;
         Sut.Email = string.Empty;
-        Sut.ShowSweInput = false;
+        Sut.AccountTypes = expectedAccountType;
         Sut.SocialWorkEnglandNumber = "SW123";
 
         MockEditAccountJourneyService

@@ -1,4 +1,6 @@
 ﻿@page "{id:Guid}"
+@using Dfe.Sww.Ecf.Frontend.Models
+@using GovUk.Frontend.AspNetCore.TagHelpers
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.EditAccountDetails
 
 @{
@@ -31,9 +33,9 @@
                     <govuk-input-error-message/>
                 </govuk-input>
 
-                @if (Model.ShowSweInput)
+                @if (Model.AccountTypes.Contains(AccountType.Assessor) || Model.AccountTypes.Contains(AccountType.EarlyCareerSocialWorker))
                 {
-                    <govuk-input for="SocialWorkEnglandNumber" spellcheck="false" input-class="govuk-input--width-10">
+                    <govuk-input for="SocialWorkEnglandNumber" hidden="@Model.AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)" spellcheck="false" input-class="govuk-input--width-10">
                         <govuk-input-label class="govuk-label">Social Work England registration number</govuk-input-label>
                         <govuk-input-hint>For example, SW1234</govuk-input-hint>
                         <govuk-input-error-message/>
