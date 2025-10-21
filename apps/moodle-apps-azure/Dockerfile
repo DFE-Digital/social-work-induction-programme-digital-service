@@ -74,21 +74,20 @@ RUN chmod +x install-moosh \
     && rm install-moosh
 
 # Required to run the install-oidc-plugin script
+COPY install-oidc-plugin /app/install-oidc-plugin
+COPY setup_moodle_webservice.php /app/setup_moodle_webservice.php
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     wget \
     unzip \
-    && mkdir -p /app \
-    && chmod +x /app \
-    && cd public \
-    # We copy the scripts in and execute them here to keep the layer self-contained
-    && copy ../../install-oidc-plugin /app/install-oidc-plugin \
-    && copy ../../setup_moodle_webservice.php /app/setup_moodle_webservice.php \
     && chmod +x /app/install-oidc-plugin \
+    && cd public \
     && /app/install-oidc-plugin check,copy,upgrade ${MOODLE_OIDC_PLUGIN_RELEASE_URL} \
     # Now, clean up the build dependencies
     && apt-get purge -y --auto-remove wget unzip \
     && rm -rf /var/lib/apt/lists/* \
+    # Clean up the scripts we copied in
     && rm -rf /app
 
 ###############################################################
