@@ -1,0 +1,22 @@
+@page
+
+@model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.EligibilitySocialWorkEnglandAsyeDropout
+
+@{
+    Model.Title = "The social worker is not eligible for grant funding";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">The social worker is not eligible for grant funding</h1>
+        <div class="govuk-body">
+            <p>This social worker has already been funded through the Assessed and Supported Year in Employment (ASYE) programme. They are not eligible for further grant funding for the Social Work Practice Development Programme. If you think this is wrong, you can contact us.</p>
+
+            <p>Your organisation will not receive payments for this social worker if they take part in the programme.</p>
+
+            <p>You can still register the social worker on this service. They will be able to access the learning, development and assessment materials.</p>
+
+            <govuk-button-link href="@LinkGenerator.ManageAccount.EligibilityStatutoryWork(Model.OrganisationId)">Continue</govuk-button-link>
+        </div>
+    </div>
+</div>

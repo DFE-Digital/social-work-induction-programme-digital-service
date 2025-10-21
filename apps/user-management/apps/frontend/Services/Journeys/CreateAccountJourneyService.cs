@@ -110,6 +110,13 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public void SetIsEnrolledInAsye(bool? isEnrolledInAsye)
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        createAccountJourneyModel.IsEnrolledInAsye = isEnrolledInAsye;
+        SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
     /// <inheritdoc />
     public bool? GetIsRecentlyQualified()
     {

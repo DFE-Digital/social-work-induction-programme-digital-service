@@ -22,6 +22,11 @@ public class CreateAccountJourneyModel
     public bool? IsAgencyWorker { get; set; }
 
     /// <summary>
+    /// Property capturing whether the Social Worker ID has already been enrolled on ASYE
+    /// </summary>
+    public bool? IsEnrolledInAsye { get; set; }
+
+    /// <summary>
     /// Property capturing whether the user has completed their social work qualification within the last 3 years.
     /// </summary>
     public bool? IsRecentlyQualified { get; set; }
@@ -58,6 +63,7 @@ public class CreateAccountJourneyModel
             && IsRegisteredWithSocialWorkEngland == true
             && IsStatutoryWorker == true
             && IsAgencyWorker == false
-            && IsRecentlyQualified == true;
+            && IsRecentlyQualified == true
+            && IsEnrolledInAsye == false;
     }
 }
