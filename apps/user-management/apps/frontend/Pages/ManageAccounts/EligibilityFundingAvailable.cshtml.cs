@@ -1,8 +1,8 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
@@ -16,8 +16,12 @@ public class EligibilityFundingAvailable(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ManageAccount.EligibilityQualification(OrganisationId);
+        var isEcsw = createAccountJourneyService.GetAccountTypes()?.Contains(AccountType.EarlyCareerSocialWorker) ?? false;
         var accountDetails = createAccountJourneyService.GetAccountDetails();
-        if (accountDetails?.SocialWorkEnglandNumber is null)
+
+        // ECSWs have a SWE ID but no account details at this stage, other account types don't have an ID or account details
+        if ((isEcsw && accountDetails?.Email is null)
+            || accountDetails?.SocialWorkEnglandNumber is null)
         {
             NextPagePath = linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
         }

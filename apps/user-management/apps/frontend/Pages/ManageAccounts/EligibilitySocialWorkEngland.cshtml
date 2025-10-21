@@ -14,7 +14,16 @@
                         Are they registered with Social Work England?
                     </govuk-radios-fieldset-legend>
 
-                    <govuk-radios-item value="@true">Yes</govuk-radios-item>
+                    <govuk-radios-item value="@true">
+                        Yes
+                        <govuk-radios-item-conditional>
+                            <govuk-input for="SocialWorkerNumber" input-class="govuk-input--width-10" type="text" spellcheck="false">
+                                <govuk-input-label>Enter their Social Work England registration number</govuk-input-label>
+                                <govuk-input-hint>For example, SW1234</govuk-input-hint>
+                            </govuk-input>
+                        </govuk-radios-item-conditional>
+                    </govuk-radios-item>
+
                     <govuk-radios-item value="@false">No</govuk-radios-item>
                 </govuk-radios-fieldset>
             </govuk-radios>
