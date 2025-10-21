@@ -15,11 +15,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 {
     public AddPrimaryCoordinatorPageTests()
     {
-        Sut = new AddPrimaryCoordinator(
-            MockCreateOrganisationJourneyService.Object,
-            new AccountDetailsValidator(),
-            new FakeLinkGenerator()
-        );
+        Sut = new AddPrimaryCoordinator(MockCreateOrganisationJourneyService.Object, new AccountDetailsValidator(new Mock<IAccountService>().Object), new FakeLinkGenerator());
     }
 
     private AddPrimaryCoordinator Sut { get; }
