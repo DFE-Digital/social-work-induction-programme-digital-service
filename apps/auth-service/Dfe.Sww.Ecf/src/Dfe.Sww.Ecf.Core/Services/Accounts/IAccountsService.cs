@@ -12,4 +12,5 @@ public interface IAccountsService
     Task<PersonDto> CreateAsync(Person person);
     Task<PersonDto?> UpdateAsync(Person person);
     Task<PersonDto?> DeleteAsync(Guid id);
+    Task<PersonDto?> GetByEmailAsync(string email);
 }
