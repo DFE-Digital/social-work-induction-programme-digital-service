@@ -142,10 +142,16 @@ RUN echo "$FULL_TAG" > version.txt
 USER root
 
 # PHP composer is a prerequisite for installing Moosh
-COPY --from=full-moodle-builder /root/.composer /root/.composer
-COPY --from=full-moodle-builder /usr/local/bin/composer /usr/local/bin/composer
-# ENV PATH="/root/.composer/vendor/bin:${PATH}"
-RUN ln -s /root/.composer/vendor/bin/moosh /usr/local/bin/moosh
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --version=${PHP_COMPOSER_VERSION} --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php \
+    && composer --version
+
+# Moosh is required to run the install-oidc-plugin script at deployment time
+COPY install-moosh install-moosh
+RUN chmod +x install-moosh \
+    && ./install-moosh \
+    && rm install-moosh
 
 # Copy the application scripts
 COPY entry-point.sh /app/entry-point.sh
