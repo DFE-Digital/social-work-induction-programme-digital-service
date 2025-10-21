@@ -86,9 +86,7 @@ RUN apt-get update \
     && /app/install-oidc-plugin check,copy,upgrade ${MOODLE_OIDC_PLUGIN_RELEASE_URL} \
     # Now, clean up the build dependencies
     && apt-get purge -y --auto-remove wget unzip \
-    && rm -rf /var/lib/apt/lists/* \
-    # Clean up the scripts we copied in
-    && rm -rf /app
+    && rm -rf /var/lib/apt/lists/*
 
 ###############################################################
 # Stage 3: Fully customised Moodle app prepped for Azure DB   #
