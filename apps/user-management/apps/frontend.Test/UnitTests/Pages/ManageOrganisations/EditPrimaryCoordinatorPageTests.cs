@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -14,11 +15,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
 {
     public EditPrimaryCoordinatorPageTests()
     {
-        Sut = new EditPrimaryCoordinator(
-            MockEditOrganisationJourneyService.Object,
-            new FakeLinkGenerator(),
-            new AccountDetailsValidator()
-        );
+        Sut = new EditPrimaryCoordinator(MockEditOrganisationJourneyService.Object, new FakeLinkGenerator(), new AccountDetailsValidator(new Mock<IAccountService>().Object));
     }
 
     private EditPrimaryCoordinator Sut { get; }

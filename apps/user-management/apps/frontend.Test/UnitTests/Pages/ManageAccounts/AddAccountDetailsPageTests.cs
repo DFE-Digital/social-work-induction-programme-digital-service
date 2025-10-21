@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
@@ -19,11 +20,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
     public AddAccountDetailsPageTests()
     {
-        Sut = new AddAccountDetails(
-            MockCreateAccountJourneyService.Object,
-            new AccountDetailsValidator(),
-            new FakeLinkGenerator()
-        );
+        Sut = new AddAccountDetails(MockCreateAccountJourneyService.Object, new AccountDetailsValidator(new Mock<IAccountService>().Object), new FakeLinkGenerator());
     }
 
     [Theory]

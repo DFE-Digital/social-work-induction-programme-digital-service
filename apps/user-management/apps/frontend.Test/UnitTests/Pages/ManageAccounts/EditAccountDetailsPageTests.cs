@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -17,11 +18,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
     public EditAccountDetailsPageTests()
     {
-        Sut = new EditAccountDetails(
-            MockEditAccountJourneyService.Object,
-            new AccountDetailsValidator(),
-            new FakeLinkGenerator()
-        )
+        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new AccountDetailsValidator(new Mock<IAccountService>().Object), new FakeLinkGenerator())
         {
             TempData = TempData
         };
