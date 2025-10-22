@@ -32,13 +32,5 @@ public class BaseOperations
         {
             throw new InvalidOperationException(errorMessage, ex);
         }
-        catch (ArgumentNullException ex)
-        {
-            throw new InvalidOperationException(errorMessage, ex);
-        }
-        catch (NotSupportedException ex)
-        {
-            throw new InvalidOperationException(errorMessage, ex);
-        }
     }
 }

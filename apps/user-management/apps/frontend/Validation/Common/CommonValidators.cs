@@ -18,11 +18,6 @@ public static class CommonValidators
         ruleBuilder.NotEmpty().WithMessage("Enter a last name");
     }
 
-    public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
-    {
-        ruleBuilder.NotEmpty().WithMessage("Enter an email address").EmailAddress().WithMessage("Enter an email address in the correct format, like name@example.com");
-    }
-
     public static IRuleBuilderOptions<T, string?> EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder, Func<string, CancellationToken, Task<bool>> emailExistsAsync)
     {
         return ruleBuilder
@@ -37,7 +32,7 @@ public static class CommonValidators
                     return !exists;
                 }
             )
-            .WithMessage("The email address entered belongs to an existing user.");
+            .WithMessage("The email address entered belongs to an existing user");
     }
 
     public static void PhoneNumberValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)

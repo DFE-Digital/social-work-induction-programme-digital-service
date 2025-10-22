@@ -139,7 +139,7 @@ public class AccountDetailsValidatorTests()
         var result = await validator.TestValidateAsync(account);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Email).WithErrorMessage("The email address entered belongs to an existing user.");
+        result.ShouldHaveValidationErrorFor(x => x.Email).WithErrorMessage("The email address entered belongs to an existing user");
     }
 
     [Fact]
