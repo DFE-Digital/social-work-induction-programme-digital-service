@@ -16,12 +16,9 @@ public class EligibilityFundingAvailable(
     public PageResult OnGet()
     {
         BackLinkPath = linkGenerator.ManageAccount.EligibilityQualification(OrganisationId);
-        var isEcsw = createAccountJourneyService.GetAccountTypes()?.Contains(AccountType.EarlyCareerSocialWorker) ?? false;
-        var accountDetails = createAccountJourneyService.GetAccountDetails();
+        var hasAccountDetails = HasAccountDetails();
 
-        // ECSWs have a SWE ID but no account details at this stage, other account types don't have an ID or account details
-        if ((isEcsw && accountDetails?.Email is null)
-            || accountDetails?.SocialWorkEnglandNumber is null)
+        if (!hasAccountDetails)
         {
             NextPagePath = linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
         }
@@ -35,5 +32,30 @@ public class EligibilityFundingAvailable(
         }
 
         return Page();
+    }
+
+    private bool HasAccountDetails()
+    {
+        var isEcsw = createAccountJourneyService.GetAccountTypes()?.Contains(AccountType.EarlyCareerSocialWorker) ?? false;
+        var accountDetails = createAccountJourneyService.GetAccountDetails();
+
+        if (accountDetails is null)
+        {
+            return false;
+        }
+
+        // ECSWs have a SWE ID but no account details at this stage
+        if (isEcsw && string.IsNullOrWhiteSpace(accountDetails.Email))
+        {
+            return false;
+        }
+
+        // Other types don't have SWE ID or account details
+        if (accountDetails.SocialWorkEnglandNumber is null)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

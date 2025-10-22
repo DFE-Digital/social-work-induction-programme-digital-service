@@ -49,22 +49,23 @@ public class EligibilitySocialWorkEngland(
 
         // Validated above but compiler complains if we don't check
         if (string.IsNullOrWhiteSpace(SocialWorkerNumber))
-        {
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
             return BadRequest();
-        }
 
-        createAccountJourneyService.SetAccountDetails(new AccountDetails { SocialWorkEnglandNumber = SocialWorkerNumber });
+        var accountDetails = createAccountJourneyService.GetAccountDetails() ?? new AccountDetails();
+        accountDetails.SocialWorkEnglandNumber = SocialWorkerNumber;
+        createAccountJourneyService.SetAccountDetails(accountDetails);
 
         var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkerNumber);
         createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
         if (isEnrolledInAsye)
         {
-            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
+            return Redirect(FromChangeLink
+                ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutChange()
+                : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
         }
 
         return Redirect(FromChangeLink
-            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            ? linkGenerator.ManageAccount.EligibilityFundingAvailable(OrganisationId)
             : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId));
     }
 
