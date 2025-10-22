@@ -53,8 +53,7 @@ jobs:
     # Permissions for OIDC Azure authentication (az login)
     permissions:
       id-token: write
-      contents: write
-      issues: write
+      contents: read
     environment: ${{ inputs.environment }}
     env:
       # This will make the secret available to Docker Build
