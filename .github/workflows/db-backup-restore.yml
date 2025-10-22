@@ -45,8 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@37c927c24552caa0ef6040ab0876db729cc12754 # v1.0.2-beta7
-
       - name: Login to Azure
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
         with:
@@ -130,8 +128,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@37c927c24552caa0ef6040ab0876db729cc12754 # v1.0.2-beta7
-
       - name: Validate backup file name
         run: |
           if [ -z "${{ inputs.backup-file-name }}" ]; then
