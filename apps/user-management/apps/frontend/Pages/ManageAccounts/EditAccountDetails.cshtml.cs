@@ -62,7 +62,7 @@ public class EditAccountDetails(
             out var swe
         );
 
-        SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
+        SocialWorkEnglandNumber = isSwe ? swe?.GetNumber() : null;
 
         return Page();
     }

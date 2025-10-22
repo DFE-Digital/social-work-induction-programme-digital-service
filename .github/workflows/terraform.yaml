@@ -27,11 +27,9 @@ defaults:
   run:
     working-directory: ./terraform
 
-#permissions for oidc auth
 permissions:
   id-token: write
-  contents: write
-  issues: write
+  contents: read
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
@@ -49,8 +47,6 @@ jobs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@37c927c24552caa0ef6040ab0876db729cc12754 # v1.0.2-beta7
-
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
