@@ -56,11 +56,14 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public async Task
-        OnPostAsync_WhenCalledWithNullIsRecentlyQualified_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
+        OnPostAsync_WhenCalledWithNullIsRecentlyQualified_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker(bool isFromChangeLink)
     {
         // Arrange
+        Sut.FromChangeLink = isFromChangeLink;
         Sut.IsRecentlyQualified = null;
 
         // Act
@@ -77,7 +80,7 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         modelState["IsRecentlyQualified"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user completed their social work qualification within the last 3 years");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
+        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/eligibility-agency-worker?handler=Change" : "/manage-accounts/eligibility-agency-worker");
 
         VerifyAllNoOtherCalls();
     }

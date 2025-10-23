@@ -18,7 +18,7 @@ public class EligibilityStatutoryWork(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
         IsStatutoryWorker = createAccountJourneyService.GetIsStatutoryWorker();
         return Page();
     }
@@ -29,7 +29,7 @@ public class EligibilityStatutoryWork(
         if (IsStatutoryWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
             return Page();
         }
 
@@ -37,15 +37,14 @@ public class EligibilityStatutoryWork(
 
         if (FromChangeLink)
         {
-            if (IsStatutoryWorker == true)
-            {
-                return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId));
-            }
-            return Redirect(linkGenerator.ManageAccount.EligibilityStatutoryWorkDropoutChange(OrganisationId));
+            return Redirect(IsStatutoryWorker == true
+                ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+                : linkGenerator.ManageAccount.EligibilityStatutoryWorkDropoutChange(OrganisationId));
         }
+
         return Redirect(IsStatutoryWorker is false
             ? linkGenerator.ManageAccount.EligibilityStatutoryWorkDropout(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
+            : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId));
     }
 
     public PageResult OnGetChange()

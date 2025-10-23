@@ -55,9 +55,10 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
             .Be(
                 isStaff
                     ? "/manage-accounts/select-use-case"
-                    : "/manage-accounts/select-account-type"
+                    : "/manage-accounts/eligibility-funding-not-available"
             );
 
+        MockCreateAccountJourneyService.Verify(x => x.GetIsFunded(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
@@ -68,7 +69,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     public void GetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var account = AccountBuilder.WithIsFunded(false).Build();
         var accountDetails = AccountDetails.FromAccount(account);
 
         MockCreateAccountJourneyService.Setup(x => x.GetIsStaff()).Returns(false);
@@ -82,6 +83,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
 
+        MockCreateAccountJourneyService.Verify(x => x.GetIsFunded(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
@@ -191,6 +193,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsFunded(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -230,6 +233,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStaff(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsFunded(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -249,7 +253,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
             .Be(
                 isStaff
                     ? "/manage-accounts/select-use-case"
-                    : "/manage-accounts/select-account-type"
+                    : "/manage-accounts/eligibility-funding-not-available"
             );
     }
 

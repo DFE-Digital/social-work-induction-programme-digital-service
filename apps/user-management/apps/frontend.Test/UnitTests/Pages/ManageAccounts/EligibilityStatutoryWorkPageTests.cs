@@ -31,7 +31,7 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.IsStatutoryWorker.Should().BeNull();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
         Sut.FromChangeLink.Should().BeFalse();
 
         MockCreateAccountJourneyService.Verify(x => x.GetIsStatutoryWorker(), Times.Once);
@@ -58,11 +58,14 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public async Task
-        OnPostAsync_WhenCalledWithNullIsStatutoryWorker_ReturnsErrorsAndRedirectsToEligibilitySocialWorkEngland()
+        OnPostAsync_WhenCalledWithNullIsStatutoryWorker_ReturnsErrorsAndRedirectsToEligibilitySocialWorkEngland(bool isFromChangeLink)
     {
         // Arrange
+        Sut.FromChangeLink = isFromChangeLink;
         Sut.IsStatutoryWorker = null;
 
         // Act
@@ -79,7 +82,7 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         modelState["IsStatutoryWorker"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user currently works in statutory child and family social work in England");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/confirm-account-details" : "/manage-accounts/eligibility-information");
 
         VerifyAllNoOtherCalls();
     }
@@ -98,7 +101,7 @@ public class EligibilityStatutoryWorkPageTests : ManageAccountsPageTestBase<Elig
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-worker");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-social-work-england");
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsStatutoryWorker(true), Times.Once);
 

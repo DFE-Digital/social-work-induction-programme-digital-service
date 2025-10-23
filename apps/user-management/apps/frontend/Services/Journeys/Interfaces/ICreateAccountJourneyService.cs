@@ -31,6 +31,8 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
+    bool? GetIsEnrolledInAsye();
+    
     void SetIsEnrolledInAsye(bool? isEnrolledInAsye);
 
     /// <summary>
@@ -38,6 +40,8 @@ public interface ICreateAccountJourneyService
     /// </summary>
     /// <returns>True if the user has qualified in the last 3 years, false otherwise.</returns>
     bool? GetIsRecentlyQualified();
+
+    bool? GetIsFunded();
 
     void SetIsRecentlyQualified(bool? isRecentlyQualified);
 

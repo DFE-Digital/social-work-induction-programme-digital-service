@@ -33,7 +33,7 @@ public class EligibilityQualification(
         if (IsRecentlyQualified is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.EligibilityAgencyWorkerChange(OrganisationId) : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId);
             return Page();
         }
 
