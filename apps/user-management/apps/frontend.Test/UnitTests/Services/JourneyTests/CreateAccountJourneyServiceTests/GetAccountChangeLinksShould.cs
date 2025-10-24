@@ -29,7 +29,7 @@ public class GetAccountChangeLinksShould : CreateAccountJourneyServiceTestBase
         };
 
         // Act
-        var accountChangeLinks = Sut.GetAccountChangeLinks();
+        var accountChangeLinks = Sut.GetAccountChangeLinks(false);
 
         // Assert
         accountChangeLinks.Should().NotBeNull();

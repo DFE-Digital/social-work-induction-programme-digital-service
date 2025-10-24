@@ -63,5 +63,5 @@ public interface ICreateAccountJourneyService
 
     AccountLabels? GetAccountLabels();
 
-    AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null);
+    AccountChangeLinks GetAccountChangeLinks(bool isEcsw, Guid? organisationId = null);
 }

@@ -17,4 +17,20 @@ public class BaseOperations
         }
     }
 
+    protected static T DeserializeOrThrow<T>(string json, string errorMessage)
+    {
+        try
+        {
+            var result = JsonSerializer.Deserialize<T>(json, SerializerOptions);
+            if (result is null && typeof(T).IsClass)
+            {
+                throw new InvalidOperationException(errorMessage);
+            }
+            return result!;
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException(errorMessage, ex);
+        }
+    }
 }

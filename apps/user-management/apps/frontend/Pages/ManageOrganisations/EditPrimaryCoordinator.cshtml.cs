@@ -64,7 +64,15 @@ public class EditPrimaryCoordinator(
             return BadRequest();
         }
 
-        var validationResult = await validator.ValidateAsync(PrimaryCoordinator);
+        var noEmailChange = string.Equals(primaryCoordinator.Email?.Trim(), PrimaryCoordinator.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+        var validationContext = new ValidationContext<AccountDetails>(PrimaryCoordinator);
+        if (noEmailChange)
+        {
+            validationContext.RootContextData["SkipEmailUnique"] = true;
+        }
+
+        var validationResult = await validator.ValidateAsync(validationContext);
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState, nameof(PrimaryCoordinator));

@@ -36,7 +36,9 @@ asdf install
 
 ###### Running Tests
 
-To run Frontend Tests locally use `pnpm playwright test --project=frontend` after starting the auth service, the One Login simulator and the frontend app.
+To run Frontend Tests locally use `pnpm playwright test --project=frontend` after starting the auth service, the One Login simulator and the frontend app. 
+Note: `INTERACTIVE_MODE=true` needs to be set in `auth-service/tools/onelogin-simulator/compose.yml`.
+
 To run API Tests use- `pnpm playwright test --project=swe_api`
 
 

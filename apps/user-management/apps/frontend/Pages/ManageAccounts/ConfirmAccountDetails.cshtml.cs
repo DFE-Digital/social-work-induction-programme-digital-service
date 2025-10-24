@@ -86,14 +86,15 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
-        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(OrganisationId);
-
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
+        var accountTypes = createAccountJourneyService.GetAccountTypes();
+
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
+        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false, OrganisationId);
 
         UserType = accountLabels?.IsStaffLabel;
-        AccountTypes = createAccountJourneyService.GetAccountTypes();
+        AccountTypes = accountTypes;
         RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
         StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
         AgencyWorker = accountLabels?.IsAgencyWorkerLabel;

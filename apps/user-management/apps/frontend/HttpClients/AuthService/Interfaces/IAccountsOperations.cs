@@ -14,4 +14,6 @@ public interface IAccountsOperations
     Task<string> GetLinkingTokenByAccountIdAsync(Guid accountId);
 
     Task<Person> UpdateAsync(UpdatePersonRequest updatePersonRequest);
+
+    Task<bool> CheckEmailExistsAsync(CheckEmailRequest checkEmailRequest);
 }

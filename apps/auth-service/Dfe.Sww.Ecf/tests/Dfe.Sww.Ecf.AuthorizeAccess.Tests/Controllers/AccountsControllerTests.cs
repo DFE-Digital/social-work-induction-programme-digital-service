@@ -472,36 +472,53 @@ public class AccountsControllerTests : TestBase
     }
 
     [Fact]
-    public void CheckEmailRequest_Validation_Fails_WhenEmailMissing()
+    public async Task GetBySocialWorkEnglandNumberAsync_ReturnsOkTrue_WhenUserExists()
     {
-        // Arrange
-        var request = new CheckEmailRequest { Email = string.Empty };
-        var validationResults = new List<ValidationResult>();
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var createdPerson = (await TestData.CreatePerson()).ToPerson();
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
 
-        // Act
-        var isValid = Validator.TryValidateObject(request, new ValidationContext(request), validationResults, validateAllProperties: true);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
-        // Assert
-        isValid.Should().BeFalse();
-        validationResults.Should().ContainSingle(r =>
-            r.MemberNames.Contains(nameof(CheckEmailRequest.Email)) &&
-            r.ErrorMessage == "Email is required.");
+            // Act
+            var result = await controller.GetBySocialWorkEnglandNumberAsync(createdPerson.Trn!);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<PersonDto>().Subject;
+
+            resultAccounts.Should().BeEquivalentTo(createdPerson.ToDto());
+        });
     }
 
     [Fact]
-    public void CheckEmailRequest_Validation_Fails_WhenEmailInvalidFormat()
+    public async Task GetBySocialWorkEnglandNumberAsync_ReturnsOkFalse_WhenUserDoesNotExist()
     {
-        // Arrange
-        var request = new CheckEmailRequest { Email = "invalid email" };
-        var validationResults = new List<ValidationResult>();
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
+            var socialWorkEnglandId = "SW951753";
 
-        // Act
-        var isValid = Validator.TryValidateObject(request, new ValidationContext(request), validationResults, validateAllProperties: true);
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
 
-        // Assert
-        isValid.Should().BeFalse();
-        validationResults.Should().ContainSingle(r =>
-            r.MemberNames.Contains(nameof(CheckEmailRequest.Email)) &&
-            r.ErrorMessage == "Email is not a valid format.");
+            // Act
+            var result = await controller.GetBySocialWorkEnglandNumberAsync(socialWorkEnglandId);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+        });
     }
 }
