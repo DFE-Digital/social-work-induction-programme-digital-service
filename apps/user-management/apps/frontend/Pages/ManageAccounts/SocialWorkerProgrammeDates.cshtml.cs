@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -76,12 +75,6 @@ public class SocialWorkerProgrammeDates(
         return Page();
     }
 
-    public Task<IActionResult> OnGetChangeAsync()
-    {
-        FromChangeLink = true;
-        return OnGetAsync();
-    }
-
     public async Task<IActionResult> OnPostAsync()
     {
         var result = await validator.ValidateAsync(this);
@@ -95,7 +88,7 @@ public class SocialWorkerProgrammeDates(
             BackLinkPath = Id.HasValue
                 ? linkGenerator.ManageAccount.ViewAccountDetails(Id.Value, OrganisationId)
                 : FromChangeLink
-                    ? linkGenerator.ManageAccount.ConfirmAccountDetails()
+                    ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
                     : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
             return Page();
         }
@@ -134,6 +127,12 @@ public class SocialWorkerProgrammeDates(
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
         return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value, OrganisationId));
+    }
+
+    public Task<IActionResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
     }
 
     public async Task<IActionResult> OnPostChangeAsync()
