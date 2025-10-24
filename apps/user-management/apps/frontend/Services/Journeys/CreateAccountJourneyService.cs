@@ -110,6 +110,12 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsEnrolledInAsye()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEnrolledInAsye;
+    }
+
     public void SetIsEnrolledInAsye(bool? isEnrolledInAsye)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
@@ -129,6 +135,12 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsRecentlyQualified = isRecentlyQualified;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public bool? GetIsFunded()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEligibleForFunding();
     }
 
     public DateOnly? GetProgrammeStartDate()
@@ -203,7 +215,7 @@ public class CreateAccountJourneyService(
             SocialWorkEnglandNumberChangeLink = isEcsw
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(organisationId)
                 : linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(organisationId)
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(organisationId: organisationId)
         };
     }
 

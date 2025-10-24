@@ -15,7 +15,7 @@ public class IndexPageTests : ManageAccountsPageTestBase<ManageAccountsIndex>
 
     public IndexPageTests()
     {
-        Sut = new ManageAccountsIndex(MockAccountService.Object, MockOrganisationService.Object, MockAuthServiceClient.Object, new FakeLinkGenerator());
+        Sut = new ManageAccountsIndex(MockAccountService.Object, MockOrganisationService.Object, new FakeLinkGenerator());
     }
 
     [Fact]

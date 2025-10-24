@@ -34,6 +34,7 @@ public class CreateAccountJourneyModel
     public DateOnly? ProgrammeStartDate { get; set; }
 
     public DateOnly? ProgrammeEndDate { get; set; }
+    public bool? IsFunded { get; set; }
 
     public Account ToAccount()
     {
@@ -57,7 +58,7 @@ public class CreateAccountJourneyModel
         };
     }
 
-    private bool IsEligibleForFunding()
+    public bool IsEligibleForFunding()
     {
         return AccountTypes?.Contains(AccountType.EarlyCareerSocialWorker) == true
             && IsRegisteredWithSocialWorkEngland == true
