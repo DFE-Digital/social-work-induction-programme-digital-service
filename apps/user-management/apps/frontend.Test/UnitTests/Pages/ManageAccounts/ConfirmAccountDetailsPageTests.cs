@@ -61,7 +61,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
             .Setup(x => x.GetAccountDetails())
             .Returns(expectedAccountDetails);
         MockCreateAccountJourneyService
-            .Setup(x => x.GetAccountChangeLinks(null))
+            .Setup(x => x.GetAccountChangeLinks(true, null))
             .Returns(expectedChangeLinks);
         MockCreateAccountJourneyService
             .Setup(x => x.GetAccountTypes())
@@ -105,7 +105,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeStartDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetProgrammeEndDate(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(null), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(true, null), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
         VerifyAllNoOtherCalls();
     }

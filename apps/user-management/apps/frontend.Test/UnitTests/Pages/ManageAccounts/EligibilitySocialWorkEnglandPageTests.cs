@@ -97,6 +97,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.SocialWorkerNumber = sweId;
         Sut.IsRegisteredWithSocialWorkEngland = true;
 
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(false);
 
         // Act
@@ -108,6 +109,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work");
 
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
         MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId), Times.Once);
@@ -126,6 +128,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.SocialWorkerNumber = sweId;
         Sut.IsRegisteredWithSocialWorkEngland = true;
 
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns((AccountDetails?)null);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(true);
 
         // Act
@@ -137,6 +140,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-accounts/eligibility-social-work-england-asye-dropout");
 
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(true), Times.Once);
@@ -167,7 +171,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
     }
 
     [Theory]
-    [InlineData(true, "/manage-accounts/confirm-account-details")]
+    [InlineData(true, "/manage-accounts/eligibility-funding-available")]
     [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
     public async Task
         OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRegisteredWithSocialWorkEngland, string redirectPath)
@@ -179,6 +183,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         Sut.FromChangeLink = true;
         Sut.IsRegisteredWithSocialWorkEngland = isRegisteredWithSocialWorkEngland;
 
+        MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(false);
 
         // Act
@@ -191,6 +196,10 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         redirectResult!.Url.Should().Be(redirectPath);
 
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(isRegisteredWithSocialWorkEngland), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(),
+            isRegisteredWithSocialWorkEngland
+                ? Times.Once
+                : Times.Never);
         MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(
                 MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             isRegisteredWithSocialWorkEngland
