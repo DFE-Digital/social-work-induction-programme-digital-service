@@ -80,7 +80,7 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         modelState["IsRecentlyQualified"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user completed their social work qualification within the last 3 years");
 
-        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/eligibility-agency-worker?handler=Change" : "/manage-accounts/eligibility-agency-worker");
+        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/confirm-account-details" : "/manage-accounts/eligibility-agency-worker");
 
         VerifyAllNoOtherCalls();
     }
@@ -135,7 +135,7 @@ public class EligibilityQualificationPageTests : ManageAccountsPageTestBase<Elig
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker?handler=Change");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
         Sut.FromChangeLink.Should().BeTrue();
         MockCreateAccountJourneyService.Verify(x => x.GetIsRecentlyQualified(), Times.Once);
         VerifyAllNoOtherCalls();
