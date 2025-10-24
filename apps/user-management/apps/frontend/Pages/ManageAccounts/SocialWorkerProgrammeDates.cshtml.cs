@@ -36,7 +36,9 @@ public class SocialWorkerProgrammeDates(
             return await OnGetUpdateAsync(id.Value);
         }
 
-        BackLinkPath = linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails()
+            : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
 
         var retrievedStartDate = createAccountJourneyService.GetProgrammeStartDate();
         ProgrammeStartDate = retrievedStartDate.HasValue
@@ -74,6 +76,12 @@ public class SocialWorkerProgrammeDates(
         return Page();
     }
 
+    public Task<IActionResult> OnGetChangeAsync()
+    {
+        FromChangeLink = true;
+        return OnGetAsync();
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         var result = await validator.ValidateAsync(this);
@@ -86,7 +94,9 @@ public class SocialWorkerProgrammeDates(
         {
             BackLinkPath = Id.HasValue
                 ? linkGenerator.ManageAccount.ViewAccountDetails(Id.Value, OrganisationId)
-                : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
+                : FromChangeLink
+                    ? linkGenerator.ManageAccount.ConfirmAccountDetails()
+                    : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
             return Page();
         }
 
@@ -124,5 +134,11 @@ public class SocialWorkerProgrammeDates(
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
 
         return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value, OrganisationId));
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync()
+    {
+        FromChangeLink = true;
+        return await OnPostAsync();
     }
 }
