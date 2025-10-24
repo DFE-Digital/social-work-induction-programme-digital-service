@@ -13,4 +13,5 @@ public interface IAccountsService
     Task<PersonDto?> UpdateAsync(Person person);
     Task<PersonDto?> DeleteAsync(Guid id);
     Task<PersonDto?> GetByEmailAsync(string email);
+    Task<PersonDto?> GetBySocialWorkEnglandNumberAsync(string socialWorkerEnglandNumber);
 }
