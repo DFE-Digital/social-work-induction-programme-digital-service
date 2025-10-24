@@ -174,7 +174,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
     }
 
     [Theory]
-    [InlineData(true, "/manage-accounts/eligibility-funding-available")]
+    [InlineData(true, "/manage-accounts/confirm-account-details")]
     [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
     public async Task
         OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRegisteredWithSocialWorkEngland, string redirectPath)
