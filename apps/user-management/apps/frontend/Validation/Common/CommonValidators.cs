@@ -18,13 +18,24 @@ public static class CommonValidators
         ruleBuilder.NotEmpty().WithMessage("Enter a last name");
     }
 
-    public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder, Func<string, CancellationToken, Task<bool>> emailExistsAsync)
     {
         ruleBuilder
             .NotEmpty()
             .WithMessage("Enter an email address")
             .EmailAddress()
-            .WithMessage("Enter an email address in the correct format, like name@example.com");
+            .WithMessage("Enter an email address in the correct format, like name@example.com")
+            .MustAsync(
+                async (_, email, context, ct) =>
+                {
+                    if (context.RootContextData.TryGetValue("SkipEmailUnique", out var skip) && skip is true)
+                        return true;
+
+                    var exists = await emailExistsAsync(email, ct);
+                    return !exists;
+                }
+            )
+            .WithMessage("The email address entered belongs to an existing user");
     }
 
     public static void PhoneNumberValidation<T>(this IRuleBuilder<T, string?> ruleBuilder)
@@ -32,7 +43,8 @@ public static class CommonValidators
         const string errorMessage = "Enter a phone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192";
 
         ruleBuilder
-            .NotEmpty().WithMessage(errorMessage)
+            .NotEmpty()
+            .WithMessage(errorMessage)
             .Must(phoneNumber =>
             {
                 if (string.IsNullOrWhiteSpace(phoneNumber))
