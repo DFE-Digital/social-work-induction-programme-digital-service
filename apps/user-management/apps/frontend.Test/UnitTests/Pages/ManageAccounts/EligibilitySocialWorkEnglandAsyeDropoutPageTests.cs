@@ -29,6 +29,7 @@ public class EligibilitySocialWorkEnglandAsyeDropoutPageTests : ManageAccountsPa
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        Sut.ContinueLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
         Sut.FromChangeLink.Should().BeFalse();
         VerifyAllNoOtherCalls();
     }
@@ -43,6 +44,7 @@ public class EligibilitySocialWorkEnglandAsyeDropoutPageTests : ManageAccountsPa
         result.Should().BeOfType<PageResult>();
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england?handler=Change");
+        Sut.ContinueLinkPath.Should().Be("/manage-accounts/confirm-account-details");
         Sut.FromChangeLink.Should().BeTrue();
         VerifyAllNoOtherCalls();
     }
