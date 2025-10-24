@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
@@ -20,7 +19,11 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
     public AddAccountDetailsPageTests()
     {
-        Sut = new AddAccountDetails(MockCreateAccountJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator());
+        Sut = new AddAccountDetails(
+            MockCreateAccountJourneyService.Object,
+            new AccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
+            new FakeLinkGenerator()
+        );
     }
 
     [Theory]
@@ -114,7 +117,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         MockCreateAccountJourneyService.Setup(x =>
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
-        MockAccountService.Setup(x => x.CheckEmailExistsAsync(account.Email!)).ReturnsAsync(false);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -144,7 +146,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         );
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
-        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

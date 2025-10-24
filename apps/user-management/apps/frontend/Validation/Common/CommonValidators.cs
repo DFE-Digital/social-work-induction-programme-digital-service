@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Models;
 using FluentValidation;
 using FluentValidation.Results;
@@ -77,16 +78,28 @@ public static class CommonValidators
     }
 
     public static void SocialWorkEnglandNumberValidation<T>(
-        this IRuleBuilder<T, string?> ruleBuilder
+        this IRuleBuilder<T, string?> ruleBuilder,
+        IAuthServiceClient authServiceClient
     )
     {
-        ruleBuilder.Custom(
-            (sweId, context) =>
+        ruleBuilder.CustomAsync(async (sweId, context, ct) =>
             {
                 if (string.IsNullOrWhiteSpace(sweId))
                 {
-                    context.AddFailure(new ValidationFailure(context.PropertyPath, "Enter a Social Work England registration number", sweId));
+                    context.AddFailure(new ValidationFailure(
+                        context.PropertyPath,
+                        "Enter a Social Work England registration number",
+                        sweId));
                     return;
+                }
+
+                var account = await authServiceClient.Accounts.GetBySocialWorkEnglandNumberAsync(sweId);
+                if (account is not null)
+                {
+                    context.AddFailure(new ValidationFailure(
+                        context.PropertyPath,
+                        "The Social Work England registration number entered belongs to an existing user",
+                        sweId));
                 }
 
                 var isSweNumber = SocialWorkEnglandRecord.TryParse(sweId, out _);
