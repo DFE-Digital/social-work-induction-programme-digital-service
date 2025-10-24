@@ -123,6 +123,18 @@ public class AccountsController(
         return Ok(user != null);
     }
 
+    [HttpGet("/social-work-england-number/{socialWorkerEnglandNumber}")]
+    [ActionName(nameof(GetBySocialWorkEnglandNumberAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GetBySocialWorkEnglandNumberAsync([FromRoute] string socialWorkerEnglandNumber)
+    {
+        var user = await accountsService.GetBySocialWorkEnglandNumberAsync(socialWorkerEnglandNumber);
+
+        return user is null
+            ? NoContent()
+            : Ok(user);
+    }
+
     [AllowAnonymous]
     [HttpGet("version")]
     [ActionName(nameof(GetVersion))]
