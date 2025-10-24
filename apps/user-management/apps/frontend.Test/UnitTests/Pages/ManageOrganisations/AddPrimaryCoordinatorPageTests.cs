@@ -15,7 +15,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 {
     public AddPrimaryCoordinatorPageTests()
     {
-        Sut = new AddPrimaryCoordinator(MockCreateOrganisationJourneyService.Object, new AccountDetailsValidator(new Mock<IAccountService>().Object), new FakeLinkGenerator());
+        Sut = new AddPrimaryCoordinator(MockCreateOrganisationJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator());
     }
 
     private AddPrimaryCoordinator Sut { get; }
@@ -71,6 +71,8 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         Sut.AccountDetails = accountDetails;
 
+        MockAccountService.Setup(x => x.CheckEmailExistsAsync(account.Email!)).ReturnsAsync(false);
+
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -85,6 +87,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -150,6 +153,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

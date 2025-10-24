@@ -80,6 +80,8 @@ public class EditAccountDetails(
             return BadRequest();
         }
 
+        var initialEmail = accountDetails.Email;
+
         accountDetails.FirstName = FirstName;
         accountDetails.MiddleNames = MiddlesNames;
         accountDetails.LastName = LastName;
@@ -88,7 +90,15 @@ public class EditAccountDetails(
 
         AccountTypes = accountDetails.Types ?? [];
 
-        var result = await validator.ValidateAsync(accountDetails);
+        var noEmailChange = string.Equals(initialEmail?.Trim(), accountDetails.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+        var validationContext = new ValidationContext<AccountDetails>(accountDetails);
+        if (noEmailChange)
+        {
+            validationContext.RootContextData["SkipEmailUnique"] = true;
+        }
+
+        var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);

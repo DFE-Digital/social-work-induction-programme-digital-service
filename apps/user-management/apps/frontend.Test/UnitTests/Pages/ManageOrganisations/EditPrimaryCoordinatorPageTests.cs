@@ -15,7 +15,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
 {
     public EditPrimaryCoordinatorPageTests()
     {
-        Sut = new EditPrimaryCoordinator(MockEditOrganisationJourneyService.Object, new FakeLinkGenerator(), new AccountDetailsValidator(new Mock<IAccountService>().Object));
+        Sut = new EditPrimaryCoordinator(MockEditOrganisationJourneyService.Object, new FakeLinkGenerator(), new AccountDetailsValidator(MockAccountService.Object));
     }
 
     private EditPrimaryCoordinator Sut { get; }
@@ -235,6 +235,98 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
             Times.Once
         );
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenEmailUnchanged_IgnoresUniquenessAndRedirects()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        accountDetails.Email = "Test@Test.com";
+        var postedEmail = "  test@test.com  ";
+
+        Sut.PrimaryCoordinator = accountDetails;
+        Sut.PrimaryCoordinator.Email = postedEmail;
+
+        MockEditOrganisationJourneyService.Setup(x => x.SetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value, MoqHelpers.ShouldBeEquivalentTo(accountDetails)));
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value)).ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnPostAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        MockAccountService.Verify<Task<bool>>(x => x.CheckEmailExistsAsync(It.IsAny<string>()), Times.Never);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value, MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
+            Times.Once
+        );
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenEmailChanged_ChecksUniqueness_AndReturnsErrorWhenNotUnique()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder
+            .WithAddOrEditAccountDetailsData()
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+
+        var postedAccount = AccountDetails.FromAccount(account);
+        var postedEmail = "different@test.com";
+        postedAccount.Email = postedEmail;
+
+        Sut.PrimaryCoordinator = postedAccount;
+
+        MockEditOrganisationJourneyService.Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value)).ReturnsAsync(accountDetails);
+        MockAccountService.Setup(x => x.CheckEmailExistsAsync(postedEmail)).ReturnsAsync(true);
+
+        // Act
+        var result = await Sut.OnPostAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Should().Contain("PrimaryCoordinator.Email");
+        modelState["PrimaryCoordinator.Email"]!.Errors.Count.Should().Be(1);
+        modelState["PrimaryCoordinator.Email"]!.Errors[0].ErrorMessage.Should().Be("The email address entered belongs to an existing user");
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(postedEmail), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenPrimaryCoordinatorMissing_ReturnsBadRequest()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync((AccountDetails?)null);
+
+        // Act
+        var result = await Sut.OnPostAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+        MockEditOrganisationJourneyService.Verify(
+            x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value),
+            Times.Once
+        );
         VerifyAllNoOtherCalls();
     }
 }

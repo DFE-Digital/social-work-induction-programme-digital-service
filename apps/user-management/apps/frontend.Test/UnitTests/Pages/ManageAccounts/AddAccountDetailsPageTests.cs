@@ -20,7 +20,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
 
     public AddAccountDetailsPageTests()
     {
-        Sut = new AddAccountDetails(MockCreateAccountJourneyService.Object, new AccountDetailsValidator(new Mock<IAccountService>().Object), new FakeLinkGenerator());
+        Sut = new AddAccountDetails(MockCreateAccountJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator());
     }
 
     [Theory]
@@ -114,6 +114,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         MockCreateAccountJourneyService.Setup(x =>
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
+        MockAccountService.Setup(x => x.CheckEmailExistsAsync(account.Email!)).ReturnsAsync(false);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -143,6 +144,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         );
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 

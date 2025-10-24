@@ -18,16 +18,19 @@ public static class CommonValidators
         ruleBuilder.NotEmpty().WithMessage("Enter a last name");
     }
 
-    public static IRuleBuilderOptions<T, string?> EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder, Func<string, CancellationToken, Task<bool>> emailExistsAsync)
+    public static void EmailValidation<T>(this IRuleBuilder<T, string?> ruleBuilder, Func<string, CancellationToken, Task<bool>> emailExistsAsync)
     {
-        return ruleBuilder
+        ruleBuilder
             .NotEmpty()
             .WithMessage("Enter an email address")
             .EmailAddress()
             .WithMessage("Enter an email address in the correct format, like name@example.com")
             .MustAsync(
-                async (email, ct) =>
+                async (_, email, context, ct) =>
                 {
+                    if (context.RootContextData.TryGetValue("SkipEmailUnique", out var skip) && skip is true)
+                        return true;
+
                     var exists = await emailExistsAsync(email, ct);
                     return !exists;
                 }

@@ -3,6 +3,8 @@ using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Validation;
+using FluentAssertions;
+using FluentValidation;
 using FluentValidation.TestHelper;
 using Moq;
 using Xunit;
@@ -143,7 +145,7 @@ public class AccountDetailsValidatorTests()
     }
 
     [Fact]
-    public async Task WhenEmailIsUnique_PassesValidation()
+    public async Task WhenEmailIsUnique_WhenRootContextFlagFalse_PassesValidation()
     {
         // Arrange
         var account = new AccountDetailsFaker().Generate();
@@ -151,11 +153,44 @@ public class AccountDetailsValidatorTests()
         accountService.Setup(s => s.CheckEmailExistsAsync(account.Email!)).ReturnsAsync(false);
 
         var validator = new AccountDetailsValidator(accountService.Object);
+        var rootContext = new ValidationContext<AccountDetails>(account)
+        {
+            RootContextData =
+            {
+                ["SkipEmailUnique"] = false
+            }
+        };
 
         // Act
-        var result = await validator.TestValidateAsync(account);
+        var result = await validator.TestValidateAsync(rootContext);
 
         // Assert
         result.ShouldNotHaveValidationErrorFor(x => x.Email);
+        accountService.Verify<Task<bool>>(x => x.CheckEmailExistsAsync(It.IsAny<string>()), Times.Once);
+
+    }
+
+    [Fact]
+    public async Task WhenRootContextFlagTrue_EmailUniquenessCheckSkipped_AndPassesValidation()
+    {
+        // Arrange
+        var account = new AccountDetailsFaker().Generate();
+        var accountService = new Mock<IAccountService>();
+        var validator = new AccountDetailsValidator(accountService.Object);
+
+        var rootContext = new ValidationContext<AccountDetails>(account)
+        {
+            RootContextData =
+            {
+                ["SkipEmailUnique"] = true
+            }
+        };
+
+        // Act
+        var result = await validator.ValidateAsync(rootContext);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+        accountService.Verify<Task<bool>>(x => x.CheckEmailExistsAsync(It.IsAny<string>()), Times.Never);
     }
 }
