@@ -1,5 +1,9 @@
 name: Build proxy service (optionally deploy to non-prod)
-run-name: Build proxy service ${{ github.event.inputs.instance && github.event.inputs.instance != 'None' && format('and deploy to {0}', inputs.instance) || format('') }}
+run-name: >-
+  Build proxy service
+  ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.instance != 'None' && format('and deploy to {0}', inputs.instance) ||
+     github.event_name == 'pull_request' && format('for PR #{0}', github.event.number) ||
+     github.event_name == 'push' && 'and deploy to d01 (merge to dev)' || '' }}
 
 on:
   workflow_dispatch:
@@ -20,10 +24,15 @@ on:
       - development
     paths:
       - "apps/proxy-app-azure/**"
+  push:
+    branches:
+      - development
+    paths:
+      - "apps/proxy-app-azure/**"
 
 concurrency:
-  # Unique group for workflow_dispatch AND unique group for each PR
-  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
+  # Unique group for workflow_dispatch AND unique group for each PR/Push
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
   cancel-in-progress: true
 
 jobs:
@@ -43,7 +52,7 @@ jobs:
 
   optional-deploy-proxy-service:
     needs: build-and-publish-proxy-image
-    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
+    if: ${{ (github.event.inputs.instance != 'None' && github.event.inputs.instance) || github.event_name == 'push' }}
     name: Deploy Proxy Service (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
