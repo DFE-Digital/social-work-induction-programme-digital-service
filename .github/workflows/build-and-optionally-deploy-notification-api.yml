@@ -31,6 +31,9 @@ jobs:
     name: Build and Publish Notification API Image
     uses: ./.github/workflows/build-and-publish-image.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
@@ -49,6 +52,9 @@ jobs:
     name: Deploy Notification API (optional)
     uses: ./.github/workflows/deploy-function-app.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
