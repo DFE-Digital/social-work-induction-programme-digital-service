@@ -1,4 +1,3 @@
-# <-- CHANGED: Updated run-name to be descriptive for all triggers
 name: Build auth service (optionally deploy to non-prod)
 run-name: >-
   Build auth service
