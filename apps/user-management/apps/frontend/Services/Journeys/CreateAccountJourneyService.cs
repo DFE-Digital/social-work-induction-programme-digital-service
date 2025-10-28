@@ -110,6 +110,12 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsEnrolledInAsye()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEnrolledInAsye;
+    }
+
     public void SetIsEnrolledInAsye(bool? isEnrolledInAsye)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
@@ -129,6 +135,12 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsRecentlyQualified = isRecentlyQualified;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public bool? GetIsFunded()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEligibleForFunding();
     }
 
     public DateOnly? GetProgrammeStartDate()
@@ -186,7 +198,7 @@ public class CreateAccountJourneyService(
         return accountLabels;
     }
 
-    public AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null)
+    public AccountChangeLinks GetAccountChangeLinks(bool isEcsw, Guid? organisationId = null)
     {
         return new AccountChangeLinks
         {
@@ -200,8 +212,10 @@ public class CreateAccountJourneyService(
             MiddleNamesChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeMiddleNames(organisationId),
             LastNameChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeLastName(organisationId),
             EmailChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeEmail(organisationId),
-            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(organisationId)
+            SocialWorkEnglandNumberChangeLink = isEcsw
+                ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(organisationId)
+                : linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(organisationId: organisationId)
         };
     }
 

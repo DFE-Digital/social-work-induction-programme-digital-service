@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -17,11 +18,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
     public EditAccountDetailsPageTests()
     {
-        Sut = new EditAccountDetails(
-            MockEditAccountJourneyService.Object,
-            new AccountDetailsValidator(),
-            new FakeLinkGenerator()
-        )
+        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator())
         {
             TempData = TempData
         };
@@ -185,4 +182,96 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
+
+    [Fact]
+    public async Task Post_WhenEmailUnchanged_IgnoresUniquenessAndRedirects()
+    {
+        // Arrange
+        var account = AccountBuilder.WithAddOrEditAccountDetailsData().Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        accountDetails.Email = "Test@Test.com";
+        var postedEmail = "  test@test.com  ";
+
+        MockEditAccountJourneyService
+            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+            .ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x =>
+            x.SetAccountDetailsAsync(account.Id, MoqHelpers.ShouldBeEquivalentTo(accountDetails))
+        );
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
+
+        Sut.FirstName = account.FirstName;
+        Sut.MiddlesNames = account.MiddleNames;
+        Sut.LastName = account.LastName;
+        Sut.Email = postedEmail;
+        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+
+        // Act
+        var result = await Sut.OnPostAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        MockAccountService.Verify<Task<bool>>(x => x.CheckEmailExistsAsync(It.IsAny<string>()), Times.Never);
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(account.Id, It.IsAny<AccountDetails>()), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenEmailChanged_ChecksUniqueness_AndReturnsErrorWhenNotUnique()
+    {
+        // Arrange
+        var account = AccountBuilder.WithAddOrEditAccountDetailsData().Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        var postedEmail = "different@test.com";
+
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValidAsync(account.Id)).ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
+        MockAccountService.Setup(x => x.CheckEmailExistsAsync(postedEmail)).ReturnsAsync(true);
+
+        Sut.FirstName = account.FirstName;
+        Sut.MiddlesNames = account.MiddleNames;
+        Sut.LastName = account.LastName;
+        Sut.Email = postedEmail;
+        Sut.SocialWorkEnglandNumber = account.SocialWorkEnglandNumber;
+
+        // Act
+        var result = await Sut.OnPostAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Should().Contain("Email");
+        modelState["Email"]!.Errors.Count.Should().Be(1);
+        modelState["Email"]!.Errors[0].ErrorMessage.Should().Be("The email address entered belongs to an existing user");
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(postedEmail), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Post_WhenAccountDetailsMissing_ReturnsBadRequest()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        MockEditAccountJourneyService.Setup(x => x.IsAccountIdValidAsync(id)).ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync((AccountDetails?)null);
+
+        // Act
+        var result = await Sut.OnPostAsync(id);
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
 }

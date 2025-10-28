@@ -25,13 +25,35 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
     [Fact]
     public void OnGet_WhenCalled_LoadsTheView()
     {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsEnrolledInAsye()).Returns(false);
+
         // Act
         var result = Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-statutory-work");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
+        MockCreateAccountJourneyService.Verify(x => x.GetIsEnrolledInAsye(), Times.Once);
+        MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGet_WhenIsEnrolledInAsye_BackLinkGoesToAsyeDropoutPage()
+    {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsEnrolledInAsye()).Returns(true);
+
+        // Act
+        var result = Sut.OnGet();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england-asye-dropout");
+        MockCreateAccountJourneyService.Verify(x => x.GetIsEnrolledInAsye(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
@@ -42,6 +64,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
     public void OnGet_WhenCalledWithIsAgencyWorkerPopulated_LoadsTheViewWithPrepopulatedValue(bool? isAgencyWorker)
     {
         // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsEnrolledInAsye()).Returns(false);
         MockCreateAccountJourneyService.Setup(x => x.GetIsAgencyWorker())
             .Returns(isAgencyWorker);
 
@@ -52,14 +75,18 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         result.Should().BeOfType<PageResult>();
         Sut.IsAgencyWorker.Should().Be(isAgencyWorker);
 
+        MockCreateAccountJourneyService.Verify(x => x.GetIsEnrolledInAsye(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
-    public async Task OnPostAsync_WhenCalledWithNullIsAgencyWorker_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task OnPostAsync_WhenCalledWithNullIsAgencyWorker_ReturnsErrorsAndRedirectsToEligibilityAgencyWorker(bool isFromChangeLink)
     {
         // Arrange
+        Sut.FromChangeLink = isFromChangeLink;
         Sut.IsAgencyWorker = null;
 
         // Act
@@ -76,7 +103,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
         modelState["IsAgencyWorker"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user is an agency worker");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-statutory-work");
+        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/confirm-account-details" : "/manage-accounts/eligibility-social-work-england");
 
         VerifyAllNoOtherCalls();
     }
@@ -125,6 +152,9 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
     [Fact]
     public void OnGetChange_WhenCalled_LoadsTheView()
     {
+        // Arrange
+        MockCreateAccountJourneyService.Setup(x => x.GetIsEnrolledInAsye()).Returns(false);
+
         // Act
         var result = Sut.OnGetChange();
 
@@ -133,6 +163,7 @@ public class EligibilityAgencyWorkerPageTests : ManageAccountsPageTestBase<Eligi
 
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
         Sut.FromChangeLink.Should().BeTrue();
+        MockCreateAccountJourneyService.Verify(x => x.GetIsEnrolledInAsye(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetIsAgencyWorker(), Times.Once);
         VerifyAllNoOtherCalls();
     }

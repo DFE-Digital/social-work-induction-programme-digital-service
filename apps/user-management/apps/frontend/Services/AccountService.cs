@@ -112,4 +112,13 @@ public class AccountService(
 
         return mapper.MapToBo(person);
     }
+
+    public async Task<bool> CheckEmailExistsAsync(string emailAddress)
+    {
+        if (string.IsNullOrWhiteSpace(emailAddress))
+            throw new ArgumentException("Email is required");
+        var exists = await authServiceClient.Accounts.CheckEmailExistsAsync(new CheckEmailRequest { Email = emailAddress });
+
+        return exists;
+    }
 }

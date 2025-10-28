@@ -29,6 +29,9 @@ jobs:
     name: Deploy Auth Service
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event_name == 'push' || github.event.inputs.instance == 'None') && 'd01' || github.event.inputs.instance }}

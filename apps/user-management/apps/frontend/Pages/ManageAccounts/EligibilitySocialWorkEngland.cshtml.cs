@@ -22,7 +22,7 @@ public class EligibilitySocialWorkEngland(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         SocialWorkerNumber = createAccountJourneyService.GetAccountDetails()?.SocialWorkEnglandNumber;
         return Page();
@@ -34,7 +34,7 @@ public class EligibilitySocialWorkEngland(
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
             return Page();
         }
 
@@ -54,18 +54,22 @@ public class EligibilitySocialWorkEngland(
             return BadRequest();
         }
 
-        createAccountJourneyService.SetAccountDetails(new AccountDetails { SocialWorkEnglandNumber = SocialWorkerNumber });
+        var accountDetails = createAccountJourneyService.GetAccountDetails() ?? new AccountDetails();
+        accountDetails.SocialWorkEnglandNumber = SocialWorkerNumber;
+        createAccountJourneyService.SetAccountDetails(accountDetails);
 
         var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkerNumber);
         createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
         if (isEnrolledInAsye)
         {
-            return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
+            return Redirect(FromChangeLink
+                ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutChange()
+                : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
         }
 
         return Redirect(FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId));
+            : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
     }
 
     public PageResult OnGetChange()

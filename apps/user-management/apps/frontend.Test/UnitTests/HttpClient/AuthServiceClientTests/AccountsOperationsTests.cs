@@ -343,6 +343,138 @@ public class AccountsOperationsTests
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
+    [Fact]
+    public async Task CheckEmailExists_SuccessfulRequest_ReturnsBoolean()
+    {
+        // Arrange
+        var checkEmailRequest = new CheckEmailRequest
+        {
+            Email = "test@test.com"
+        };
+
+        const string route = "/api/Accounts/check";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Post,
+            true,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Accounts.CheckEmailExistsAsync(checkEmailRequest);
+
+        // Assert
+        response.Should().BeTrue();
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task CheckEmailExists_WhenErrorResponseReturned_ThrowsHttpRequestException()
+    {
+        // Arrange
+        var checkEmailRequest = new CheckEmailRequest
+        {
+            Email = "test@test.com"
+        };
+
+        const string route = "/api/Accounts/check";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Post,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Accounts.CheckEmailExistsAsync(checkEmailRequest)
+        );
+
+        // Assert
+        exception.Message.Should().Be("Failed to check if email exists.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task Create_WhenResponseIsNull_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var createRequest = new CreatePersonRequest
+        {
+            FirstName = "Test",
+            LastName = "Tester",
+            SocialWorkEnglandNumber = "SW123",
+            EmailAddress = "test@test.com",
+            Status = AccountStatus.Active
+        };
+
+        const string route = "/api/Accounts/Create";
+
+        var (mockHttp, request) = GenerateMockClientWithRawResponse(
+            HttpStatusCode.OK,
+            HttpMethod.Post,
+            "null",
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => sut.Accounts.CreateAsync(createRequest)
+        );
+
+        // Assert
+        ex.Message.Should().Be("Failed to create account.");
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task CheckEmailExists_WhenResponseIsInvalidJson_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var checkEmailRequest = new CheckEmailRequest
+        {
+            Email = "test@test.com"
+        };
+
+        const string route = "/api/Accounts/check";
+
+        var (mockHttp, request) = GenerateMockClientWithRawResponse(
+            HttpStatusCode.OK,
+            HttpMethod.Post,
+            "invalid-json",
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => sut.Accounts.CheckEmailExistsAsync(checkEmailRequest)
+        );
+
+        // Assert
+        ex.Message.Should().Be("Failed to check if email exists.");
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
     private AuthServiceClient BuildSut(MockHttpMessageHandler mockHttpMessageHandler)
     {
         var client = mockHttpMessageHandler.ToHttpClient();
@@ -394,6 +526,25 @@ public class AccountsOperationsTests
         var request = mockHttp
             .When(httpMethod, route)
             .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
+
+        return (mockHttp, request);
+    }
+
+    // Helper to test deserialisation errors
+    private static (
+        MockHttpMessageHandler MockHttpMessageHandler,
+        MockedRequest MockedRequest
+        ) GenerateMockClientWithRawResponse(
+            HttpStatusCode statusCode,
+            HttpMethod httpMethod,
+            string rawContent,
+            string route
+        )
+    {
+        using var mockHttp = new MockHttpMessageHandler();
+        var request = mockHttp
+            .When(httpMethod, route)
+            .Respond(statusCode, "application/json", rawContent);
 
         return (mockHttp, request);
     }

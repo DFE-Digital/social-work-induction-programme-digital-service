@@ -148,6 +148,13 @@ public class AccountBuilder
         return this;
     }
 
+    public AccountBuilder WithIsFunded(bool isFunded)
+    {
+        _faker.RuleFor(a => a.IsFunded, _ => isFunded);
+
+        return this;
+    }
+
     public AccountBuilder WithIsStaff(bool isStaff)
     {
         _faker.RuleFor(a => a.IsStaff, _ => isStaff);

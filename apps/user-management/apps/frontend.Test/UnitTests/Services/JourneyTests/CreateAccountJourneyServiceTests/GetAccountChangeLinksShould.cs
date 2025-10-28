@@ -25,11 +25,11 @@ public class GetAccountChangeLinksShould : CreateAccountJourneyServiceTestBase
             LastNameChangeLink = "/manage-accounts/add-account-details?handler=Change#LastName",
             EmailChangeLink = "/manage-accounts/add-account-details?handler=Change#Email",
             SocialWorkEnglandNumberChangeLink = "/manage-accounts/add-account-details?handler=Change#SocialWorkEnglandNumber",
-            ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates"
+            ProgrammeDatesChangeLink = "/manage-accounts/social-worker-programme-dates?handler=Change"
         };
 
         // Act
-        var accountChangeLinks = Sut.GetAccountChangeLinks();
+        var accountChangeLinks = Sut.GetAccountChangeLinks(false);
 
         // Assert
         accountChangeLinks.Should().NotBeNull();
