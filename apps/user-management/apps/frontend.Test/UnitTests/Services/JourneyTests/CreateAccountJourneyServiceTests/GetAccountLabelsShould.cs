@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using FluentAssertions;
@@ -9,22 +8,20 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccoun
 public class GetAccountLabelsShould : CreateAccountJourneyServiceTestBase
 {
     [Theory]
-    [InlineData(true, true, true, true, true,
-        IsStaffLabels.IsStaffTrue, "Yes", "Yes", "Yes", "Yes"
+    [InlineData(true,  true, true, true,
+        IsStaffLabels.IsStaffTrue, "Yes",  "Yes", "Yes"
     )]
-    [InlineData(false, false, false, false, false,
-        IsStaffLabels.IsStaffFalse, null, "No", null, "No"
+    [InlineData(false,  false, false, false,
+        IsStaffLabels.IsStaffFalse, "No", null, "No"
     )]
-    [InlineData(null, null, null, null, null,
-        IsStaffLabels.IsStaffFalse, null, null, null, null)]
+    [InlineData(null,  null, null, null,
+        IsStaffLabels.IsStaffFalse,  null, null, null)]
     public void GetIsRegisteredWithSocialWorkEnglandLabel_ReturnsYesOnlyWhenTrue(
         bool? isStaff,
-        bool? isRegistered,
         bool? isAgency,
         bool? isStatutory,
         bool? isQualified,
         string? expectedStaffLabel,
-        string? expectedRegisteredLabel,
         string? expectedAgencyLabel,
         string? expectedStatutoryLabel,
         string? expectedQualifiedLabel
@@ -34,7 +31,6 @@ public class GetAccountLabelsShould : CreateAccountJourneyServiceTestBase
         var createAccountJourneyModel = new CreateAccountJourneyModel
         {
             IsStaff = isStaff,
-            IsRegisteredWithSocialWorkEngland = isRegistered,
             IsAgencyWorker = isAgency,
             IsStatutoryWorker = isStatutory,
             IsRecentlyQualified = isQualified
@@ -46,8 +42,7 @@ public class GetAccountLabelsShould : CreateAccountJourneyServiceTestBase
 
         // Assert
         accountLabels.Should().NotBeNull();
-        accountLabels!.IsStaffLabel.Should().Be(expectedStaffLabel);
-        accountLabels.IsRegisteredWithSocialWorkEnglandLabel.Should().Be(expectedRegisteredLabel);
+        accountLabels.IsStaffLabel.Should().Be(expectedStaffLabel);
         accountLabels.IsAgencyWorkerLabel.Should().Be(expectedAgencyLabel);
         accountLabels.IsStatutoryWorkerLabel.Should().Be(expectedStatutoryLabel);
         accountLabels.IsRecentlyQualifiedLabel.Should().Be(expectedQualifiedLabel);

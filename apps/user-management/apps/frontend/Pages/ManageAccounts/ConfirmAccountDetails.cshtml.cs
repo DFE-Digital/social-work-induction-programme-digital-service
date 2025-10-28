@@ -29,9 +29,6 @@ public class ConfirmAccountDetails(
 
     [Display(Name = "Account type")] public IList<AccountType>? AccountTypes { get; set; }
 
-    [Display(Name = "Are they registered with Social Work England?")]
-    public string? RegisteredWithSocialWorkEngland { get; set; }
-
     [Display(Name = "Are they working in statutory child and family social work?")]
     public string? StatutoryWorker { get; set; }
 
@@ -95,7 +92,6 @@ public class ConfirmAccountDetails(
 
         UserType = accountLabels?.IsStaffLabel;
         AccountTypes = accountTypes;
-        RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
         StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
         AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
         Qualified = accountLabels?.IsRecentlyQualifiedLabel;
