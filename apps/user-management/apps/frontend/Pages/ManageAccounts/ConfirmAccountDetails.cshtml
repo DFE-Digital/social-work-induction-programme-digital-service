@@ -58,7 +58,7 @@
                     </govuk-summary-list-row>
                 }
 
-                @if (Model.IsStaff is false && Model.SocialWorkEnglandNumber is not null && Model.IsUpdatingAccount == false)
+                @if (Model.IsStaff is false && Model.SocialWorkEnglandNumber is not null && !Model.IsUpdatingAccount)
                 {
                     <govuk-summary-list-row>
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)</govuk-summary-list-row-key>
