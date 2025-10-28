@@ -11,4 +11,5 @@ public interface IAccountService
 
     public Task<Account> CreateAsync(Account account, Guid? organisationId = null);
     Task<Account> UpdateAsync(Account updatedAccount);
+    Task<bool> CheckEmailExistsAsync(string emailAddress);
 }

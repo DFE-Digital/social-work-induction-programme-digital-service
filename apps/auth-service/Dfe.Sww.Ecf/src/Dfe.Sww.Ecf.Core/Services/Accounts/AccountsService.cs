@@ -156,4 +156,20 @@ public class AccountsService(EcfDbContext dbContext, IClock clock) : IAccountsSe
 
         return account.ToDto();
     }
+
+    public async Task<PersonDto?> GetByEmailAsync(string email)
+    {
+        var account = await dbContext
+            .Persons
+            .FirstOrDefaultAsync(p => p.EmailAddress == email);
+        return account?.ToDto();
+    }
+
+    public async Task<PersonDto?> GetBySocialWorkEnglandNumberAsync(string socialWorkerEnglandNumber)
+    {
+        var account = await dbContext
+            .Persons
+            .FirstOrDefaultAsync(p => p.Trn == socialWorkerEnglandNumber);
+        return account?.ToDto();
+    }
 }

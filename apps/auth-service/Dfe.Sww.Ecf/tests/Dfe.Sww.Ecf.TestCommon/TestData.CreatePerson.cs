@@ -43,6 +43,29 @@ public partial class TestData
             dbContext.Persons.Add(newPerson);
             await dbContext.SaveChangesAsync();
 
+            if (builder.Roles.Count > 0)
+            {
+                foreach (var roleType in builder.Roles)
+                {
+                    var role = await dbContext.Roles
+                        .SingleOrDefaultAsync(r => r.RoleName == roleType);
+                    if (role is null)
+                    {
+                        role = new Role { RoleName = roleType };
+                        dbContext.Roles.Add(role);
+                        await dbContext.SaveChangesAsync();
+                    }
+
+                    dbContext.PersonRoles.Add(new PersonRole
+                    {
+                        PersonId = newPerson.PersonId,
+                        RoleId = role.RoleId
+                    });
+                }
+
+                await dbContext.SaveChangesAsync();
+            }
+
             return createPersonResult;
         });
     }
@@ -76,6 +99,7 @@ public partial class TestData
         private DateOnly? _programmeEndDate;
         private DateOnly? _programmeStartDate;
         private PersonStatus? _status;
+        private readonly List<RoleType> _roles = [];
 
         private Guid PersonId { get; } = Guid.NewGuid();
 
@@ -287,6 +311,20 @@ public partial class TestData
             return this;
         }
 
+        public CreatePersonBuilder WithRoles(RoleType[] roles)
+        {
+            if (_roles.Count > 0 && !_roles.SequenceEqualIgnoringOrder(roles))
+            {
+                throw new InvalidOperationException(
+                    "WithRoles cannot be changed after it's set."
+                );
+            }
+            _roles.AddRange(roles);
+            return this;
+        }
+
+        internal IReadOnlyList<RoleType> Roles => _roles;
+
         internal async Task<CreatePersonResult> Execute(TestData testData)
         {
             var hasTrn = _hasTrn ?? true;
@@ -304,6 +342,7 @@ public partial class TestData
             var firstName = firstAndMiddleNames.First();
             var middleName = string.Join(" ", firstAndMiddleNames.Skip(1));
             var lastName = _lastName ?? GenerateLastName();
+            var email = _email ?? GenerateEmail();
             var dateOfBirth = _dateOfBirth ?? GenerateDateOfBirth();
             var status = _status ?? PersonStatus.Active;
             var personOrganisations = _organisationId != Guid.Empty
@@ -329,7 +368,7 @@ public partial class TestData
                 FirstName = firstName,
                 MiddleName = middleName,
                 LastName = lastName,
-                Email = _email,
+                Email = email,
                 NationalInsuranceNumber = nationalInsuranceNumber,
                 CreatedOn = testData.Clock.UtcNow,
                 Status = status,

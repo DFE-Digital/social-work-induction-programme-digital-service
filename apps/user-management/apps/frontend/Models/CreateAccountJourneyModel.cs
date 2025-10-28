@@ -22,6 +22,11 @@ public class CreateAccountJourneyModel
     public bool? IsAgencyWorker { get; set; }
 
     /// <summary>
+    /// Property capturing whether the Social Worker ID has already been enrolled on ASYE
+    /// </summary>
+    public bool? IsEnrolledInAsye { get; set; }
+
+    /// <summary>
     /// Property capturing whether the user has completed their social work qualification within the last 3 years.
     /// </summary>
     public bool? IsRecentlyQualified { get; set; }
@@ -29,16 +34,13 @@ public class CreateAccountJourneyModel
     public DateOnly? ProgrammeStartDate { get; set; }
 
     public DateOnly? ProgrammeEndDate { get; set; }
+    public bool? IsFunded { get; set; }
 
     public Account ToAccount()
     {
         return new Account
         {
-            Status =
-                AccountTypes != null
-                && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                    ? AccountStatus.PendingRegistration
-                    : AccountStatus.Active,
+            Status = AccountStatus.PendingRegistration,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             MiddleNames = AccountDetails?.MiddleNames,
@@ -52,12 +54,13 @@ public class CreateAccountJourneyModel
         };
     }
 
-    private bool IsEligibleForFunding()
+    public bool IsEligibleForFunding()
     {
         return AccountTypes?.Contains(AccountType.EarlyCareerSocialWorker) == true
             && IsRegisteredWithSocialWorkEngland == true
             && IsStatutoryWorker == true
             && IsAgencyWorker == false
-            && IsRecentlyQualified == true;
+            && IsRecentlyQualified == true
+            && IsEnrolledInAsye == false;
     }
 }

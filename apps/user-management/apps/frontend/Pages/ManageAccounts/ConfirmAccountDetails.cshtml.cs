@@ -29,9 +29,6 @@ public class ConfirmAccountDetails(
 
     [Display(Name = "Account type")] public IList<AccountType>? AccountTypes { get; set; }
 
-    [Display(Name = "Are they registered with Social Work England?")]
-    public string? RegisteredWithSocialWorkEngland { get; set; }
-
     [Display(Name = "Are they working in statutory child and family social work?")]
     public string? StatutoryWorker { get; set; }
 
@@ -86,15 +83,15 @@ public class ConfirmAccountDetails(
     /// <returns>A confirmation screen displaying user details</returns>
     public PageResult OnGet()
     {
-        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
-        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(OrganisationId);
-
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var accountLabels = createAccountJourneyService.GetAccountLabels();
+        var accountTypes = createAccountJourneyService.GetAccountTypes();
+
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
+        ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false, OrganisationId);
 
         UserType = accountLabels?.IsStaffLabel;
-        AccountTypes = createAccountJourneyService.GetAccountTypes();
-        RegisteredWithSocialWorkEngland = accountLabels?.IsRegisteredWithSocialWorkEnglandLabel;
+        AccountTypes = accountTypes;
         StatutoryWorker = accountLabels?.IsStatutoryWorkerLabel;
         AgencyWorker = accountLabels?.IsAgencyWorkerLabel;
         Qualified = accountLabels?.IsRecentlyQualifiedLabel;

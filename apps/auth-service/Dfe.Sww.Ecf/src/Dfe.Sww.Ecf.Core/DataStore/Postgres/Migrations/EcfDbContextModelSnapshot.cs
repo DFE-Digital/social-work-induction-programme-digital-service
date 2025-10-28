@@ -444,8 +444,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("status");
 
                     b.Property<string>("Trn")
-                        .HasMaxLength(7)
-                        .HasColumnType("character(7)")
+                        .HasMaxLength(8)
+                        .HasColumnType("character(8)")
                         .HasColumnName("trn")
                         .IsFixedLength();
 

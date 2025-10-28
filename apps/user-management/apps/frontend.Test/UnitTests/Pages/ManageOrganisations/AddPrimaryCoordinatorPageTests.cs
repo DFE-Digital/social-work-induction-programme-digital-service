@@ -1,5 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
@@ -14,11 +15,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 {
     public AddPrimaryCoordinatorPageTests()
     {
-        Sut = new AddPrimaryCoordinator(
-            MockCreateOrganisationJourneyService.Object,
-            new AccountDetailsValidator(),
-            new FakeLinkGenerator()
-        );
+        Sut = new AddPrimaryCoordinator(MockCreateOrganisationJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator());
     }
 
     private AddPrimaryCoordinator Sut { get; }
@@ -74,6 +71,8 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
 
         Sut.AccountDetails = accountDetails;
 
+        MockAccountService.Setup(x => x.CheckEmailExistsAsync(account.Email!)).ReturnsAsync(false);
+
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -88,6 +87,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -153,6 +153,7 @@ public class AddPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<Ad
             x => x.SetPrimaryCoordinatorAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
             Times.Once
         );
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
 using Dfe.Sww.Ecf.TestCommon.Fakers;
 using GovUk.OneLogin.AspNetCore;
@@ -449,6 +450,183 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 $"/NotFound?{journeyInstance.GetUniqueIdQueryParameter()}",
                 redirectResult.Url
             );
+        });
+    }
+
+    [Fact]
+    public Task OnUserAuthenticated_FirstLogin_WithStaffRole_SetsPersonActive()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var oneLoginAccountLinkingService =
+                ActivatorUtilities.CreateInstance<OneLoginAccountLinkingService>(
+                    HostFixture.Services
+                );
+            var helper = CreateHelper(dbContext);
+
+            var person = await TestData.CreatePerson(p => p.WithStatus(PersonStatus.PendingRegistration).WithRoles([RoleType.Assessor]));
+            var user = await TestData.CreateOneLoginUser(personId: null);
+
+            Clock.Advance();
+
+            var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountIdAsync(
+                person.PersonId
+            );
+
+            var state = new SignInJourneyState(
+                "/",
+                "Test Service",
+                "https://service",
+                linkingToken
+            );
+            var journeyInstance = await CreateJourneyInstance(state);
+
+            var authenticationTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationOnlyVtr,
+                user.Subject,
+                user.Subject,
+                createCoreIdentityVc: false
+            );
+
+            // Act
+            await helper.OnOneLoginCallback(journeyInstance, authenticationTicket);
+
+            // Assert
+            var updatedPerson = await WithDbContext(ctx =>
+                ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
+            );
+            Assert.Equal(PersonStatus.Active, updatedPerson.Status);
+        });
+    }
+
+    [Fact]
+    public Task OnUserAuthenticated_FirstLogin_WithEarlyCareerSocialWorkerRole_DoesNotSetActive()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var oneLoginAccountLinkingService =
+                ActivatorUtilities.CreateInstance<OneLoginAccountLinkingService>(
+                    HostFixture.Services
+                );
+            var helper = CreateHelper(dbContext);
+
+            var person = await TestData.CreatePerson(p => p.WithStatus(PersonStatus.PendingRegistration).WithRoles([RoleType.EarlyCareerSocialWorker]));
+            var user = await TestData.CreateOneLoginUser(personId: null);
+
+            var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountIdAsync(person.PersonId);
+
+            var state = new SignInJourneyState("/", "Test Service", "https://service", linkingToken);
+            var journeyInstance = await CreateJourneyInstance(state);
+
+            var authenticationTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationOnlyVtr,
+                user.Subject,
+                user.Subject,
+                createCoreIdentityVc: false
+            );
+
+            // Act
+            await helper.OnOneLoginCallback(journeyInstance, authenticationTicket);
+
+            // Assert
+            var updatedPerson = await WithDbContext(ctx =>
+                ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
+            );
+            Assert.Equal(PersonStatus.PendingRegistration, updatedPerson.Status);
+        });
+    }
+
+    [Fact]
+    public Task OnUserVerifiedCore_FirstLogin_WithStaffRole_SetsPersonActive()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var oneLoginAccountLinkingService =
+                ActivatorUtilities.CreateInstance<OneLoginAccountLinkingService>(HostFixture.Services);
+            var helper = CreateHelper(dbContext);
+
+            var person = await TestData.CreatePerson(p => p.WithStatus(PersonStatus.PendingRegistration).WithRoles([RoleType.Assessor]));
+            var user = await TestData.CreateOneLoginUser(personId: null);
+
+            var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountIdAsync(person.PersonId);
+
+            var state = new SignInJourneyState("/", "Test Service", "https://service", linkingToken);
+            var journeyInstance = await CreateJourneyInstance(state);
+
+            var authOnlyTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationOnlyVtr,
+                user.Subject,
+                user.Subject,
+                createCoreIdentityVc: false
+            );
+            await helper.OnOneLoginCallback(journeyInstance, authOnlyTicket);
+
+            var verifiedTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr,
+                user.Subject,
+                firstName: person.FirstName,
+                lastName: person.LastName,
+                dateOfBirth: person.DateOfBirth,
+                createCoreIdentityVc: true
+            );
+
+            // Act
+            await helper.OnOneLoginCallback(journeyInstance, verifiedTicket);
+
+            // Assert
+            var updatedPerson = await WithDbContext(ctx =>
+                ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
+            );
+            Assert.Equal(PersonStatus.Active, updatedPerson.Status);
+        });
+    }
+
+    [Fact]
+    public Task OnUserVerifiedCore_FirstLogin_WithEarlyCareerSocialWorkerRole_DoesNotSetActive()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var oneLoginAccountLinkingService =
+                ActivatorUtilities.CreateInstance<OneLoginAccountLinkingService>(HostFixture.Services);
+            var helper = CreateHelper(dbContext);
+
+            var person = await TestData.CreatePerson(p => p.WithStatus(PersonStatus.PendingRegistration).WithRoles([RoleType.EarlyCareerSocialWorker]));
+            var user = await TestData.CreateOneLoginUser(personId: null);
+
+            var linkingToken = await oneLoginAccountLinkingService.GetLinkingTokenForAccountIdAsync(person.PersonId);
+
+            var state = new SignInJourneyState("/", "Test Service", "https://service", linkingToken);
+            var journeyInstance = await CreateJourneyInstance(state);
+
+            var authOnlyTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationOnlyVtr,
+                user.Subject,
+                user.Subject,
+                createCoreIdentityVc: false
+            );
+            await helper.OnOneLoginCallback(journeyInstance, authOnlyTicket);
+
+            var verifiedTicket = CreateOneLoginAuthenticationTicket(
+                SignInJourneyHelper.AuthenticationAndIdentityVerificationVtr,
+                user.Subject,
+                firstName: person.FirstName,
+                lastName: person.LastName,
+                dateOfBirth: person.DateOfBirth,
+                createCoreIdentityVc: true
+            );
+
+            // Act
+            await helper.OnOneLoginCallback(journeyInstance, verifiedTicket);
+
+            // Assert
+            var updatedPerson = await WithDbContext(ctx =>
+                ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
+            );
+            Assert.Equal(PersonStatus.PendingRegistration, updatedPerson.Status);
         });
     }
 

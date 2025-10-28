@@ -6,6 +6,7 @@ using Dfe.Sww.Ecf.Core.Services.Accounts;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using System.ComponentModel.DataAnnotations;
 
 namespace Dfe.Sww.Ecf.AuthorizeAccess.Tests.Controllers;
 
@@ -45,9 +46,10 @@ public class AccountsControllerTests : TestBase
                 .Select(p => p.ToDto())
                 .ToList();
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -76,9 +78,10 @@ public class AccountsControllerTests : TestBase
             var request = new PaginationRequest(0, 1);
 
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -100,9 +103,10 @@ public class AccountsControllerTests : TestBase
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -125,9 +129,10 @@ public class AccountsControllerTests : TestBase
         {
             // Arrange
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -148,9 +153,10 @@ public class AccountsControllerTests : TestBase
             // Arrange
             var createdPerson = (await TestData.CreatePerson()).ToPerson();
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -171,9 +177,10 @@ public class AccountsControllerTests : TestBase
         {
             // Arrange
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -206,9 +213,10 @@ public class AccountsControllerTests : TestBase
             }.ToImmutableList();
 
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -299,9 +307,10 @@ public class AccountsControllerTests : TestBase
             };
 
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -367,9 +376,10 @@ public class AccountsControllerTests : TestBase
             }.ToImmutableList();
 
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -389,9 +399,10 @@ public class AccountsControllerTests : TestBase
         {
             // Arrange
             var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
                 accountsService,
-                new MemoryCache(new MemoryCacheOptions())
+                memoryCache
             );
 
             var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
@@ -403,6 +414,111 @@ public class AccountsControllerTests : TestBase
             result.Should().BeOfType<BadRequestObjectResult>();
             var response = result as BadRequestObjectResult;
             response!.Value.Should().Be("Account not found.");
+        });
+    }
+
+    [Fact]
+    public async Task CheckEmailExistsAsync_ReturnsOkTrue_WhenUserExists()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var createdPerson = (await TestData.CreatePerson()).ToPerson();
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.CheckEmailExists(new CheckEmailRequest { Email = createdPerson.EmailAddress! });
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
+
+            resultAccounts.Should().Be(true);
+        });
+    }
+
+    [Fact]
+    public async Task CheckEmailExistsAsync_ReturnsOkFalse_WhenUserDoesNotExist()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
+            var nonExistentEmail = $"nonexistent-{Guid.NewGuid()}@test.com";
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.CheckEmailExists(new CheckEmailRequest { Email = nonExistentEmail });
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
+
+            resultAccounts.Should().Be(false);
+        });
+    }
+
+    [Fact]
+    public async Task GetBySocialWorkEnglandNumberAsync_ReturnsOkTrue_WhenUserExists()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var createdPerson = (await TestData.CreatePerson()).ToPerson();
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.GetBySocialWorkEnglandNumberAsync(createdPerson.Trn!);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<PersonDto>().Subject;
+
+            resultAccounts.Should().BeEquivalentTo(createdPerson.ToDto());
+        });
+    }
+
+    [Fact]
+    public async Task GetBySocialWorkEnglandNumberAsync_ReturnsOkFalse_WhenUserDoesNotExist()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var accountsService = new AccountsService(dbContext, Clock);
+            using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var oneLoginAccountLinkingService = new OneLoginAccountLinkingService(
+                accountsService,
+                memoryCache
+            );
+            var socialWorkEnglandId = "SW951753";
+
+            var controller = new AccountsController(accountsService, oneLoginAccountLinkingService, _appInfo);
+
+            // Act
+            var result = await controller.GetBySocialWorkEnglandNumberAsync(socialWorkEnglandId);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
         });
     }
 }

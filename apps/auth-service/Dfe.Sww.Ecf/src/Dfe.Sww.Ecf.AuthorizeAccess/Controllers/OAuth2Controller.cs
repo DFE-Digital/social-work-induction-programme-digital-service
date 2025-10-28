@@ -123,12 +123,18 @@ public class OAuth2Controller(
         // Claim only false for ECSWs that are pending registration
         if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)
         {
-            claimsBuilder
-                .AddIfScope(
-                    CustomScopes.EcswRegistered,
-                    ClaimTypes.IsEcswRegistered,
-                    () => "false"
-                );
+            var isEcsw = await dbContext.PersonRoles
+                .AnyAsync(pr => pr.PersonId == oneLoginUser.Person.PersonId
+                                && pr.Role.RoleName == RoleType.EarlyCareerSocialWorker);
+            if (isEcsw)
+            {
+                claimsBuilder
+                    .AddIfScope(
+                        CustomScopes.EcswRegistered,
+                        ClaimTypes.IsEcswRegistered,
+                        () => "false"
+                    );
+            }
         }
     }
 

@@ -12,33 +12,34 @@ public class SocialWorkEnglandRecordTest
     public void WhenSweNumberNegativeSingleParam_ThrowException()
     {
         // Arrange & Act
-        Action action = () => _ = new SocialWorkEnglandRecord(-1);
+        Action action = () => _ = new SocialWorkEnglandRecord("-1");
 
         // Assert
-        action
-            .Should()
-            .Throw<ArgumentException>()
-            .WithMessage("Social Work England number must not be negative");
+        var ex = action.Should().Throw<ArgumentException>().Which;
+
+        ex.Message.Should().StartWith("Social Work England number must match pattern SW followed by 1 to 6 digits.");
+        ex.ParamName.Should().Be("socialWorkEnglandNumber");
     }
 
     [Fact]
     public void WhenSweNumberNegative_ThrowException()
     {
         // Arrange & Act
-        Action action = () => _ = new SocialWorkEnglandRecord(-1, _today);
+        Action action = () => _ = new SocialWorkEnglandRecord("-1", _today);
 
         // Assert
-        action
-            .Should()
-            .Throw<ArgumentException>()
-            .WithMessage("Social Work England number must not be negative");
+        var ex = action.Should().Throw<ArgumentException>().Which;
+
+        ex.Message.Should().StartWith("Social Work England number must match pattern SW followed by 1 to 6 digits.");
+        ex.ParamName.Should().Be("socialWorkEnglandNumber");
     }
 
     [Fact]
     public void WhenDueDateInFuture_RegisteredCheckRequireFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today.AddDays(1));
+        var id = new Random().Next(1, 999999);
+        var account = new SocialWorkEnglandRecord($"SW{id}", _today.AddDays(1));
 
         // Act
         var result = account.IsStatusCheckRequired();
@@ -51,7 +52,8 @@ public class SocialWorkEnglandRecordTest
     public void WhenCheckIsDue_RegisteredCheckRequireTrue()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var id = new Random().Next(1, 999999);
+        var account = new SocialWorkEnglandRecord($"SW{id}", _today);
 
         // Act
         var result = account.IsStatusCheckRequired();
@@ -62,11 +64,11 @@ public class SocialWorkEnglandRecordTest
 
     [Theory]
     [InlineData("SW1234")]
-    [InlineData("1234")]
-    public void ExtractNumber_ReturnsInt(string sweId)
+    [InlineData("sw1234")]
+    public void ExtractNumber_ReturnsNumber(string sweId)
     {
         // Arrange
-        var expectedObject = new SocialWorkEnglandRecord(1234);
+        var expectedObject = new SocialWorkEnglandRecord("SW1234");
 
         // Act
         var result = SocialWorkEnglandRecord.Parse(sweId);
@@ -78,11 +80,10 @@ public class SocialWorkEnglandRecordTest
     [Theory]
     [InlineData("SW1234")]
     [InlineData("sw1234")]
-    [InlineData("1234")]
     public void TryParse_WithValidInputs_ReturnsSocialWorkEnglandNumber(string sweId)
     {
         // Arrange
-        var expectedObject = new SocialWorkEnglandRecord(1234);
+        var expectedObject = new SocialWorkEnglandRecord("SW1234");
 
         // Act
         var result = SocialWorkEnglandRecord.TryParse(sweId, out var sweNumber);
@@ -116,7 +117,8 @@ public class SocialWorkEnglandRecordTest
     public void WhenArgumentIsNull_EqualsReturnsFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var id = new Random().Next(1, 999999);
+        var account = new SocialWorkEnglandRecord($"SW{id}", _today);
 
         // Act
         var result = account.Equals(null);
@@ -129,7 +131,8 @@ public class SocialWorkEnglandRecordTest
     public void WhenObjectIsNotSocialWorkEnglandNumber_EqualsReturnsFalse()
     {
         // Arrange
-        var account = new SocialWorkEnglandRecord(new Random().Next(), _today);
+        var id = new Random().Next(1, 999999);
+        var account = new SocialWorkEnglandRecord($"SW{id}", _today);
         var obj = new object();
 
         // Act
@@ -143,8 +146,8 @@ public class SocialWorkEnglandRecordTest
     public void WhenObjectsHoldTheSameNumber_EqualsReturnsTrue()
     {
         // Arrange
-        var account1 = new SocialWorkEnglandRecord(1234, _today);
-        var account2 = new SocialWorkEnglandRecord(1234, _today.AddDays(1));
+        var account1 = new SocialWorkEnglandRecord("SW1234", _today);
+        var account2 = new SocialWorkEnglandRecord("SW1234", _today.AddDays(1));
 
         // Act
         var result = account1.Equals(account2);

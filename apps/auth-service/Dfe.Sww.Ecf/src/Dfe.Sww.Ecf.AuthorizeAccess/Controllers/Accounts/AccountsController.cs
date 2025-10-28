@@ -113,6 +113,28 @@ public class AccountsController(
         return Ok(result);
     }
 
+
+    [HttpPost("check")]
+    [ActionName(nameof(CheckEmailExists))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> CheckEmailExists([FromBody] CheckEmailRequest checkEmailRequest)
+    {
+        var user = await accountsService.GetByEmailAsync(checkEmailRequest.Email);
+        return Ok(user != null);
+    }
+
+    [HttpGet("social-work-england-number/{socialWorkerEnglandNumber}")]
+    [ActionName(nameof(GetBySocialWorkEnglandNumberAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GetBySocialWorkEnglandNumberAsync([FromRoute] string socialWorkerEnglandNumber)
+    {
+        var user = await accountsService.GetBySocialWorkEnglandNumberAsync(socialWorkerEnglandNumber);
+
+        return user is null
+            ? NoContent()
+            : Ok(user);
+    }
+
     [AllowAnonymous]
     [HttpGet("version")]
     [ActionName(nameof(GetVersion))]

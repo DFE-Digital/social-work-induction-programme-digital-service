@@ -31,11 +31,17 @@ public interface ICreateAccountJourneyService
 
     void SetIsAgencyWorker(bool? isAgencyWorker);
 
+    bool? GetIsEnrolledInAsye();
+    
+    void SetIsEnrolledInAsye(bool? isEnrolledInAsye);
+
     /// <summary>
     ///     Get property capturing whether the user has recently completed their social work qualification.
     /// </summary>
     /// <returns>True if the user has qualified in the last 3 years, false otherwise.</returns>
     bool? GetIsRecentlyQualified();
+
+    bool? GetIsFunded();
 
     void SetIsRecentlyQualified(bool? isRecentlyQualified);
 
@@ -57,5 +63,5 @@ public interface ICreateAccountJourneyService
 
     AccountLabels? GetAccountLabels();
 
-    AccountChangeLinks GetAccountChangeLinks(Guid? organisationId = null);
+    AccountChangeLinks GetAccountChangeLinks(bool isEcsw, Guid? organisationId = null);
 }

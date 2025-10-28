@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 
@@ -21,15 +20,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
-        var persons = JsonSerializer.Deserialize<PaginationResult<Person>>(
-            response,
-            SerializerOptions
-        );
-
-        if (persons is null)
-        {
-            throw new InvalidOperationException("Failed to get accounts.");
-        }
+        var persons = DeserializeOrThrow<PaginationResult<Person>>(response, "Failed to get accounts.");
 
         return persons;
     }
@@ -42,7 +33,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
-        var person = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
+        var person = DeserializeOrThrow<Person>(response, $"Failed to get account with ID {id}.");
 
         return person;
     }
@@ -57,11 +48,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
         HandleHttpResponse(httpResponse, "Failed to create account.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
-        var createdPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
-        if (createdPerson is null)
-        {
-            throw new InvalidOperationException("Failed to create account.");
-        }
+        var createdPerson = DeserializeOrThrow<Person>(response, "Failed to create account.");
 
         return createdPerson;
     }
@@ -76,10 +63,7 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
 
         var response = await httpResponse.Content.ReadAsStringAsync();
 
-        var linkingTokenResponse = JsonSerializer.Deserialize<LinkingTokenResponse>(
-            response,
-            SerializerOptions
-        );
+        var linkingTokenResponse = DeserializeOrThrow<LinkingTokenResponse>(response, "Failed to get account linking token.");
 
         if (linkingTokenResponse?.LinkingToken is null)
         {
@@ -99,12 +83,22 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
         HandleHttpResponse(httpResponse, "Failed to update account.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
-        var updatedPerson = JsonSerializer.Deserialize<Person>(response, SerializerOptions);
-        if (updatedPerson is null)
-        {
-            throw new InvalidOperationException("Failed to update account.");
-        }
+
+        var updatedPerson = DeserializeOrThrow<Person>(response, "Failed to update account.");
 
         return updatedPerson;
+    }
+
+    public async Task<bool> CheckEmailExistsAsync(CheckEmailRequest checkEmailRequest)
+    {
+        var httpResponse = await authServiceClient.HttpClient.PostAsJsonAsync("/api/Accounts/check", checkEmailRequest);
+
+        HandleHttpResponse(httpResponse, $"Failed to check if email exists.");
+
+        var response = await httpResponse.Content.ReadAsStringAsync();
+
+        var exists = DeserializeOrThrow<bool>(response, "Failed to check if email exists.");
+
+        return exists;
     }
 }

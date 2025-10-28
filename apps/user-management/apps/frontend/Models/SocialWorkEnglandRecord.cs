@@ -1,116 +1,97 @@
-﻿namespace Dfe.Sww.Ecf.Frontend.Models;
+﻿using System.Text.RegularExpressions;
+
+namespace Dfe.Sww.Ecf.Frontend.Models;
 
 public sealed class SocialWorkEnglandRecord
 {
-    private readonly int _socialWorkEnglandNumber;
+    private static readonly Regex SwePattern = new(
+        pattern: @"^SW[1-9]\d{0,5}$",
+        options: RegexOptions.IgnoreCase | RegexOptions.Compiled,
+        matchTimeout: TimeSpan.FromMilliseconds(250)
+    );
 
+    private readonly string _socialWorkEnglandNumber;
     private readonly DateOnly _statusCheckDueDate;
 
-    public SocialWorkEnglandRecord(int socialWorkEnglandNumber)
+    /// <summary>
+    /// Create a record with a Social Work England ID in the form "SW" + 1-6 digits.
+    /// </summary>
+    public SocialWorkEnglandRecord(string socialWorkEnglandNumber)
     {
-        if (socialWorkEnglandNumber < 0)
-        {
-            throw new ArgumentException("Social Work England number must not be negative");
-        }
-        _socialWorkEnglandNumber = socialWorkEnglandNumber;
+        if (!IsValid(socialWorkEnglandNumber))
+            throw new ArgumentException("Social Work England number must match pattern SW followed by 1 to 6 digits.", nameof(socialWorkEnglandNumber));
+
+        _socialWorkEnglandNumber = Normalize(socialWorkEnglandNumber);
         _statusCheckDueDate = default;
     }
 
-    public SocialWorkEnglandRecord(int socialWorkEnglandNumber, DateOnly statusCheckDueDate)
+    /// <summary>
+    /// Create a record with a Social Work England ID and due date.
+    /// </summary>
+    public SocialWorkEnglandRecord(string socialWorkEnglandNumber, DateOnly statusCheckDueDate)
     {
-        if (socialWorkEnglandNumber < 0)
-        {
-            throw new ArgumentException("Social Work England number must not be negative");
-        }
-        _socialWorkEnglandNumber = socialWorkEnglandNumber;
+        if (!IsValid(socialWorkEnglandNumber))
+            throw new ArgumentException("Social Work England number must match pattern SW followed by 1 to 6 digits.", nameof(socialWorkEnglandNumber));
+
+        _socialWorkEnglandNumber = Normalize(socialWorkEnglandNumber);
         _statusCheckDueDate = statusCheckDueDate;
     }
 
-    public int GetNumber()
+    /// <summary>
+    /// Returns the full ID string (e.g., "SW123456").
+    /// </summary>
+    public string GetNumber()
     {
         return _socialWorkEnglandNumber;
     }
 
     /// <summary>
-    /// Get new instance with updated due date
-    /// based on today's date incremented by provided number of days
+    /// Get new instance with updated due date based on today's date incremented by provided number of days.
     /// </summary>
-    /// <param name="incrementDays"></param>
-    /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     public SocialWorkEnglandRecord UpdateDueDate(int incrementDays)
     {
-        if (incrementDays > -1)
-        {
-            return new SocialWorkEnglandRecord(
-                _socialWorkEnglandNumber,
-                DateOnly.FromDateTime(DateTime.Now).AddDays(incrementDays)
-            );
-        }
-        throw new ArgumentException("Increment value must not be negative");
+        if (incrementDays < 0)
+            throw new ArgumentException("Increment value must not be negative", nameof(incrementDays));
+
+        return new SocialWorkEnglandRecord(
+            _socialWorkEnglandNumber,
+            DateOnly.FromDateTime(DateTime.Now).AddDays(incrementDays)
+        );
     }
 
     /// <summary>
-    /// Return Social Work England Number object from string identifier
+    /// Parse a string into a SocialWorkEnglandRecord if it matches "SW" + 1-6 digits; throws on failure.
     /// </summary>
-    /// <param name="sweId"></param>
-    /// <returns></returns>
     public static SocialWorkEnglandRecord Parse(string sweId)
     {
-        var sweNumber = sweId.StartsWith("SW", StringComparison.OrdinalIgnoreCase)
-            ? int.Parse(sweId.Remove(0, 2))
-            : int.Parse(sweId);
-        return new SocialWorkEnglandRecord(sweNumber);
+        var isValid = TryParse(sweId, out var sweRecord);
+
+        if (!isValid || sweRecord is null)
+            throw new ArgumentException("Input must match pattern SW followed by 1 to 6 digits.", nameof(sweId));
+
+        return sweRecord;
     }
 
     /// <summary>
-    /// Tries to convert a Social Work England Registration ID into its Social Work England Number object equivalent
+    /// Tries to convert a Social Work England Registration ID (e.g., "SW123456")
+    /// into its SocialWorkEnglandRecord equivalent.
     /// </summary>
-    /// <param name="sweId"></param>
-    /// <param name="socialWorkEnglandNumber"></param>
-    /// <returns><c>true</c> if <paramref name="sweId" /> was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if converted successfully; otherwise, <c>false</c>.</returns>
     public static bool TryParse(string? sweId, out SocialWorkEnglandRecord? socialWorkEnglandNumber)
     {
-        if (string.IsNullOrWhiteSpace(sweId))
-        {
-            socialWorkEnglandNumber = null;
+        socialWorkEnglandNumber = null;
+
+        if (!IsValid(sweId))
             return false;
-        }
 
-        if (sweId.StartsWith("SW", StringComparison.InvariantCultureIgnoreCase))
-        {
-            sweId = sweId.Remove(0, 2);
-        }
-
-        var startWithZero = sweId.FirstOrDefault() == '0';
-        if (startWithZero)
-        {
-            socialWorkEnglandNumber = null;
-            return false;
-        }
-
-        var isNumber = int.TryParse(sweId, out var sweNumber);
-        if (!isNumber || sweNumber <= 0)
-        {
-            socialWorkEnglandNumber = null;
-            return false;
-        }
-
-        var isCorrectLength = sweId.Trim().Length <= 6;
-        if (isCorrectLength == false)
-        {
-            socialWorkEnglandNumber = null;
-            return false;
-        }
-
-        socialWorkEnglandNumber = new SocialWorkEnglandRecord(sweNumber);
+        socialWorkEnglandNumber = new SocialWorkEnglandRecord(Normalize(sweId!));
         return true;
     }
 
     /// <summary>
-    /// Determine if Social Work England registration status check is due
+    /// Determine if Social Work England registration status check is due.
     /// </summary>
-    /// <returns>boolean for whether a check is needed</returns>
     public bool IsStatusCheckRequired()
     {
         return _statusCheckDueDate <= DateOnly.FromDateTime(DateTime.Now);
@@ -118,18 +99,34 @@ public sealed class SocialWorkEnglandRecord
 
     public override int GetHashCode()
     {
-        return _socialWorkEnglandNumber;
+        // IDs are normalized to uppercase, so ordinal hash is fine
+        return _socialWorkEnglandNumber.GetHashCode();
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj is not SocialWorkEnglandRecord account)
+        if (obj is not SocialWorkEnglandRecord other)
             return false;
-        return _socialWorkEnglandNumber == account.GetNumber();
+
+        // Stored as normalized uppercase, so ordinal comparison is fine
+        return _socialWorkEnglandNumber == other._socialWorkEnglandNumber;
     }
 
     public override string ToString()
     {
-        return $"{_socialWorkEnglandNumber}";
+        return _socialWorkEnglandNumber;
+    }
+
+    private static bool IsValid(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        return SwePattern.IsMatch(value.Trim());
+    }
+
+    private static string Normalize(string value)
+    {
+        return value.Trim().ToUpperInvariant();
     }
 }

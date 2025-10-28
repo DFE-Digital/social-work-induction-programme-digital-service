@@ -38,7 +38,7 @@ public class EditAccountDetails(
     [Display(Name = "Social Work England number")]
     public string? SocialWorkEnglandNumber { get; set; }
 
-    public bool ShowSweInput { get; set; }
+    public IList<AccountType> AccountTypes { get; set; } = new List<AccountType>();
 
     public async Task<IActionResult> OnGetAsync(Guid id)
     {
@@ -55,15 +55,15 @@ public class EditAccountDetails(
         MiddlesNames = accountDetails.MiddleNames ?? string.Empty;
         LastName = accountDetails.LastName;
         Email = accountDetails.Email;
+        AccountTypes = accountDetails.Types ?? [];
 
         var isSwe = SocialWorkEnglandRecord.TryParse(
             accountDetails.SocialWorkEnglandNumber,
             out var swe
         );
-        SocialWorkEnglandNumber = isSwe ? swe?.GetNumber().ToString() : null;
 
-        var accountTypes = accountDetails.Types;
-        ShowSweInput = (accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountTypes?.Contains(AccountType.Assessor) ?? false);
+        SocialWorkEnglandNumber = isSwe ? swe?.GetNumber() : null;
+
         return Page();
     }
 
@@ -80,16 +80,25 @@ public class EditAccountDetails(
             return BadRequest();
         }
 
+        var initialEmail = accountDetails.Email;
+
         accountDetails.FirstName = FirstName;
         accountDetails.MiddleNames = MiddlesNames;
         accountDetails.LastName = LastName;
         accountDetails.Email = Email;
         accountDetails.SocialWorkEnglandNumber = SocialWorkEnglandNumber;
 
-        var accountTypes = accountDetails.Types;
-        ShowSweInput = (accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false) || (accountTypes?.Contains(AccountType.Assessor) ?? false);
+        AccountTypes = accountDetails.Types ?? [];
 
-        var result = await validator.ValidateAsync(accountDetails);
+        var noEmailChange = string.Equals(initialEmail?.Trim(), accountDetails.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+        var validationContext = new ValidationContext<AccountDetails>(accountDetails);
+        if (noEmailChange)
+        {
+            validationContext.RootContextData["SkipEmailUnique"] = true;
+        }
+
+        var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);

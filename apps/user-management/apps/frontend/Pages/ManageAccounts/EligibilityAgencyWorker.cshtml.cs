@@ -18,7 +18,16 @@ public class EligibilityAgencyWorker(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
+        var isEnrolledInAsye = createAccountJourneyService.GetIsEnrolledInAsye();
+        var nonChangeLinkBackPath = isEnrolledInAsye == true
+            ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout()
+            : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
+
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            : nonChangeLinkBackPath;
+
+
         IsAgencyWorker = createAccountJourneyService.GetIsAgencyWorker();
         return Page();
     }
@@ -29,7 +38,7 @@ public class EligibilityAgencyWorker(
         if (IsAgencyWorker is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilitySocialWorkEngland(OrganisationId);
             return Page();
         }
 
