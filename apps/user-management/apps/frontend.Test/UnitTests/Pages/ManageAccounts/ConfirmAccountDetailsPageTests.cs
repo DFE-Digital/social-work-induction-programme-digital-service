@@ -47,7 +47,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         var expectedAccountLabels = new AccountLabels
         {
             IsStaffLabel = IsStaffLabels.IsStaffFalse,
-            IsRegisteredWithSocialWorkEnglandLabel = "Yes",
             IsAgencyWorkerLabel = "No",
             IsStatutoryWorkerLabel = "Yes",
             IsRecentlyQualifiedLabel = "Yes"
@@ -93,7 +92,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.ChangeDetailsLinks.Should().BeEquivalentTo(expectedChangeLinks);
         Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountTypes);
         Sut.UserType.Should().Be(expectedAccountLabels.IsStaffLabel);
-        Sut.RegisteredWithSocialWorkEngland.Should().Be(expectedAccountLabels.IsRegisteredWithSocialWorkEnglandLabel);
         Sut.StatutoryWorker.Should().Be(expectedAccountLabels.IsStatutoryWorkerLabel);
         Sut.AgencyWorker.Should().Be(expectedAccountLabels.IsAgencyWorkerLabel);
         Sut.Qualified.Should().Be(expectedAccountLabels.IsRecentlyQualifiedLabel);

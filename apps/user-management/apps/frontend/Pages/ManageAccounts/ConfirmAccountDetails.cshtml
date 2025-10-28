@@ -44,20 +44,6 @@
                     </govuk-summary-list-row>
                 }
 
-                @if (Model.RegisteredWithSocialWorkEngland is not null && Model.IsSocialWorker == false)
-                {
-                    <govuk-summary-list-row>
-                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)</govuk-summary-list-row-key>
-                        <govuk-summary-list-row-value>@Model.RegisteredWithSocialWorkEngland</govuk-summary-list-row-value>
-                        <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.RegisteredWithSocialWorkEnglandChangeLink"
-                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.RegisteredWithSocialWorkEngland)">
-                                Change
-                            </govuk-summary-list-row-action>
-                        </govuk-summary-list-row-actions>
-                    </govuk-summary-list-row>
-                }
-
                 @if (Model.StatutoryWorker is not null && Model.IsStaff is false)
                 {
                     <govuk-summary-list-row>
@@ -66,6 +52,20 @@
                         <govuk-summary-list-row-actions>
                             <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.StatutoryWorkerChangeLink"
                                                            visually-hidden-text="@Html.DisplayNameFor(model => model.StatutoryWorker)">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
+                    </govuk-summary-list-row>
+                }
+
+                @if (Model.IsStaff is false && Model.SocialWorkEnglandNumber is not null && Model.IsUpdatingAccount == false)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>@Model.SocialWorkEnglandNumber</govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@Model.ChangeDetailsLinks.SocialWorkEnglandNumberChangeLink"
+                                                           visually-hidden-text="@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -151,7 +151,7 @@
                     </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
 
-                @if (Model.SocialWorkEnglandNumber is not null)
+                @if (Model.SocialWorkEnglandNumber is not null && (Model.IsStaff is true || Model.IsUpdatingAccount))
                 {
                     <govuk-summary-list-row>
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.SocialWorkEnglandNumber)</govuk-summary-list-row-key>

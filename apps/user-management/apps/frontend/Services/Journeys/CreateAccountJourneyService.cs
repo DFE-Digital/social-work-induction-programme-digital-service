@@ -178,8 +178,6 @@ public class CreateAccountJourneyService(
                 createAccountJourneyModel.IsStaff == true
                     ? IsStaffLabels.IsStaffTrue
                     : IsStaffLabels.IsStaffFalse,
-            IsRegisteredWithSocialWorkEnglandLabel =
-                createAccountJourneyModel.IsRegisteredWithSocialWorkEngland == true ? "Yes" : null,
             IsAgencyWorkerLabel = createAccountJourneyModel.IsAgencyWorker switch
             {
                 true => "Yes",
