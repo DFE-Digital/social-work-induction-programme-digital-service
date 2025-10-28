@@ -10,9 +10,9 @@ public class CreateAccountJourneyModelTests
 {
     [Theory]
     [InlineData(new[] {AccountType.EarlyCareerSocialWorker}, AccountStatus.PendingRegistration)]
-    [InlineData(new [] {AccountType.Assessor}, AccountStatus.Active)]
-    [InlineData(new[] {AccountType.Coordinator}, AccountStatus.Active)]
-    [InlineData(new[] {AccountType.Assessor, AccountType.Coordinator}, AccountStatus.Active)]
+    [InlineData(new [] {AccountType.Assessor}, AccountStatus.PendingRegistration)]
+    [InlineData(new[] {AccountType.Coordinator}, AccountStatus.PendingRegistration)]
+    [InlineData(new[] {AccountType.Assessor, AccountType.Coordinator}, AccountStatus.PendingRegistration)]
     public void WhenMapped_AccountStatusIsCorrect(
         AccountType[] accountTypes,
         AccountStatus expectedStatus
