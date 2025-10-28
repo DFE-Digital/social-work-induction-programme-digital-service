@@ -40,11 +40,7 @@ public class CreateAccountJourneyModel
     {
         return new Account
         {
-            Status =
-                AccountTypes != null
-                && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                    ? AccountStatus.PendingRegistration
-                    : AccountStatus.Active,
+            Status = AccountStatus.PendingRegistration,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             MiddleNames = AccountDetails?.MiddleNames,

@@ -28,7 +28,7 @@ public class SignInJourneyHelper(
     public const string AuthenticationOnlyVtr = """["Cl.Cm"]""";
     public const string AuthenticationAndIdentityVerificationVtr = """["Cl.Cm.P2"]""";
 
-    public AuthorizeAccessLinkGenerator LinkGenerator { get; } = linkGenerator;
+    private AuthorizeAccessLinkGenerator LinkGenerator { get; } = linkGenerator;
 
     public IUserInstanceStateProvider UserInstanceStateProvider { get; } =
         userInstanceStateProvider;
@@ -68,7 +68,7 @@ public class SignInJourneyHelper(
             : GetNextPage(journeyInstance);
     }
 
-    public async Task OnUserAuthenticated(
+    private async Task OnUserAuthenticated(
         JourneyInstance<SignInJourneyState> journeyInstance,
         AuthenticationTicket ticket
     )
@@ -83,6 +83,7 @@ public class SignInJourneyHelper(
         var oneLoginUser = await dbContext
             .OneLoginUsers.Include(u => u.Person)
             .SingleOrDefaultAsync(u => u.Subject == sub);
+        var previouslyLinked = oneLoginUser?.PersonId is not null;
 
         if (oneLoginUser is null)
         {
@@ -91,7 +92,7 @@ public class SignInJourneyHelper(
                 Subject = sub,
                 Email = email,
                 FirstOneLoginSignIn = clock.UtcNow,
-                LastOneLoginSignIn = clock.UtcNow,
+                LastOneLoginSignIn = clock.UtcNow
             };
             dbContext.OneLoginUsers.Add(oneLoginUser);
         }
@@ -123,6 +124,11 @@ public class SignInJourneyHelper(
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Automatic;
         }
 
+        if (!previouslyLinked && oneLoginUser.PersonId is not null)
+        {
+            await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
+        }
+
         await dbContext.SaveChangesAsync();
 
         await journeyInstance.UpdateStateAsync(state =>
@@ -144,7 +150,7 @@ public class SignInJourneyHelper(
         });
     }
 
-    public Task OnUserVerified(
+    private Task OnUserVerified(
         JourneyInstance<SignInJourneyState> journeyInstance,
         AuthenticationTicket ticket
     )
@@ -183,6 +189,8 @@ public class SignInJourneyHelper(
             ?? throw new InvalidOperationException("No sub claim.");
 
         var oneLoginUser = await dbContext.OneLoginUsers.SingleAsync(u => u.Subject == sub);
+        var previouslyLinked = oneLoginUser.PersonId is not null;
+
         oneLoginUser.VerifiedOn = clock.UtcNow;
         oneLoginUser.VerificationRoute = OneLoginUserVerificationRoute.OneLogin;
         oneLoginUser.VerifiedNames = verifiedNames;
@@ -195,6 +203,11 @@ public class SignInJourneyHelper(
             oneLoginUser.FirstSignIn = clock.UtcNow;
             oneLoginUser.LastSignIn = clock.UtcNow;
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.LinkingToken;
+        }
+
+        if (!previouslyLinked && oneLoginUser.PersonId is not null)
+        {
+            await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
         }
 
         await dbContext.SaveChangesAsync();
@@ -347,4 +360,18 @@ public class SignInJourneyHelper(
     }
 
     private record TryApplyLinkingTokenResult(Guid PersonId);
+
+    private async Task SetStaffToActiveOnFirstLinkAsync(Guid personId)
+    {
+        var person = await dbContext.Persons
+            .Include(p => p.PersonRoles)
+            .ThenInclude(r => r.Role)
+            .SingleAsync(p => p.PersonId == personId);
+
+        var isStaff = person.PersonRoles.All(pr => pr.Role.RoleName != RoleType.EarlyCareerSocialWorker);
+        if ( isStaff && person.Status == PersonStatus.PendingRegistration)
+        {
+            person.Status = PersonStatus.Active;
+        }
+    }
 }
