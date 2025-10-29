@@ -34,7 +34,7 @@ resource "azurerm_network_security_group" "sn_moodle_nsg" {
     priority                   = 1000
     direction                  = "Outbound"
     access                     = "Deny"
-    protocol                   = "Any"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "*"
     source_address_prefix      = "VirtualNetwork"
