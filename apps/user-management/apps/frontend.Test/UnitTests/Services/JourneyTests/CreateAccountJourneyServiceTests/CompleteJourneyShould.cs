@@ -1,7 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -68,8 +67,7 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         capturedEmailRequest.Should().BeEquivalentTo(new InvitationEmailRequest
         {
             AccountId = expected.Id,
-            OrganisationName = organisation.OrganisationName,
-            Role = expected.Types!.Min()
+            OrganisationName = organisation.OrganisationName
         });
 
         VerifyAllNoOtherCall();

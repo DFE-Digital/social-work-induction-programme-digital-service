@@ -38,7 +38,7 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
         MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
             req.AccountId == primaryCoordinator.Id
             && req.OrganisationName == organisation.OrganisationName
-            && req.Role == null
+            && req.IsPrimaryCoordinator == true
         )));
 
         VerifyAllNoOtherCall();
