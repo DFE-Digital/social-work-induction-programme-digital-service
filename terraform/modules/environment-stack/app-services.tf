@@ -24,6 +24,29 @@ resource "azurerm_subnet" "sn_moodle_app" {
   }
 }
 
+resource "azurerm_network_security_group" "sn_moodle_nsg" {
+  name                = "${var.resource_name_prefix}-nsg-moodle"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "Any"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "moodle_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.sn_moodle_app.id
+  network_security_group_id = azurerm_network_security_group.sn_moodle_nsg.id
+}
+
 resource "azurerm_service_plan" "asp_moodle_app" {
   name                = "${var.resource_name_prefix}-asp-moodle"
   location            = var.location
