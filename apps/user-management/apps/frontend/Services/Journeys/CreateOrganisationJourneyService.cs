@@ -97,7 +97,8 @@ public class CreateOrganisationJourneyService(
             await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
             {
                 AccountId = primaryCoordinatorId,
-                OrganisationName = organisation.OrganisationName
+                OrganisationName = organisation.OrganisationName,
+                IsPrimaryCoordinator = true
             });
 
         return organisation;

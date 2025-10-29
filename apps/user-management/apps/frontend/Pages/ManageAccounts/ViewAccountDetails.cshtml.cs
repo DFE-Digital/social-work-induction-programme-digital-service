@@ -58,8 +58,7 @@ public class ViewAccountDetails(
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = organisation.OrganisationName,
-            Role = account.Types?.Min()
+            OrganisationName = organisation.OrganisationName
         });
 
         TempData["NotificationType"] = NotificationBannerType.Success;

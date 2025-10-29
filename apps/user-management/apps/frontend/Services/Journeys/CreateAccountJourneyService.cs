@@ -235,8 +235,7 @@ public class CreateAccountJourneyService(
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = organisation?.OrganisationName ?? string.Empty,
-            Role = account.Types?.Min() // Get the highest ranking role - the lowest (int)enum
+            OrganisationName = organisation?.OrganisationName ?? string.Empty
         });
 
         ResetCreateAccountJourneyModel();
