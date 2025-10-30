@@ -1,10 +1,8 @@
 using System.Collections.Immutable;
-using Bogus;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Validators;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,7 +18,8 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
     public EditAccountDetailsPageTests()
     {
-        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object), new FakeLinkGenerator())
+        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new TestAccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
+            new FakeLinkGenerator())
         {
             TempData = TempData
         };
@@ -133,7 +132,10 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndLoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var account = AccountBuilder
+            .WithTypes([AccountType.Assessor])
+            .WithSocialWorkEnglandNumber("SW321")
+            .Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
 
@@ -165,7 +167,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
-        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(Sut.SocialWorkEnglandNumber!), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(accountDetails.SocialWorkEnglandNumber!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -277,5 +279,4 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
-
 }
