@@ -105,7 +105,7 @@ public class AddAccountDetails(
         var validationContext = new ValidationContext<AccountDetails>(accountDetails);
         validationContext.RootContextData["SkipSweIdUnique"] = false;
 
-        var result = await validator.ValidateAsync(accountDetails);
+        var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
