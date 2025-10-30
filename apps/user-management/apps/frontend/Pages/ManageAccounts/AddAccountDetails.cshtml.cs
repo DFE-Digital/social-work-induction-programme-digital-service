@@ -56,20 +56,23 @@ public class AddAccountDetails(
 
     public IList<AccountType> AccountTypes { get; set; } = createAccountJourneyService.GetAccountTypes() ?? new List<AccountType>();
 
-    private void SetBackLinkPath(bool fromConfirmPage = false)
+    private void SetBackLinkPath(bool fromConfirmPage = false, bool isFunded = false)
     {
         BackLinkPath ??= fromConfirmPage
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : IsStaff
                 ? linkGenerator.ManageAccount.SelectUseCase(OrganisationId)
-                : linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
+                : isFunded
+                    ? linkGenerator.ManageAccount.EligibilityFundingAvailable(OrganisationId)
+                    : linkGenerator.ManageAccount.EligibilityFundingNotAvailable();
     }
 
     public PageResult OnGet()
     {
-        SetBackLinkPath();
-
         var accountDetails = createAccountJourneyService.GetAccountDetails();
+        var isFunded = createAccountJourneyService.GetIsFunded();
+
+        SetBackLinkPath(isFunded: isFunded ?? false);
 
         FirstName = accountDetails?.FirstName;
         MiddleNames = accountDetails?.MiddleNames;
@@ -102,7 +105,8 @@ public class AddAccountDetails(
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
-            SetBackLinkPath();
+            var isFunded = createAccountJourneyService.GetIsFunded();
+            SetBackLinkPath(isFunded: isFunded ?? false);
             return Page();
         }
 

@@ -33,7 +33,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         // Assert
         result.Should().BeOfType<PageResult>();
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-statutory-work");
         Sut.FromChangeLink.Should().BeFalse();
         MockCreateAccountJourneyService.Verify(x => x.GetIsRegisteredWithSocialWorkEngland(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
@@ -61,11 +61,14 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         VerifyAllNoOtherCalls();
     }
 
-    [Fact]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public async Task
-        OnPostAsync_WhenCalledWithNullIsRegisteredWithSocialWorkEngland_ReturnsErrorsAndRedirectsToEligibilitySocialWorkEngland()
+        OnPostAsync_WhenCalledWithNullIsRegisteredWithSocialWorkEngland_ReturnsErrorsAndRedirectsToEligibilitySocialWorkEngland(bool isFromChangeLink)
     {
         // Arrange
+        Sut.FromChangeLink = isFromChangeLink;
         Sut.IsRegisteredWithSocialWorkEngland = null;
 
         // Act
@@ -82,7 +85,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         modelState["IsRegisteredWithSocialWorkEngland"]!.Errors[0].ErrorMessage.Should()
             .Be("Select if the user is registered with Social Work England");
 
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-information");
+        Sut.BackLinkPath.Should().Be(isFromChangeLink ? "/manage-accounts/confirm-account-details" : "/manage-accounts/eligibility-statutory-work");
 
         VerifyAllNoOtherCalls();
     }
@@ -107,7 +110,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-statutory-work");
+        redirectResult!.Url.Should().Be("/manage-accounts/eligibility-agency-worker");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)), Times.Once);
@@ -171,7 +174,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
     }
 
     [Theory]
-    [InlineData(true, "/manage-accounts/eligibility-funding-available")]
+    [InlineData(true, "/manage-accounts/confirm-account-details")]
     [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
     public async Task
         OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRegisteredWithSocialWorkEngland, string redirectPath)

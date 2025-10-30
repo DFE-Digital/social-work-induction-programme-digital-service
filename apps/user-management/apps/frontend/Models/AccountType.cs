@@ -7,6 +7,9 @@ namespace Dfe.Sww.Ecf.Frontend.Models;
 /// </summary>
 public enum AccountType
 {
+    [Display(Name = "Administrator")]
+    Administrator = 1000,
+
     [Display(Name = "Coordinator")]
     Coordinator = 800,
 

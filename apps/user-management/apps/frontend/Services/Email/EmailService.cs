@@ -32,10 +32,9 @@ public class EmailService(
             linkingToken
         );
 
-        // TODO: Refactor invite emails to be a singular template with role-based personalisation
-        var templateId = request.Role.HasValue
-            ? _templateOptions.Roles[request.Role.Value].Invitation
-            : _templateOptions.PrimaryCoordinatorInvitationEmail;
+        var templateId = request.IsPrimaryCoordinator is true
+            ? _templateOptions.PrimaryCoordinatorInvitationEmail
+            : _templateOptions.Invitation;
 
         var notificationRequest = new NotificationRequest
         {

@@ -34,16 +34,13 @@ public class CreateAccountJourneyModel
     public DateOnly? ProgrammeStartDate { get; set; }
 
     public DateOnly? ProgrammeEndDate { get; set; }
+    public bool? IsFunded { get; set; }
 
     public Account ToAccount()
     {
         return new Account
         {
-            Status =
-                AccountTypes != null
-                && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker)
-                    ? AccountStatus.PendingRegistration
-                    : AccountStatus.Active,
+            Status = AccountStatus.PendingRegistration,
             Email = AccountDetails?.Email,
             FirstName = AccountDetails?.FirstName,
             MiddleNames = AccountDetails?.MiddleNames,
@@ -57,7 +54,7 @@ public class CreateAccountJourneyModel
         };
     }
 
-    private bool IsEligibleForFunding()
+    public bool IsEligibleForFunding()
     {
         return AccountTypes?.Contains(AccountType.EarlyCareerSocialWorker) == true
             && IsRegisteredWithSocialWorkEngland == true

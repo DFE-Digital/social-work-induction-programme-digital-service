@@ -22,7 +22,7 @@ public class EligibilitySocialWorkEngland(
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         SocialWorkerNumber = createAccountJourneyService.GetAccountDetails()?.SocialWorkEnglandNumber;
         return Page();
@@ -34,7 +34,7 @@ public class EligibilitySocialWorkEngland(
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
             return Page();
         }
 
@@ -49,7 +49,10 @@ public class EligibilitySocialWorkEngland(
 
         // Validated above but compiler complains if we don't check
         if (string.IsNullOrWhiteSpace(SocialWorkerNumber))
+        {
+            BackLinkPath = linkGenerator.ManageAccount.EligibilityInformation(OrganisationId);
             return BadRequest();
+        }
 
         var accountDetails = createAccountJourneyService.GetAccountDetails() ?? new AccountDetails();
         accountDetails.SocialWorkEnglandNumber = SocialWorkerNumber;
@@ -65,8 +68,8 @@ public class EligibilitySocialWorkEngland(
         }
 
         return Redirect(FromChangeLink
-            ? linkGenerator.ManageAccount.EligibilityFundingAvailable(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId));
+            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+            : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
     }
 
     public PageResult OnGetChange()

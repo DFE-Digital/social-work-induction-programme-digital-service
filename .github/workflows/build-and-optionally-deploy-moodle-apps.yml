@@ -1,5 +1,9 @@
 name: Build Moodle apps (optionally deploy to non-prod)
-run-name: Build Moodle apps ${{ github.event.inputs.instance && github.event.inputs.instance != 'None' && format('and deploy to {0}', inputs.instance) || format('') }}
+run-name: >-
+  Build Moodle apps
+  ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.instance != 'None' && format('and deploy to {0}', inputs.instance) ||
+     github.event_name == 'pull_request' && format('for PR #{0}', github.event.number) ||
+     github.event_name == 'push' && 'and deploy to d01 (merge to dev)' || '' }}
 
 on:
   workflow_dispatch:
@@ -34,10 +38,16 @@ on:
     paths:
       - "apps/moodle-apps-azure/**"
       - "apps/moodle-ddev/**"
+  push:
+    branches:
+      - development
+    paths:
+      - "apps/moodle-apps-azure/**"
+      - "apps/moodle-ddev/**"
 
 concurrency:
-  # Unique group for workflow_dispatch AND unique group for each PR
-  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
+  # Unique group for workflow_dispatch AND unique group for each PR/Push
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.event.inputs.instance) }}
   cancel-in-progress: true
 
 jobs:
@@ -45,6 +55,9 @@ jobs:
     name: Build and Publish Moodle Image
     uses: ./.github/workflows/build-and-publish-image.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
@@ -58,10 +71,13 @@ jobs:
 
   optional-deploy-moodle-app:
     needs: build-and-publish-moodle-image
-    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
+    if: ${{ (github.event.inputs.instance != 'None' && github.event.inputs.instance) || github.event_name == 'push' }}
     name: Deploy Moodle App (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}
@@ -79,10 +95,13 @@ jobs:
     needs:
       - build-and-publish-moodle-image
       - optional-deploy-moodle-app
-    if: ${{ github.event.inputs.instance != 'None' && github.event.inputs.instance }}
+    if: ${{ (github.event.inputs.instance != 'None' && github.event.inputs.instance) || github.event_name == 'push' }}
     name: Deploy Moodle Cron App (optional)
     uses: ./.github/workflows/deploy-app-service.yml
     secrets: inherit
+    permissions:
+      id-token: write
+      contents: read
     with:
       environment: Dev
       environment-instance: ${{ (github.event.inputs.instance == 'None' || github.event.inputs.instance == '') && 'd01' || github.event.inputs.instance }}

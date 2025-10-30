@@ -16,11 +16,7 @@ public class MockEmailTemplateOptions : Mock<IOptions<EmailTemplateOptions>>
             new EmailTemplateOptions
             {
                 PrimaryCoordinatorInvitationEmail = _faker.Random.Guid(),
-                Roles = Enum.GetValues<AccountType>().ToDictionary(type => type, _ => new RoleEmailTemplateConfiguration
-                {
-                    Invitation = _faker.Random.Guid(),
-                    Welcome = _faker.Random.Guid()
-                })
+                Invitation = _faker.Random.Guid()
             };
         Setup(x => x.Value).Returns(Options);
     }

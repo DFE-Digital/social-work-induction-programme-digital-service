@@ -110,6 +110,12 @@ public class CreateAccountJourneyService(
         SetCreateAccountJourneyModel(createAccountJourneyModel);
     }
 
+    public bool? GetIsEnrolledInAsye()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEnrolledInAsye;
+    }
+
     public void SetIsEnrolledInAsye(bool? isEnrolledInAsye)
     {
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
@@ -129,6 +135,12 @@ public class CreateAccountJourneyService(
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
         createAccountJourneyModel.IsRecentlyQualified = isRecentlyQualified;
         SetCreateAccountJourneyModel(createAccountJourneyModel);
+    }
+
+    public bool? GetIsFunded()
+    {
+        var createAccountJourneyModel = GetCreateAccountJourneyModel();
+        return createAccountJourneyModel.IsEligibleForFunding();
     }
 
     public DateOnly? GetProgrammeStartDate()
@@ -166,8 +178,6 @@ public class CreateAccountJourneyService(
                 createAccountJourneyModel.IsStaff == true
                     ? IsStaffLabels.IsStaffTrue
                     : IsStaffLabels.IsStaffFalse,
-            IsRegisteredWithSocialWorkEnglandLabel =
-                createAccountJourneyModel.IsRegisteredWithSocialWorkEngland == true ? "Yes" : null,
             IsAgencyWorkerLabel = createAccountJourneyModel.IsAgencyWorker switch
             {
                 true => "Yes",
@@ -203,7 +213,7 @@ public class CreateAccountJourneyService(
             SocialWorkEnglandNumberChangeLink = isEcsw
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(organisationId)
                 : linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(organisationId)
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(organisationId: organisationId)
         };
     }
 
@@ -225,8 +235,7 @@ public class CreateAccountJourneyService(
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = organisation?.OrganisationName ?? string.Empty,
-            Role = account.Types?.Min() // Get the highest ranking role - the lowest (int)enum
+            OrganisationName = organisation?.OrganisationName ?? string.Empty
         });
 
         ResetCreateAccountJourneyModel();

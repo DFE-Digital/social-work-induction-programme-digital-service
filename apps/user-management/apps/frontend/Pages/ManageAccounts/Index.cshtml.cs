@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
-public class Index(IAccountService accountService, IOrganisationService organisationService, IAuthServiceClient authServiceClient, EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
+public class Index(IAccountService accountService, IOrganisationService organisationService, EcfLinkGenerator linkGenerator) : ManageAccountsBasePageModel
 {
     [FromQuery]
     public int Offset { get; set; } = 0;
