@@ -81,6 +81,7 @@ public class EditAccountDetails(
         }
 
         var initialEmail = accountDetails.Email;
+        var initialSweId = accountDetails.SocialWorkEnglandNumber;
 
         accountDetails.FirstName = FirstName;
         accountDetails.MiddleNames = MiddlesNames;
@@ -91,12 +92,11 @@ public class EditAccountDetails(
         AccountTypes = accountDetails.Types ?? [];
 
         var noEmailChange = string.Equals(initialEmail?.Trim(), accountDetails.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
+        var noSweIdChange = string.Equals(initialSweId?.Trim(), accountDetails.SocialWorkEnglandNumber?.Trim(), StringComparison.OrdinalIgnoreCase);
 
         var validationContext = new ValidationContext<AccountDetails>(accountDetails);
-        if (noEmailChange)
-        {
-            validationContext.RootContextData["SkipEmailUnique"] = true;
-        }
+        validationContext.RootContextData["SkipEmailUnique"] = noEmailChange;
+        validationContext.RootContextData["SkipSweIdUnique"] = noSweIdChange;
 
         var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)

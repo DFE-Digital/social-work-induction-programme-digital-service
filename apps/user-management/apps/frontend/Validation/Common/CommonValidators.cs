@@ -93,13 +93,17 @@ public static class CommonValidators
                     return;
                 }
 
-                var account = await authServiceClient.Accounts.GetBySocialWorkEnglandNumberAsync(sweId);
-                if (account is not null)
+                var isValid = context.RootContextData.TryGetValue("SkipSweIdUnique", out var isSkipped);
+                if (isValid && isSkipped is false)
                 {
-                    context.AddFailure(new ValidationFailure(
-                        context.PropertyPath,
-                        "The Social Work England registration number entered belongs to an existing user",
-                        sweId));
+                    var account = await authServiceClient.Accounts.GetBySocialWorkEnglandNumberAsync(sweId);
+                    if (account is not null)
+                    {
+                        context.AddFailure(new ValidationFailure(
+                            context.PropertyPath,
+                            "The Social Work England registration number entered belongs to an existing user",
+                            sweId));
+                    }
                 }
 
                 var isSweNumber = SocialWorkEnglandRecord.TryParse(sweId, out _);

@@ -1,11 +1,16 @@
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Validators;
 using Dfe.Sww.Ecf.Frontend.Validation;
 using FluentAssertions;
+using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
@@ -21,7 +26,7 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
     {
         Sut = new AddAccountDetails(
             MockCreateAccountJourneyService.Object,
-            new AccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
+            new TestAccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
             new FakeLinkGenerator()
         );
     }
@@ -120,6 +125,8 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
             x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails))
         );
 
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId)).ReturnsAsync((Person?)null);
+
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -148,6 +155,8 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         );
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
+        MockAccountService.Verify(x => x.CheckEmailExistsAsync(account.Email!), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId), accountType.Equals(AccountType.Coordinator) ? Times.Never : Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -267,4 +276,6 @@ public class AddAccountDetailsPageTests : ManageAccountsPageTestBase<AddAccountD
         Sut.BackLinkPath.Should().Be("/manage-accounts/confirm-account-details");
         Sut.FromChangeLink.Should().BeTrue();
     }
+
+
 }

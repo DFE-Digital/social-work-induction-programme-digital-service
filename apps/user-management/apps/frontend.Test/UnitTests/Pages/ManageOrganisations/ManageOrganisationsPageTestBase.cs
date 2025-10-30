@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -18,6 +19,7 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
 
     private protected Mock<ICreateOrganisationJourneyService> MockCreateOrganisationJourneyService { get; }
     private protected Mock<IEditOrganisationJourneyService> MockEditOrganisationJourneyService { get; }
+    private protected Mock<IAuthServiceClient> MockAuthServiceClient { get; }
 
     private protected Mock<IAccountService> MockAccountService { get; }
 
@@ -33,6 +35,8 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
 
         MockEditOrganisationJourneyService = new();
 
+        MockAuthServiceClient = new();
+
         MockAccountService = new();
     }
 
@@ -41,6 +45,7 @@ public abstract class ManageOrganisationsPageTestBase<[MeansTestSubject] T> : Pa
         MockOrganisationService.VerifyNoOtherCalls();
         MockCreateOrganisationJourneyService.VerifyNoOtherCalls();
         MockEditOrganisationJourneyService.VerifyNoOtherCalls();
+        MockAuthServiceClient.VerifyNoOtherCalls();
         MockAccountService.VerifyNoOtherCalls();
     }
 }
