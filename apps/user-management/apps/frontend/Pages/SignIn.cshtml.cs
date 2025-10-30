@@ -29,10 +29,9 @@ public class SignIn(
             return Redirect(linkGenerator.Dashboard());
         }
 
-        var token = Request.Query["linkingToken"].ToString();
-        var handler = Request.Query["handler"].ToString();
+        var isStaffFirstLogin = authServiceClient.HttpContextService.GetIsStaffFirstLogin();
 
-        if (!string.IsNullOrEmpty(token) && string.Equals(handler, "invite", StringComparison.OrdinalIgnoreCase))
+        if (isStaffFirstLogin)
         {
             var personId = authServiceClient.HttpContextService.GetPersonId();
             await emailService.SendWelcomeEmailAsync(new WelcomeEmailRequest
