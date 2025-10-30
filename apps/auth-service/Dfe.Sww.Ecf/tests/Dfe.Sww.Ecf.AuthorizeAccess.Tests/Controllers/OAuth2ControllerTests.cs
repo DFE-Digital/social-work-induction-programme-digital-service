@@ -1,10 +1,17 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Tests.Fakers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
+using Dfe.Sww.Ecf.Core.Services.Accounts;
+using Dfe.Sww.Ecf.UiCommon.FormFlow;
+using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
@@ -25,7 +32,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var oneLoginUser = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: oneLoginUser.Subject,
                 scopes: $"{CustomScopes.EcswRegistered} profile"
@@ -52,7 +59,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var user = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
                 scopes: $"{CustomScopes.EcswRegistered} profile"
@@ -77,7 +84,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var user = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
                 scopes: $"{CustomScopes.EcswRegistered} profile"
@@ -92,7 +99,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
         });
     }
 
-    private static OAuth2Controller CreateControllerWithContext(
+    private Task<OAuth2Controller> CreateControllerWithContext(
         EcfDbContext dbContext,
         string subject,
         string scopes)
@@ -106,7 +113,40 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
         scopeManager.Setup(m => m.ListResourcesAsync(It.IsAny<ImmutableArray<string>>(), It.IsAny<CancellationToken>()))
             .Returns((ImmutableArray<string> _, CancellationToken _) => AsyncEnumerable.Empty<string>());
 
-        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object);
+        var userInstanceStateProvider = new Mock<IUserInstanceStateProvider>();
+
+        var testJourneyState = new SignInJourneyState(
+            redirectUri: "/test-redirect",
+            serviceName: "Test Service",
+            serviceUrl: "https://test.service",
+            linkingToken: "test-linking-token");
+
+        var testJourneyInstanceId = new JourneyInstanceId("test-instance", new Dictionary<string, StringValues>());
+
+        var testJourneyInstance = (JourneyInstance<SignInJourneyState>)JourneyInstance.Create(
+            userInstanceStateProvider.Object,
+            testJourneyInstanceId,
+            typeof(SignInJourneyState),
+            testJourneyState,
+            properties: new Dictionary<object, object>());
+
+        userInstanceStateProvider
+            .Setup(p => p.GetInstanceAsync(
+                It.IsAny<JourneyInstanceId>(),
+                It.IsAny<Type>()))
+            .ReturnsAsync(testJourneyInstance);
+
+        var journeyHelper = new SignInJourneyHelper(
+            dbContext,
+            Mock.Of<IOneLoginAccountLinkingService>(),
+            Mock.Of<AuthorizeAccessLinkGenerator>(),
+            Mock.Of<IOptions<AuthorizeAccessOptions>>(),
+            userInstanceStateProvider.Object,
+            Mock.Of<IClock>(),
+            Mock.Of<IOptions<DatabaseSeedOptions>>()
+        );
+
+        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object, journeyHelper);
 
         var services = new ServiceCollection()
             .AddSingleton<IAuthenticationService>(new FakeAuthenticationService(subject))
@@ -131,6 +171,6 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
         });
 
         controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
-        return controller;
+        return Task.FromResult(controller);
     }
 }

@@ -292,7 +292,8 @@ public static class ServicesExtensions
                     OpenIddictConstants.Scopes.Roles,
                     CustomScopes.Organisation,
                     CustomScopes.EcswRegistered,
-                    CustomScopes.Person
+                    CustomScopes.Person,
+                    CustomScopes.StaffFirstLogin
                 );
 
                 options.AllowAuthorizationCodeFlow();

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
@@ -17,7 +18,8 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 public class OAuth2Controller(
     EcfDbContext dbContext,
     IOpenIddictApplicationManager applicationManager,
-    IOpenIddictScopeManager scopeManager
+    IOpenIddictScopeManager scopeManager,
+    SignInJourneyHelper helper
 ) : Controller
 {
     [HttpGet("~/oauth2/authorize")]
@@ -100,6 +102,15 @@ public class OAuth2Controller(
             return;
         }
 
+        var journeyInstance = await helper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(HttpContext);
+
+        if (journeyInstance is null)
+        {
+            throw new InvalidOperationException("No active journey instance found.");
+        }
+
+        var journeyState = journeyInstance.State;
+
         var claimsBuilder = new ClaimsBuilder(identity, request);
 
         await claimsBuilder
@@ -115,6 +126,7 @@ public class OAuth2Controller(
                 () => oneLoginUser.Person.Trn
             )
             .AddIfScope(CustomScopes.Person, ClaimTypes.PersonId, () => oneLoginUser.PersonId.ToString())
+            .AddIfScope(CustomScopes.StaffFirstLogin, ClaimTypes.IsStaffFirstLogin, () => journeyState.IsStaffFirstLogin ? "true" : null)
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
 
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
@@ -371,6 +383,13 @@ public class OAuth2Controller(
                 yield break;
             case ClaimTypes.PersonId:
                 if (claim.Subject!.HasScope(CustomScopes.Person))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
+                yield break;
+            case ClaimTypes.IsStaffFirstLogin:
+                if (claim.Subject!.HasScope(CustomScopes.StaffFirstLogin))
                 {
                     yield return Destinations.AccessToken;
                     yield return Destinations.IdentityToken;

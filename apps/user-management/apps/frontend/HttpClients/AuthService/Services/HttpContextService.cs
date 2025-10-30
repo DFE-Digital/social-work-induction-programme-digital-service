@@ -33,4 +33,17 @@ public class HttpContextService(IHttpContextAccessor httpContextAccessor) : IHtt
 
         return isEcswRegistered;
     }
+
+    public bool GetIsStaffFirstLogin()
+    {
+        var successful = bool.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue("is_staff_first_login"),
+            out var isStaffFirstLogin);
+        if (successful == false)
+        {
+            // Key isn't present, not first login for staff account
+            return false;
+        }
+
+        return isStaffFirstLogin;
+    }
 }
