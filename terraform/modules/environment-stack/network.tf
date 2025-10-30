@@ -25,6 +25,22 @@ resource "azurerm_network_security_group" "funcapp_nsg" {
     source_address_prefix      = azurerm_subnet.sn_service_apps.address_prefixes[0]
     destination_address_prefix = azurerm_subnet.sn_function_app.address_prefixes[0]
   }
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "azurerm_network_security_group" "private_endpoint_nsg" {
@@ -34,27 +50,15 @@ resource "azurerm_network_security_group" "private_endpoint_nsg" {
   tags                = var.tags
 
   security_rule {
-    name                       = "AllowVnetInbound"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
     protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "*"
     source_address_prefix      = "VirtualNetwork"
-    destination_address_prefix = "VirtualNetwork"
-  }
-
-  security_rule {
-    name                       = "AllowAzureLoadBalancerInbound"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "AzureLoadBalancer"
-    destination_address_prefix = "*"
+    destination_address_prefix = "Internet"
   }
 
   lifecycle {
