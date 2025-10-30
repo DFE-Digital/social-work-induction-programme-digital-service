@@ -4,6 +4,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 

@@ -26,7 +26,7 @@ public class SignInTests: PageModelTestBase<SignIn>
 
     public SignInTests()
     {
-        Sut = new SignIn(new FakeLinkGenerator(), _authServiceClient.Object)
+        Sut = new SignIn(new FakeLinkGenerator(), _authServiceClient.Object, MockEmailService.Object)
         {
             PageContext =
             {
@@ -36,13 +36,13 @@ public class SignInTests: PageModelTestBase<SignIn>
     }
 
     [Fact]
-    public void Get_WhenCalledAndEcswIsRegistered_RedirectsToManageAccounts()
+    public async Task GetAsync_WhenCalledAndEcswIsRegistered_RedirectsToManageAccounts()
     {
         // Arrange
         _authServiceClient.Setup(x => x.HttpContextService.GetIsEcswRegistered()).Returns(true);
 
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
@@ -58,13 +58,13 @@ public class SignInTests: PageModelTestBase<SignIn>
     }
 
     [Fact]
-    public void Get_WhenCalledAndEcswIsNotRegistered_RedirectsToSocialWorkerRegistrationStart()
+    public async Task GetAsync_WhenCalledAndEcswIsNotRegistered_RedirectsToSocialWorkerRegistrationStart()
     {
         // Arrange
         _authServiceClient.Setup(x => x.HttpContextService.GetIsEcswRegistered()).Returns(false);
 
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
@@ -80,14 +80,14 @@ public class SignInTests: PageModelTestBase<SignIn>
     }
 
     [Fact]
-    public void Get_WhenCalledAndUserIsAdministrator_RedirectsToDashboard()
+    public async Task Get_WhenCalledAndUserIsAdministrator_RedirectsToDashboard()
     {
         // Arrange
         _authServiceClient.Setup(x => x.HttpContextService.GetIsEcswRegistered()).Returns(true);
         HttpContext.User = new ClaimsPrincipalBuilder().WithRole(RoleType.Administrator).Build();
 
         // Act
-        var result = Sut.OnGet();
+        var result = await Sut.OnGetAsync();
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
