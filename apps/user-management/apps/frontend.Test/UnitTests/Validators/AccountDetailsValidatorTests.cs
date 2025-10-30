@@ -175,7 +175,7 @@ public class AccountDetailsValidatorTests()
     [Theory]
     [InlineData(AccountType.EarlyCareerSocialWorker)]
     [InlineData(AccountType.Assessor)]
-    public async Task WhenSocialWorkEnglandNumberIsNotTaken_HaveValidationErrors(AccountType accountType)
+    public async Task WhenSocialWorkEnglandNumberIsNotTaken_HaveNoValidationErrors(AccountType accountType)
     {
         // Arrange
         var account = Faker.GenerateWithSweIdAndRelevantAccountType("SW123", new List<AccountType> { accountType });
