@@ -480,9 +480,9 @@ resource "azurerm_network_security_group" "sn_function_app_nsg" {
   }
 }
 
-resource "azurerm_subnet_network_security_group_association" "service_apps_nsg_assoc" {
-  subnet_id                 = azurerm_subnet.sn_service_apps.id
-  network_security_group_id = azurerm_network_security_group.sn_service_apps_nsg.id
+resource "azurerm_subnet_network_security_group_association" "function_app_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.sn_function_app.id
+  network_security_group_id = azurerm_network_security_group.sn_function_app_nsg.id
 }
 
 resource "azurerm_service_plan" "asp_notification_service" {
