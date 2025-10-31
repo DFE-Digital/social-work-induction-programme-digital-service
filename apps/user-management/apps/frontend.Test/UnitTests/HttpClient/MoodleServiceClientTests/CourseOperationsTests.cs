@@ -134,9 +134,9 @@ public class CourseOperationsTests
     private static (
         MockHttpMessageHandler MockHttpMessageHandler,
         MockedRequest MockedRequest
-        ) GenerateMockClient<TRequest>(
+        ) GenerateMockClient<TResponse>(
             HttpStatusCode statusCode,
-            TRequest response,
+            TResponse response,
             IDictionary<string, string>? expectedFormParams = null)
     {
         using var mockHttp = new MockHttpMessageHandler();
