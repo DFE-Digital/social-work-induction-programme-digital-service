@@ -1,12 +1,11 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 
-public sealed class MoodleCourseRequestFaker : Faker<EnrolUserRequest>
+public sealed class MoodleEnrolUserOntoCourseRequestFaker : Faker<EnrolUserRequest>
 {
-    public MoodleCourseRequestFaker()
+    public MoodleEnrolUserOntoCourseRequestFaker()
     {
         RuleFor(a => a.RoleId, f => f.PickRandom<MoodleRoles>());
         RuleFor(a => a.UserId, f => f.Random.Int());

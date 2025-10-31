@@ -15,9 +15,77 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.MoodleServiceClientTest
 
 public class CourseOperationsTests
 {
-    private readonly MoodleCourseRequestFaker _moodleCourseRequestFaker = new();
+    private readonly MoodleEnrolUserOntoCourseRequestFaker _moodleCourseRequestFaker = new();
     private readonly Guid _apikey = Guid.NewGuid();
     private readonly Mock<IOptions<MoodleClientOptions>> _mockOptions = new();
+
+    [Fact]
+    public async Task CreateAsync_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var createCourseRequest = new CreateCourseRequest
+        {
+            FullName = "Full Course Name",
+            ShortName = "Short Name",
+            CategoryId = 1
+        };
+
+        var createCourseResponse = new CreateCourseResponse
+        {
+            Id = 5,
+            ShortName = createCourseRequest.ShortName,
+            Successful = true
+        };
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, new List<CreateCourseResponse> { createCourseResponse });
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Course.CreateAsync(createCourseRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<CreateCourseResponse>();
+        response.Should().BeEquivalentTo(createCourseResponse);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task CreateAsync_UnsuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var createCourseRequest = new CreateCourseRequest
+        {
+            FullName = "Full Course Name",
+            ShortName = "Short Name",
+            CategoryId = 1
+        };
+
+        var createCourseResponse = new CreateCourseResponse
+        {
+            Successful = false
+        };
+
+        var (mockHttp, request) = GenerateMockClient(HttpStatusCode.BadRequest, new List<CreateCourseResponse> { createCourseResponse });
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Course.CreateAsync(createCourseRequest);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<CreateCourseResponse>();
+        response.Should().BeEquivalentTo(createCourseResponse);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
 
     [Fact]
     public async Task EnrolUserAsync_SuccessfulRequest_ReturnsCorrectResponse()
@@ -66,9 +134,9 @@ public class CourseOperationsTests
     private static (
         MockHttpMessageHandler MockHttpMessageHandler,
         MockedRequest MockedRequest
-        ) GenerateMockClient(
+        ) GenerateMockClient<TRequest>(
             HttpStatusCode statusCode,
-            EnrolUserResponse response,
+            TRequest response,
             IDictionary<string, string>? expectedFormParams = null)
     {
         using var mockHttp = new MockHttpMessageHandler();
