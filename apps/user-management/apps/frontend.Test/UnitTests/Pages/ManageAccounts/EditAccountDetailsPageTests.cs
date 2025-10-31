@@ -1,14 +1,14 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Validators;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 using Xunit;
+using Person = Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Person;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.ManageAccounts;
 
@@ -18,7 +18,8 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
     public EditAccountDetailsPageTests()
     {
-        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new AccountDetailsValidator(MockAccountService.Object), new FakeLinkGenerator())
+        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new TestAccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
+            new FakeLinkGenerator())
         {
             TempData = TempData
         };
@@ -131,7 +132,10 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
     public async Task Post_WhenCalledWithInvalidData_ReturnsErrorsAndLoadsTheView()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var account = AccountBuilder
+            .WithTypes([AccountType.Assessor])
+            .WithSocialWorkEnglandNumber("SW321")
+            .Build();
         var accountDetails = AccountDetails.FromAccount(account);
         var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
 
@@ -145,6 +149,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
         MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(account.SocialWorkEnglandNumber!)).ReturnsAsync((Person?)null);
 
         // Act
         var result = await Sut.OnPostAsync(account.Id);
@@ -162,6 +167,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(accountDetails.SocialWorkEnglandNumber!), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -273,5 +279,4 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
         VerifyAllNoOtherCalls();
     }
-
 }

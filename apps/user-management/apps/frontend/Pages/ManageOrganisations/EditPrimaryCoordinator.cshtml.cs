@@ -65,12 +65,8 @@ public class EditPrimaryCoordinator(
         }
 
         var noEmailChange = string.Equals(primaryCoordinator.Email?.Trim(), PrimaryCoordinator.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
-
         var validationContext = new ValidationContext<AccountDetails>(PrimaryCoordinator);
-        if (noEmailChange)
-        {
-            validationContext.RootContextData["SkipEmailUnique"] = true;
-        }
+        validationContext.RootContextData["SkipEmailUnique"] = noEmailChange;
 
         var validationResult = await validator.ValidateAsync(validationContext);
         if (!validationResult.IsValid)

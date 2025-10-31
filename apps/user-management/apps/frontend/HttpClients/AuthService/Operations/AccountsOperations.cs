@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+﻿using System.Text.Json;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
 
@@ -100,5 +101,23 @@ public class AccountsOperations(AuthServiceClient authServiceClient)
         var exists = DeserializeOrThrow<bool>(response, "Failed to check if email exists.");
 
         return exists;
+    }
+
+    public async Task<Person?> GetBySocialWorkEnglandNumberAsync(string socialWorkEnglandNumber)
+    {
+        var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Accounts/social-work-england-number/{socialWorkEnglandNumber}");
+
+        HandleHttpResponse(httpResponse, $"Failed to get account with social work england number {socialWorkEnglandNumber}.");
+
+        var response = await httpResponse.Content.ReadAsStringAsync();
+
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            return null;
+        }
+
+        var person = DeserializeOrThrow<Person>(response, $"Failed to get account with social work england number {socialWorkEnglandNumber}.");
+
+        return person;
     }
 }
