@@ -15,7 +15,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.MoodleServiceClientTest
 
 public class CourseOperationsTests
 {
-    private readonly MoodleEnrolUserOntoCourseRequestFaker _moodleCourseRequestFaker = new();
+    private readonly MoodleEnrolUserRequestFaker _moodleEnrolUserRequestFaker = new();
     private readonly Guid _apikey = Guid.NewGuid();
     private readonly Mock<IOptions<MoodleClientOptions>> _mockOptions = new();
 
@@ -91,7 +91,7 @@ public class CourseOperationsTests
     public async Task EnrolUserAsync_SuccessfulRequest_ReturnsCorrectResponse()
     {
         // Arrange
-        var enrolUserRequest = _moodleCourseRequestFaker.Generate();
+        var enrolUserRequest = _moodleEnrolUserRequestFaker.Generate();
         var enrolUserResponse = new EnrolUserResponse();
 
         var (mockHttp, request) = GenerateMockClient(HttpStatusCode.OK, enrolUserResponse);
