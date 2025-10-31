@@ -7,5 +7,6 @@ public static class FunctionNameConstants
     public const string UpdateUser = "core_user_update_users";
 
     // Course
+    public const string CreateCourse = "core_course_create_courses";
     public const string EnrolUser = "enrol_manual_enrol_users";
 }
