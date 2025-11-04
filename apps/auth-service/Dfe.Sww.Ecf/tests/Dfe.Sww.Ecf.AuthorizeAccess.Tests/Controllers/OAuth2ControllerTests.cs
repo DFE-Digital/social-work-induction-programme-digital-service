@@ -100,7 +100,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
     }
 
     [Fact]
-    public Task Authorize_WhenScopePresentAndStateTrue_AddsIsStaffFirstLogin()
+    public Task Authorize_WhenScopePresentAndStateTrue_AddsIsStaffFirstLoginTrue()
     {
         return WithDbContext(async dbContext =>
         {
@@ -121,12 +121,14 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             // Assert
             var signIn = Assert.IsType<SignInResult>(result);
-            Assert.DoesNotContain(signIn.Principal.Claims, c => c.Type == ClaimTypes.IsEcswRegistered);
+            var claim = signIn.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsStaffFirstLogin);
+            Assert.NotNull(claim);
+            Assert.Equal("true", claim.Value);
         });
     }
 
     [Fact]
-    public Task Authorize_WhenStateFalse_DoesNotAddIsStaffFirstLogin()
+    public Task Authorize_WhenScopePresentAndStateFalse_AddsIsStaffFirstLoginNull()
     {
         return WithDbContext(async dbContext =>
         {
@@ -146,7 +148,8 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             // Assert
             var signIn = Assert.IsType<SignInResult>(result);
-            Assert.DoesNotContain(signIn.Principal.Claims, c => c.Type == ClaimTypes.IsEcswRegistered);
+            var claim = signIn.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsStaffFirstLogin);
+            Assert.Null(claim);
         });
     }
 
@@ -178,7 +181,13 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             IsStaffFirstLogin = isStaffFirstLogin
         };
 
-        var journeyInstanceId = new JourneyInstanceId("test-instance", new Dictionary<string, StringValues>());
+        var uniqueKey = Guid.NewGuid().ToString();
+        var journeyInstanceId = new JourneyInstanceId(
+            SignInJourneyState.JourneyName,
+            new Dictionary<string, StringValues>
+            {
+                { Constants.UniqueKeyQueryParameterName, new StringValues(uniqueKey) }
+            });
 
         var journeyInstance = (JourneyInstance<SignInJourneyState>)JourneyInstance.Create(
             mockUserStateProvider.Object,
@@ -188,9 +197,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             properties: new Dictionary<object, object>());
 
         mockUserStateProvider
-            .Setup(p => p.GetInstanceAsync(
-                journeyInstanceId,
-                typeof(SignInJourneyState)))
+            .Setup(p => p.GetInstanceAsync(It.IsAny<JourneyInstanceId>(), typeof(SignInJourneyState)))
             .ReturnsAsync(journeyInstance);
 
         var services = new ServiceCollection()
@@ -203,7 +210,14 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             .Configure<DatabaseSeedOptions>(_ => { })
             .BuildServiceProvider();
 
-        var httpContext = new DefaultHttpContext { RequestServices = services };
+        var httpContext = new DefaultHttpContext
+        {
+            RequestServices = services,
+            Request =
+            {
+                QueryString = QueryString.Create(Constants.UniqueKeyQueryParameterName, uniqueKey)
+            }
+        };
 
         var oidcRequest = new OpenIddictRequest
         {
