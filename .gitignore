@@ -1,3 +1,4 @@
+# Moodle
 public/
 moodledata/
 
@@ -65,6 +66,9 @@ moodle-app/.ddev/docker-compose.selenium-chrome_extras.yaml
 # .NET Core build folders
 bin/
 obj/
+
+# App settings
+*.Development.json
 
 # Common node modules locations
 /node_modules
