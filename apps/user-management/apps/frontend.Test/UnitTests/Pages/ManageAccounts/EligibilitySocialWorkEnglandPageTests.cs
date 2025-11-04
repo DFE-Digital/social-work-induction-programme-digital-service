@@ -1,7 +1,8 @@
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
-using Dfe.Sww.Ecf.Frontend.Validation;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Validators;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,7 +21,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
             MockCreateAccountJourneyService.Object,
             MockAuthServiceClient.Object,
             new FakeLinkGenerator(),
-            new EligibilitySocialWorkEnglandValidator()
+            new TestEligibilitySocialWorkEnglandValidator(MockAuthServiceClient.Object)
         );
     }
 
@@ -102,6 +103,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
 
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(false);
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId)).ReturnsAsync((Person?)null);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -117,6 +119,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
         MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(false), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -133,6 +136,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
 
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns((AccountDetails?)null);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(true);
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId)).ReturnsAsync((Person?)null);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -148,6 +152,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(true), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(true), Times.Once);
         MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -188,6 +193,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
 
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
         MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(sweId)).ReturnsAsync(false);
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(sweId)).ReturnsAsync((Person?)null);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -198,24 +204,16 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be(redirectPath);
 
+        var verifiedTimes = isRegisteredWithSocialWorkEngland
+            ? Times.Once()
+            : Times.Never();
+
         MockCreateAccountJourneyService.Verify(x => x.SetIsRegisteredWithSocialWorkEngland(isRegisteredWithSocialWorkEngland), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(),
-            isRegisteredWithSocialWorkEngland
-                ? Times.Once
-                : Times.Never);
-        MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(
-                MoqHelpers.ShouldBeEquivalentTo(accountDetails)),
-            isRegisteredWithSocialWorkEngland
-                ? Times.Once
-                : Times.Never);
-        MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId),
-            isRegisteredWithSocialWorkEngland
-                ? Times.Once
-                : Times.Never);
-        MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(false),
-            isRegisteredWithSocialWorkEngland
-                ? Times.Once
-                : Times.Never);
+        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), verifiedTimes);
+        MockCreateAccountJourneyService.Verify(x => x.SetAccountDetails(MoqHelpers.ShouldBeEquivalentTo(accountDetails)), verifiedTimes);
+        MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(sweId), verifiedTimes);
+        MockCreateAccountJourneyService.Verify(x => x.SetIsEnrolledInAsye(false), verifiedTimes);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(accountDetails.SocialWorkEnglandNumber), verifiedTimes);
 
         VerifyAllNoOtherCalls();
     }

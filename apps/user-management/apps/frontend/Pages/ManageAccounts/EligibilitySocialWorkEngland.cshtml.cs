@@ -30,7 +30,11 @@ public class EligibilitySocialWorkEngland(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var validationResult = await validator.ValidateAsync(this);
+        // Always perform this action for add
+        var validationContext = new ValidationContext<EligibilitySocialWorkEngland>(this);
+        validationContext.RootContextData["SkipSweIdUnique"] = false;
+
+        var validationResult = await validator.ValidateAsync(validationContext);
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);

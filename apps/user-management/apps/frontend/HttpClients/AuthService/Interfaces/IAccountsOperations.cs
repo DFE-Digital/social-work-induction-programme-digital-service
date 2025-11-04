@@ -16,4 +16,6 @@ public interface IAccountsOperations
     Task<Person> UpdateAsync(UpdatePersonRequest updatePersonRequest);
 
     Task<bool> CheckEmailExistsAsync(CheckEmailRequest checkEmailRequest);
+
+    Task<Person?> GetBySocialWorkEnglandNumberAsync(string socialWorkEnglandNumber);
 }
