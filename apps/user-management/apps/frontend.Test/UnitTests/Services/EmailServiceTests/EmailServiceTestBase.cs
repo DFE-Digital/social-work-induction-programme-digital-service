@@ -41,7 +41,7 @@ public abstract class EmailServiceTestBase
     private protected Mock<IAccountService> MockAccountService { get; } = new();
     private protected FakeLinkGenerator LinkGenerator { get; } = new();
     private protected MockEmailTemplateOptions MockEmailTemplateOptions { get; } = new();
-    private Mock<ILogger<EmailService>> MockLogger { get; } = new();
+    private protected Mock<ILogger<EmailService>> MockLogger { get; } = new();
     private protected EmailService Sut { get; }
 
 

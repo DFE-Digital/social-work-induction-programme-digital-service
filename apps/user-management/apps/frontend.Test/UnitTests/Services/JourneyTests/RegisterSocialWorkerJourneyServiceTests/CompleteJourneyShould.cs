@@ -1,6 +1,7 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
@@ -21,6 +22,9 @@ public class CompleteJourneyShould : RegisterSocialWorkerJourneyServiceTestBase
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
         MockAccountService.Setup(x => x.UpdateAsync(account));
+        WelcomeEmailRequest? capturedEmailRequest = null;
+        MockEmailService.Setup(x => x.SendWelcomeEmailAsync(It.IsAny<WelcomeEmailRequest>()))
+            .Callback<WelcomeEmailRequest>(req => capturedEmailRequest = req);
 
         // Act
         await Sut.CompleteJourneyAsync(account.Id);
@@ -38,6 +42,12 @@ public class CompleteJourneyShould : RegisterSocialWorkerJourneyServiceTestBase
             x => x.UpdateAsync(MoqHelpers.ShouldBeEquivalentTo(account)),
             Times.Once
         );
+        MockEmailService.Verify(x =>
+            x.SendWelcomeEmailAsync(It.IsAny<WelcomeEmailRequest>()), Times.Once);
+        capturedEmailRequest.Should().BeEquivalentTo(new WelcomeEmailRequest
+        {
+            AccountId = account.Id
+        });
         VerifyAllNoOtherCall();
     }
 }

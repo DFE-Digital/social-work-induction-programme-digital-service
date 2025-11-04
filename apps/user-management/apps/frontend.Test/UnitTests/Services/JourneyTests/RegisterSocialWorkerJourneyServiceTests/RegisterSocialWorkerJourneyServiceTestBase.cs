@@ -20,7 +20,7 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
     private protected ITempDataDictionary TempData { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
     private protected Mock<EthnicGroupService> MockEthnicGroupService { get; }
-    private Mock<IEmailService> MockEmailService { get; }
+    private protected Mock<IEmailService> MockEmailService { get; }
 
     private protected RegisterSocialWorkerJourneyService Sut;
 
@@ -48,5 +48,6 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
     private protected void VerifyAllNoOtherCall()
     {
         MockAccountService.VerifyNoOtherCalls();
+        MockEmailService.VerifyNoOtherCalls();
     }
 }
