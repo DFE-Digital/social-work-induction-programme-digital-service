@@ -19,7 +19,7 @@ public class OAuth2Controller(
     EcfDbContext dbContext,
     IOpenIddictApplicationManager applicationManager,
     IOpenIddictScopeManager scopeManager,
-    SignInJourneyHelper helper
+    SignInJourneyHelper journeyHelper
 ) : Controller
 {
     [HttpGet("~/oauth2/authorize")]
@@ -102,15 +102,6 @@ public class OAuth2Controller(
             return;
         }
 
-        var journeyInstance = await helper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(HttpContext);
-
-        if (journeyInstance is null)
-        {
-            throw new InvalidOperationException("No active journey instance found.");
-        }
-
-        var journeyState = journeyInstance.State;
-
         var claimsBuilder = new ClaimsBuilder(identity, request);
 
         await claimsBuilder
@@ -126,11 +117,23 @@ public class OAuth2Controller(
                 () => oneLoginUser.Person.Trn
             )
             .AddIfScope(CustomScopes.Person, ClaimTypes.PersonId, () => oneLoginUser.PersonId.ToString())
-            .AddIfScope(CustomScopes.StaffFirstLogin, ClaimTypes.IsStaffFirstLogin, () => journeyState.IsStaffFirstLogin ? "true" : null)
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
 
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
             dbContext);
+
+        if (request.HasScope(CustomScopes.StaffFirstLogin))
+        {
+            var journeyInstance = await journeyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(HttpContext);
+
+            var staffFirstLoginValue = journeyInstance?.State.IsStaffFirstLogin == true ? "true" : null;
+
+            claimsBuilder.AddIfScope(
+                CustomScopes.StaffFirstLogin,
+                ClaimTypes.IsStaffFirstLogin,
+                () => staffFirstLoginValue
+            );
+        }
 
         // Claim only false for ECSWs that are pending registration
         if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)

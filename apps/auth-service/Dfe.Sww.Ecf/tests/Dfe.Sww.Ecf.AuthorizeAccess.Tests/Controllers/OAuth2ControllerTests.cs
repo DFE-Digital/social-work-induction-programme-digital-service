@@ -35,7 +35,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: oneLoginUser.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -62,7 +62,7 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -87,7 +87,58 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
+            );
+
+            // Act
+            var result = await controller.Authorize();
+
+            // Assert
+            var signIn = Assert.IsType<SignInResult>(result);
+            Assert.DoesNotContain(signIn.Principal.Claims, c => c.Type == ClaimTypes.IsEcswRegistered);
+        });
+    }
+
+    [Fact]
+    public Task Authorize_WhenScopePresentAndStateTrue_AddsIsStaffFirstLogin()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var person = await TestData.CreatePerson(b => b.WithStatus(PersonStatus.Active).WithRoles([RoleType.EarlyCareerSocialWorker]));
+
+            var user = await TestData.CreateOneLoginUser(person);
+
+            var controller = await CreateControllerWithContext(
+                dbContext,
+                subject: user.Subject,
+                scopes: $"{CustomScopes.StaffFirstLogin} {OpenIddictConstants.Scopes.Profile}",
+                isStaffFirstLogin: true
+            );
+
+            // Act
+            var result = await controller.Authorize();
+
+            // Assert
+            var signIn = Assert.IsType<SignInResult>(result);
+            Assert.DoesNotContain(signIn.Principal.Claims, c => c.Type == ClaimTypes.IsEcswRegistered);
+        });
+    }
+
+    [Fact]
+    public Task Authorize_WhenStateFalse_DoesNotAddIsStaffFirstLogin()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var person = await TestData.CreatePerson(b => b.WithStatus(PersonStatus.Active).WithRoles([RoleType.EarlyCareerSocialWorker]));
+
+            var user = await TestData.CreateOneLoginUser(person);
+
+            var controller = await CreateControllerWithContext(
+                dbContext,
+                subject: user.Subject,
+                scopes: $"{CustomScopes.StaffFirstLogin} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -102,54 +153,54 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
     private Task<OAuth2Controller> CreateControllerWithContext(
         EcfDbContext dbContext,
         string subject,
-        string scopes)
+        string scopes,
+        bool isStaffFirstLogin = false)
     {
         var appManager = new Mock<IOpenIddictApplicationManager>();
         var app = new object();
-        appManager.Setup(m => m.FindByClientIdAsync(It.IsAny<string>(), CancellationToken.None))
+        appManager
+            .Setup(m => m.FindByClientIdAsync(It.IsAny<string>(), CancellationToken.None))
             .ReturnsAsync(app);
 
         var scopeManager = new Mock<IOpenIddictScopeManager>();
-        scopeManager.Setup(m => m.ListResourcesAsync(It.IsAny<ImmutableArray<string>>(), It.IsAny<CancellationToken>()))
+        scopeManager
+            .Setup(m => m.ListResourcesAsync(It.IsAny<ImmutableArray<string>>(), It.IsAny<CancellationToken>()))
             .Returns((ImmutableArray<string> _, CancellationToken _) => AsyncEnumerable.Empty<string>());
 
-        var userInstanceStateProvider = new Mock<IUserInstanceStateProvider>();
+        var mockUserStateProvider = new Mock<IUserInstanceStateProvider>();
 
-        var testJourneyState = new SignInJourneyState(
+        var journeyState = new SignInJourneyState(
             redirectUri: "/test-redirect",
             serviceName: "Test Service",
             serviceUrl: "https://test.service",
-            linkingToken: "test-linking-token");
+            linkingToken: "test-linking-token")
+        {
+            IsStaffFirstLogin = isStaffFirstLogin
+        };
 
-        var testJourneyInstanceId = new JourneyInstanceId("test-instance", new Dictionary<string, StringValues>());
+        var journeyInstanceId = new JourneyInstanceId("test-instance", new Dictionary<string, StringValues>());
 
-        var testJourneyInstance = (JourneyInstance<SignInJourneyState>)JourneyInstance.Create(
-            userInstanceStateProvider.Object,
-            testJourneyInstanceId,
+        var journeyInstance = (JourneyInstance<SignInJourneyState>)JourneyInstance.Create(
+            mockUserStateProvider.Object,
+            journeyInstanceId,
             typeof(SignInJourneyState),
-            testJourneyState,
+            journeyState,
             properties: new Dictionary<object, object>());
 
-        userInstanceStateProvider
+        mockUserStateProvider
             .Setup(p => p.GetInstanceAsync(
-                It.IsAny<JourneyInstanceId>(),
-                It.IsAny<Type>()))
-            .ReturnsAsync(testJourneyInstance);
-
-        var journeyHelper = new SignInJourneyHelper(
-            dbContext,
-            Mock.Of<IOneLoginAccountLinkingService>(),
-            Mock.Of<AuthorizeAccessLinkGenerator>(),
-            Mock.Of<IOptions<AuthorizeAccessOptions>>(),
-            userInstanceStateProvider.Object,
-            Mock.Of<IClock>(),
-            Mock.Of<IOptions<DatabaseSeedOptions>>()
-        );
-
-        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object, journeyHelper);
+                journeyInstanceId,
+                typeof(SignInJourneyState)))
+            .ReturnsAsync(journeyInstance);
 
         var services = new ServiceCollection()
             .AddSingleton<IAuthenticationService>(new FakeAuthenticationService(subject))
+            .AddSingleton(mockUserStateProvider.Object)
+            .AddSingleton(Mock.Of<IOneLoginAccountLinkingService>())
+            .AddSingleton<AuthorizeAccessLinkGenerator, FakeLinkGenerator>()
+            .AddSingleton<IClock>(Clock)
+            .Configure<AuthorizeAccessOptions>(o => o.ShowDebugPages = false)
+            .Configure<DatabaseSeedOptions>(_ => { })
             .BuildServiceProvider();
 
         var httpContext = new DefaultHttpContext { RequestServices = services };
@@ -169,6 +220,10 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
                 Request = oidcRequest
             }
         });
+
+        var journeyHelper = ActivatorUtilities.CreateInstance<SignInJourneyHelper>(services, dbContext, Clock);
+
+        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object, journeyHelper);
 
         controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
         return Task.FromResult(controller);
