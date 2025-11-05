@@ -33,6 +33,8 @@ public class CreateCourseAsyncShould : MoodleServiceTestBase
         // Assert
         response.Should().Be(moodleResponse.Id);
         MockClient.Verify(x => x.Course.CreateAsync(MoqHelpers.ShouldBeEquivalentTo(moodleRequest)), Times.Once);
+
+        VerifyAllNoOtherCalls();
     }
 
     [Fact]
@@ -58,5 +60,6 @@ public class CreateCourseAsyncShould : MoodleServiceTestBase
         actualException.Message.Should().Be($"Failed to create Moodle course with name {organisation.OrganisationName}");
 
         MockClient.Verify(x => x.Course.CreateAsync(MoqHelpers.ShouldBeEquivalentTo(moodleRequest)), Times.Once);
+        VerifyAllNoOtherCalls();
     }
 }
