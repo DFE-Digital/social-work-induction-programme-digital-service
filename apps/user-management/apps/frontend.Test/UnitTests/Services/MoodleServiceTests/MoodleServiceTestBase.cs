@@ -11,7 +11,7 @@ public abstract class MoodleServiceTestBase
 
     private protected Mock<IMoodleServiceClient> MockClient { get; }
 
-    private protected MoodleService Sut;
+    private protected readonly MoodleService Sut;
 
     protected MoodleServiceTestBase()
     {
