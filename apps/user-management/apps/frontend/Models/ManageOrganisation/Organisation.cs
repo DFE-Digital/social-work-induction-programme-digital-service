@@ -13,7 +13,8 @@ public class Organisation
     [Display(Name = "Local authority code")]
     public int? LocalAuthorityCode { get; init; }
 
-    [Display(Name = "Type")] public OrganisationType? Type { get; init; }
+    [Display(Name = "Type")]
+    public OrganisationType? Type { get; init; }
 
     [Display(Name = "Local authority region")]
     public string? Region { get; init; }

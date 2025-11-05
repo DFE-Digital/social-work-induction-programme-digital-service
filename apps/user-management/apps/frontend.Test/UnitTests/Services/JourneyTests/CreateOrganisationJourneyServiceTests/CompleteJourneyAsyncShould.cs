@@ -1,7 +1,9 @@
-﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using Dfe.Sww.Ecf.Frontend.Configuration;
+using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -17,6 +19,8 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
         var primaryCoordinator = AccountBuilder.Build();
         var organisation = OrganisationBuilder.WithPrimaryCoordinatorId(primaryCoordinator.Id).Build();
         MockOrganisationService.Setup(x => x.CreateAsync(It.IsAny<Organisation>(), It.IsAny<Account>())).ReturnsAsync(organisation);
+        MockMoodleService.Setup(x => x.CreateCourseAsync(MoqHelpers.ShouldBeEquivalentTo(organisation))).ReturnsAsync(1);
+        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags { EnableMoodleIntegration = true });
 
         HttpContext.Session.Set(
             CreateOrganisationSessionKey,
@@ -40,6 +44,7 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
             && req.OrganisationName == organisation.OrganisationName
             && req.IsPrimaryCoordinator == true
         )));
+        MockMoodleService.Verify(x => x.CreateCourseAsync(It.Is<Organisation>(org => org.OrganisationName == organisation.OrganisationName)), Times.Once);
 
         VerifyAllNoOtherCall();
     }
