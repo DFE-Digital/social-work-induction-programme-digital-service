@@ -92,7 +92,7 @@ public class SignInJourneyHelper(
                 Subject = sub,
                 Email = email,
                 FirstOneLoginSignIn = clock.UtcNow,
-                LastOneLoginSignIn = clock.UtcNow
+                LastOneLoginSignIn = clock.UtcNow,
             };
             dbContext.OneLoginUsers.Add(oneLoginUser);
         }
@@ -118,7 +118,10 @@ public class SignInJourneyHelper(
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.LinkingToken;
         }
 
-        if (oneLoginUser.PersonId is null && email == databaseSeedOptionsAccessor.Value.OneLoginEmail)
+        if (
+            oneLoginUser.PersonId is null
+            && email == databaseSeedOptionsAccessor.Value.OneLoginEmail
+        )
         {
             oneLoginUser.PersonId = databaseSeedOptionsAccessor.Value.PersonId;
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Automatic;
@@ -127,8 +130,7 @@ public class SignInJourneyHelper(
         var isStaffFirstLogin = false;
         if (!previouslyLinked && oneLoginUser.PersonId is not null)
         {
-             isStaffFirstLogin  = await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
-
+            isStaffFirstLogin = await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
         }
 
         await dbContext.SaveChangesAsync();
@@ -376,13 +378,15 @@ public class SignInJourneyHelper(
 
     private async Task<bool> SetStaffToActiveOnFirstLinkAsync(Guid personId)
     {
-        var person = await dbContext.Persons
-            .Include(p => p.PersonRoles)
+        var person = await dbContext
+            .Persons.Include(p => p.PersonRoles)
             .ThenInclude(r => r.Role)
             .SingleAsync(p => p.PersonId == personId);
 
-        var isStaff = person.PersonRoles.All(pr => pr.Role.RoleName != RoleType.EarlyCareerSocialWorker);
-        if ( isStaff && person.Status == PersonStatus.PendingRegistration)
+        var isStaff = person.PersonRoles.All(pr =>
+            pr.Role.RoleName != RoleType.EarlyCareerSocialWorker
+        );
+        if (isStaff && person.Status == PersonStatus.PendingRegistration)
         {
             person.Status = PersonStatus.Active;
             return true;

@@ -25,7 +25,7 @@ public class HttpContextService(IHttpContextAccessor httpContextAccessor) : IHtt
     {
         var successful = bool.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue("is_ecsw_registered"),
             out var isEcswRegistered);
-        if (successful == false)
+        if (!successful)
         {
             // Key isn't present, they don't need to register
             return true;
@@ -38,7 +38,7 @@ public class HttpContextService(IHttpContextAccessor httpContextAccessor) : IHtt
     {
         var successful = bool.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue("is_staff_first_login"),
             out var isStaffFirstLogin);
-        if (successful == false)
+        if (!successful)
         {
             // Key isn't present, not first login for staff account
             return false;
