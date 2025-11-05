@@ -19,7 +19,7 @@ public class SignIn(
     public async Task<IActionResult> OnGetAsync()
     {
         var isEcswRegistered = authServiceClient.HttpContextService.GetIsEcswRegistered();
-        if (isEcswRegistered == false && User.IsInRole(RoleType.EarlyCareerSocialWorker.ToString()))
+        if (!isEcswRegistered && User.IsInRole(RoleType.EarlyCareerSocialWorker.ToString()))
         {
             return Redirect(linkGenerator.SocialWorkerRegistration());
         }

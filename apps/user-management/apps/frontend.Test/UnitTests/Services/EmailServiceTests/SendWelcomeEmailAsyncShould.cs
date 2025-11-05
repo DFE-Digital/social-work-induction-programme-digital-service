@@ -30,9 +30,11 @@ public class SendWelcomeEmailAsyncShould : EmailServiceTestBase
         MockAccountService.Verify(x => x.GetByIdAsync(accountId), Times.Once);
         MockAuthServiceClient.Verify(x => x.Accounts, Times.Never);
         MockNotificationServiceClient.Verify(x => x.Notification, Times.Never);
+
         var log = MockLogger.Invocations.FirstOrDefault(i => i.Method.Name == nameof(ILogger.Log));
         log.Should().NotBeNull();
         log!.Arguments[2].ToString().Should().Contain("Email is required to send welcome email");
+
         VerifyNoOtherCalls();
     }
 
@@ -56,9 +58,11 @@ public class SendWelcomeEmailAsyncShould : EmailServiceTestBase
         MockAccountService.Verify(x => x.GetByIdAsync(accountId), Times.Once);
         MockAuthServiceClient.Verify(x => x.Accounts, Times.Never);
         MockNotificationServiceClient.Verify(x => x.Notification, Times.Never);
+
         var log = MockLogger.Invocations.FirstOrDefault(i => i.Method.Name == nameof(ILogger.Log));
         log.Should().NotBeNull();
         log!.Arguments[2].ToString().Should().Contain("Full name is required to send welcome email");
+
         VerifyNoOtherCalls();
     }
 
@@ -75,6 +79,7 @@ public class SendWelcomeEmailAsyncShould : EmailServiceTestBase
         var account = AccountBuilder.WithTypes([AccountType.Coordinator]).Build();
 
         MockAccountService.Setup(x => x.GetByIdAsync(accountId)).ReturnsAsync(account);
+
         NotificationRequest? capturedNotificationRequest = null;
         MockNotificationServiceClient.MockNotificationsOperations.Setup(x => x.SendEmailAsync(It.IsAny<NotificationRequest>()))
             .Callback<NotificationRequest>(req => capturedNotificationRequest = req);
@@ -85,6 +90,7 @@ public class SendWelcomeEmailAsyncShould : EmailServiceTestBase
         // Assert
         MockAccountService.Verify(x => x.GetByIdAsync(accountId), Times.Once);
         MockNotificationServiceClient.MockNotificationsOperations.Verify(x => x.SendEmailAsync(It.IsAny<NotificationRequest>()), Times.Once);
+
         capturedNotificationRequest.Should().BeEquivalentTo(new NotificationRequest
         {
             EmailAddress = account.Email!,

@@ -22,6 +22,7 @@ public class CompleteJourneyShould : RegisterSocialWorkerJourneyServiceTestBase
 
         MockAccountService.Setup(x => x.GetByIdAsync(account.Id)).ReturnsAsync(account);
         MockAccountService.Setup(x => x.UpdateAsync(account));
+
         WelcomeEmailRequest? capturedEmailRequest = null;
         MockEmailService.Setup(x => x.SendWelcomeEmailAsync(It.IsAny<WelcomeEmailRequest>()))
             .Callback<WelcomeEmailRequest>(req => capturedEmailRequest = req);
