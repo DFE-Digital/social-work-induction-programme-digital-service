@@ -5,6 +5,7 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Configuration;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.EmailServiceTests;
@@ -21,7 +22,8 @@ public abstract class EmailServiceTestBase
             LinkGenerator,
             MockAccountService.Object,
             MockEmailTemplateOptions.Object,
-            MockHttpContextAccessor.Object);
+            MockHttpContextAccessor.Object,
+            MockLogger.Object);
     }
 
     private protected AccountBuilder AccountBuilder { get; } = new();
@@ -39,6 +41,7 @@ public abstract class EmailServiceTestBase
     private protected Mock<IAccountService> MockAccountService { get; } = new();
     private protected FakeLinkGenerator LinkGenerator { get; } = new();
     private protected MockEmailTemplateOptions MockEmailTemplateOptions { get; } = new();
+    private protected Mock<ILogger<EmailService>> MockLogger { get; } = new();
     private protected EmailService Sut { get; }
 
 

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,8 @@ public class PageModelTestBase<[MeansTestSubject] T>
     private protected HttpContext HttpContext { get; }
 
     private protected ITempDataDictionary TempData { get; }
+
+    private protected Mock<IEmailService> MockEmailService { get; } = new();
 
     protected PageModelTestBase()
     {
