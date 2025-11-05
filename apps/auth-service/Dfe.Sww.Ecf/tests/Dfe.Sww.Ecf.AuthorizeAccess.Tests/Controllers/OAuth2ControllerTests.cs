@@ -1,10 +1,17 @@
 using System.Collections.Immutable;
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Tests.Fakers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
+using Dfe.Sww.Ecf.Core.Infrastructure.Configuration;
+using Dfe.Sww.Ecf.Core.Services.Accounts;
+using Dfe.Sww.Ecf.UiCommon.FormFlow;
+using Dfe.Sww.Ecf.UiCommon.FormFlow.State;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
@@ -25,10 +32,10 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var oneLoginUser = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: oneLoginUser.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -52,10 +59,10 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var user = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -77,10 +84,10 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
 
             var user = await TestData.CreateOneLoginUser(person);
 
-            var controller = CreateControllerWithContext(
+            var controller = await CreateControllerWithContext(
                 dbContext,
                 subject: user.Subject,
-                scopes: $"{CustomScopes.EcswRegistered} profile"
+                scopes: $"{CustomScopes.EcswRegistered} {OpenIddictConstants.Scopes.Profile}"
             );
 
             // Act
@@ -92,27 +99,125 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
         });
     }
 
-    private static OAuth2Controller CreateControllerWithContext(
+    [Fact]
+    public Task Authorize_WhenScopePresentAndStateTrue_AddsIsStaffFirstLoginTrue()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var person = await TestData.CreatePerson(b => b.WithStatus(PersonStatus.Active).WithRoles([RoleType.EarlyCareerSocialWorker]));
+
+            var user = await TestData.CreateOneLoginUser(person);
+
+            var controller = await CreateControllerWithContext(
+                dbContext,
+                subject: user.Subject,
+                scopes: $"{CustomScopes.StaffFirstLogin} {OpenIddictConstants.Scopes.Profile}",
+                isStaffFirstLogin: true
+            );
+
+            // Act
+            var result = await controller.Authorize();
+
+            // Assert
+            var signIn = Assert.IsType<SignInResult>(result);
+            var claim = signIn.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsStaffFirstLogin);
+            Assert.NotNull(claim);
+            Assert.Equal("true", claim.Value);
+        });
+    }
+
+    [Fact]
+    public Task Authorize_WhenScopePresentAndStateFalse_AddsIsStaffFirstLoginNull()
+    {
+        return WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var person = await TestData.CreatePerson(b => b.WithStatus(PersonStatus.Active).WithRoles([RoleType.EarlyCareerSocialWorker]));
+
+            var user = await TestData.CreateOneLoginUser(person);
+
+            var controller = await CreateControllerWithContext(
+                dbContext,
+                subject: user.Subject,
+                scopes: $"{CustomScopes.StaffFirstLogin} {OpenIddictConstants.Scopes.Profile}"
+            );
+
+            // Act
+            var result = await controller.Authorize();
+
+            // Assert
+            var signIn = Assert.IsType<SignInResult>(result);
+            var claim = signIn.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsStaffFirstLogin);
+            Assert.Null(claim);
+        });
+    }
+
+    private Task<OAuth2Controller> CreateControllerWithContext(
         EcfDbContext dbContext,
         string subject,
-        string scopes)
+        string scopes,
+        bool isStaffFirstLogin = false)
     {
         var appManager = new Mock<IOpenIddictApplicationManager>();
         var app = new object();
-        appManager.Setup(m => m.FindByClientIdAsync(It.IsAny<string>(), CancellationToken.None))
+        appManager
+            .Setup(m => m.FindByClientIdAsync(It.IsAny<string>(), CancellationToken.None))
             .ReturnsAsync(app);
 
         var scopeManager = new Mock<IOpenIddictScopeManager>();
-        scopeManager.Setup(m => m.ListResourcesAsync(It.IsAny<ImmutableArray<string>>(), It.IsAny<CancellationToken>()))
+        scopeManager
+            .Setup(m => m.ListResourcesAsync(It.IsAny<ImmutableArray<string>>(), It.IsAny<CancellationToken>()))
             .Returns((ImmutableArray<string> _, CancellationToken _) => AsyncEnumerable.Empty<string>());
 
-        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object);
+        var mockUserStateProvider = new Mock<IUserInstanceStateProvider>();
+
+        var journeyState = new SignInJourneyState(
+            redirectUri: "/test-redirect",
+            serviceName: "Test Service",
+            serviceUrl: "https://test.service",
+            linkingToken: "test-linking-token")
+        {
+            IsStaffFirstLogin = isStaffFirstLogin
+        };
+
+        var uniqueKey = Guid.NewGuid().ToString();
+        var journeyInstanceId = new JourneyInstanceId(
+            SignInJourneyState.JourneyName,
+            new Dictionary<string, StringValues>
+            {
+                { Constants.UniqueKeyQueryParameterName, new StringValues(uniqueKey) }
+            });
+
+        var journeyInstance = (JourneyInstance<SignInJourneyState>)JourneyInstance.Create(
+            mockUserStateProvider.Object,
+            journeyInstanceId,
+            typeof(SignInJourneyState),
+            journeyState,
+            properties: new Dictionary<object, object>());
+
+        mockUserStateProvider
+            .Setup(p => p.GetInstanceAsync(It.IsAny<JourneyInstanceId>(), typeof(SignInJourneyState)))
+            .ReturnsAsync(journeyInstance);
 
         var services = new ServiceCollection()
             .AddSingleton<IAuthenticationService>(new FakeAuthenticationService(subject))
+            .AddSingleton(mockUserStateProvider.Object)
+            .AddSingleton(Mock.Of<IOneLoginAccountLinkingService>())
+            .AddSingleton<AuthorizeAccessLinkGenerator, FakeLinkGenerator>()
+            .AddSingleton<IClock>(Clock)
+            .Configure<AuthorizeAccessOptions>(o => o.ShowDebugPages = false)
+            .Configure<DatabaseSeedOptions>(_ => { })
             .BuildServiceProvider();
 
-        var httpContext = new DefaultHttpContext { RequestServices = services };
+        var httpContext = new DefaultHttpContext
+        {
+            RequestServices = services,
+            Request =
+            {
+                QueryString = QueryString.Create(Constants.UniqueKeyQueryParameterName, uniqueKey)
+            }
+        };
 
         var oidcRequest = new OpenIddictRequest
         {
@@ -130,7 +235,11 @@ public class OAuth2ControllerTests(HostFixture hostFixture) : TestBase(hostFixtu
             }
         });
 
+        var journeyHelper = ActivatorUtilities.CreateInstance<SignInJourneyHelper>(services, dbContext, Clock);
+
+        var controller = new OAuth2Controller(dbContext, appManager.Object, scopeManager.Object, journeyHelper);
+
         controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
-        return controller;
+        return Task.FromResult(controller);
     }
 }
