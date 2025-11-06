@@ -34,6 +34,8 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
 
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
 
+    public DbSet<LocalAuthority> LocalAuthorities => Set<LocalAuthority>();
+
     public static EcfDbContext Create(string connectionString, int? commandTimeout = null)
     {
         return new EcfDbContext(CreateOptions(connectionString, commandTimeout));
@@ -95,7 +97,7 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
                         nameof(OpenIddictEntityFrameworkCoreToken) => "oidc_tokens",
                         _ => throw new NotSupportedException(
                             $"Cannot configure table name for {clrType.Name}."
-                        )
+                        ),
                     }
                 );
             }
