@@ -72,10 +72,11 @@ resource "azurerm_subnet_network_security_group_association" "funcapp_nsg_assoc"
 }
 
 resource "azurerm_subnet" "private_endpoint" {
-  name                 = "${var.resource_name_prefix}-sn-funcapp-endpoint"
-  resource_group_name  = azurerm_resource_group.rg_primary.name
-  virtual_network_name = azurerm_virtual_network.vnet_stack.name
-  address_prefixes     = ["10.0.7.0/24"]
+  name                            = "${var.resource_name_prefix}-sn-funcapp-endpoint"
+  resource_group_name             = azurerm_resource_group.rg_primary.name
+  virtual_network_name            = azurerm_virtual_network.vnet_stack.name
+  address_prefixes                = ["10.0.7.0/24"]
+  default_outbound_access_enabled = false
 
   # This setting is required for private endpoint subnets.
   private_endpoint_network_policies = "Disabled"
