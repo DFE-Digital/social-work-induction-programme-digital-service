@@ -15,11 +15,11 @@ public class LocalAuthority
 
     [Required]
     [MaxLength(100)]
-    public string RegionName { get; init; } = string.Empty;
+    public required string RegionName { get; init; }
 
     [Required]
     [MaxLength(100)]
-    public string LaName { get; init; } = string.Empty;
+    public required string LaName { get; init; }
 
     [MaxLength(15)]
     public string? NewLaCode { get; init; }
