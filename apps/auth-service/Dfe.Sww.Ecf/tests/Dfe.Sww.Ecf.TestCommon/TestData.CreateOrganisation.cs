@@ -5,10 +5,11 @@ namespace Dfe.Sww.Ecf.TestCommon;
 
 public partial class TestData
 {
-    public async Task<Organisation> CreateOrganisation(
-        string? organisationName = null)
+    public async Task<Organisation> CreateOrganisation(string? organisationName = null)
     {
-        var organisationFaker = new OrganisationFaker().WithCreatedOn(Clock.UtcNow).WithUpdatedOn(Clock.UtcNow);
+        var organisationFaker = new OrganisationFaker()
+            .WithCreatedOn(Clock.UtcNow)
+            .WithUpdatedOn(Clock.UtcNow);
         var organisation = organisationName is null
             ? organisationFaker.Generate()
             : organisationFaker.WithName(organisationName).Generate();
@@ -34,5 +35,30 @@ public partial class TestData
         }
 
         return results;
+    }
+
+    public async Task<LocalAuthority> CreateLocalAuthority()
+    {
+        var organisationFaker = new OrganisationFaker()
+            .WithCreatedOn(Clock.UtcNow)
+            .WithUpdatedOn(Clock.UtcNow);
+        var organisation = organisationFaker.Generate();
+
+        var localAuthority = await WithDbContext(async dbContext =>
+        {
+            var la = new LocalAuthority
+            {
+                OldLaCode = organisation.LocalAuthorityCode ?? 123,
+                LaName = organisation.OrganisationName,
+                RegionName = organisation.Region ?? "Test Region",
+            };
+
+            dbContext.LocalAuthorities.Add(la);
+            await dbContext.SaveChangesAsync();
+
+            return la;
+        });
+
+        return localAuthority;
     }
 }
