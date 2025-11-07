@@ -16,7 +16,10 @@ public sealed class OrganisationFaker : Faker<Organisation>
         RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber("+44##########"));
         RuleFor(a => a.Region, f => f.Address.County());
         RuleFor(a => a.LocalAuthorityCode, f => f.Random.Number(1, 1000));
-        RuleFor(a => a.ExternalOrganisationId, _ => Interlocked.Increment(ref _lastExternalOrganisationId));
+        RuleFor(
+            a => a.ExternalOrganisationId,
+            _ => Interlocked.Increment(ref _lastExternalOrganisationId)
+        );
         RuleFor(a => a.CreatedOn, f => f.Date.Past().ToUniversalTime());
         RuleFor(a => a.UpdatedOn, f => f.Date.Recent().ToUniversalTime());
         RuleFor(a => a.Type, f => f.PickRandom<OrganisationType>());
