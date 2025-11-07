@@ -9,6 +9,7 @@ resource "azurerm_subnet" "sn_moodle_app" {
   address_prefixes                  = ["10.0.3.0/24"]
   private_endpoint_network_policies = "Disabled"
   service_endpoints                 = ["Microsoft.Sql"]
+  default_outbound_access_enabled   = false
 
   delegation {
     name = "delegation"
@@ -22,6 +23,59 @@ resource "azurerm_subnet" "sn_moodle_app" {
   lifecycle {
     ignore_changes = [delegation]
   }
+}
+
+resource "azurerm_network_security_group" "sn_moodle_nsg" {
+  name                = "${var.resource_name_prefix}-nsg-moodle"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
+
+  security_rule {
+    name                       = "Allow_FrontDoor_InBound"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "AzureFrontDoor.Backend"
+    destination_address_prefix = "VirtualNetwork"
+  }
+
+  # To allow access to services like GOV.UK One Login and Notify
+  security_rule {
+    name                       = "Allow_Outbound_Integration"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "moodle_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.sn_moodle_app.id
+  network_security_group_id = azurerm_network_security_group.sn_moodle_nsg.id
 }
 
 resource "azurerm_service_plan" "asp_moodle_app" {
@@ -122,6 +176,7 @@ resource "azurerm_subnet" "sn_maintenance_apps" {
   address_prefixes                  = ["10.0.4.0/24"]
   private_endpoint_network_policies = "Disabled"
   service_endpoints                 = ["Microsoft.Sql"]
+  default_outbound_access_enabled   = false
 
   delegation {
     name = "delegation"
@@ -135,6 +190,34 @@ resource "azurerm_subnet" "sn_maintenance_apps" {
   lifecycle {
     ignore_changes = [delegation]
   }
+}
+
+resource "azurerm_network_security_group" "sn_maintenance_apps_nsg" {
+  name                = "${var.resource_name_prefix}-nsg-maintenance-apps"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "maintenance_apps_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.sn_maintenance_apps.id
+  network_security_group_id = azurerm_network_security_group.sn_maintenance_apps_nsg.id
 }
 
 resource "azurerm_service_plan" "asp_maintenance_apps" {
@@ -171,6 +254,7 @@ resource "azurerm_subnet" "sn_service_apps" {
   address_prefixes                  = ["10.0.5.0/24"]
   private_endpoint_network_policies = "Disabled"
   service_endpoints                 = ["Microsoft.Sql", "Microsoft.Web"]
+  default_outbound_access_enabled   = false
 
   delegation {
     name = "delegation"
@@ -184,6 +268,59 @@ resource "azurerm_subnet" "sn_service_apps" {
   lifecycle {
     ignore_changes = [delegation]
   }
+}
+
+resource "azurerm_network_security_group" "sn_service_apps_nsg" {
+  name                = "${var.resource_name_prefix}-nsg-service-apps"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_primary.name
+  tags                = var.tags
+
+  security_rule {
+    name                       = "Allow_FrontDoor_InBound"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "AzureFrontDoor.Backend"
+    destination_address_prefix = "VirtualNetwork"
+  }
+
+  # To allow access to services like GOV.UK One Login and Notify
+  security_rule {
+    name                       = "Allow_Outbound_Integration"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "service_apps_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.sn_service_apps.id
+  network_security_group_id = azurerm_network_security_group.sn_service_apps_nsg.id
 }
 
 resource "azurerm_service_plan" "asp_service_apps" {
@@ -283,6 +420,7 @@ resource "azurerm_subnet" "sn_function_app" {
   address_prefixes                  = ["10.0.6.0/24"]
   private_endpoint_network_policies = "Disabled"
   service_endpoints                 = ["Microsoft.Sql"]
+  default_outbound_access_enabled   = false
 
   delegation {
     name = "delegation"
