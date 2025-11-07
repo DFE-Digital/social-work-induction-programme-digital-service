@@ -26,6 +26,19 @@ resource "azurerm_network_security_group" "funcapp_nsg" {
     destination_address_prefix = azurerm_subnet.sn_function_app.address_prefixes[0]
   }
 
+  # To allow access to services like GOV.UK One Login and Notify
+  security_rule {
+    name                       = "Allow_Outbound_Integration"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
   security_rule {
     name                       = "Deny_Internet_Outbound"
     priority                   = 1000
