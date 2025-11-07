@@ -1,5 +1,6 @@
 ﻿using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
@@ -17,9 +18,15 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
     {
         // Arrange
         var primaryCoordinator = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(primaryCoordinator);
         var organisation = OrganisationBuilder.WithPrimaryCoordinatorId(primaryCoordinator.Id).Build();
+        var externalUserId = 100;
+        var externalOrgId = 200;
+
         MockOrganisationService.Setup(x => x.CreateAsync(It.IsAny<Organisation>(), It.IsAny<Account>())).ReturnsAsync(organisation);
-        MockMoodleService.Setup(x => x.CreateCourseAsync(MoqHelpers.ShouldBeEquivalentTo(organisation))).ReturnsAsync(1);
+        MockMoodleService.Setup(x => x.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(accountDetails))).ReturnsAsync(externalUserId);
+        MockMoodleService.Setup(x => x.CreateCourseAsync(MoqHelpers.ShouldBeEquivalentTo(organisation))).ReturnsAsync(externalOrgId);
+        MockMoodleService.Setup(x => x.EnrolUserAsync(100, 200, MoodleRoles.Manager)).ReturnsAsync(true);
         MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags { EnableMoodleIntegration = true });
 
         HttpContext.Session.Set(
@@ -44,7 +51,9 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
             && req.OrganisationName == organisation.OrganisationName
             && req.IsPrimaryCoordinator == true
         )));
+        MockMoodleService.Verify(x => x.CreateUserAsync(It.Is<AccountDetails>(acc => acc.Email == accountDetails.Email)), Times.Once);
         MockMoodleService.Verify(x => x.CreateCourseAsync(It.Is<Organisation>(org => org.OrganisationName == organisation.OrganisationName)), Times.Once);
+        MockMoodleService.Verify(x => x.EnrolUserAsync(externalUserId, externalOrgId, MoodleRoles.Manager), Times.Once);
 
         VerifyAllNoOtherCall();
     }

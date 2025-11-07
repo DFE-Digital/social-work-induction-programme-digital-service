@@ -4,6 +4,6 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
 
 public interface IUserOperations
 {
-    Task<MoodleUserResponse> CreateUserAsync(MoodleUserRequest request);
-    Task<MoodleUserResponse> UpdateUserAsync(MoodleUserRequest request);
+    Task<MoodleUserResponse> CreateAsync(MoodleUserRequest request);
+    Task<MoodleUserResponse> UpdateAsync(MoodleUserRequest request);
 }
