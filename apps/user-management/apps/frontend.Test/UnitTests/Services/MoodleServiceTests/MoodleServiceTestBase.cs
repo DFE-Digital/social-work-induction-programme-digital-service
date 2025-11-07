@@ -8,6 +8,7 @@ namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.MoodleServiceTests;
 public abstract class MoodleServiceTestBase
 {
     private protected OrganisationBuilder OrganisationBuilder { get; }
+    private protected AccountBuilder AccountBuilder { get; }
 
     private protected Mock<IMoodleServiceClient> MockClient { get; }
 
@@ -15,10 +16,12 @@ public abstract class MoodleServiceTestBase
 
     protected MoodleServiceTestBase()
     {
-        OrganisationBuilder = new();
-        MockClient = new();
+        OrganisationBuilder = new OrganisationBuilder();
+        AccountBuilder = new AccountBuilder();
 
-        Sut = new(MockClient.Object);
+        MockClient = new Mock<IMoodleServiceClient>();
+
+        Sut = new MoodleService(MockClient.Object);
     }
 
     private protected void VerifyAllNoOtherCalls()
