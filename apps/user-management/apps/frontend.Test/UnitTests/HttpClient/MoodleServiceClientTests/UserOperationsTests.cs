@@ -36,7 +36,7 @@ public class UserOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.User.CreateAsync(createUserRequest);
+        var response = await sut.User.CreateUserAsync(createUserRequest);
 
         // Assert
         response.Should().NotBeNull();
@@ -77,7 +77,7 @@ public class UserOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.User.CreateAsync(createUserRequest);
+        var response = await sut.User.CreateUserAsync(createUserRequest);
 
         // Assert
         response.Should().NotBeNull();
@@ -101,7 +101,7 @@ public class UserOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.User.CreateAsync(createUserRequest);
+        var response = await sut.User.CreateUserAsync(createUserRequest);
 
         // Assert
         response.Should().BeEquivalentTo(createUserResponse);
@@ -138,7 +138,7 @@ public class UserOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.User.CreateAsync(createUserRequest);
+        var response = await sut.User.CreateUserAsync(createUserRequest);
 
         // Assert
         response.Should().BeEquivalentTo(createUserResponse);
@@ -213,7 +213,7 @@ public class UserOperationsTests
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.User.UpdateAsync(updateUserRequest);
+        var response = await sut.User.UpdateUserAsync(updateUserRequest);
 
         // Assert
         response.Should().NotBeNull();
