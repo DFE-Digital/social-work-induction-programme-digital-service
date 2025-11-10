@@ -4,6 +4,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Microsoft.Extensions.Options;
@@ -87,8 +88,7 @@ public class CreateOrganisationJourneyService(
         var organisation = createAccountJourneyModel.Organisation;
         var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
 
-        if (organisation is null || primaryCoordinator is null)
-            throw new ArgumentNullException();
+        if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
         await CreateMoodleOrganisationAsync(organisation, primaryCoordinator);
 

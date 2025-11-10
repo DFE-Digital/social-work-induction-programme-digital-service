@@ -111,6 +111,12 @@ public class AccountBuilder
         return this;
     }
 
+    public AccountBuilder WithMiddleNames(string? middleNames)
+    {
+        _faker.RuleFor(x => x.MiddleNames, middleNames);
+        return this;
+    }
+
     public AccountBuilder WithEmail(string? email)
     {
         _faker.RuleFor(x => x.Email, email);

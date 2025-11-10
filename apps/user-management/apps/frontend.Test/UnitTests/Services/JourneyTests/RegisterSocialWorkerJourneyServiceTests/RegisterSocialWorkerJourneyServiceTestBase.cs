@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -19,6 +20,7 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
     private protected ITempDataDictionary TempData { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
     private protected Mock<EthnicGroupService> MockEthnicGroupService { get; }
+    private protected Mock<IEmailService> MockEmailService { get; }
 
     private protected RegisterSocialWorkerJourneyService Sut;
 
@@ -38,12 +40,14 @@ public abstract class RegisterSocialWorkerJourneyServiceTestBase
 
         MockAccountService = new();
         MockEthnicGroupService = new();
+        MockEmailService = new();
 
-        Sut = new(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator());
+        Sut = new(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator(), MockEmailService.Object);
     }
 
     private protected void VerifyAllNoOtherCall()
     {
         MockAccountService.VerifyNoOtherCalls();
+        MockEmailService.VerifyNoOtherCalls();
     }
 }

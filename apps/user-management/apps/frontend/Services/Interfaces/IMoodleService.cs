@@ -1,4 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 

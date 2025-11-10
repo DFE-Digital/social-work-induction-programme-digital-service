@@ -114,8 +114,8 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         var organisation = OrganisationBuilder.Build();
 
         MockOrganisationService
-            .Setup(x => x.GetByLocalAuthorityCode(localAuthorityCode))
-            .Returns(organisation);
+            .Setup(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode))
+            .ReturnsAsync(organisation);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -126,7 +126,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/confirm-organisation-details");
 
-        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
@@ -143,8 +143,8 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         var organisation = OrganisationBuilder.Build();
 
         MockOrganisationService
-            .Setup(x => x.GetByLocalAuthorityCode(localAuthorityCode))
-            .Returns(organisation);
+            .Setup(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode))
+            .ReturnsAsync(organisation);
 
         // Act
         var result = await Sut.OnPostChangeAsync();
@@ -158,7 +158,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         Sut.FromChangeLink.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
-        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
