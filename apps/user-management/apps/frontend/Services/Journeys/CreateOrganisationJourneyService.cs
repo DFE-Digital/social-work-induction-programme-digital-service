@@ -1,3 +1,4 @@
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
@@ -5,13 +6,16 @@ using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IEmailService emailService
+    IEmailService emailService,
+    IMoodleService moodleService,
+    IOptions<FeatureFlags> featureFlags
 ) : ICreateOrganisationJourneyService
 {
     private const string CreateOrganisationSessionKey = "_createOrganisation";
@@ -85,9 +89,12 @@ public class CreateOrganisationJourneyService(
 
         if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
-        // TODO implement call to Moodle for creating a person and organisation here, then set the ids
-        organisation.ExternalOrganisationId = 123;
-        primaryCoordinator.ExternalUserId = 123;
+        // TODO implement call to Moodle for creating a person here, then set the id
+        if (featureFlags.Value.EnableMoodleIntegration)
+        {
+            organisation.ExternalOrganisationId = await moodleService.CreateCourseAsync(organisation);
+            primaryCoordinator.ExternalUserId = 123;
+        }
 
         var account = AccountDetails.ToAccount(primaryCoordinator);
         organisation = await organisationService.CreateAsync(organisation, account);

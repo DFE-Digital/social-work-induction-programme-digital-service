@@ -3,4 +3,5 @@
 public interface IMoodleServiceClient
 {
     public IUserOperations User { get; init; }
+    public ICourseOperations Course { get; init; }
 }

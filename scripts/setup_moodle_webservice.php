@@ -44,6 +44,8 @@ $capabilities = !empty($options['capabilities']) ? explode(',', $options['capabi
     'moodle/user:view',
     'moodle/user:create',
     'moodle/user:update',
+    'moodle/course:create',
+    'moodle/course:visibility',
     'moodle/course:viewhiddencourses',
     'moodle/course:update',
     'moodle/course:view'
@@ -194,7 +196,8 @@ if (!$token) {
 // List of Moodle web service functions you want to allow
 $functions = [
     'core_user_create_users',
-    'core_user_update_users'
+    'core_user_update_users',
+    'core_course_create_courses'
 ];
 
 foreach ($functions as $functionname) {
