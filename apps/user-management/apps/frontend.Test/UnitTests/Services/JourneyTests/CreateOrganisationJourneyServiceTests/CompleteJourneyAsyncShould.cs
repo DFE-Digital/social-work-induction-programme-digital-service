@@ -26,7 +26,7 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
         MockOrganisationService.Setup(x => x.CreateAsync(It.IsAny<Organisation>(), It.IsAny<Account>())).ReturnsAsync(organisation);
         MockMoodleService.Setup(x => x.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(accountDetails))).ReturnsAsync(externalUserId);
         MockMoodleService.Setup(x => x.CreateCourseAsync(MoqHelpers.ShouldBeEquivalentTo(organisation))).ReturnsAsync(externalOrgId);
-        MockMoodleService.Setup(x => x.EnrolUserAsync(100, 200, MoodleRoles.Manager)).ReturnsAsync(true);
+        MockMoodleService.Setup(x => x.EnrolUserAsync(externalUserId, externalOrgId, MoodleRoles.Manager)).ReturnsAsync(true);
         MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags { EnableMoodleIntegration = true });
 
         HttpContext.Session.Set(
