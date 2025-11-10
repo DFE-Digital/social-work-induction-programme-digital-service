@@ -1,9 +1,7 @@
-﻿using Dfe.Sww.Ecf.Frontend.Configuration;
-using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
 using Xunit;

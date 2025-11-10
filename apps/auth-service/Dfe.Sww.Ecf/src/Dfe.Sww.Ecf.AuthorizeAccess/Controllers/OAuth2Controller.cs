@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.FormFlow;
 using Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Security;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
@@ -17,7 +18,8 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers;
 public class OAuth2Controller(
     EcfDbContext dbContext,
     IOpenIddictApplicationManager applicationManager,
-    IOpenIddictScopeManager scopeManager
+    IOpenIddictScopeManager scopeManager,
+    SignInJourneyHelper journeyHelper
 ) : Controller
 {
     [HttpGet("~/oauth2/authorize")]
@@ -119,6 +121,19 @@ public class OAuth2Controller(
 
         await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
             dbContext);
+
+        if (request.HasScope(CustomScopes.StaffFirstLogin))
+        {
+            var journeyInstance = await journeyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(HttpContext);
+
+            var staffFirstLoginValue = journeyInstance?.State.IsStaffFirstLogin == true ? "true" : null;
+
+            claimsBuilder.AddIfScope(
+                CustomScopes.StaffFirstLogin,
+                ClaimTypes.IsStaffFirstLogin,
+                () => staffFirstLoginValue
+            );
+        }
 
         // Claim only false for ECSWs that are pending registration
         if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)
@@ -371,6 +386,13 @@ public class OAuth2Controller(
                 yield break;
             case ClaimTypes.PersonId:
                 if (claim.Subject!.HasScope(CustomScopes.Person))
+                {
+                    yield return Destinations.AccessToken;
+                    yield return Destinations.IdentityToken;
+                }
+                yield break;
+            case ClaimTypes.IsStaffFirstLogin:
+                if (claim.Subject!.HasScope(CustomScopes.StaffFirstLogin))
                 {
                     yield return Destinations.AccessToken;
                     yield return Destinations.IdentityToken;

@@ -29,9 +29,9 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
 
     public async Task<OrganisationDto?> GetByIdAsync(Guid id)
     {
-        var organisation = await dbContext
-            .Organisations
-            .FirstOrDefaultAsync(p => p.OrganisationId == id);
+        var organisation = await dbContext.Organisations.FirstOrDefaultAsync(p =>
+            p.OrganisationId == id
+        );
 
         return organisation?.ToDto();
     }
@@ -46,7 +46,7 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
         var personOrganisation = new PersonOrganisation
         {
             Person = organisation.PrimaryCoordinator,
-            Organisation = organisation
+            Organisation = organisation,
         };
 
         organisation.PersonOrganisations = new List<PersonOrganisation> { personOrganisation };
@@ -55,5 +55,14 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
         await dbContext.SaveChangesAsync();
 
         return organisation.ToDto();
+    }
+
+    public async Task<OrganisationDto?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
+    {
+        var organisation = await dbContext.LocalAuthorities.FirstOrDefaultAsync(p =>
+            p.OldLaCode == localAuthorityCode
+        );
+
+        return organisation?.ToDto();
     }
 }

@@ -49,6 +49,8 @@ public class SignInJourneyState(
     [JsonInclude]
     public string? NationalInsuranceNumber { get; private set; }
 
+    public bool IsStaffFirstLogin { get; set; }
+
     public void Reset()
     {
         AuthenticationTicket = null;

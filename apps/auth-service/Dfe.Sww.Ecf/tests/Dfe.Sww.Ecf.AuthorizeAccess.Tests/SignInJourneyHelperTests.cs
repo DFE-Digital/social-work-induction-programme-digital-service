@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Dfe.Sww.Ecf.AuthorizeAccess.Tests.Fakers;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres;
 using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 using Dfe.Sww.Ecf.Core.Services.Accounts;
@@ -497,6 +498,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
             );
             Assert.Equal(PersonStatus.Active, updatedPerson.Status);
+            Assert.True(state.IsStaffFirstLogin);
         });
     }
 
@@ -535,6 +537,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
             );
             Assert.Equal(PersonStatus.PendingRegistration, updatedPerson.Status);
+            Assert.False(state.IsStaffFirstLogin);
         });
     }
 
@@ -581,6 +584,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
             );
             Assert.Equal(PersonStatus.Active, updatedPerson.Status);
+            Assert.True(state.IsStaffFirstLogin);
         });
     }
 
@@ -627,6 +631,7 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
                 ctx.Persons.SingleAsync(p => p.PersonId == person.PersonId)
             );
             Assert.Equal(PersonStatus.PendingRegistration, updatedPerson.Status);
+            Assert.False(state.IsStaffFirstLogin);
         });
     }
 
@@ -642,17 +647,5 @@ public class SignInJourneyHelperTests(HostFixture hostFixture) : TestBase(hostFi
             options,
             Clock
         );
-    }
-
-    private class FakeLinkGenerator : AuthorizeAccessLinkGenerator
-    {
-        protected override string GetRequiredPathByPage(
-            string page,
-            string? handler = null,
-            object? routeValues = null
-        )
-        {
-            return page;
-        }
     }
 }
