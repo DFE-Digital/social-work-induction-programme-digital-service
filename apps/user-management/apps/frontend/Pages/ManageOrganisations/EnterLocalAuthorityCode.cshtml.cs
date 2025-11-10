@@ -58,7 +58,13 @@ public class EnterLocalAuthorityCode(
 
         createOrganisationJourneyService.SetLocalAuthorityCode(LocalAuthorityCode);
 
-        var organisation = organisationService.GetByLocalAuthorityCode(LocalAuthorityCode);
+        // Validated above but compiler complains if we don't check
+        if (LocalAuthorityCode is null)
+        {
+            return BadRequest();
+        }
+
+        var organisation = await organisationService.GetByLocalAuthorityCodeAsync(LocalAuthorityCode.Value);
         // TODO show error if organisation not found once validation and error message designs are available
         createOrganisationJourneyService.SetOrganisation(organisation);
 

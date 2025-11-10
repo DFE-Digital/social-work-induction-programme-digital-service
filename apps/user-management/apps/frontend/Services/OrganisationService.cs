@@ -26,17 +26,20 @@ public class OrganisationService(
         return organisations;
     }
 
-    // TODO Get from database when data is available
-    public Organisation GetByLocalAuthorityCode(int? localAuthorityCode)
+    public async Task<Organisation> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
-        return new Organisation
+        var localAuthority = await authServiceClient.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode);
+
+        // Add type which is always Local Authority for this method
+        var organisation = new OrganisationDto
         {
-            OrganisationId = new Guid(),
-            LocalAuthorityCode = localAuthorityCode,
-            OrganisationName = "Test Organisation",
-            Type = OrganisationType.LocalAuthority,
-            Region = "Test Region"
+            LocalAuthorityCode = localAuthority.LocalAuthorityCode,
+            OrganisationName = localAuthority.OrganisationName,
+            Region = localAuthority.Region,
+            Type = OrganisationType.LocalAuthority
         };
+
+        return mapper.MapToBo(organisation);
     }
 
     public async Task<Organisation> CreateAsync(Organisation organisation, Account primaryCoordinator)
