@@ -28,7 +28,7 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
     private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
     private protected Mock<IEmailService> MockEmailService { get; } = new();
     private protected Mock<IAuthServiceClient> MockAuthServiceClient { get; } = new();
-    private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; } = new();
+    private protected Mock<IMoodleService> MockMoodleService { get; } = new();
 
 
     private protected Mock<AccountDetailsValidator> MockAccountDetailsValidator { get; } = new();
@@ -44,6 +44,6 @@ public abstract class ManageAccountsPageTestBase<[MeansTestSubject] T> : PageMod
         MockOrganisationService.VerifyNoOtherCalls();
         MockEmailService.VerifyNoOtherCalls();
         MockAuthServiceClient.VerifyNoOtherCalls();
-        MockMoodleServiceClient.VerifyNoOtherCalls();
+        MockMoodleService.VerifyNoOtherCalls();
     }
 }

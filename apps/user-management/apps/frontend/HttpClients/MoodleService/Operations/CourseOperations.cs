@@ -28,10 +28,7 @@ public class CourseOperations(MoodleServiceClient moodleServiceClient) : ICourse
 
         var httpResponse = await _moodleServiceClient.HttpClient.PostAsync(string.Empty, content);
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            return new CreateCourseResponse { Successful = false };
-        }
+        if (!httpResponse.IsSuccessStatusCode) return new CreateCourseResponse { Successful = false };
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
 
@@ -50,7 +47,7 @@ public class CourseOperations(MoodleServiceClient moodleServiceClient) : ICourse
             { "wstoken", _moodleServiceClient.Options.ApiToken },
             { "wsfunction", FunctionNameConstants.EnrolUser },
             { "moodlewsrestformat", "json" },
-            { "enrolments[0][roleid]", request.RoleId.ToString() },
+            { "enrolments[0][roleid]", ((int)request.RoleId).ToString() },
             { "enrolments[0][userid]", request.UserId.ToString() },
             { "enrolments[0][courseid]", request.CourseId.ToString() }
         };
