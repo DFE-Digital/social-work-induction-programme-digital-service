@@ -48,7 +48,10 @@ $capabilities = !empty($options['capabilities']) ? explode(',', $options['capabi
     'moodle/course:visibility',
     'moodle/course:viewhiddencourses',
     'moodle/course:update',
-    'moodle/course:view'
+    'moodle/course:view',
+    'enrol/manual:enrol',
+    'enrol/manual:unenrol',
+    'moodle/role:assign'
 ];
 
 // Ensure the role exists
@@ -197,7 +200,8 @@ if (!$token) {
 $functions = [
     'core_user_create_users',
     'core_user_update_users',
-    'core_course_create_courses'
+    'core_course_create_courses',
+    'enrol_manual_enrol_users'
 ];
 
 foreach ($functions as $functionname) {
