@@ -35,12 +35,4 @@ public static class OrganisationDtoExtensions
             Region = organisation.Region,
             PhoneNumber = organisation.PhoneNumber,
         };
-
-    public static OrganisationDto ToDto(this LocalAuthority localAuthority) =>
-        new()
-        {
-            OrganisationName = localAuthority.LaName,
-            LocalAuthorityCode = localAuthority.OldLaCode,
-            Region = localAuthority.RegionName,
-        };
 }
