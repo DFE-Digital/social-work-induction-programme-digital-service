@@ -58,19 +58,14 @@ public class OrganisationsController(IOrganisationService organisationService) :
         );
     }
 
-    [HttpGet("{localAuthorityCode:int}")]
-    [ActionName(nameof(GetByLocalAuthorityCodeAsync))]
+    [HttpGet("local-authority-code/{localAuthorityCode:int}")]
+    [ActionName(nameof(ExistsByLocalAuthorityCodeAsync))]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
+    public async Task<IActionResult> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
         var organisation = await organisationService.GetByLocalAuthorityCodeAsync(
             localAuthorityCode
         );
-        if (organisation == null)
-        {
-            return NoContent();
-        }
-
-        return Ok(organisation);
+        return Ok(organisation != null);
     }
 }
