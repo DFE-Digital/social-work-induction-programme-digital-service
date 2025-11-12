@@ -182,44 +182,46 @@ public class OrganisationsControllerTests : TestBase
     }
 
     [Fact]
-    public async Task GetOrganisationByLocalAuthorityCodeAsync_ReturnsOkResult_WhenLocalAuthorityExists()
+    public async Task ExistsByLocalAuthorityCodeAsync_ReturnsOkTrue_WhenOrganisationExists()
     {
         await WithDbContext(async dbContext =>
         {
             // Arrange
-            var createdLocalAuthority = (await TestData.CreateLocalAuthority()).ToDto();
+            var createdOrganisation = (await TestData.CreateOrganisation("test org")).ToDto();
             var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
 
             // Act
-            var result = await controller.GetByLocalAuthorityCodeAsync(
-                createdLocalAuthority.LocalAuthorityCode!.Value
+            var result = await controller.ExistsByLocalAuthorityCodeAsync(
+                createdOrganisation.LocalAuthorityCode ?? 0
             );
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var resultOrganisation = okResult.Value.Should().BeOfType<OrganisationDto>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
 
-            resultOrganisation.Should().BeEquivalentTo(createdLocalAuthority);
+            resultAccounts.Should().Be(true);
         });
     }
 
     [Fact]
-    public async Task GetOrganisationByLocalAuthorityCodeAsync_ReturnsNotFoundResult_WhenLocalAuthorityDoesNotExist()
+    public async Task ExistsByLocalAuthorityCodeAsync_ReturnsOkFalse_WhenOrganisationDoesNotExist()
     {
         await WithDbContext(async dbContext =>
         {
             // Arrange
             var organisationService = new OrganisationService(dbContext);
-
             var controller = new OrganisationsController(organisationService);
 
             // Act
-            var result = await controller.GetByLocalAuthorityCodeAsync(999999);
+            var result = await controller.ExistsByLocalAuthorityCodeAsync(999999);
 
             // Assert
-            result.Should().BeOfType<NoContentResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var resultAccounts = okResult.Value.Should().BeOfType<bool>().Subject;
+
+            resultAccounts.Should().Be(false);
         });
     }
 }

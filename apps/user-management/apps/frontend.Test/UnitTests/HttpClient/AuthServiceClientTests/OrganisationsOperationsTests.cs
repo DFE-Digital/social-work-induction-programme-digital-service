@@ -202,6 +202,98 @@ public class OrganisationsOperationsTests
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
+        [Fact]
+    public async Task GetByLocalAuthorityCode_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        const int localAuthorityCode = 1;
+        var route = $"/api/Organisations/{localAuthorityCode}";
+        var organisation = new Organisation
+        {
+            OrganisationName = "test org",
+            LocalAuthorityCode = localAuthorityCode,
+            Type = OrganisationType.LocalAuthority,
+            Region = "Test region"
+        };
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            organisation,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OrganisationDto>();
+        response.Should().BeEquivalentTo(organisation);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetByLocalAuthorityCode_WhenErrorResponseReturned_ThrowsHttpRequestException()
+    {
+        // Arrange
+        const int localAuthorityCode = 1;
+        var route = $"/api/Organisations/{localAuthorityCode}";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Get,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode)
+        );
+
+        // Assert
+        exception.Message.Should().Be($"Failed to get organisation with local authority code {localAuthorityCode}.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetByLocalAuthorityCode_WhenNoOrganisationReturned_ThrowsException()
+    {
+        // Arrange
+        const int localAuthorityCode = 1;
+        var route = $"/api/Organisations/{localAuthorityCode}";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Get,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act & Assert
+        await sut.Invoking(s => s.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode))
+            .Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Failed to get local authority data.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
     private AuthServiceClient BuildSut(MockHttpMessageHandler mockHttpMessageHandler)
     {
         var client = mockHttpMessageHandler.ToHttpClient();

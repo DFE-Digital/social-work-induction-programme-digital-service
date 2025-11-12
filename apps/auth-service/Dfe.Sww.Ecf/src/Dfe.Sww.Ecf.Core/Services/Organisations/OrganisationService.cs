@@ -59,8 +59,8 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
 
     public async Task<OrganisationDto?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
-        var organisation = await dbContext.LocalAuthorities.FirstOrDefaultAsync(p =>
-            p.OldLaCode == localAuthorityCode
+        var organisation = await dbContext.Organisations.FirstOrDefaultAsync(p =>
+            p.LocalAuthorityCode == localAuthorityCode
         );
 
         return organisation?.ToDto();
