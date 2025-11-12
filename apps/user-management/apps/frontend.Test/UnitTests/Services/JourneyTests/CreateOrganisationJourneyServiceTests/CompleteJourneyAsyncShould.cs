@@ -18,13 +18,12 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
     {
         // Arrange
         var primaryCoordinator = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(primaryCoordinator);
         var organisation = OrganisationBuilder.WithPrimaryCoordinatorId(primaryCoordinator.Id).Build();
         var externalUserId = 100;
         var externalOrgId = 200;
 
         MockOrganisationService.Setup(x => x.CreateAsync(It.IsAny<Organisation>(), It.IsAny<Account>())).ReturnsAsync(organisation);
-        MockMoodleService.Setup(x => x.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(accountDetails))).ReturnsAsync(externalUserId);
+        MockMoodleService.Setup(x => x.CreateUserAsync(It.Is<Account>(acc => acc.Email == primaryCoordinator.Email))).ReturnsAsync(externalUserId);
         MockMoodleService.Setup(x => x.CreateCourseAsync(MoqHelpers.ShouldBeEquivalentTo(organisation))).ReturnsAsync(externalOrgId);
         MockMoodleService.Setup(x => x.EnrolUserAsync(externalUserId, externalOrgId, MoodleRoles.Manager)).ReturnsAsync(true);
         MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags { EnableMoodleIntegration = true });
@@ -51,7 +50,7 @@ public class CompleteJourneyAsyncShould : CreateOrganisationJourneyServiceTestBa
             && req.OrganisationName == organisation.OrganisationName
             && req.IsPrimaryCoordinator == true
         )));
-        MockMoodleService.Verify(x => x.CreateUserAsync(It.Is<AccountDetails>(acc => acc.Email == accountDetails.Email)), Times.Once);
+        MockMoodleService.Verify(x => x.CreateUserAsync(It.Is<Account>(acc => acc.Email == primaryCoordinator.Email)), Times.Once);
         MockMoodleService.Verify(x => x.CreateCourseAsync(It.Is<Organisation>(org => org.OrganisationName == organisation.OrganisationName)), Times.Once);
         MockMoodleService.Verify(x => x.EnrolUserAsync(externalUserId, externalOrgId, MoodleRoles.Manager), Times.Once);
 

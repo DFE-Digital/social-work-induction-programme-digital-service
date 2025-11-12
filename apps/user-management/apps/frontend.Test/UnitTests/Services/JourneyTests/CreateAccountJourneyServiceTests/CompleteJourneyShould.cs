@@ -1,6 +1,9 @@
-﻿using Dfe.Sww.Ecf.Frontend.Extensions;
+﻿using Dfe.Sww.Ecf.Frontend.Configuration;
+using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
+using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -15,22 +18,27 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         // Arrange
         var account = AccountBuilder.WithId(Guid.Empty).Build();
         var organisation = OrganisationBuilder.Build();
+        var externalUserId = 100;
+        var createJourneyModel = new CreateAccountJourneyModel
+        {
+            AccountDetails = AccountDetails.FromAccount(account),
+            AccountTypes = account.Types,
+            IsStaff = account.IsStaff
+        };
 
         HttpContext.Session.Set(
             CreateAccountSessionKey,
-            new CreateAccountJourneyModel
-            {
-                AccountDetails = AccountDetails.FromAccount(account),
-                AccountTypes = account.Types,
-                IsStaff = account.IsStaff
-            }
+            createJourneyModel
         );
 
         var expected = account with { Id = Guid.NewGuid() };
         MockOrganisationService.Setup(x => x.GetByIdAsync(organisation.OrganisationId)).ReturnsAsync(organisation);
+        MockMoodleService.Setup(x => x.CreateUserAsync(It.IsAny<Account>())).ReturnsAsync(externalUserId);
+        MockMoodleService.Setup(x => x.EnrolUserAsync(externalUserId, organisation.ExternalOrganisationId!.Value, MoodleRoles.Manager));
         MockAccountService.Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<Guid?>())).ReturnsAsync(expected);
         InvitationEmailRequest? capturedEmailRequest = null;
         MockEmailService.Setup(x => x.SendInvitationEmailAsync(It.IsAny<InvitationEmailRequest>())).Callback<InvitationEmailRequest>(req => capturedEmailRequest = req);
+        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags { EnableMoodleIntegration = true });
 
         // Act
         var result = await Sut.CompleteJourneyAsync(organisation.OrganisationId);
@@ -46,6 +54,9 @@ public class CompleteJourneyShould : CreateAccountJourneyServiceTestBase
         createAccountJourneyModel.Should().BeNull();
 
         MockOrganisationService.Verify(x => x.GetByIdAsync(organisation.OrganisationId), Times.Once);
+        MockMoodleService.Verify(x => x.CreateUserAsync(It.Is<Account>(acc => acc.Email == account.Email)), Times.Once);
+        MockMoodleService.Verify(x => x.EnrolUserAsync(externalUserId, organisation.ExternalOrganisationId!.Value, MoodleRoles.Manager), Times.Once);
+
         MockAccountService.Verify(
             x =>
                 x.CreateAsync(

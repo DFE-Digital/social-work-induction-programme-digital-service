@@ -78,7 +78,7 @@ public record Account
 
     public DateOnly? ProgrammeEndDate { get; init; }
 
-    public int? ExternalUserId { get; init; }
+    public int? ExternalUserId { get; set; }
 
     public bool IsFunded { get; init; }
 

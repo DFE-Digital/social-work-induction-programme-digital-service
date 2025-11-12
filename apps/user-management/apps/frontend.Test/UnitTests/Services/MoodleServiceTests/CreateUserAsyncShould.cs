@@ -14,14 +14,13 @@ public class CreateUserAsyncShould : MoodleServiceTestBase
     {
         // Arrange
         var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
         var moodleRequest = new MoodleUserRequest
         {
-            Username = accountDetails.Email,
-            Email = accountDetails.Email,
-            FirstName = accountDetails.FirstName,
-            MiddleName = accountDetails.MiddleNames,
-            LastName = accountDetails.LastName
+            Username = account.Email,
+            Email = account.Email,
+            FirstName = account.FirstName,
+            MiddleName = account.MiddleNames,
+            LastName = account.LastName
         };
         var moodleResponse = new MoodleUserResponse
         {
@@ -32,7 +31,7 @@ public class CreateUserAsyncShould : MoodleServiceTestBase
         MockClient.Setup(x => x.User.CreateAsync(MoqHelpers.ShouldBeEquivalentTo(moodleRequest))).ReturnsAsync(moodleResponse);
 
         // Act
-        var response = await Sut.CreateUserAsync(accountDetails);
+        var response = await Sut.CreateUserAsync(account);
 
         // Assert
         response.Should().Be(moodleResponse.Id);
@@ -46,21 +45,20 @@ public class CreateUserAsyncShould : MoodleServiceTestBase
     {
         // Arrange
         var account = AccountBuilder.Build();
-        var accountDetails = AccountDetails.FromAccount(account);
         var moodleRequest = new MoodleUserRequest
         {
-            Username = accountDetails.Email,
-            Email = accountDetails.Email,
-            FirstName = accountDetails.FirstName,
-            MiddleName = accountDetails.MiddleNames,
-            LastName = accountDetails.LastName
+            Username = account.Email,
+            Email = account.Email,
+            FirstName = account.FirstName,
+            MiddleName = account.MiddleNames,
+            LastName = account.LastName
         };
         var moodleResponse = new MoodleUserResponse { Successful = false };
         MockClient.Setup(x => x.User.CreateAsync(MoqHelpers.ShouldBeEquivalentTo(moodleRequest))).ReturnsAsync(moodleResponse);
 
         // Act
         var actualException = await Assert.ThrowsAsync<Exception>(
-            async () => await Sut.CreateUserAsync(accountDetails)
+            async () => await Sut.CreateUserAsync(account)
         );
 
         // Assert

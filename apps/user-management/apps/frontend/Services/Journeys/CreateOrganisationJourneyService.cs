@@ -84,15 +84,15 @@ public class CreateOrganisationJourneyService(
     public async Task<Organisation?> CompleteJourneyAsync()
     {
         var createAccountJourneyModel = GetOrganisationJourneyModel();
-
         var organisation = createAccountJourneyModel.Organisation;
         var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
 
         if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
-        await CreateMoodleOrganisationAsync(organisation, primaryCoordinator);
-
         var account = AccountDetails.ToAccount(primaryCoordinator);
+
+        await CreateMoodleOrganisationAsync(organisation, account);
+
         organisation = await organisationService.CreateAsync(organisation, account);
 
         ResetCreateOrganisationJourneyModel();
@@ -108,7 +108,7 @@ public class CreateOrganisationJourneyService(
         return organisation;
     }
 
-    private async Task CreateMoodleOrganisationAsync(Organisation organisation, AccountDetails primaryCoordinator)
+    private async Task CreateMoodleOrganisationAsync(Organisation organisation, Account primaryCoordinator)
     {
         if (featureFlags.Value.EnableMoodleIntegration)
         {

@@ -11,15 +11,15 @@ public class MoodleService(
     IMoodleServiceClient moodleServiceClient
 ) : IMoodleService
 {
-    public async Task<int?> CreateUserAsync(AccountDetails accountDetails)
+    public async Task<int?> CreateUserAsync(Account account)
     {
         var moodleRequest = new MoodleUserRequest
         {
-            Username = accountDetails.Email,
-            Email = accountDetails.Email,
-            FirstName = accountDetails.FirstName,
-            MiddleName = accountDetails.MiddleNames,
-            LastName = accountDetails.LastName
+            Username = account.Email,
+            Email = account.Email,
+            FirstName = account.FirstName,
+            MiddleName = account.MiddleNames,
+            LastName = account.LastName
         };
 
         var response = await moodleServiceClient.User.CreateAsync(moodleRequest);
@@ -29,16 +29,16 @@ public class MoodleService(
         return response.Id;
     }
 
-    public async Task<int?> UpdateUserAsync(AccountDetails accountDetails)
+    public async Task<int?> UpdateUserAsync(Account account)
     {
         var moodleRequest = new MoodleUserRequest
         {
-            Id = accountDetails.ExternalUserId,
-            Username = accountDetails.Email,
-            Email = accountDetails.Email,
-            FirstName = accountDetails.FirstName,
-            MiddleName = accountDetails.MiddleNames,
-            LastName = accountDetails.LastName
+            Id = account.ExternalUserId,
+            Username = account.Email,
+            Email = account.Email,
+            FirstName = account.FirstName,
+            MiddleName = account.MiddleNames,
+            LastName = account.LastName
         };
 
         var response = await moodleServiceClient.User.UpdateAsync(moodleRequest);

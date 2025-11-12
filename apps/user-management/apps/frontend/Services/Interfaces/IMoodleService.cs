@@ -6,8 +6,8 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 
 public interface IMoodleService
 {
-    Task<int?> CreateUserAsync(AccountDetails accountDetails);
-    Task<int?> UpdateUserAsync(AccountDetails accountDetails);
+    Task<int?> CreateUserAsync(Account account);
+    Task<int?> UpdateUserAsync(Account account);
     Task<int?> CreateCourseAsync(Organisation organisation);
     Task<bool> EnrolUserAsync(int externalUserId, int externalOrgId, MoodleRoles moodleRole);
 }
