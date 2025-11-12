@@ -1,4 +1,5 @@
 using Bogus;
+using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
@@ -95,9 +96,60 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
 
         modelStateKeys.Should().Contain("LocalAuthorityCode");
         modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
-        // TODO update error message once design is ready
         modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
-            .Be("Enter the local authority code in full. (error message TBC)");
+            .Be("Enter a local authority code");
+
+        Sut.BackLinkPath.Should().Be("/manage-organisations");
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithInvalidLACode_ReturnsValidationErrors()
+    {
+        // Arrange
+        Sut.LocalAuthorityCode = 1000; // Invalid LA code (should be 3 digits)
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+
+        modelStateKeys.Should().Contain("LocalAuthorityCode");
+        modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
+        modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
+            .Be("The local authority code must be three numbers");
+
+        Sut.BackLinkPath.Should().Be("/manage-organisations");
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenModelBinderError_ReturnsCustomValidationErrorMessage()
+    {
+        // Arrange
+        Sut.ModelState.AddModelError(nameof(EnterLocalAuthorityCode.LocalAuthorityCode), "Binder error");
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+
+        modelStateKeys.Should().Contain("LocalAuthorityCode");
+        modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
+        modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
+            .Be("The local authority code must only include numbers");
 
         Sut.BackLinkPath.Should().Be("/manage-organisations");
 
@@ -108,7 +160,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     public async Task OnPostAsync_WhenCalledWithLACode_SavesLACodeAndRedirectsUser()
     {
         // Arrange
-        var localAuthorityCode =  new Faker().Random.Int();
+        var localAuthorityCode =  new Faker().Random.Int(100,999);
         Sut.LocalAuthorityCode = localAuthorityCode;
 
         var organisation = OrganisationBuilder.Build();
@@ -134,10 +186,46 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
     }
 
     [Fact]
+    public async Task OnPostAsync_WhenLACodeNotFound_ReturnsValidationError()
+    {
+        // Arrange
+        var localAuthorityCode =  new Faker().Random.Int(100,999);
+        Sut.LocalAuthorityCode = localAuthorityCode;
+
+        var organisation = OrganisationBuilder.Build();
+
+        MockOrganisationService
+            .Setup(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode))
+            .ReturnsAsync((Organisation?)null);
+
+        // Act
+        var result = await Sut.OnPostAsync();
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+
+        modelStateKeys.Should().Contain("LocalAuthorityCode");
+        modelState["LocalAuthorityCode"]!.Errors.Count.Should().Be(1);
+        modelState["LocalAuthorityCode"]!.Errors[0].ErrorMessage.Should()
+            .Be("The code you have entered is not associated with a local authority");
+
+        Sut.BackLinkPath.Should().Be("/manage-organisations");
+
+        MockOrganisationService.Verify(x => x.GetByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task OnPostChangeAsync_WhenCalledWithLACode_SavesLACodeAndRedirectsUser()
     {
         // Arrange
-        var localAuthorityCode =  new Faker().Random.Int();
+        var localAuthorityCode =  new Faker().Random.Int(100,999);
         Sut.LocalAuthorityCode = localAuthorityCode;
 
         var organisation = OrganisationBuilder.Build();

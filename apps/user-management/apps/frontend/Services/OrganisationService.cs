@@ -26,9 +26,13 @@ public class OrganisationService(
         return organisations;
     }
 
-    public async Task<Organisation> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
+    public async Task<Organisation?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
         var localAuthority = await authServiceClient.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode);
+        if (localAuthority is null)
+        {
+            return null;
+        }
 
         // Add type which is always Local Authority for this method
         var organisation = new OrganisationDto

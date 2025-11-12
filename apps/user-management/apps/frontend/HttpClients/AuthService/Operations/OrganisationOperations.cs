@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
@@ -63,9 +64,14 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
         return organisation;
     }
 
-    public async Task<OrganisationDto> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
+    public async Task<OrganisationDto?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
         var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Organisations/{localAuthorityCode}");
+
+        if (httpResponse.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
 
         HandleHttpResponse(httpResponse, $"Failed to get organisation with local authority code {localAuthorityCode}.");
 

@@ -48,6 +48,15 @@ public class EnterLocalAuthorityCode(
 
     public async Task<IActionResult> OnPostAsync()
     {
+        // Handle model binding error for non-numeric input
+        if (ModelState.TryGetValue(nameof(LocalAuthorityCode), out var input) && input.Errors.Count > 0)
+        {
+            input.Errors.Clear();
+            ModelState.AddModelError(nameof(LocalAuthorityCode), "The local authority code must only include numbers");
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
+            return Page();
+        }
+
         var result = await validator.ValidateAsync(this);
         if (!result.IsValid)
         {
@@ -65,7 +74,13 @@ public class EnterLocalAuthorityCode(
         }
 
         var organisation = await organisationService.GetByLocalAuthorityCodeAsync(LocalAuthorityCode.Value);
-        // TODO show error if organisation not found once validation and error message designs are available
+        if (organisation is null)
+        {
+            ModelState.AddModelError(nameof(LocalAuthorityCode), "The code you have entered is not associated with a local authority");
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
+            return Page();
+        }
+
         createOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(
