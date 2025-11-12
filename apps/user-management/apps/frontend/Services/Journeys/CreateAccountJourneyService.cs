@@ -2,6 +2,7 @@
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -240,8 +241,19 @@ public class CreateAccountJourneyService(
             if (externalUserId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
             account.ExternalUserId = externalUserId;
 
+            var highestRole = account.Types?.Max();
+            var moodleRole = highestRole switch
+            {
+                AccountType.Administrator => MoodleRoles.Manager,
+                AccountType.Coordinator => MoodleRoles.Manager,
+                AccountType.Assessor => MoodleRoles.Teacher,
+                AccountType.EarlyCareerSocialWorker => MoodleRoles.Student,
+                null => throw new ArgumentNullException(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
             if (organisation?.ExternalOrganisationId.HasValue == true)
-                await moodleService.EnrolUserAsync(externalUserId.Value, organisation.ExternalOrganisationId.Value, MoodleRoles.Manager);
+                await moodleService.EnrolUserAsync(externalUserId.Value, organisation.ExternalOrganisationId.Value, moodleRole);
         }
 
         account = await accountService.CreateAsync(account, organisationId);
