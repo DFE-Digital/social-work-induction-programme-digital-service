@@ -43,7 +43,7 @@ public abstract class AuthServiceClientTestBase
         string route
     )
     {
-        var mockHttp = new MockHttpMessageHandler();
+        using var mockHttp = new MockHttpMessageHandler();
         var request = mockHttp
             .When(httpMethod, route)
             .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
@@ -62,7 +62,7 @@ public abstract class AuthServiceClientTestBase
             string route
         )
     {
-        var mockHttp = new MockHttpMessageHandler();
+        using var mockHttp = new MockHttpMessageHandler();
         var request = mockHttp
             .When(httpMethod, route)
             .Respond(statusCode, "application/json", rawContent);

@@ -230,8 +230,6 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         var localAuthorityCode = new Faker().Random.Int(100, 999);
         Sut.LocalAuthorityCode = localAuthorityCode.ToString();
 
-        var organisation = OrganisationBuilder.Build();
-
         MockAuthServiceClient
             .Setup(x => x.LocalAuthority.GetByLocalAuthorityCodeAsync(localAuthorityCode))
             .ReturnsAsync((Organisation?)null);
