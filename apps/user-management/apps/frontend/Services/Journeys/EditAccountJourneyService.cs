@@ -1,29 +1,38 @@
 using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class EditAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IAccountService accountService,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IMoodleService moodleService,
+    IOptions<FeatureFlags> featureFlags
 ) : IEditAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IAccountService _accountService = accountService;
     private readonly EcfLinkGenerator _linkGenerator = linkGenerator;
 
-    private static string EditAccountSessionKey(Guid id) => "_editAccount-" + id;
+    private static string EditAccountSessionKey(Guid id)
+    {
+        return "_editAccount-" + id;
+    }
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
-    private static KeyNotFoundException AccountNotFoundException(Guid id) =>
-        new("Account not found with ID " + id);
+    private static KeyNotFoundException AccountNotFoundException(Guid id)
+    {
+        return new KeyNotFoundException("Account not found with ID " + id);
+    }
 
     private async Task<EditAccountJourneyModel?> GetEditAccountJourneyModelAsync(Guid accountId)
     {
@@ -31,16 +40,10 @@ public class EditAccountJourneyService(
             EditAccountSessionKey(accountId),
             out EditAccountJourneyModel? editAccountJourneyModel
         );
-        if (editAccountJourneyModel is not null)
-        {
-            return editAccountJourneyModel;
-        }
+        if (editAccountJourneyModel is not null) return editAccountJourneyModel;
 
         var account = await _accountService.GetByIdAsync(accountId);
-        if (account is null)
-        {
-            return null;
-        }
+        if (account is null) return null;
 
         editAccountJourneyModel = new EditAccountJourneyModel(account);
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
@@ -109,10 +112,7 @@ public class EditAccountJourneyService(
     public async Task ResetEditAccountJourneyModelAsync(Guid accountId)
     {
         var account = await _accountService.GetByIdAsync(accountId);
-        if (account is null)
-        {
-            throw AccountNotFoundException(accountId);
-        }
+        if (account is null) throw AccountNotFoundException(accountId);
 
         Session.Remove(EditAccountSessionKey(accountId));
     }
@@ -132,6 +132,14 @@ public class EditAccountJourneyService(
             ?? throw AccountNotFoundException(accountId);
 
         var updatedAccount = editAccountJourneyModel.ToAccount();
+
+        if (featureFlags.Value.EnableMoodleIntegration)
+        {
+            var externalUserId = await moodleService.UpdateUserAsync(updatedAccount);
+            if (externalUserId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
+            updatedAccount.ExternalUserId = externalUserId;
+        }
+
         await _accountService.UpdateAsync(updatedAccount);
 
         await ResetEditAccountJourneyModelAsync(accountId);

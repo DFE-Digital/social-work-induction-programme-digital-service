@@ -1,24 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
-    IMoodleService moodleService,
-    EcfLinkGenerator linkGenerator,
-    IOptions<FeatureFlags> featureFlags
+    EcfLinkGenerator linkGenerator
 ) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
@@ -144,14 +139,6 @@ public class ConfirmAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         if (accountDetails is null) return BadRequest();
 
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var externalUserId = await moodleService.CreateUserAsync(accountDetails);
-            if (externalUserId is null) return BadRequest(); // TODO handle unhappy path in separate ticket
-
-            createAccountJourneyService.SetExternalUserId(externalUserId);
-        }
-
         await createAccountJourneyService.CompleteJourneyAsync(OrganisationId);
 
         TempData["NotificationType"] = NotificationBannerType.Success;
@@ -167,14 +154,6 @@ public class ConfirmAccountDetails(
 
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (accountDetails is null) return BadRequest();
-
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var externalUserId = await moodleService.UpdateUserAsync(accountDetails);
-            if (externalUserId is null) return BadRequest(); // TODO handle unhappy path in separate ticket
-
-            createAccountJourneyService.SetExternalUserId(externalUserId);
-        }
 
         await editAccountJourneyService.CompleteJourneyAsync(id);
 
