@@ -1,30 +1,15 @@
 using System.Net;
-using System.Security.Claims;
-using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
+using Bogus;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Moq;
-using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AuthServiceClientTests;
 
-public class OrganisationsOperationsTests
+public class OrganisationsOperationsTests : AuthServiceClientTestBase
 {
-    private readonly Mock<IOptions<AuthClientOptions>> _mockOptions;
-
-    public OrganisationsOperationsTests()
-    {
-        _mockOptions = new();
-    }
-
     [Fact]
     public async Task GetAll_SuccessfulRequest_ReturnsCorrectResponse()
     {
@@ -202,36 +187,28 @@ public class OrganisationsOperationsTests
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
-        [Fact]
-    public async Task GetByLocalAuthorityCode_SuccessfulRequest_ReturnsCorrectResponse()
+
+    [Fact]
+    public async Task ExistsByLocalAuthorityCode_SuccessfulRequest_ReturnsBoolean()
     {
         // Arrange
-        const int localAuthorityCode = 1;
-        var route = $"/api/Organisations/{localAuthorityCode}";
-        var organisation = new Organisation
-        {
-            OrganisationName = "test org",
-            LocalAuthorityCode = localAuthorityCode,
-            Type = OrganisationType.LocalAuthority,
-            Region = "Test region"
-        };
+        var localAuthorityCode = new Faker().Random.Int(100, 999);
+        var route = $"/api/Organisations/local-authority-code/{localAuthorityCode}";
 
         var (mockHttp, request) = GenerateMockClient(
             HttpStatusCode.OK,
             HttpMethod.Get,
-            organisation,
+            true,
             route
         );
 
         var sut = BuildSut(mockHttp);
 
         // Act
-        var response = await sut.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode);
+        var response = await sut.Organisations.ExistsByLocalAuthorityCodeAsync(localAuthorityCode);
 
         // Assert
-        response.Should().NotBeNull();
-        response.Should().BeOfType<OrganisationDto>();
-        response.Should().BeEquivalentTo(organisation);
+        response.Should().BeTrue();
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -239,11 +216,11 @@ public class OrganisationsOperationsTests
     }
 
     [Fact]
-    public async Task GetByLocalAuthorityCode_WhenErrorResponseReturned_ThrowsHttpRequestException()
+    public async Task ExistsByLocalAuthorityCode_WhenErrorResponseReturned_ThrowsHttpRequestException()
     {
         // Arrange
-        const int localAuthorityCode = 1;
-        var route = $"/api/Organisations/{localAuthorityCode}";
+        var localAuthorityCode = new Faker().Random.Int(100, 999);
+        var route = $"/api/Organisations/local-authority-code/{localAuthorityCode}";
 
         var (mockHttp, request) = GenerateMockClient(
             HttpStatusCode.BadRequest,
@@ -256,11 +233,11 @@ public class OrganisationsOperationsTests
 
         // Act
         var exception = await Assert.ThrowsAsync<HttpRequestException>(
-            () => sut.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode)
+            () => sut.Organisations.ExistsByLocalAuthorityCodeAsync(localAuthorityCode)
         );
 
         // Assert
-        exception.Message.Should().Be($"Failed to get organisation with local authority code {localAuthorityCode}.");
+        exception.Message.Should().Be($"Failed to check if organisation exists with local authority code {localAuthorityCode}.");
 
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
@@ -268,84 +245,30 @@ public class OrganisationsOperationsTests
     }
 
     [Fact]
-    public async Task GetByLocalAuthorityCode_WhenNoOrganisationReturned_ThrowsException()
+    public async Task ExistsByLocalAuthorityCode_WhenResponseIsInvalidJson_ThrowsInvalidOperationException()
     {
         // Arrange
-        const int localAuthorityCode = 1;
-        var route = $"/api/Organisations/{localAuthorityCode}";
+        var localAuthorityCode = new Faker().Random.Int(100, 999);
+        var route = $"/api/Organisations/local-authority-code/{localAuthorityCode}";
 
-        var (mockHttp, request) = GenerateMockClient(
+        var (mockHttp, request) = GenerateMockClientWithRawResponse(
             HttpStatusCode.OK,
             HttpMethod.Get,
-            null,
+            "invalid-json",
             route
         );
 
         var sut = BuildSut(mockHttp);
 
-        // Act & Assert
-        await sut.Invoking(s => s.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode))
-            .Should()
-            .ThrowAsync<InvalidOperationException>()
-            .WithMessage("Failed to get local authority data.");
+        // Act
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => sut.Organisations.ExistsByLocalAuthorityCodeAsync(localAuthorityCode)
+        );
 
+        // Assert
+        ex.Message.Should().Be("Failed to check if organisation exists.");
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();
-    }
-
-    private AuthServiceClient BuildSut(MockHttpMessageHandler mockHttpMessageHandler)
-    {
-        var client = mockHttpMessageHandler.ToHttpClient();
-        client.BaseAddress = new Uri("http://localhost");
-
-        _mockOptions
-            .Setup(x => x.Value)
-            .Returns(
-                new AuthClientOptions
-                {
-                    BaseUrl = "http://localhost",
-                    ClientCredentials = new ClientCredentials
-                    {
-                        ClientId = string.Empty,
-                        ClientSecret = string.Empty,
-                        AccessTokenUrl = string.Empty
-                    }
-                }
-            );
-
-        var claims = new List<Claim>
-        {
-            new Claim("organisation_id", Guid.NewGuid().ToString())
-        };
-        var identity = new ClaimsIdentity(claims, "TestAuthType");
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-        var httpContext = new DefaultHttpContext
-        {
-            User = claimsPrincipal
-        };
-        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-        mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
-        var sut = new AuthServiceClient(client, mockHttpContextAccessor.Object);
-
-        return sut;
-    }
-
-    private static (
-        MockHttpMessageHandler MockHttpMessageHandler,
-        MockedRequest MockedRequest
-    ) GenerateMockClient(
-        HttpStatusCode statusCode,
-        HttpMethod httpMethod,
-        object? response,
-        string route
-    )
-    {
-        using var mockHttp = new MockHttpMessageHandler();
-        var request = mockHttp
-            .When(httpMethod, route)
-            .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
-
-        return (mockHttp, request);
     }
 }

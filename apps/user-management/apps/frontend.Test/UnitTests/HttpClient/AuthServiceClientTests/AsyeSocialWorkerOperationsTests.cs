@@ -1,27 +1,11 @@
 using System.Net;
-using System.Security.Claims;
-using System.Text.Json;
-using Dfe.Sww.Ecf.Frontend.HttpClients.Authentication;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Moq;
-using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.HttpClient.AuthServiceClientTests;
 
-public class AsyeSocialWorkerOperationsTests
+public class AsyeSocialWorkerOperationsTests : AuthServiceClientTestBase
 {
-    private readonly Mock<IOptions<AuthClientOptions>> _mockOptions;
-
-    public AsyeSocialWorkerOperationsTests()
-    {
-        _mockOptions = new();
-    }
-
     [Fact]
     public async Task ExistsAsync_SuccessfulRequest_ReturnsCorrectResponse()
     {
@@ -77,60 +61,5 @@ public class AsyeSocialWorkerOperationsTests
         mockHttp.GetMatchCount(request).Should().Be(1);
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();
-    }
-
-    private AuthServiceClient BuildSut(MockHttpMessageHandler mockHttpMessageHandler)
-    {
-        var client = mockHttpMessageHandler.ToHttpClient();
-        client.BaseAddress = new Uri("http://localhost");
-
-        _mockOptions
-            .Setup(x => x.Value)
-            .Returns(
-                new AuthClientOptions
-                {
-                    BaseUrl = "http://localhost",
-                    ClientCredentials = new ClientCredentials
-                    {
-                        ClientId = string.Empty,
-                        ClientSecret = string.Empty,
-                        AccessTokenUrl = string.Empty
-                    }
-                }
-            );
-
-        var claims = new List<Claim>
-        {
-            new Claim("organisation_id", Guid.NewGuid().ToString())
-        };
-        var identity = new ClaimsIdentity(claims, "TestAuthType");
-        var claimsPrincipal = new ClaimsPrincipal(identity);
-        var httpContext = new DefaultHttpContext
-        {
-            User = claimsPrincipal
-        };
-        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-        mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
-        var sut = new AuthServiceClient(client, mockHttpContextAccessor.Object);
-
-        return sut;
-    }
-
-    private static (
-        MockHttpMessageHandler MockHttpMessageHandler,
-        MockedRequest MockedRequest
-    ) GenerateMockClient(
-        HttpStatusCode statusCode,
-        HttpMethod httpMethod,
-        object? response,
-        string route
-    )
-    {
-        using var mockHttp = new MockHttpMessageHandler();
-        var request = mockHttp
-            .When(httpMethod, route)
-            .Respond(statusCode, "application/json", JsonSerializer.Serialize(response));
-
-        return (mockHttp, request);
     }
 }

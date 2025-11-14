@@ -194,7 +194,7 @@ public class OrganisationsControllerTests : TestBase
 
             // Act
             var result = await controller.ExistsByLocalAuthorityCodeAsync(
-                createdOrganisation.LocalAuthorityCode ?? 0
+                createdOrganisation.LocalAuthorityCode!.Value
             );
 
             // Assert

@@ -5,6 +5,7 @@ public interface IAuthServiceClient
     public IAccountsOperations Accounts { get; init; }
     public IOrganisationOperations Organisations { get; init; }
     public IAsyeSocialWorkerOperations AsyeSocialWorker { get; init; }
+    public ILocalAuthorityOperations LocalAuthority { get; init; }
 
     public IHttpContextService HttpContextService { get; init; }
 }
