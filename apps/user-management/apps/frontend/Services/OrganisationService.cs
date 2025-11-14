@@ -26,26 +26,6 @@ public class OrganisationService(
         return organisations;
     }
 
-    public async Task<Organisation?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
-    {
-        var localAuthority = await authServiceClient.Organisations.GetByLocalAuthorityCodeAsync(localAuthorityCode);
-        if (localAuthority is null)
-        {
-            return null;
-        }
-
-        // Add type which is always Local Authority for this method
-        var organisation = new OrganisationDto
-        {
-            LocalAuthorityCode = localAuthority.LocalAuthorityCode,
-            OrganisationName = localAuthority.OrganisationName,
-            Region = localAuthority.Region,
-            Type = OrganisationType.LocalAuthority
-        };
-
-        return mapper.MapToBo(organisation);
-    }
-
     public async Task<Organisation> CreateAsync(Organisation organisation, Account primaryCoordinator)
     {
         if (
@@ -103,5 +83,12 @@ public class OrganisationService(
         var organisation = await authServiceClient.Organisations.GetByIdAsync(id.Value);
 
         return organisation is null ? null : mapper.MapToBo(organisation);
+    }
+
+    public async Task<bool> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode)
+    {
+        var exists = await authServiceClient.Organisations.ExistsByLocalAuthorityCodeAsync(localAuthorityCode);
+
+        return exists;
     }
 }

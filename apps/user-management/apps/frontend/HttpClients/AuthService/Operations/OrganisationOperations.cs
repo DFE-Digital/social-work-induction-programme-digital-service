@@ -64,23 +64,16 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
         return organisation;
     }
 
-    public async Task<OrganisationDto?> GetByLocalAuthorityCodeAsync(int localAuthorityCode)
+    public async Task<bool> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode)
     {
-        var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Organisations/{localAuthorityCode}");
+        var httpResponse = await authServiceClient.HttpClient.GetAsync($"/api/Organisations/local-authority-code/{localAuthorityCode}");
 
-        if (httpResponse.StatusCode == HttpStatusCode.NoContent)
-        {
-            return null;
-        }
-
-        HandleHttpResponse(httpResponse, $"Failed to get organisation with local authority code {localAuthorityCode}.");
+        HandleHttpResponse(httpResponse, $"Failed to check if organisation exists with local authority code {localAuthorityCode}.");
 
         var response = await httpResponse.Content.ReadAsStringAsync();
-        var organisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
-        if (organisation is null)
-        {
-            throw new InvalidOperationException("Failed to get local authority data.");
-        }
-        return organisation;
+
+        var exists = DeserializeOrThrow<bool>(response, "Failed to check if organisation exists.");
+
+        return exists;
     }
 }

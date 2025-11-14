@@ -1,5 +1,4 @@
 using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.LocalAuthorities;
-using Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

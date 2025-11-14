@@ -13,6 +13,7 @@ public class AuthServiceClient : IAuthServiceClient
         Accounts = new AccountsOperations(this);
         Organisations = new OrganisationOperations(this);
         AsyeSocialWorker = new AsyeSocialWorkerOperations(this);
+        LocalAuthority = new LocalAuthorityOperations(this);
     }
 
     internal HttpClient HttpClient { get; init; }
@@ -20,4 +21,5 @@ public class AuthServiceClient : IAuthServiceClient
     public IAccountsOperations Accounts { get; init; }
     public IOrganisationOperations Organisations { get; init; }
     public IAsyeSocialWorkerOperations AsyeSocialWorker { get; init; }
+    public ILocalAuthorityOperations LocalAuthority { get; init; }
 }

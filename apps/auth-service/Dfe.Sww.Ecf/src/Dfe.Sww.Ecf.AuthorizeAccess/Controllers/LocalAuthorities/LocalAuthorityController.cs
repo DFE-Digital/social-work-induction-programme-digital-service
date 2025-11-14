@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using Dfe.Sww.Ecf.Core.Services.Accounts;
 using Dfe.Sww.Ecf.Core.Services.Organisations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
