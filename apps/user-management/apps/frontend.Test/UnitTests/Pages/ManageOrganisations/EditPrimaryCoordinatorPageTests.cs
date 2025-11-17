@@ -15,7 +15,7 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
 {
     public EditPrimaryCoordinatorPageTests()
     {
-        Sut = new EditPrimaryCoordinator(MockEditOrganisationJourneyService.Object, new FakeLinkGenerator(), new AccountDetailsValidator(MockAccountService.Object));
+        Sut = new EditPrimaryCoordinator(MockEditOrganisationJourneyService.Object, new FakeLinkGenerator(), new AccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object));
     }
 
     private EditPrimaryCoordinator Sut { get; }

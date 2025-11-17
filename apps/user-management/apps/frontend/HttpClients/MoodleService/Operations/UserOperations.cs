@@ -12,12 +12,12 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
 
     private readonly MoodleServiceClient _moodleServiceClient = moodleServiceClient;
 
-    public async Task<MoodleUserResponse> CreateUserAsync(MoodleUserRequest request)
+    public async Task<MoodleUserResponse> CreateAsync(MoodleUserRequest request)
     {
         return await SendMoodleRequestAsync(request, FunctionNameConstants.CreateUser);
     }
 
-    public async Task<MoodleUserResponse> UpdateUserAsync(MoodleUserRequest request)
+    public async Task<MoodleUserResponse> UpdateAsync(MoodleUserRequest request)
     {
         return await SendMoodleRequestAsync(request, FunctionNameConstants.UpdateUser);
     }
@@ -30,9 +30,7 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
             || string.IsNullOrWhiteSpace(request.Email)
             || string.IsNullOrWhiteSpace(request.Username)
         )
-        {
             return new MoodleUserResponse { Successful = false };
-        }
 
         var parameters = new Dictionary<string, string>
         {
@@ -46,32 +44,21 @@ public class UserOperations(MoodleServiceClient moodleServiceClient) : IUserOper
             { "users[0][email]", request.Email }
         };
 
-        if (!string.IsNullOrWhiteSpace(request.MiddleName))
-        {
-            parameters.Add("users[0][middlename]", request.MiddleName);
-        }
+        if (!string.IsNullOrWhiteSpace(request.MiddleName)) parameters.Add("users[0][middlename]", request.MiddleName);
 
         if (request.Id.HasValue
             && wsFunction == FunctionNameConstants.UpdateUser)
-        {
             parameters.Add("users[0][id]", request.Id.Value.ToString());
-        }
 
         using var content = new FormUrlEncodedContent(parameters);
 
         var httpResponse = await _moodleServiceClient.HttpClient.PostAsync(string.Empty, content);
 
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            return new MoodleUserResponse { Successful = false };
-        }
+        if (!httpResponse.IsSuccessStatusCode) return new MoodleUserResponse { Successful = false };
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
 
-        if (wsFunction == FunctionNameConstants.UpdateUser)
-        {
-            return new MoodleUserResponse { Id = request.Id, Username = request.Email.ToLower(), Successful = true };
-        }
+        if (wsFunction == FunctionNameConstants.UpdateUser) return new MoodleUserResponse { Id = request.Id, Username = request.Email.ToLower(), Successful = true };
 
         var result = JsonSerializer.Deserialize<IList<MoodleUserResponse>>(
             jsonResponse,

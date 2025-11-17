@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
@@ -101,7 +100,12 @@ public class AddAccountDetails(
             IsStaff = IsStaff,
             Types = AccountTypes
         };
-        var result = await validator.ValidateAsync(accountDetails);
+
+        // Always perform this action for add
+        var validationContext = new ValidationContext<AccountDetails>(accountDetails);
+        validationContext.RootContextData["SkipSweIdUnique"] = false;
+
+        var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);

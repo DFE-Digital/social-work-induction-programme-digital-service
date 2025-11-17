@@ -1,11 +1,9 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models.Pagination;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,19 +12,19 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 public class EnterLocalAuthorityCode(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
-    IOrganisationService organisationService,
+    IAuthServiceClient authServiceClient,
     EcfLinkGenerator linkGenerator,
     IValidator<EnterLocalAuthorityCode> validator
 ) : BasePageModel
 {
-    [BindProperty] public int? LocalAuthorityCode { get; set; }
+    [BindProperty] public string? LocalAuthorityCode { get; set; }
 
     public PageResult OnGet()
     {
         var localAuthorityCode = createOrganisationJourneyService.GetLocalAuthorityCode();
         if (localAuthorityCode is not null)
         {
-            LocalAuthorityCode = localAuthorityCode;
+            LocalAuthorityCode = localAuthorityCode.ToString();
         }
 
         SetBackLinkPath();
@@ -48,7 +46,19 @@ public class EnterLocalAuthorityCode(
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var result = await validator.ValidateAsync(this);
+        var initialCode = createOrganisationJourneyService.GetLocalAuthorityCode();
+
+        var noChange = initialCode.HasValue
+                       && string.Equals(LocalAuthorityCode?.Trim(), initialCode.Value.ToString(), StringComparison.Ordinal);
+        var validationContext = new ValidationContext<EnterLocalAuthorityCode>(this)
+        {
+            RootContextData =
+            {
+                ["SkipLaCodeUnique"] = noChange
+            }
+        };
+
+        var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
         {
             result.AddToModelState(ModelState);
@@ -56,10 +66,23 @@ public class EnterLocalAuthorityCode(
             return Page();
         }
 
-        createOrganisationJourneyService.SetLocalAuthorityCode(LocalAuthorityCode);
+        if (!int.TryParse(LocalAuthorityCode, out var parsedLocalAuthorityCode))
+        {
+            ModelState.AddModelError(nameof(LocalAuthorityCode), "The local authority code must only include numbers");
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
+            return Page();
+        }
 
-        var organisation = organisationService.GetByLocalAuthorityCode(LocalAuthorityCode);
-        // TODO show error if organisation not found once validation and error message designs are available
+        createOrganisationJourneyService.SetLocalAuthorityCode(parsedLocalAuthorityCode);
+
+        var organisation = await authServiceClient.LocalAuthority.GetByLocalAuthorityCodeAsync(parsedLocalAuthorityCode);
+        if (organisation is null)
+        {
+            ModelState.AddModelError(nameof(LocalAuthorityCode), "The code you have entered is not associated with a local authority");
+            BackLinkPath = linkGenerator.ManageOrganisations.Index();
+            return Page();
+        }
+
         createOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(

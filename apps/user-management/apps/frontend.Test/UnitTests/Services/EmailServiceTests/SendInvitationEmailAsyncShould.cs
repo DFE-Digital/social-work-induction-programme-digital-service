@@ -1,6 +1,6 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -86,7 +86,8 @@ public class SendInvitationEmailAsyncShould : EmailServiceTestBase
         var request = new InvitationEmailRequest
         {
             AccountId = accountId,
-            OrganisationName = "Test Organisation"
+            OrganisationName = "Test Organisation",
+            IsPrimaryCoordinator = true
         };
 
         var account = AccountBuilder.Build();
@@ -121,19 +122,15 @@ public class SendInvitationEmailAsyncShould : EmailServiceTestBase
         VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineData(AccountType.Assessor)]
-    [InlineData(AccountType.EarlyCareerSocialWorker)]
-    [InlineData(AccountType.Coordinator)]
-    public async Task SendInvitationEmailAsync_WithRole_SendsEmailWithCorrectRoleTemplate(AccountType role)
+    [Fact]
+    public async Task SendInvitationEmailAsync_WithoutIsPrimaryCoordinator_SendsEmailWithCorrectTemplate()
     {
         // Arrange
         var accountId = Guid.NewGuid();
         var request = new InvitationEmailRequest
         {
             AccountId = accountId,
-            OrganisationName = "Test Organisation",
-            Role = role
+            OrganisationName = "Test Organisation"
         };
 
         var account = AccountBuilder.Build();
@@ -153,12 +150,12 @@ public class SendInvitationEmailAsyncShould : EmailServiceTestBase
         MockAuthServiceClient.MockAccountsOperations.Verify(x => x.GetLinkingTokenByAccountIdAsync(accountId), Times.Once);
 
         MockNotificationServiceClient.MockNotificationsOperations.Verify(x => x.SendEmailAsync(It.Is<NotificationRequest>(req =>
-            req.TemplateId == MockEmailTemplateOptions.Options.Roles[role].Invitation
+            req.TemplateId == MockEmailTemplateOptions.Options.Invitation
         )), Times.Once);
         capturedNotificationRequest.Should().BeEquivalentTo(new NotificationRequest
         {
             EmailAddress = account.Email!,
-            TemplateId = MockEmailTemplateOptions.Options.Roles[role].Invitation,
+            TemplateId = MockEmailTemplateOptions.Options.Invitation,
             Personalisation = new Dictionary<string, string>
             {
                 ["name"] = account.FullName,

@@ -59,18 +59,11 @@ public class EditPrimaryCoordinator(
     public async Task<IActionResult> OnPostAsync(Guid id)
     {
         var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
-        if (primaryCoordinator is null)
-        {
-            return BadRequest();
-        }
+        if (primaryCoordinator is null) return BadRequest();
 
         var noEmailChange = string.Equals(primaryCoordinator.Email?.Trim(), PrimaryCoordinator.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
-
         var validationContext = new ValidationContext<AccountDetails>(PrimaryCoordinator);
-        if (noEmailChange)
-        {
-            validationContext.RootContextData["SkipEmailUnique"] = true;
-        }
+        validationContext.RootContextData["SkipEmailUnique"] = noEmailChange;
 
         var validationResult = await validator.ValidateAsync(validationContext);
         if (!validationResult.IsValid)
@@ -81,7 +74,12 @@ public class EditPrimaryCoordinator(
             return Page();
         }
 
-        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, PrimaryCoordinator);
+        primaryCoordinator.FirstName = PrimaryCoordinator.FirstName;
+        primaryCoordinator.MiddleNames = PrimaryCoordinator.MiddleNames;
+        primaryCoordinator.LastName = PrimaryCoordinator.LastName;
+        primaryCoordinator.Email = PrimaryCoordinator.Email;
+
+        await editOrganisationJourneyService.SetPrimaryCoordinatorAccountAsync(id, primaryCoordinator);
 
         return Redirect(
             IsReplace

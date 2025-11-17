@@ -1,11 +1,16 @@
 ﻿using System.Collections.Immutable;
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -14,7 +19,9 @@ public class CreateAccountJourneyService(
     IAccountService accountService,
     IOrganisationService organisationService,
     EcfLinkGenerator linkGenerator,
-    IEmailService emailService
+    IEmailService emailService,
+    IMoodleService moodleService,
+    IOptions<FeatureFlags> featureFlags
 ) : ICreateAccountJourneyService
 {
     private const string CreateAccountSessionKey = "_createAccount";
@@ -225,18 +232,36 @@ public class CreateAccountJourneyService(
     public async Task<Account> CompleteJourneyAsync(Guid? organisationId = null)
     {
         var organisation = await organisationService.GetByIdAsync(organisationId);
-
         var createAccountJourneyModel = GetCreateAccountJourneyModel();
-
         var account = createAccountJourneyModel.ToAccount();
+
+        if (featureFlags.Value.EnableMoodleIntegration)
+        {
+            var externalUserId = await moodleService.CreateUserAsync(account);
+            if (externalUserId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
+            account.ExternalUserId = externalUserId;
+
+            var highestRole = account.Types?.Max();
+            var moodleRole = highestRole switch
+            {
+                AccountType.Administrator => MoodleRoles.Manager,
+                AccountType.Coordinator => MoodleRoles.Manager,
+                AccountType.Assessor => MoodleRoles.Teacher,
+                AccountType.EarlyCareerSocialWorker => MoodleRoles.Student,
+                null => throw new ArgumentNullException(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            if (organisation?.ExternalOrganisationId.HasValue == true)
+                await moodleService.EnrolUserAsync(externalUserId.Value, organisation.ExternalOrganisationId.Value, moodleRole);
+        }
 
         account = await accountService.CreateAsync(account, organisationId);
 
         await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
         {
             AccountId = account.Id,
-            OrganisationName = organisation?.OrganisationName ?? string.Empty,
-            Role = account.Types?.Min() // Get the highest ranking role - the lowest (int)enum
+            OrganisationName = organisation?.OrganisationName ?? string.Empty
         });
 
         ResetCreateAccountJourneyModel();

@@ -92,7 +92,7 @@ public class SignInJourneyHelper(
                 Subject = sub,
                 Email = email,
                 FirstOneLoginSignIn = clock.UtcNow,
-                LastOneLoginSignIn = clock.UtcNow
+                LastOneLoginSignIn = clock.UtcNow,
             };
             dbContext.OneLoginUsers.Add(oneLoginUser);
         }
@@ -118,15 +118,19 @@ public class SignInJourneyHelper(
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.LinkingToken;
         }
 
-        if (oneLoginUser.PersonId is null && email == databaseSeedOptionsAccessor.Value.OneLoginEmail)
+        if (
+            oneLoginUser.PersonId is null
+            && email == databaseSeedOptionsAccessor.Value.OneLoginEmail
+        )
         {
             oneLoginUser.PersonId = databaseSeedOptionsAccessor.Value.PersonId;
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.Automatic;
         }
 
+        var isStaffFirstLogin = false;
         if (!previouslyLinked && oneLoginUser.PersonId is not null)
         {
-            await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
+            isStaffFirstLogin = await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
         }
 
         await dbContext.SaveChangesAsync();
@@ -141,6 +145,11 @@ public class SignInJourneyHelper(
                 Debug.Assert(oneLoginUser.VerifiedNames is not null);
                 Debug.Assert(oneLoginUser.VerifiedDatesOfBirth is not null);
                 state.SetVerified(oneLoginUser.VerifiedNames!, oneLoginUser.VerifiedDatesOfBirth!);
+            }
+
+            if (isStaffFirstLogin)
+            {
+                state.IsStaffFirstLogin = true;
             }
 
             if (oneLoginUser.PersonId is not null && !ShowDebugPages)
@@ -205,9 +214,10 @@ public class SignInJourneyHelper(
             oneLoginUser.MatchRoute = OneLoginUserMatchRoute.LinkingToken;
         }
 
+        var isStaffFirstLogin = false;
         if (!previouslyLinked && oneLoginUser.PersonId is not null)
         {
-            await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
+            isStaffFirstLogin = await SetStaffToActiveOnFirstLinkAsync(oneLoginUser.PersonId.Value);
         }
 
         await dbContext.SaveChangesAsync();
@@ -218,6 +228,11 @@ public class SignInJourneyHelper(
             state.AttemptedIdentityVerification = true;
 
             state.SetVerified(verifiedNames, verifiedDatesOfBirth);
+
+            if (isStaffFirstLogin)
+            {
+                state.IsStaffFirstLogin = true;
+            }
 
             if (oneLoginUser.PersonId is not null)
             {
@@ -361,17 +376,21 @@ public class SignInJourneyHelper(
 
     private record TryApplyLinkingTokenResult(Guid PersonId);
 
-    private async Task SetStaffToActiveOnFirstLinkAsync(Guid personId)
+    private async Task<bool> SetStaffToActiveOnFirstLinkAsync(Guid personId)
     {
-        var person = await dbContext.Persons
-            .Include(p => p.PersonRoles)
+        var person = await dbContext
+            .Persons.Include(p => p.PersonRoles)
             .ThenInclude(r => r.Role)
             .SingleAsync(p => p.PersonId == personId);
 
-        var isStaff = person.PersonRoles.All(pr => pr.Role.RoleName != RoleType.EarlyCareerSocialWorker);
-        if ( isStaff && person.Status == PersonStatus.PendingRegistration)
+        var isStaff = person.PersonRoles.All(pr =>
+            pr.Role.RoleName != RoleType.EarlyCareerSocialWorker
+        );
+        if (isStaff && person.Status == PersonStatus.PendingRegistration)
         {
             person.Status = PersonStatus.Active;
+            return true;
         }
+        return false;
     }
 }

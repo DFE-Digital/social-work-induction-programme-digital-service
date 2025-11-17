@@ -1,16 +1,22 @@
+using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IEmailService emailService
+    IEmailService emailService,
+    IMoodleService moodleService,
+    IOptions<FeatureFlags> featureFlags
 ) : ICreateOrganisationJourneyService
 {
     private const string CreateOrganisationSessionKey = "_createOrganisation";
@@ -78,17 +84,15 @@ public class CreateOrganisationJourneyService(
     public async Task<Organisation?> CompleteJourneyAsync()
     {
         var createAccountJourneyModel = GetOrganisationJourneyModel();
-
         var organisation = createAccountJourneyModel.Organisation;
         var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
 
         if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
-        // TODO implement call to Moodle for creating a person and organisation here, then set the ids
-        organisation.ExternalOrganisationId = 123;
-        primaryCoordinator.ExternalUserId = 123;
-
         var account = AccountDetails.ToAccount(primaryCoordinator);
+
+        await CreateMoodleOrganisationAsync(organisation, account);
+
         organisation = await organisationService.CreateAsync(organisation, account);
 
         ResetCreateOrganisationJourneyModel();
@@ -97,10 +101,27 @@ public class CreateOrganisationJourneyService(
             await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
             {
                 AccountId = primaryCoordinatorId,
-                OrganisationName = organisation.OrganisationName
+                OrganisationName = organisation.OrganisationName,
+                IsPrimaryCoordinator = true
             });
 
         return organisation;
+    }
+
+    private async Task CreateMoodleOrganisationAsync(Organisation organisation, Account primaryCoordinator)
+    {
+        if (featureFlags.Value.EnableMoodleIntegration)
+        {
+            var externalUserId = await moodleService.CreateUserAsync(primaryCoordinator);
+            var externalOrgId = await moodleService.CreateCourseAsync(organisation);
+
+            if (externalUserId is null || externalOrgId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
+
+            organisation.ExternalOrganisationId = externalOrgId.Value;
+            primaryCoordinator.ExternalUserId = externalUserId.Value;
+
+            await moodleService.EnrolUserAsync(externalUserId.Value, externalOrgId.Value, MoodleRoles.Manager);
+        }
     }
 
     private CreateOrganisationJourneyModel GetOrganisationJourneyModel()

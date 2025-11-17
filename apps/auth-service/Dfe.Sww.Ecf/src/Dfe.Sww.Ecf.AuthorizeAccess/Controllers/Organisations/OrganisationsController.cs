@@ -10,9 +10,7 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Controllers.Organisations;
 [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
 [ApiController]
 [Route("api/[controller]")]
-public class OrganisationsController(
-    IOrganisationService organisationService
-) : Controller
+public class OrganisationsController(IOrganisationService organisationService) : Controller
 {
     [HttpGet]
     [ActionName(nameof(GetAllAsync))]
@@ -45,14 +43,29 @@ public class OrganisationsController(
     [ActionName(nameof(CreateAsync))]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateOrganisationRequest createOrganisationRequest)
+    public async Task<IActionResult> CreateAsync(
+        [FromBody] CreateOrganisationRequest createOrganisationRequest
+    )
     {
-        var createdOrganisation = await organisationService.CreateAsync(createOrganisationRequest.ToOrganisation());
+        var createdOrganisation = await organisationService.CreateAsync(
+            createOrganisationRequest.ToOrganisation()
+        );
 
         return CreatedAtAction(
             nameof(GetByIdAsync),
             new { id = createdOrganisation.OrganisationId },
             createdOrganisation
         );
+    }
+
+    [HttpGet("local-authority-code/{localAuthorityCode:int}")]
+    [ActionName(nameof(ExistsByLocalAuthorityCodeAsync))]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode)
+    {
+        var organisation = await organisationService.GetByLocalAuthorityCodeAsync(
+            localAuthorityCode
+        );
+        return Ok(organisation != null);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Models;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
+using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Validation.Common;
 using FluentValidation;
@@ -10,7 +11,7 @@ namespace Dfe.Sww.Ecf.Frontend.Validation;
 /// </summary>
 public class AccountDetailsValidator : AbstractValidator<AccountDetails>
 {
-    public AccountDetailsValidator(IAccountService accountService)
+    public AccountDetailsValidator(IAccountService accountService, IAuthServiceClient authServiceClient)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -19,7 +20,7 @@ public class AccountDetailsValidator : AbstractValidator<AccountDetails>
         RuleFor(y => y.Email).EmailValidation((email, _) => accountService.CheckEmailExistsAsync(email));
         When(
             x => x.Types?.Contains(AccountType.Assessor) == true || x.Types?.Contains(AccountType.EarlyCareerSocialWorker) == true,
-            () => { RuleFor(y => y.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation(); }
+            () => { RuleFor(y => y.SocialWorkEnglandNumber).SocialWorkEnglandNumberValidation(authServiceClient); }
         );
     }
 }

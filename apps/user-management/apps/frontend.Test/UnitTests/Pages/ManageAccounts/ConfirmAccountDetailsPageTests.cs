@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using System.Globalization;
-using Dfe.Sww.Ecf.Frontend.Configuration;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
@@ -19,16 +17,10 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 {
     public ConfirmAccountDetailsShould()
     {
-        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags
-        {
-            EnableMoodleIntegration = true
-        });
         Sut = new ConfirmAccountDetails(
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
-            MockMoodleServiceClient.Object,
-            new FakeLinkGenerator(),
-            MockFeatureFlags.Object
+            new FakeLinkGenerator()
         )
         {
             TempData = TempData
@@ -165,25 +157,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync(null));
 
-        var createUserRequest = new MoodleUserRequest
-        {
-            Username = updatedAccountDetails.Email,
-            Email = updatedAccountDetails.Email,
-            FirstName = updatedAccountDetails.FirstName,
-            MiddleName = updatedAccountDetails.MiddleNames,
-            LastName = updatedAccountDetails.LastName
-        };
-        MockMoodleServiceClient
-            .Setup(x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)))
-            .ReturnsAsync(
-                new MoodleUserResponse
-                {
-                    Id = 1,
-                    Username = "test",
-                    Successful = true
-                }
-            );
-
         // Act
         var result = await Sut.OnPostAsync();
 
@@ -197,29 +170,18 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
 
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(null), Times.Once);
-        MockMoodleServiceClient.Verify(
-            x => x.User.CreateUserAsync(MoqHelpers.ShouldBeEquivalentTo(createUserRequest)),
-            Times.Once
-        );
         VerifyAllNoOtherCalls();
     }
 
     [Fact]
     public async Task Post_WhenCalledWithMoodleIntegrationDisabled_CreatesUserAndSendsEmailAndDoesNotCallMoodleAndSetExternalUserId()
     {
-        MockFeatureFlags.SetupGet(x => x.Value).Returns(new FeatureFlags
-        {
-            EnableMoodleIntegration = false
-        });
         // Arrange
         Sut = new ConfirmAccountDetails(
             MockCreateAccountJourneyService.Object,
             MockEditAccountJourneyService.Object,
-            MockMoodleServiceClient.Object,
-            new FakeLinkGenerator(),
-            MockFeatureFlags.Object
+            new FakeLinkGenerator()
         )
         {
             TempData = TempData
@@ -248,7 +210,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(null), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(It.IsAny<int>()), Times.Never);
-        MockMoodleServiceClient.VerifyNoOtherCalls();
         VerifyAllNoOtherCalls();
     }
 
@@ -280,33 +241,12 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     {
         // Arrange
         var account = AccountBuilder.Build();
-        var updatedAccountDetails = AccountDetails.FromAccount(account);
 
         MockEditAccountJourneyService
             .Setup(x => x.IsAccountIdValidAsync(account.Id))
             .ReturnsAsync(true);
         MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
         MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(AccountDetails.FromAccount(account));
-
-        var updateUserRequest = new MoodleUserRequest
-        {
-            Id = updatedAccountDetails.ExternalUserId,
-            Username = updatedAccountDetails.Email,
-            Email = updatedAccountDetails.Email,
-            FirstName = updatedAccountDetails.FirstName,
-            MiddleName = updatedAccountDetails.MiddleNames,
-            LastName = updatedAccountDetails.LastName
-        };
-        MockMoodleServiceClient
-            .Setup(x => x.User.UpdateUserAsync(MoqHelpers.ShouldBeEquivalentTo(updateUserRequest)))
-            .ReturnsAsync(
-                new MoodleUserResponse
-                {
-                    Id = 1,
-                    Username = "test",
-                    Successful = true
-                }
-            );
 
         // Act
         var result = await Sut.OnPostUpdateAsync(account.Id);
@@ -324,11 +264,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
-        MockMoodleServiceClient.Verify(
-            x => x.User.UpdateUserAsync(MoqHelpers.ShouldBeEquivalentTo(updateUserRequest)),
-            Times.Once
-        );
-        MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(1), Times.Once);
 
         VerifyAllNoOtherCalls();
     }

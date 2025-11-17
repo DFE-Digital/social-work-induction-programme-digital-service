@@ -2,8 +2,7 @@ using System.Collections.Immutable;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
-using Dfe.Sww.Ecf.Frontend.Services;
-using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using FluentAssertions;
 using GovUk.Frontend.AspNetCore;
@@ -157,8 +156,7 @@ public class ViewAccountDetailsPageTests : ManageAccountsPageTestBase<ViewAccoun
         MockOrganisationService.Verify(x => x.GetByIdAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
                 req.AccountId == account.Id &&
-                req.OrganisationName == organisation.OrganisationName &&
-                req.Role == account.Types!.Min())),
+                req.OrganisationName == organisation.OrganisationName)),
             Times.Once);
 
         VerifyAllNoOtherCalls();

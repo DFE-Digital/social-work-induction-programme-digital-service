@@ -36,7 +36,10 @@ var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<Program>();
 
 logger.LogInformation("Starting auth-service application");
 
-builder.Services.AddOptions<AuthorizeAccessOptions>().Bind(builder.Configuration).ValidateDataAnnotations()
+builder
+    .Services.AddOptions<AuthorizeAccessOptions>()
+    .Bind(builder.Configuration)
+    .ValidateDataAnnotations()
     .ValidateOnStart();
 var applicationOptions = builder.Configuration.Get<AuthorizeAccessOptions>();
 if (applicationOptions is null)
@@ -46,7 +49,9 @@ if (applicationOptions is null)
 
 builder.Services.AddOptions<AppInfo>().Bind(builder.Configuration.GetRequiredSection("AppInfo"));
 
-var featureFlagsSection = builder.Configuration.GetRequiredSection(FeatureFlagOptions.ConfigurationKey);
+var featureFlagsSection = builder.Configuration.GetRequiredSection(
+    FeatureFlagOptions.ConfigurationKey
+);
 builder.Services.AddOptions<FeatureFlagOptions>().Bind(featureFlagsSection);
 var featureFlags = featureFlagsSection.Get<FeatureFlagOptions>();
 
@@ -60,12 +65,13 @@ if (featureFlags.EnableOneLoginCertificateRotation || featureFlags.EnableOpenIdC
     if (applicationOptions.KeyVaultUri is null)
     {
         throw new InvalidConfigurationException(
-            "KeyVaultUri must be set if one of the certificate rotation features are enabled.");
+            "KeyVaultUri must be set if one of the certificate rotation features are enabled."
+        );
     }
 
     var keyVaultUri = new Uri(applicationOptions.KeyVaultUri);
-    builder.Services
-        .AddSingleton(_ => new SecretClient(keyVaultUri, new DefaultAzureCredential()))
+    builder
+        .Services.AddSingleton(_ => new SecretClient(keyVaultUri, new DefaultAzureCredential()))
         .AddSingleton(_ => new CertificateClient(keyVaultUri, new DefaultAzureCredential()));
 }
 
@@ -76,9 +82,9 @@ builder.Configuration.AddEnvironmentVariables();
 builder.AddServiceDefaults();
 
 builder.ConfigureLogging();
-builder.Services.AddOptions<OidcOptions>().Bind(builder.Configuration.GetRequiredSection(
-    OidcOptions.ConfigurationKey
-));
+builder
+    .Services.AddOptions<OidcOptions>()
+    .Bind(builder.Configuration.GetRequiredSection(OidcOptions.ConfigurationKey));
 
 builder.Services.AddGovUkFrontend();
 builder.Services.AddCsp();
@@ -107,7 +113,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
         {
             Title = "Accounts API",
             Version = "v1",
-            Description = "API for managing accounts in the system"
+            Description = "API for managing accounts in the system",
         }
     );
     // If you need to add authentication
@@ -118,7 +124,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter JWT Bearer token **_only_**"
+        Description = "Enter JWT Bearer token **_only_**",
     };
     swaggerGenOptions.AddSecurityDefinition("Bearer", securityScheme);
     var securityRequirement = new OpenApiSecurityRequirement
@@ -129,17 +135,18 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                    Id = "Bearer",
+                },
             },
             []
-        }
+        },
     };
     swaggerGenOptions.AddSecurityRequirement(securityRequirement);
 });
 builder
     .Services.AddOptions<SwaggerUIOptions>()
-    .Configure<IHttpContextAccessor>((swaggerUiOptions, httpContextAccessor) =>
+    .Configure<IHttpContextAccessor>(
+        (swaggerUiOptions, httpContextAccessor) =>
         {
             // 2. Take a reference of the original Stream factory which reads from Swashbuckle's embedded resources
             var originalIndexStreamFactory = swaggerUiOptions.IndexStream;
@@ -189,14 +196,17 @@ if (featureFlags.RequiresDbConnection)
     );
 }
 
-builder.Services
-    .AddEcfBaseServices()
+builder
+    .Services.AddEcfBaseServices()
     .AddTransient<AuthorizeAccessLinkGenerator, RoutingAuthorizeAccessLinkGenerator>()
     .AddTransient<FormFlowJourneySignInHandler>()
     .AddTransient<MatchToEcfAccountAuthenticationHandler>()
     .AddHttpContextAccessor()
     .AddSingleton<IStartupFilter, FormFlowSessionMiddlewareStartupFilter>()
-    .AddFormFlow(options => { options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor); })
+    .AddFormFlow(options =>
+    {
+        options.JourneyRegistry.RegisterJourney(SignInJourneyState.JourneyDescriptor);
+    })
     .AddSingleton<ICurrentUserIdProvider, FormFlowSessionCurrentUserIdProvider>()
     .AddTransient<SignInJourneyHelper>()
     .AddSingleton<ITagHelperInitializer<FormTagHelper>, FormTagHelperInitializer>()
@@ -205,6 +215,7 @@ builder.Services
     .AddScoped<IOrganisationService, OrganisationService>()
     .AddScoped<IAsyeSocialWorkerService, AsyeSocialWorkerService>()
     .AddScoped<IOneLoginAccountLinkingService, OneLoginAccountLinkingService>()
+    .AddScoped<ILocalAuthorityService, LocalAuthorityService>()
     .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value);
 
 builder.AddTestApp();
@@ -289,6 +300,4 @@ app.Run();
 logger.LogInformation("Application stopped");
 
 [PublicAPI]
-public partial class Program
-{
-}
+public partial class Program { }

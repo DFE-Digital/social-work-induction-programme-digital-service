@@ -26,19 +26,6 @@ public class OrganisationService(
         return organisations;
     }
 
-    // TODO Get from database when data is available
-    public Organisation GetByLocalAuthorityCode(int? localAuthorityCode)
-    {
-        return new Organisation
-        {
-            OrganisationId = new Guid(),
-            LocalAuthorityCode = localAuthorityCode,
-            OrganisationName = "Test Organisation",
-            Type = OrganisationType.LocalAuthority,
-            Region = "Test Region"
-        };
-    }
-
     public async Task<Organisation> CreateAsync(Organisation organisation, Account primaryCoordinator)
     {
         if (
@@ -96,5 +83,12 @@ public class OrganisationService(
         var organisation = await authServiceClient.Organisations.GetByIdAsync(id.Value);
 
         return organisation is null ? null : mapper.MapToBo(organisation);
+    }
+
+    public async Task<bool> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode)
+    {
+        var exists = await authServiceClient.Organisations.ExistsByLocalAuthorityCodeAsync(localAuthorityCode);
+
+        return exists;
     }
 }

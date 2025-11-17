@@ -120,6 +120,1269 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.ToTable("journey_states", (string)null);
                 });
 
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LocalAuthority", b =>
+                {
+                    b.Property<int>("OldLaCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("old_la_code");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OldLaCode"));
+
+                    b.Property<string>("LaName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("la_name");
+
+                    b.Property<string>("NewLaCode")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("new_la_code");
+
+                    b.Property<string>("RegionCode")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("region_code");
+
+                    b.Property<string>("RegionName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("region_name");
+
+                    b.HasKey("OldLaCode")
+                        .HasName("pk_local_authorities");
+
+                    b.ToTable("local_authorities", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            OldLaCode = 840,
+                            LaName = "County Durham",
+                            NewLaCode = "E06000047",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 841,
+                            LaName = "Darlington",
+                            NewLaCode = "E06000005",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 390,
+                            LaName = "Gateshead",
+                            NewLaCode = "E08000037",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 805,
+                            LaName = "Hartlepool",
+                            NewLaCode = "E06000001",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 806,
+                            LaName = "Middlesbrough",
+                            NewLaCode = "E06000002",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 391,
+                            LaName = "Newcastle upon Tyne",
+                            NewLaCode = "E08000021",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 392,
+                            LaName = "North Tyneside",
+                            NewLaCode = "E08000022",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 929,
+                            LaName = "Northumberland",
+                            NewLaCode = "E06000057",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 807,
+                            LaName = "Redcar and Cleveland",
+                            NewLaCode = "E06000003",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 393,
+                            LaName = "South Tyneside",
+                            NewLaCode = "E08000023",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 808,
+                            LaName = "Stockton-on-Tees",
+                            NewLaCode = "E06000004",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 394,
+                            LaName = "Sunderland",
+                            NewLaCode = "E08000024",
+                            RegionCode = "E12000001",
+                            RegionName = "North East"
+                        },
+                        new
+                        {
+                            OldLaCode = 889,
+                            LaName = "Blackburn with Darwen",
+                            NewLaCode = "E06000008",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 890,
+                            LaName = "Blackpool",
+                            NewLaCode = "E06000009",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 350,
+                            LaName = "Bolton",
+                            NewLaCode = "E08000001",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 351,
+                            LaName = "Bury",
+                            NewLaCode = "E08000002",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 895,
+                            LaName = "Cheshire East",
+                            NewLaCode = "E06000049",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 896,
+                            LaName = "Cheshire West and Chester",
+                            NewLaCode = "E06000050",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 942,
+                            LaName = "Cumberland",
+                            NewLaCode = "E06000063",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 943,
+                            LaName = "Westmorland and Furness",
+                            NewLaCode = "E06000064",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 876,
+                            LaName = "Halton",
+                            NewLaCode = "E06000006",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 340,
+                            LaName = "Knowsley",
+                            NewLaCode = "E08000011",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 888,
+                            LaName = "Lancashire",
+                            NewLaCode = "E10000017",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 341,
+                            LaName = "Liverpool",
+                            NewLaCode = "E08000012",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 352,
+                            LaName = "Manchester",
+                            NewLaCode = "E08000003",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 353,
+                            LaName = "Oldham",
+                            NewLaCode = "E08000004",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 354,
+                            LaName = "Rochdale",
+                            NewLaCode = "E08000005",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 355,
+                            LaName = "Salford",
+                            NewLaCode = "E08000006",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 343,
+                            LaName = "Sefton",
+                            NewLaCode = "E08000014",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 342,
+                            LaName = "St. Helens",
+                            NewLaCode = "E08000013",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 356,
+                            LaName = "Stockport",
+                            NewLaCode = "E08000007",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 357,
+                            LaName = "Tameside",
+                            NewLaCode = "E08000008",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 358,
+                            LaName = "Trafford",
+                            NewLaCode = "E08000009",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 877,
+                            LaName = "Warrington",
+                            NewLaCode = "E06000007",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 359,
+                            LaName = "Wigan",
+                            NewLaCode = "E08000010",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 344,
+                            LaName = "Wirral",
+                            NewLaCode = "E08000015",
+                            RegionCode = "E12000002",
+                            RegionName = "North West"
+                        },
+                        new
+                        {
+                            OldLaCode = 370,
+                            LaName = "Barnsley",
+                            NewLaCode = "E08000016",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 380,
+                            LaName = "Bradford",
+                            NewLaCode = "E08000032",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 381,
+                            LaName = "Calderdale",
+                            NewLaCode = "E08000033",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 371,
+                            LaName = "Doncaster",
+                            NewLaCode = "E08000017",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 811,
+                            LaName = "East Riding of Yorkshire",
+                            NewLaCode = "E06000011",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 810,
+                            LaName = "Kingston upon Hull, City of",
+                            NewLaCode = "E06000010",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 382,
+                            LaName = "Kirklees",
+                            NewLaCode = "E08000034",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 383,
+                            LaName = "Leeds",
+                            NewLaCode = "E08000035",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 812,
+                            LaName = "North East Lincolnshire",
+                            NewLaCode = "E06000012",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 813,
+                            LaName = "North Lincolnshire",
+                            NewLaCode = "E06000013",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 815,
+                            LaName = "North Yorkshire",
+                            NewLaCode = "E06000065",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 372,
+                            LaName = "Rotherham",
+                            NewLaCode = "E08000018",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 373,
+                            LaName = "Sheffield",
+                            NewLaCode = "E08000019",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 384,
+                            LaName = "Wakefield",
+                            NewLaCode = "E08000036",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 816,
+                            LaName = "York",
+                            NewLaCode = "E06000014",
+                            RegionCode = "E12000003",
+                            RegionName = "Yorkshire and The Humber"
+                        },
+                        new
+                        {
+                            OldLaCode = 831,
+                            LaName = "Derby",
+                            NewLaCode = "E06000015",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 830,
+                            LaName = "Derbyshire",
+                            NewLaCode = "E10000007",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 856,
+                            LaName = "Leicester",
+                            NewLaCode = "E06000016",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 855,
+                            LaName = "Leicestershire",
+                            NewLaCode = "E10000018",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 925,
+                            LaName = "Lincolnshire",
+                            NewLaCode = "E10000019",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 940,
+                            LaName = "North Northamptonshire",
+                            NewLaCode = "E06000061",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 892,
+                            LaName = "Nottingham",
+                            NewLaCode = "E06000018",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 891,
+                            LaName = "Nottinghamshire",
+                            NewLaCode = "E10000024",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 857,
+                            LaName = "Rutland",
+                            NewLaCode = "E06000017",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 941,
+                            LaName = "West Northamptonshire",
+                            NewLaCode = "E06000062",
+                            RegionCode = "E12000004",
+                            RegionName = "East Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 330,
+                            LaName = "Birmingham",
+                            NewLaCode = "E08000025",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 331,
+                            LaName = "Coventry",
+                            NewLaCode = "E08000026",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 332,
+                            LaName = "Dudley",
+                            NewLaCode = "E08000027",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 884,
+                            LaName = "Herefordshire, County of",
+                            NewLaCode = "E06000019",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 333,
+                            LaName = "Sandwell",
+                            NewLaCode = "E08000028",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 893,
+                            LaName = "Shropshire",
+                            NewLaCode = "E06000051",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 334,
+                            LaName = "Solihull",
+                            NewLaCode = "E08000029",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 860,
+                            LaName = "Staffordshire",
+                            NewLaCode = "E10000028",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 861,
+                            LaName = "Stoke-on-Trent",
+                            NewLaCode = "E06000021",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 894,
+                            LaName = "Telford and Wrekin",
+                            NewLaCode = "E06000020",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 335,
+                            LaName = "Walsall",
+                            NewLaCode = "E08000030",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 937,
+                            LaName = "Warwickshire",
+                            NewLaCode = "E10000031",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 336,
+                            LaName = "Wolverhampton",
+                            NewLaCode = "E08000031",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 885,
+                            LaName = "Worcestershire",
+                            NewLaCode = "E10000034",
+                            RegionCode = "E12000005",
+                            RegionName = "West Midlands"
+                        },
+                        new
+                        {
+                            OldLaCode = 822,
+                            LaName = "Bedford",
+                            NewLaCode = "E06000055",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 873,
+                            LaName = "Cambridgeshire",
+                            NewLaCode = "E10000003",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 823,
+                            LaName = "Central Bedfordshire",
+                            NewLaCode = "E06000056",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 881,
+                            LaName = "Essex",
+                            NewLaCode = "E10000012",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 919,
+                            LaName = "Hertfordshire",
+                            NewLaCode = "E10000015",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 821,
+                            LaName = "Luton",
+                            NewLaCode = "E06000032",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 926,
+                            LaName = "Norfolk",
+                            NewLaCode = "E10000020",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 874,
+                            LaName = "Peterborough",
+                            NewLaCode = "E06000031",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 882,
+                            LaName = "Southend-on-Sea",
+                            NewLaCode = "E06000033",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 935,
+                            LaName = "Suffolk",
+                            NewLaCode = "E10000029",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 883,
+                            LaName = "Thurrock",
+                            NewLaCode = "E06000034",
+                            RegionCode = "E12000006",
+                            RegionName = "East of England"
+                        },
+                        new
+                        {
+                            OldLaCode = 301,
+                            LaName = "Barking and Dagenham",
+                            NewLaCode = "E09000002",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 302,
+                            LaName = "Barnet",
+                            NewLaCode = "E09000003",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 303,
+                            LaName = "Bexley",
+                            NewLaCode = "E09000004",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 304,
+                            LaName = "Brent",
+                            NewLaCode = "E09000005",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 305,
+                            LaName = "Bromley",
+                            NewLaCode = "E09000006",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 202,
+                            LaName = "Camden",
+                            NewLaCode = "E09000007",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 201,
+                            LaName = "City of London",
+                            NewLaCode = "E09000001",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 306,
+                            LaName = "Croydon",
+                            NewLaCode = "E09000008",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 307,
+                            LaName = "Ealing",
+                            NewLaCode = "E09000009",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 308,
+                            LaName = "Enfield",
+                            NewLaCode = "E09000010",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 203,
+                            LaName = "Greenwich",
+                            NewLaCode = "E09000011",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 204,
+                            LaName = "Hackney",
+                            NewLaCode = "E09000012",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 205,
+                            LaName = "Hammersmith and Fulham",
+                            NewLaCode = "E09000013",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 309,
+                            LaName = "Haringey",
+                            NewLaCode = "E09000014",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 310,
+                            LaName = "Harrow",
+                            NewLaCode = "E09000015",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 311,
+                            LaName = "Havering",
+                            NewLaCode = "E09000016",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 312,
+                            LaName = "Hillingdon",
+                            NewLaCode = "E09000017",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 313,
+                            LaName = "Hounslow",
+                            NewLaCode = "E09000018",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 206,
+                            LaName = "Islington",
+                            NewLaCode = "E09000019",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 207,
+                            LaName = "Kensington and Chelsea",
+                            NewLaCode = "E09000020",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 314,
+                            LaName = "Kingston upon Thames",
+                            NewLaCode = "E09000021",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 208,
+                            LaName = "Lambeth",
+                            NewLaCode = "E09000022",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 209,
+                            LaName = "Lewisham",
+                            NewLaCode = "E09000023",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 315,
+                            LaName = "Merton",
+                            NewLaCode = "E09000024",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 316,
+                            LaName = "Newham",
+                            NewLaCode = "E09000025",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 317,
+                            LaName = "Redbridge",
+                            NewLaCode = "E09000026",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 318,
+                            LaName = "Richmond upon Thames",
+                            NewLaCode = "E09000027",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 210,
+                            LaName = "Southwark",
+                            NewLaCode = "E09000028",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 319,
+                            LaName = "Sutton",
+                            NewLaCode = "E09000029",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 211,
+                            LaName = "Tower Hamlets",
+                            NewLaCode = "E09000030",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 320,
+                            LaName = "Waltham Forest",
+                            NewLaCode = "E09000031",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 212,
+                            LaName = "Wandsworth",
+                            NewLaCode = "E09000032",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 213,
+                            LaName = "Westminster",
+                            NewLaCode = "E09000033",
+                            RegionCode = "E12000007",
+                            RegionName = "London"
+                        },
+                        new
+                        {
+                            OldLaCode = 867,
+                            LaName = "Bracknell Forest",
+                            NewLaCode = "E06000036",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 846,
+                            LaName = "Brighton and Hove",
+                            NewLaCode = "E06000043",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 825,
+                            LaName = "Buckinghamshire",
+                            NewLaCode = "E06000060",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 845,
+                            LaName = "East Sussex",
+                            NewLaCode = "E10000011",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 850,
+                            LaName = "Hampshire",
+                            NewLaCode = "E10000014",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 921,
+                            LaName = "Isle of Wight",
+                            NewLaCode = "E06000046",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 886,
+                            LaName = "Kent",
+                            NewLaCode = "E10000016",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 887,
+                            LaName = "Medway",
+                            NewLaCode = "E06000035",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 826,
+                            LaName = "Milton Keynes",
+                            NewLaCode = "E06000042",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 931,
+                            LaName = "Oxfordshire",
+                            NewLaCode = "E10000025",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 851,
+                            LaName = "Portsmouth",
+                            NewLaCode = "E06000044",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 870,
+                            LaName = "Reading",
+                            NewLaCode = "E06000038",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 871,
+                            LaName = "Slough",
+                            NewLaCode = "E06000039",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 852,
+                            LaName = "Southampton",
+                            NewLaCode = "E06000045",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 936,
+                            LaName = "Surrey",
+                            NewLaCode = "E10000030",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 869,
+                            LaName = "West Berkshire",
+                            NewLaCode = "E06000037",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 938,
+                            LaName = "West Sussex",
+                            NewLaCode = "E10000032",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 868,
+                            LaName = "Windsor and Maidenhead",
+                            NewLaCode = "E06000040",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 872,
+                            LaName = "Wokingham",
+                            NewLaCode = "E06000041",
+                            RegionCode = "E12000008",
+                            RegionName = "South East"
+                        },
+                        new
+                        {
+                            OldLaCode = 800,
+                            LaName = "Bath and North East Somerset",
+                            NewLaCode = "E06000022",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 839,
+                            LaName = "Bournemouth, Christchurch and Poole",
+                            NewLaCode = "E06000058",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 801,
+                            LaName = "Bristol, City of",
+                            NewLaCode = "E06000023",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 908,
+                            LaName = "Cornwall",
+                            NewLaCode = "E06000052",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 878,
+                            LaName = "Devon",
+                            NewLaCode = "E10000008",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 838,
+                            LaName = "Dorset",
+                            NewLaCode = "E06000059",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 916,
+                            LaName = "Gloucestershire",
+                            NewLaCode = "E10000013",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 420,
+                            LaName = "Isles of Scilly",
+                            NewLaCode = "E06000053",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 802,
+                            LaName = "North Somerset",
+                            NewLaCode = "E06000024",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 879,
+                            LaName = "Plymouth",
+                            NewLaCode = "E06000026",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 933,
+                            LaName = "Somerset",
+                            NewLaCode = "E06000066",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 803,
+                            LaName = "South Gloucestershire",
+                            NewLaCode = "E06000025",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 866,
+                            LaName = "Swindon",
+                            NewLaCode = "E06000030",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 880,
+                            LaName = "Torbay",
+                            NewLaCode = "E06000027",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        },
+                        new
+                        {
+                            OldLaCode = 865,
+                            LaName = "Wiltshire",
+                            NewLaCode = "E06000054",
+                            RegionCode = "E12000009",
+                            RegionName = "South West"
+                        });
+                });
+
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.NameSynonyms", b =>
                 {
                     b.Property<long>("NameSynonymsId")

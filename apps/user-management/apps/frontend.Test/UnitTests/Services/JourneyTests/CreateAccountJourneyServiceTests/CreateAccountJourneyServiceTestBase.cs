@@ -1,11 +1,11 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Services;
+﻿using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.CreateAccountJourneyServiceTests;
@@ -23,12 +23,13 @@ public abstract class CreateAccountJourneyServiceTestBase
             MockAccountService.Object,
             MockOrganisationService.Object,
             new FakeLinkGenerator(),
-            MockEmailService.Object
+            MockEmailService.Object,
+            MockMoodleService.Object,
+            MockFeatureFlags.Object
         );
     }
 
     private protected AccountBuilder AccountBuilder { get; } = new();
-
     private protected OrganisationBuilder OrganisationBuilder { get; } = new();
 
     private protected HttpContext HttpContext { get; } = new DefaultHttpContext
@@ -40,12 +41,14 @@ public abstract class CreateAccountJourneyServiceTestBase
     private protected Mock<IAccountService> MockAccountService { get; } = new();
     private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
     private protected Mock<IEmailService> MockEmailService { get; } = new();
-    private protected Mock<IMoodleServiceClient> MockMoodleServiceClient { get; } = new();
+    private protected Mock<IMoodleService> MockMoodleService { get; } = new();
+
+    private protected Mock<IOptions<FeatureFlags>> MockFeatureFlags { get; } = new();
 
     private protected void VerifyAllNoOtherCall()
     {
         MockAccountService.VerifyNoOtherCalls();
         MockEmailService.VerifyNoOtherCalls();
-        MockMoodleServiceClient.VerifyNoOtherCalls();
+        MockMoodleService.VerifyNoOtherCalls();
     }
 }

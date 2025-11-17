@@ -33,6 +33,6 @@ public static class OrganisationDtoExtensions
             Type = organisation.Type,
             PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
             Region = organisation.Region,
-            PhoneNumber = organisation.PhoneNumber
+            PhoneNumber = organisation.PhoneNumber,
         };
 }

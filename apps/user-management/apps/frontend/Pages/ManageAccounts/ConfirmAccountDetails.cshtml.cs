@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using Dfe.Sww.Ecf.Frontend.Configuration;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Users;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -10,16 +7,13 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 
 public class ConfirmAccountDetails(
     ICreateAccountJourneyService createAccountJourneyService,
     IEditAccountJourneyService editAccountJourneyService,
-    IMoodleServiceClient moodleServiceClient,
-    EcfLinkGenerator linkGenerator,
-    IOptions<FeatureFlags> featureFlags
+    EcfLinkGenerator linkGenerator
 ) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
@@ -145,22 +139,6 @@ public class ConfirmAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         if (accountDetails is null) return BadRequest();
 
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var moodleRequest = new MoodleUserRequest
-            {
-                Username = accountDetails.Email,
-                Email = accountDetails.Email,
-                FirstName = accountDetails.FirstName,
-                MiddleName = accountDetails.MiddleNames,
-                LastName = accountDetails.LastName
-            };
-            var response = await moodleServiceClient.User.CreateUserAsync(moodleRequest);
-            if (!response.Successful) return BadRequest();
-
-            createAccountJourneyService.SetExternalUserId(response.Id);
-        }
-
         await createAccountJourneyService.CompleteJourneyAsync(OrganisationId);
 
         TempData["NotificationType"] = NotificationBannerType.Success;
@@ -176,23 +154,6 @@ public class ConfirmAccountDetails(
 
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (accountDetails is null) return BadRequest();
-
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var moodleRequest = new MoodleUserRequest
-            {
-                Id = accountDetails.ExternalUserId,
-                Username = accountDetails.Email,
-                Email = accountDetails.Email,
-                FirstName = accountDetails.FirstName,
-                MiddleName = accountDetails.MiddleNames,
-                LastName = accountDetails.LastName
-            };
-            var response = await moodleServiceClient.User.UpdateUserAsync(moodleRequest);
-            if (!response.Successful) return BadRequest();
-
-            createAccountJourneyService.SetExternalUserId(response.Id);
-        }
 
         await editAccountJourneyService.CompleteJourneyAsync(id);
 

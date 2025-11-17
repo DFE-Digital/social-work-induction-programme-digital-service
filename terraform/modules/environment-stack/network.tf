@@ -25,6 +25,35 @@ resource "azurerm_network_security_group" "funcapp_nsg" {
     source_address_prefix      = azurerm_subnet.sn_service_apps.address_prefixes[0]
     destination_address_prefix = azurerm_subnet.sn_function_app.address_prefixes[0]
   }
+
+  # To allow access to services like GOV.UK One Login and Notify
+  security_rule {
+    name                       = "Allow_Outbound_Integration"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  security_rule {
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "Internet"
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "azurerm_network_security_group" "private_endpoint_nsg" {
@@ -34,27 +63,15 @@ resource "azurerm_network_security_group" "private_endpoint_nsg" {
   tags                = var.tags
 
   security_rule {
-    name                       = "AllowVnetInbound"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
+    name                       = "Deny_Internet_Outbound"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Deny"
     protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "*"
     source_address_prefix      = "VirtualNetwork"
-    destination_address_prefix = "VirtualNetwork"
-  }
-
-  security_rule {
-    name                       = "AllowAzureLoadBalancerInbound"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "AzureLoadBalancer"
-    destination_address_prefix = "*"
+    destination_address_prefix = "Internet"
   }
 
   lifecycle {
@@ -68,10 +85,11 @@ resource "azurerm_subnet_network_security_group_association" "funcapp_nsg_assoc"
 }
 
 resource "azurerm_subnet" "private_endpoint" {
-  name                 = "${var.resource_name_prefix}-sn-funcapp-endpoint"
-  resource_group_name  = azurerm_resource_group.rg_primary.name
-  virtual_network_name = azurerm_virtual_network.vnet_stack.name
-  address_prefixes     = ["10.0.7.0/24"]
+  name                            = "${var.resource_name_prefix}-sn-funcapp-endpoint"
+  resource_group_name             = azurerm_resource_group.rg_primary.name
+  virtual_network_name            = azurerm_virtual_network.vnet_stack.name
+  address_prefixes                = ["10.0.7.0/24"]
+  default_outbound_access_enabled = false
 
   # This setting is required for private endpoint subnets.
   private_endpoint_network_policies = "Disabled"

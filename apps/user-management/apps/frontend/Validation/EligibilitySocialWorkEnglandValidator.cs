@@ -7,7 +7,7 @@ namespace Dfe.Sww.Ecf.Frontend.Validation;
 
 public class EligibilitySocialWorkEnglandValidator : AbstractValidator<EligibilitySocialWorkEngland>
 {
-    public EligibilitySocialWorkEnglandValidator()
+    public EligibilitySocialWorkEnglandValidator(IAuthServiceClient authServiceClient)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -17,7 +17,7 @@ public class EligibilitySocialWorkEnglandValidator : AbstractValidator<Eligibili
 
         When(
             x => x.IsRegisteredWithSocialWorkEngland is true,
-            () => { RuleFor(y => y.SocialWorkerNumber).SocialWorkEnglandNumberValidation(); }
+            () => { RuleFor(y => y.SocialWorkerNumber).SocialWorkEnglandNumberValidation(authServiceClient); }
         );
     }
 }

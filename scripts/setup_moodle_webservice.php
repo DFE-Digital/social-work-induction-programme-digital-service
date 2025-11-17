@@ -44,9 +44,14 @@ $capabilities = !empty($options['capabilities']) ? explode(',', $options['capabi
     'moodle/user:view',
     'moodle/user:create',
     'moodle/user:update',
+    'moodle/course:create',
+    'moodle/course:visibility',
     'moodle/course:viewhiddencourses',
     'moodle/course:update',
-    'moodle/course:view'
+    'moodle/course:view',
+    'enrol/manual:enrol',
+    'enrol/manual:unenrol',
+    'moodle/role:assign'
 ];
 
 // Ensure the role exists
@@ -194,7 +199,9 @@ if (!$token) {
 // List of Moodle web service functions you want to allow
 $functions = [
     'core_user_create_users',
-    'core_user_update_users'
+    'core_user_update_users',
+    'core_course_create_courses',
+    'enrol_manual_enrol_users'
 ];
 
 foreach ($functions as $functionname) {

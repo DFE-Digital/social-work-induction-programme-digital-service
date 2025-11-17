@@ -8,4 +8,5 @@ public interface IOrganisationOperations
     Task<PaginationResult<OrganisationDto>> GetAllAsync(PaginationRequest request);
     Task<OrganisationDto> CreateAsync(CreateOrganisationRequest createOrganisationRequest);
     Task<OrganisationDto?> GetByIdAsync(Guid id);
+    Task<bool> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode);
 }

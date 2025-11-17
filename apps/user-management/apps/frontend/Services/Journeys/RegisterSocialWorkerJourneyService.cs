@@ -2,6 +2,8 @@ using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.RegisterSocialWorker;
 using Dfe.Sww.Ecf.Frontend.Routing;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -12,16 +14,19 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAccountService _accountService;
     private readonly EcfLinkGenerator _ecfLinkGenerator;
+    private readonly IEmailService _emailService;
     public IEthnicGroupService EthnicGroups { get; init; }
 
     public RegisterSocialWorkerJourneyService(
         IHttpContextAccessor httpContextAccessor,
         IAccountService accountService,
-        EcfLinkGenerator ecfLinkGenerator)
+        EcfLinkGenerator ecfLinkGenerator,
+        IEmailService emailService)
     {
         _httpContextAccessor = httpContextAccessor;
         _accountService = accountService;
         _ecfLinkGenerator = ecfLinkGenerator;
+        _emailService = emailService;
         EthnicGroups = new EthnicGroupService(this);
     }
 
@@ -272,6 +277,11 @@ public class RegisterSocialWorkerJourneyService : IRegisterSocialWorkerJourneySe
         updatedAccount.Status = AccountStatus.Active;
 
         await _accountService.UpdateAsync(updatedAccount);
+
+        await _emailService.SendWelcomeEmailAsync(new WelcomeEmailRequest
+        {
+            AccountId = personId
+        });
 
         ResetRegisterSocialWorkerJourneyModel(personId);
         return updatedAccount;
