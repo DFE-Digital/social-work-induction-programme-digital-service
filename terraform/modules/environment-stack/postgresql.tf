@@ -128,7 +128,7 @@ resource "random_password" "password" {
   override_special = "!@#^*_-"
 }
 
-resource "time_offset" "secret_expiry" {
+resource "time_offset" "secret_expiry05" {
   offset_days = 365
 }
 
@@ -137,7 +137,7 @@ resource "azurerm_key_vault_secret" "database_password" {
   value           = random_password.password.result
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "password"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry05.rfc3339
 
   lifecycle {
     ignore_changes = [value]

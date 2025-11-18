@@ -18,7 +18,7 @@ resource "random_password" "auth_service_client_secret" {
   override_special = "!#$%&*-_=+<>:?"
 }
 
-resource "time_offset" "secret_expiry" {
+resource "time_offset" "secret_expiry01" {
   offset_days = 365
 }
 
@@ -27,7 +27,7 @@ resource "azurerm_key_vault_secret" "auth_service_client_secret" {
   value           = random_password.auth_service_client_secret.result
   key_vault_id    = module.stack.kv_id
   content_type    = "client secret"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry01.rfc3339
 
   lifecycle {
     ignore_changes = [value]

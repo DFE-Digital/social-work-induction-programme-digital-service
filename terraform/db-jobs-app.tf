@@ -97,7 +97,7 @@ data "azurerm_function_app_host_keys" "db_operations_keys" {
   depends_on = [module.db-jobs-app]
 }
 
-resource "time_offset" "secret_expiry" {
+resource "time_offset" "secret_expiry02" {
   offset_days = 365
 }
 
@@ -107,7 +107,7 @@ resource "azurerm_key_vault_secret" "db_operations_function_key" {
   value           = data.azurerm_function_app_host_keys.db_operations_keys.default_function_key
   key_vault_id    = module.stack.kv_id
   content_type    = "function app key"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry02.rfc3339
 
   tags = local.common_tags
 
@@ -124,7 +124,7 @@ resource "azurerm_key_vault_secret" "db_operations_frontdoor_url" {
   value           = azurerm_cdn_frontdoor_endpoint.fd_endpoint.host_name
   key_vault_id    = module.stack.kv_id
   content_type    = "front door hostname"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry02.rfc3339
 
   depends_on = [azurerm_cdn_frontdoor_endpoint.fd_endpoint]
 }

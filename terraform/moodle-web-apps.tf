@@ -37,7 +37,7 @@ resource "random_password" "web_service_user_password" {
   override_special = "!#$%&*-_=+<>:?"
 }
 
-resource "time_offset" "secret_expiry" {
+resource "time_offset" "secret_expiry03" {
   offset_days = 365
 }
 
@@ -46,7 +46,7 @@ resource "azurerm_key_vault_secret" "web_service_user_password" {
   value           = random_password.web_service_user_password.result
   key_vault_id    = module.stack.kv_id
   content_type    = "password"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry03.rfc3339
 
   lifecycle {
     ignore_changes = [value]
@@ -64,7 +64,7 @@ resource "azurerm_key_vault_secret" "web_service_token" {
   value           = random_id.web_service_token.hex
   key_vault_id    = module.stack.kv_id
   content_type    = "access token"
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry03.rfc3339
 
   lifecycle {
     ignore_changes = [value]

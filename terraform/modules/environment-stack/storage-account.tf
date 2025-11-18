@@ -52,7 +52,7 @@ resource "azurerm_storage_account" "sa_app_blob_storage" {
   #checkov:skip=CKV_AZURE_33:Argument has been deprecated
 }
 
-resource "time_offset" "secret_expiry" {
+resource "time_offset" "secret_expiry06" {
   offset_days = 365
 }
 
@@ -62,7 +62,7 @@ resource "azurerm_key_vault_secret" "blob_storage_connection_string" {
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "storage connection string"
   depends_on      = [azurerm_key_vault_access_policy.kv_gh_ap]
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry06.rfc3339
 }
 
 resource "azurerm_storage_account" "sa_app_file_storage" {
@@ -105,7 +105,7 @@ resource "azurerm_key_vault_secret" "file_storage_connection_string" {
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "storage connection string"
   depends_on      = [azurerm_key_vault_access_policy.kv_gh_ap]
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry06.rfc3339
 }
 
 resource "azurerm_key_vault_secret" "file_storage_access_key" {
@@ -114,7 +114,7 @@ resource "azurerm_key_vault_secret" "file_storage_access_key" {
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "storage access key"
   depends_on      = [azurerm_key_vault_access_policy.kv_gh_ap]
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry06.rfc3339
 }
 
 resource "azurerm_storage_account" "sa_db_backup_blob_storage" {
@@ -180,7 +180,7 @@ resource "azurerm_key_vault_secret" "db_backup_blob_storage_connection_string" {
   key_vault_id    = azurerm_key_vault.kv.id
   content_type    = "storage connection string"
   depends_on      = [azurerm_key_vault_access_policy.kv_gh_ap]
-  expiration_date = time_offset.secret_expiry.rfc3339
+  expiration_date = time_offset.secret_expiry06.rfc3339
 }
 
 resource "azurerm_storage_account" "sa_moodle_data" {
