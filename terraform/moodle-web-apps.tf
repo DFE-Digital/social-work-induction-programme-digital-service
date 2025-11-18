@@ -37,22 +37,22 @@ resource "random_password" "web_service_user_password" {
   override_special = "!#$%&*-_=+<>:?"
 }
 
-resource "azurerm_key_vault_secret" "web_service_user_password" {
-  name         = "Moodle-WebServicePassword"
-  value        = random_password.web_service_user_password.result
-  key_vault_id = module.stack.kv_id
-  content_type = "password"
+resource "time_offset" "secret_expiry" {
+  offset_days = 365
+}
 
-  // TODO: Managed expiry of passwords
-  //expiration_date = local.expiration_date
+resource "azurerm_key_vault_secret" "web_service_user_password" {
+  name            = "Moodle-WebServicePassword"
+  value           = random_password.web_service_user_password.result
+  key_vault_id    = module.stack.kv_id
+  content_type    = "password"
+  expiration_date = time_offset.secret_expiry.rfc3339
 
   lifecycle {
-    ignore_changes = [value, expiration_date]
+    ignore_changes = [value]
   }
 
   depends_on = [module.stack]
-
-  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
 
 resource "random_id" "web_service_token" {
@@ -60,21 +60,17 @@ resource "random_id" "web_service_token" {
 }
 
 resource "azurerm_key_vault_secret" "web_service_token" {
-  name         = "Moodle-WebServiceToken"
-  value        = random_id.web_service_token.hex
-  key_vault_id = module.stack.kv_id
-  content_type = "access token"
-
-  // TODO: Managed expiry of passwords
-  //expiration_date = local.expiration_date
+  name            = "Moodle-WebServiceToken"
+  value           = random_id.web_service_token.hex
+  key_vault_id    = module.stack.kv_id
+  content_type    = "access token"
+  expiration_date = time_offset.secret_expiry.rfc3339
 
   lifecycle {
-    ignore_changes = [value, expiration_date]
+    ignore_changes = [value]
   }
 
   depends_on = [module.stack]
-
-  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
 
 resource "azurerm_postgresql_flexible_server_database" "moodle_db" {

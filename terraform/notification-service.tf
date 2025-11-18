@@ -46,17 +46,20 @@ data "azurerm_function_app_host_keys" "function_keys" {
   depends_on = [module.notification-service]
 }
 
+resource "time_offset" "secret_expiry" {
+  offset_days = 365
+}
+
 resource "azurerm_key_vault_secret" "function_key" {
-  name         = "NotificationService-FunctionKey"
-  value        = data.azurerm_function_app_host_keys.function_keys.default_function_key
-  key_vault_id = module.stack.kv_id
-  content_type = "function app key"
+  name            = "NotificationService-FunctionKey"
+  value           = data.azurerm_function_app_host_keys.function_keys.default_function_key
+  key_vault_id    = module.stack.kv_id
+  content_type    = "function app key"
+  expiration_date = time_offset.secret_expiry.rfc3339
 
   tags = local.common_tags
 
   lifecycle {
     ignore_changes = [tags]
   }
-
-  #checkov:skip=CKV_AZURE_41:No expiry date
 }

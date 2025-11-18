@@ -97,12 +97,17 @@ data "azurerm_function_app_host_keys" "db_operations_keys" {
   depends_on = [module.db-jobs-app]
 }
 
+resource "time_offset" "secret_expiry" {
+  offset_days = 365
+}
+
 # Store the function key in Key Vault for workflow retrieval
 resource "azurerm_key_vault_secret" "db_operations_function_key" {
-  name         = "DbOperationsService-FunctionKey"
-  value        = data.azurerm_function_app_host_keys.db_operations_keys.default_function_key
-  key_vault_id = module.stack.kv_id
-  content_type = "function app key"
+  name            = "DbOperationsService-FunctionKey"
+  value           = data.azurerm_function_app_host_keys.db_operations_keys.default_function_key
+  key_vault_id    = module.stack.kv_id
+  content_type    = "function app key"
+  expiration_date = time_offset.secret_expiry.rfc3339
 
   tags = local.common_tags
 
@@ -111,18 +116,15 @@ resource "azurerm_key_vault_secret" "db_operations_function_key" {
   }
 
   depends_on = [data.azurerm_function_app_host_keys.db_operations_keys]
-
-  #checkov:skip=CKV_AZURE_41:Function key doesn't need expiry date
 }
 
 # Store the Front Door hostname in Key Vault for workflow retrieval
 resource "azurerm_key_vault_secret" "db_operations_frontdoor_url" {
-  name         = "DbOperationsService-FrontDoorUrl"
-  value        = azurerm_cdn_frontdoor_endpoint.fd_endpoint.host_name
-  key_vault_id = module.stack.kv_id
-  content_type = "front door hostname"
+  name            = "DbOperationsService-FrontDoorUrl"
+  value           = azurerm_cdn_frontdoor_endpoint.fd_endpoint.host_name
+  key_vault_id    = module.stack.kv_id
+  content_type    = "front door hostname"
+  expiration_date = time_offset.secret_expiry.rfc3339
 
   depends_on = [azurerm_cdn_frontdoor_endpoint.fd_endpoint]
-
-  #checkov:skip=CKV_AZURE_41:URL doesn't need expiry date
 }
