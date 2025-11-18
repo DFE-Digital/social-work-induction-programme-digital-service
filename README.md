@@ -346,7 +346,7 @@ ddev command for viewing useful configuration, including external ports:
 cd ~/swpdp/apps/moodle-ddev; ddev describe
 ```
 
-### Configure Moodle to use the SWPDP GOV.UK theme
+### Configure Moodle to use the GOV.UK SWPDP theme
 
 In addition to the [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme), there is a SWPDP-specific version
 of this theme, which needs to be copied in order to make it selectable:
