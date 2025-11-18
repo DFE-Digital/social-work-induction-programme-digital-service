@@ -390,9 +390,9 @@ cp -r ~/swpdp/apps/moodle-ddev/plugins/theme/govuk_swpdp ~/swpdp/apps/moodle-dde
 
 ### Testing the SSO integration
 
-To test the integration, ensure there is an account in the SWIP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database.
+To test the integration, ensure there is an account in the SWPDP auth database that can authenticate successfully via GOV.UK OneLogin. Similarly, ensure there is a corresponding user account in the Moodle database.
 
-To create this account in Moodle, navigate to `Site administration > Users > Accounts > Add a new user`. Set the `username` to the value of the email address stored for the SWIP user account. This will be used for account matching after authentication. Also select OpenID Connect for the authentication method of this account.
+To create this account in Moodle, navigate to `Site administration > Users > Accounts > Add a new user`. Set the `username` to the value of the email address stored for the SWPDP user account. This will be used for account matching after authentication. Also select OpenID Connect for the authentication method of this account.
 
 If needed, enable Moodle OIDC plugin debug manually in the user interface (Site Administration > Plugins > Authentication > OpenId Connect > Debugging section) or by using `moosh config-set debugmode 1 auth_oidc` with moosh installed and after running `ddev ssh`.
 
