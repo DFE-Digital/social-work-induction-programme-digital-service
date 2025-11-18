@@ -128,20 +128,20 @@ resource "random_password" "password" {
   override_special = "!@#^*_-"
 }
 
-resource "azurerm_key_vault_secret" "database_password" {
-  name         = "Database-AdminPassword"
-  value        = random_password.password.result
-  key_vault_id = azurerm_key_vault.kv.id
-  content_type = "password"
+resource "time_offset" "secret_expiry05" {
+  offset_days = 365
+}
 
-  // TODO: Managed expiry of db passwords
-  //expiration_date = local.expiration_date
+resource "azurerm_key_vault_secret" "database_password" {
+  name            = "Database-AdminPassword"
+  value           = random_password.password.result
+  key_vault_id    = azurerm_key_vault.kv.id
+  content_type    = "password"
+  expiration_date = time_offset.secret_expiry05.rfc3339
 
   lifecycle {
-    ignore_changes = [value, expiration_date]
+    ignore_changes = [value]
   }
 
   depends_on = [azurerm_key_vault_access_policy.kv_gh_ap]
-
-  #checkov:skip=CKV_AZURE_41:Ensure that the expiration date is set on all secrets
 }
