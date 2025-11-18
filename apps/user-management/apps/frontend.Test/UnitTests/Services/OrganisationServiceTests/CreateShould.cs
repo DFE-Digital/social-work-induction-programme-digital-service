@@ -26,6 +26,7 @@ public class CreateShould : OrganisationAccountServiceTestBase
             Type = organisation.Type,
             PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
             Region = organisation.Region,
+            PhoneNumber = organisation.PhoneNumber,
             CreatePersonRequest = new CreatePersonRequest
             {
                 FirstName = primaryCoordinator.FirstName!,
@@ -38,8 +39,7 @@ public class CreateShould : OrganisationAccountServiceTestBase
                 ExternalUserId = primaryCoordinator.ExternalUserId,
                 IsFunded = primaryCoordinator.IsFunded,
                 ProgrammeStartDate = primaryCoordinator.ProgrammeStartDate,
-                ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate,
-                PhoneNumber = primaryCoordinator.PhoneNumber
+                ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate
             }
         };
 

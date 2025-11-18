@@ -19,5 +19,4 @@ public record CreatePersonRequest
     public bool IsFunded { get; set; }
     public DateOnly? ProgrammeStartDate { get; init; }
     public DateOnly? ProgrammeEndDate { get; init; }
-    public string? PhoneNumber { get; init; }
 }

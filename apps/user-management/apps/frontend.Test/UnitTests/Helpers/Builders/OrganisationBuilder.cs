@@ -17,6 +17,7 @@ public class OrganisationBuilder
         _faker.RuleFor(a => a.Region, f => f.Address.County());
         _faker.RuleFor(a => a.PrimaryCoordinatorId, f => f.Random.Guid());
         _faker.RuleFor(a => a.ExternalOrganisationId, f => f.Random.Int());
+        _faker.RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber("+447### ######"));
     }
 
     public OrganisationBuilder WithPrimaryCoordinatorId(Guid? primaryCoordinatorId = null)

@@ -218,6 +218,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.GetLocalAuthorityCode(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         MockOrganisationService.Verify(x => x.ExistsByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
 
         VerifyAllNoOtherCalls();
@@ -288,6 +289,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         MockOrganisationService.Verify(x => x.ExistsByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
         MockAuthServiceClient.Verify(x => x.LocalAuthority.GetByLocalAuthorityCodeAsync(localAuthorityCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(localAuthorityCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();
@@ -373,6 +375,7 @@ public class EnterLocalAuthorityCodePageTests : ManageOrganisationsPageTestBase<
         MockOrganisationService.Verify(x => x.ExistsByLocalAuthorityCodeAsync(existingCode), Times.Never);
         MockAuthServiceClient.Verify(x => x.LocalAuthority.GetByLocalAuthorityCodeAsync(existingCode), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetLocalAuthorityCode(existingCode), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();

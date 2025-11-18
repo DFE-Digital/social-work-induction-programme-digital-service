@@ -18,7 +18,7 @@ public class EnterPhoneNumber(
 
     public PageResult OnGet()
     {
-        var phoneNumber = createOrganisationJourneyService.GetPhoneNumber();
+        var phoneNumber = createOrganisationJourneyService.GetOrganisation()?.PhoneNumber;
         if (phoneNumber is not null)
         {
             PhoneNumber = phoneNumber;
@@ -45,7 +45,10 @@ public class EnterPhoneNumber(
             return Page();
         }
 
-        createOrganisationJourneyService.SetPhoneNumber(PhoneNumber);
+        var organisation = createOrganisationJourneyService.GetOrganisation();
+        if (organisation is null) throw new InvalidOperationException("Organisation must be set before accessing this page.");
+        organisation.PhoneNumber = PhoneNumber;
+        createOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(
             FromChangeLink

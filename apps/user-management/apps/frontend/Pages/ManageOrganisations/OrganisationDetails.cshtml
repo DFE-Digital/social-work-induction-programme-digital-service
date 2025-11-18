@@ -76,10 +76,13 @@
                         <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value>
                     </govuk-summary-list-row>
-                    <govuk-summary-list-row>
-                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.PhoneNumber)</govuk-summary-list-row-key>
-                        <govuk-summary-list-row-value>@Model.PrimaryCoordinator.PhoneNumber</govuk-summary-list-row-value>
-                    </govuk-summary-list-row>
+                    @if (Model.Organisation?.PhoneNumber is not null)
+                    {
+                        <govuk-summary-list-row>
+                            <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.PhoneNumber)</govuk-summary-list-row-key>
+                            <govuk-summary-list-row-value>@Model.Organisation.PhoneNumber</govuk-summary-list-row-value>
+                        </govuk-summary-list-row>
+                    }
                 </govuk-summary-list>
             </govuk-summary-card>
         }
