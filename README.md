@@ -18,7 +18,7 @@ Once the **LOCALDEV one-time installation** has been run once, the following com
 ```bash
 cd ~/swpdp/apps/auth-service/tools/auth-db
 docker compose up -d
-**auth-db running on localhost:5432
+**auth-db (Postgres database) running on localhost:5432
 
 cd ~/swpdp/apps/auth-service
 just onelogin-sim start
@@ -148,13 +148,13 @@ getent group docker
 
 ### Set up and run `auth-service`
 
-#### 1. Dependency: `auth-db` Postgres service
+#### 1. Dependency: `auth-db` (Postgres database)
 ```bash
 cd ~/swpdp/apps/auth-service/tools/auth-db
 docker compose up -d
 ```
 
-**Postgres is now running on localhost:5432 (auth_user / auth_pass)**
+**`auth-db` (Postgres database) is now running on localhost:5432 (auth_user / auth_pass)**
 
 <font color="orange">If Postgres is not running on localhost:5432, may need to update `apps/auth-service/tools/auth-db/compose.yml`</font>
 
