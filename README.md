@@ -11,7 +11,37 @@ This repository houses the digital service for the Social Work Practice Developm
   - The standalone [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme) adds [GDS](https://design-system.service.gov.uk/) compliance to Moodle.
   - The standlone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
 
-## Local development setup
+## Starting LOCALDEV
+
+Once the **LOCALDEV one-time installation** has been run once, the following commands will bring up the service:
+
+```bash
+cd ~/swpdp/apps/auth-service/tools/auth-db
+docker compose up -d
+**auth-db running on localhost:5432
+
+cd ~/swpdp/apps/auth-service
+just onelogin-sim start
+**onelogin-sim available at https://localhost:9010/onelogin/config
+
+cd ~/swpdp/apps/auth-service
+just watch-authz
+**auth-service available at https://localhost:7236/.well-known/openid-configuration
+
+cd ~/swpdp/apps/user-management/apps/notification-service/DfeSwwEcf.NotificationService
+func start
+**notification-service available at http://localhost:7071/api/health
+
+cd ~/swpdp/apps/user-management/apps/frontend
+dotnet watch run --launch-profile https
+**user-management available at https://localhost:7244
+
+cd ~/swpdp/apps/moodle-ddev
+ddev start
+**moodle-ddev available at https://moodle.ddev.site or https://moodle.ddev.site?noredirect=1
+```
+
+## LOCALDEV one-time installation
 
 **This setup process assumes a LOCALDEV environment using [Ubuntu 24.04](https://ubuntu.com/blog/tag/ubuntu-24-04-lts)**
 
