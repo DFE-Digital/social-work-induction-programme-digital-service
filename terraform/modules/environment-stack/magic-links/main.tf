@@ -18,7 +18,7 @@ resource "azurerm_key_vault_secret" "magic_link_token" {
   value           = random_password.magic_link_token[0].result
   key_vault_id    = var.key_vault_id
   content_type    = "alphanumeric token string"
-  expiration_date = time_offset.secret_expiry06.rfc3339
+  expiration_date = time_offset.secret_expiry07.rfc3339
 
   lifecycle {
     ignore_changes = [
