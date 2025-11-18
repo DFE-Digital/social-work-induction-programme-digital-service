@@ -18,27 +18,27 @@ Once the **LOCALDEV one-time installation** has been run once, the following com
 ```bash
 cd ~/swpdp/apps/auth-service/tools/auth-db
 docker compose up -d
-**auth-db (Postgres database) running on localhost:5432
+**auth-db (Postgres database) is now running on localhost:5432 (auth_user / auth_pass)
 
 cd ~/swpdp/apps/auth-service
 just onelogin-sim start
-**onelogin-simulator available at https://localhost:9010/onelogin/config
+**onelogin-simulator is now available at https://localhost:9010/onelogin/config
 
 cd ~/swpdp/apps/auth-service
 just watch-authz
-**auth-service available at https://localhost:7236/.well-known/openid-configuration
+**auth-service is now available at https://localhost:7236/.well-known/openid-configuration
 
 cd ~/swpdp/apps/user-management/apps/notification-service/DfeSwwEcf.NotificationService
 func start
-**notification-service available at http://localhost:7071/api/health
+**notification-service is now available at http://localhost:7071/api/health
 
 cd ~/swpdp/apps/user-management/apps/frontend
 dotnet watch run --launch-profile https
-**user-management available at https://localhost:7244
+**user-management is now available at https://localhost:7244
 
 cd ~/swpdp/apps/moodle-ddev
 ddev start
-**moodle-ddev available at https://moodle.ddev.site or https://moodle.ddev.site?noredirect=1
+**moodle-ddev is now available at https://moodle.ddev.site or https://moodle.ddev.site?noredirect=1
 ```
 
 ## LOCALDEV one-time installation
