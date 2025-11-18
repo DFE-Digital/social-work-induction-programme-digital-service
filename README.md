@@ -22,7 +22,7 @@ docker compose up -d
 
 cd ~/swpdp/apps/auth-service
 just onelogin-sim start
-**onelogin-sim available at https://localhost:9010/onelogin/config
+**onelogin-simulator available at https://localhost:9010/onelogin/config
 
 cd ~/swpdp/apps/auth-service
 just watch-authz
@@ -215,7 +215,7 @@ just onelogin-sim setup (Creates SSL certificate in ~/swpdp/apps/auth-service/to
 just onelogin-sim start
 ``` 
 
-**One Login simulator is now available at https://localhost:9010/onelogin/config**
+**`onelogin-simulator` is now available at https://localhost:9010/onelogin/config**
 
 ### Set up and run `user-management`
 
