@@ -8,12 +8,17 @@ resource "random_password" "magic_link_token" {
   numeric = true
 }
 
+resource "time_offset" "secret_expiry07" {
+  offset_days = 365
+}
+
 resource "azurerm_key_vault_secret" "magic_link_token" {
-  count        = var.magic_links_enabled ? 1 : 0
-  name         = "MagicLink-Token"
-  value        = random_password.magic_link_token[0].result
-  key_vault_id = var.key_vault_id
-  content_type = "alphanumeric token string"
+  count           = var.magic_links_enabled ? 1 : 0
+  name            = "MagicLink-Token"
+  value           = random_password.magic_link_token[0].result
+  key_vault_id    = var.key_vault_id
+  content_type    = "alphanumeric token string"
+  expiration_date = time_offset.secret_expiry06.rfc3339
 
   lifecycle {
     ignore_changes = [

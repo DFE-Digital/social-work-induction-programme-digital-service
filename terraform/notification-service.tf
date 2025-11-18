@@ -1,13 +1,17 @@
+resource "time_offset" "secret_expiry08" {
+  offset_days = 365
+}
+
 resource "azurerm_key_vault_secret" "govnotify_api_key" {
-  name         = "NotificationService-GovNotifyApiKey"
-  value        = var.govnotify_api_key
-  key_vault_id = module.stack.kv_id
-  content_type = "API Key"
+  name            = "NotificationService-GovNotifyApiKey"
+  value           = var.govnotify_api_key
+  key_vault_id    = module.stack.kv_id
+  content_type    = "API Key"
+  expiration_date = time_offset.secret_expiry08.rfc3339
 
   lifecycle {
     ignore_changes = [value]
   }
-  #checkov:skip=CKV_AZURE_41:No expiry date
 }
 
 module "notification-service" {
