@@ -1,3 +1,284 @@
+# Social Work Practice Development Programme (SWPDP) digital service
+
+This repository houses the digital service for the Social Work Practice Development Programme (SWPDP), which is delivered using a number of applications:
+
+- User management (`user-management`) provides a secure web-accessible frontend to allow organisations and users to be managed.
+- Auth service (`auth-service`) provides an API for both authentication and data retrieval/persistence for `user-management`
+  - The `auth-db` tool provides a database instance to support `auth-service`
+  - The `onelogin-simulator` tool provides a local [One Login](https://www.sign-in.service.gov.uk) simulator to support `auth-service`.
+- Moodle service (`moodle-ddev`) provides a secure web-accessible frontend to provide access to learning materials and assessment tools.
+  - The standalone [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme) adds [GDS](https://design-system.service.gov.uk/) compliance to Moodle.
+  - The standlone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
+
+## Local development setup
+
+**This setup process assumes a LOCALDEV environment using [Ubuntu 24.04](https://ubuntu.com/blog/tag/ubuntu-24-04-lts)**
+
+### Set up Ubuntu 24.04 on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about)
+
+```bash
+[Windows PowerShell] Remove any previous WSL distributions and install a new one:
+wsl --list --verbose
+wsl --unregister Ubuntu-24.04
+wsl --install Ubuntu-24.04
+Create a single local user
+```
+
+### Set up an SSH keypair to access GitHub
+ ```bash
+cd
+mkdir ssh-keys
+cd ssh-keys
+ssh-keygen -t ed25519 -b 4096 -C "<DEVELOPER_EMAIL_ADDRESS>" -f github_swpdp
+Enter passphrase (empty for no passphrase): <EMPTY: PRESS RETURN>
+
+eval `ssh-agent -s`
+ssh-add ~/ssh-keys/github_swpdp
+mkdir ~/.ssh
+vi ~/.ssh/config (new file) and add:
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+Host github.com
+AddKeysToAgent yes
+IdentityFile ~/ssh-keys/github_swpdp
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+```
+
+Add the SSH keypair to GitHub:
+- Logged into GitHub, go to https://github.com/settings/ssh/new
+- Title: 'GitHub SWPDP'
+- Key type: Authentication Key
+- Key: Contents of ~/ssh-keys/github_swpdp.pub
+
+### Check out the SWPDP GitHub repository
+
+```bash
+cd
+mkdir swpdp
+cd swpdp
+git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-service.git .
+```
+
+#### TODO: Add apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json
+
+#### TODO: Add apps/user-management/apps/frontend/appsettings.Development.json
+
+### Install the [mise](https://mise.jdx.dev/installing-mise.html) tool version manager
+```bash
+sudo apt update -y && sudo apt install -y gpg sudo wget curl
+sudo install -dm 755 /etc/apt/keyrings
+wget -qO - https://mise.jdx.dev/gpg-key.pub | gpg --dearmor | sudo tee /etc/apt/keyrings/mise-archive-keyring.gpg 1> /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.gpg arch=amd64] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list
+sudo apt update
+sudo apt install -y mise
+```
+
+### Install [docker](https://docs.docker.com/engine/install/ubuntu/)
+```bash
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo docker run hello-world
+```
+
+When the `hello-world` container runs, it prints a confirmation message and exits.
+
+Add the current user to the docker group:
+```bash
+getent group docker
+sudo usermod -aG docker $USER
+getent group docker
+```
+
+Log out of your SSH shell and log in again.
+
+### Set up and run `auth-service`
+
+#### `auth-db` Postgres service
+```bash
+cd ~/swpdp/apps/auth-service/tools/auth-db
+docker compose up -d
+```
+
+**Postgres is now running on localhost:5432 (auth_user / auth_pass)**
+
+<font color="orange">If Postgres is not running on localhost:5432, may need to update `apps/auth-service/tools/auth-db/compose.yml`</font>
+
+<font color="orange">Change:</font>
+```bash
+      - pgdata:/var/lib/postgresql/data
+```
+<font color="orange">To:</font>
+```bash
+      - pgdata:/var/lib/postgresql/18/main
+```
+<font color="orange">Retry:</font> `docker compose up -d`
+
+#### `onelogin-simulator` service
+```bash
+cd ~/swpdp/apps/auth-service
+just onelogin-sim setup (Creates SSL certificate in ~/swpdp/apps/auth-service/tools/onelogin-simulator/certs)
+just onelogin-sim start
+``` 
+
+**One Login simulator is now available at https://localhost:9010/onelogin/config**
+
+#### Set up `auth-service`
+
+```bash
+- Install dependencies from apps/auth-service/.tool-versions
+cd ~/swpdp/apps/auth-service
+mise install
+
+vi ~/.bashrc and add:
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+eval "$(mise activate bash)"
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+source ~/.bashrc
+
+- Set up
+cd ~/swpdp/apps/auth-service
+just install-tools
+just restore
+just set-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf"
+just set-test-db-connection "Host=localhost;Username=auth_user;Password=auth_pass;Database=sww-ecf_tests"
+just build
+just cli migrate-db
+
+- Create SSL certificate
+cd ~/swpdp/apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout aspnet-dev-cert.key \
+    -out aspnet-dev-cert.crt \
+    -subj "/CN=localhost" \
+    -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"
+- This creates aspnet-dev-cert.crt and aspnet-dev-cert.key
+openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:password123
+- This creates aspnet-dev-cert.pfx
+
+cd ~/swpdp/apps/auth-service
+just watch-authz
+```
+
+**`auth-service` is now available at https://localhost:7236/.well-known/openid-configuration**
+
+#### Set up `user-management`
+
+```bash
+cd ~/swpdp/apps/user-management
+mise install
+pnpm i
+pnpm exec playwright install
+pnpm exec playwright install-deps
+
+cd ~/swpdp/apps/user-management/apps/frontend
+dotnet watch run --launch-profile https
+```
+
+**`user-management` is now available at https://localhost:7244**
+
+<font color="orange">At this stage, clicking through to **Sign in with GOV.UK One Login** gives an UntrustedRoot error</font>
+
+#### Add SSL certificates to Windows and WSL
+
+```bash
+Remove any previously-trusted certificates:
+- In Windows, run 'certmgr.msc'
+- Navigate to Certificates - Current User > Trusted Root Certification Authorities > Certificates
+- Remove 2 localhost (expiring a year from now) and 1 'mkcert...' certificates
+
+Locate swpdp/apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/aspnet-dev-cert.pfx
+and double click it to start the Certificate Import Wizard.
+- Store Location: Current User
+- Click 'Next' twice
+- Password: password123
+- Place all certificates in the following store: Trusted Root Certification Authorities
+- Complete the process
+
+BUT... even though we've added the certificate to Windows Trusted Root Certification Authorities,
+WSL/Linux has its own trust store. ***WSL does not automatically use Windows' root certificates***
+
+Add the certificate to WSL/Linux trust store
+sudo cp ~/swpdp/apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/aspnet-dev-cert.crt /usr/local/share/ca-certificates/aspnet-dev-cert.crt
+sudo update-ca-certificates
+- Should report '1 added'
+
+At this stage, trust the other SSL certificates
+
+https://localhost:9010 is secured by a certificate generated by mkcert.
+We have to install the mkcert *root CA*, not the higher-level certificate.
+copy ~/.local/share/mkcert/rootCA.pem to the Downloads directory and rename it rootCA.pem.crt
+Double-click rootCA.pem.crt and Install Certificate as Current User > Trusted Root Certification Authorities
+
+Go to https://localhost:7244 and export the certificate via Not secure > Certificate details > Details > Export...
+Exports localhost.crt
+Double-click the exported .crt file and Install Certificate as Current User > Trusted Root Certification Authorities
+
+Verify the above by running 'certmgr.msc' in Windows > Trusted Root Certification Authorities > Certificates
+There should be 2 localhost (expiring a year from now) and 1 'mkcert...' (expiring 10 years from now)
+```
+
+#### Set up `moodle-ddev`
+
+Install [DDEV](https://docs.ddev.com/en/stable/users/install/ddev-installation/#linux):
+
+```bash
+# Add DDEV’s GPG key to your keyring
+sudo sh -c 'echo ""'
+sudo apt-get update && sudo apt-get install -y curl
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://pkg.ddev.com/apt/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/ddev.gpg > /dev/null
+sudo chmod a+r /etc/apt/keyrings/ddev.gpg
+# Add DDEV releases to your package repository
+sudo sh -c 'echo ""'
+echo "deb [signed-by=/etc/apt/keyrings/ddev.gpg] https://pkg.ddev.com/apt/ * *" | sudo tee /etc/apt/sources.list.d/ddev.list >/dev/null
+# Update package information and install DDEV
+sudo sh -c 'echo ""'
+sudo apt-get update && sudo apt-get install -y ddev
+# One-time initialization of mkcert: THIS HAS ALREADY BEEN DONE
+# mkcert -install
+```
+
+Docker container needs to know about the outside world: create apps/moodle-ddev/.ddev/docker-compose.override.yaml
+```bash
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+version: '3.6'
+
+services:
+  web:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+```
+
+```bash
+cd ~/swpdp/apps/moodle-ddev
+mise install
+just setup
+Permission to beam up? n
+```
+
+**`moodle-dev` is now  available at https://moodle.ddev.site or https://moodle.ddev.site?noredirect=1**
+
+ddev command for viewing useful configuration, including external ports:
+```bash
+cd ~/swpdp/apps/moodle-ddev; ddev describe
+```
+
+
+
+
+
+
 # Social Work Induction Programme (SWIP) digital service
 
 This repository houses the core digital service for the Social Work Induction programme in children's social care. The digital service is based on [Moodle LMS](https://moodle.org).
