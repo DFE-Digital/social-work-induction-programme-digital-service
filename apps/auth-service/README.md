@@ -1,4 +1,4 @@
-# SWPDP digital service - Auth service (`auth-service`)
+# SWPDP digital service: `auth-service`
 
 ## Installation
 
