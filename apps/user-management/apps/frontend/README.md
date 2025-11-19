@@ -33,21 +33,6 @@ e.g.
 }
 ```
 
-### Moodle Service Client Settings
-
-```json
-"MoodleClientOptions": {
-    "BaseUrl": "https://moodle.ddev.site/webservice/rest/server.php"
-},
-```
-
-You will also need to provide values for the Moodle Client in a **.Net User Secrets** file. **DO NOT PROVIDE THESE IN THE APP SETTINGS FILE**.
-You can obtain a new API key by following the `Create a Moodle a web service` section in the Moodle README. The README can be found here `social-work-induction-programme-digital-service\README.md`
-
-```json
-"MoodleClientOptions:ApiToken": "{API_KEY}"
-```
-
 ## Feature Flags
 
 The user management frontend uses feature flags to control various functionality. Feature flags are configured in the `appsettings.json` files and can be overridden using environment variables or other configuration sources.
@@ -55,12 +40,11 @@ The user management frontend uses feature flags to control various functionality
 ### Available Feature Flags
 
 | Flag                                    | Description                                                                                                                                                                               | Default Value                                |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
 | `EnableDeveloperExceptionPage`          | Provides detailed error information and stack traces during development to aid debugging                                                                                                  | `true` in Development, `false` in Production |
 | `EnableHttpStrictTransportSecurity`     | Enables HSTS security headers                                                                                                                                                             | `false` in Development, `true` in Production |
 | `EnableContentSecurityPolicyWorkaround` | Enables Content Security Policy workaround for ASP.NET Core auto refresh (see [dotnet/aspnetcore#33068](https://github.com/dotnet/aspnetcore/issues/33068))                               | `true` in Development, `false` in Production |
 | `EnableForwardedHeaders`                | Enables forwarded headers middleware for proxy support                                                                                                                                    | `true`                                       |
-| `EnableMoodleIntegration`               | Enables Moodle learning management system integration functionality                                                                                                                       | `true`                                       |
 | `EnablePlusEmailStripping`              | Enables removal of 'plus tags' (See [RFC 5233](https://www.rfc-editor.org/rfc/rfc5233) on Subaddress Extensions) from email addresses before sending emails via the Notification service. | `true`                                       |
 
 ### Configuration
@@ -79,7 +63,6 @@ Example configuration in `appsettings.Development.json`:
     "FeatureFlags": {
         "EnableDeveloperExceptionPage": true,
         "EnableHttpStrictTransportSecurity": false,
-        "EnableMoodleIntegration": true,
         "EnablePlusEmailStripping": true
     }
 }

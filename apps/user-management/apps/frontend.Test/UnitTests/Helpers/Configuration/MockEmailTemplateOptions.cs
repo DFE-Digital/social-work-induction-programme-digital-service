@@ -1,6 +1,5 @@
 using Bogus;
 using Dfe.Sww.Ecf.Frontend.Configuration.Notification;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Microsoft.Extensions.Options;
 using Moq;
 

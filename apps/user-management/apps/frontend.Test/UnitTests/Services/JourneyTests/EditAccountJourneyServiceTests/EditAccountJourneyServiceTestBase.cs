@@ -6,7 +6,6 @@ using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.JourneyTests.EditAccountJourneyServiceTests;
@@ -24,8 +23,6 @@ public abstract class EditAccountJourneyServiceTestBase
     private protected ITempDataDictionary TempData { get; }
 
     private protected Mock<IAccountService> MockAccountService { get; } = new();
-    private protected Mock<IMoodleService> MockMoodleService { get; } = new();
-    private protected Mock<IOptions<FeatureFlags>> MockFeatureFlags { get; } = new();
 
 
     private protected EditAccountJourneyService Sut;
@@ -44,7 +41,7 @@ public abstract class EditAccountJourneyServiceTestBase
         TempData = new TempDataDictionary(HttpContext, Mock.Of<ITempDataProvider>());
         var httpContextAccessor = new HttpContextAccessor { HttpContext = HttpContext };
 
-        Sut = new EditAccountJourneyService(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator(), MockMoodleService.Object, MockFeatureFlags.Object);
+        Sut = new EditAccountJourneyService(httpContextAccessor, MockAccountService.Object, new FakeLinkGenerator());
     }
 
     private protected void VerifyAllNoOtherCall()

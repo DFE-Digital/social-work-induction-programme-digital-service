@@ -1,10 +1,8 @@
 using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Routing;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 

@@ -23,9 +23,7 @@ public abstract class CreateAccountJourneyServiceTestBase
             MockAccountService.Object,
             MockOrganisationService.Object,
             new FakeLinkGenerator(),
-            MockEmailService.Object,
-            MockMoodleService.Object,
-            MockFeatureFlags.Object
+            MockEmailService.Object
         );
     }
 
@@ -41,7 +39,6 @@ public abstract class CreateAccountJourneyServiceTestBase
     private protected Mock<IAccountService> MockAccountService { get; } = new();
     private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
     private protected Mock<IEmailService> MockEmailService { get; } = new();
-    private protected Mock<IMoodleService> MockMoodleService { get; } = new();
 
     private protected Mock<IOptions<FeatureFlags>> MockFeatureFlags { get; } = new();
 
@@ -49,6 +46,5 @@ public abstract class CreateAccountJourneyServiceTestBase
     {
         MockAccountService.VerifyNoOtherCalls();
         MockEmailService.VerifyNoOtherCalls();
-        MockMoodleService.VerifyNoOtherCalls();
     }
 }

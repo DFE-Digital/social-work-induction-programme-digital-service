@@ -6,8 +6,6 @@ using Dfe.Sww.Ecf.Frontend.Services;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
-using Microsoft.AspNetCore.Http;
-using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Services.AccountServiceTests;
 
