@@ -2,7 +2,7 @@
 
 ## Installation
 
-See [LOCALDEV one-time installation](/README#localdev-one-time-installation) and [Starting LOCALDEV](/README#starting-localdev).
+See [LOCALDEV one-time installation](/README.md#localdev-one-time-installation) and [Starting LOCALDEV](/README.md#starting-localdev).
 
 ## Developer setup
 
