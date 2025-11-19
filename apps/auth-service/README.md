@@ -9,9 +9,115 @@ for installation instructions for the SWPDP digital service.
 
 Auth service (`auth-service`) provides an API for authentication and data retrieval/persistence. It is an ASP.NET Core 8 web application.
 
-## One Login simulator
+## One Login integration
 
-- TODO: VERIFY On installation, a single admin user is added to the `auth-db` database (the `persons` and `person_roles` tables each have one row added).
+During [LOCALDEV one-time installation](/README.md#localdev-one-time-installation), when setting up and running `auth-service`:
+
+- `just cli migrate-db`:
+  - Adds 1 row to the `users` table.
+  - There are no rows in the `one_login_users`, `persons` or `person_roles` tables.
+
+- `cd ~/swpdp/apps/auth-service; just watch-authz`:
+  - Adds 1 row to the `persons` table, with `email_address` set to the default email address.
+  - Adds 1 row to the `person_roles` table.
+  - Adds 3 rows to the `person_search_attributes` table.
+  - There are no rows in the `one_login_users` table.
+
+- First use of One Login Simulator using the default email address:
+  - Adds 1 row to the `one_login_users` table, with `person_id` populated with `persons` > `person_id`.
+  - Results in a successful `user-service` login.
+
+The local `onelogin-simulator` is a Node application which acts as the OpenID authentication server in place of the real One Login service. It runs entirely locally as a container and allows us full control over what the response is from the auth flow. It also features a [config](https://github.com/govuk-one-login/simulator/blob/main/docs/configuration.md) endpoint that can be used to change the responses of the service on-the-fly. Further information and guides can be found in the official [GitHub repo](https://github.com/govuk-one-login/simulator) for the simulator.
+
+The development configurations for the auth service are already pre-configured to use the simulator by default
+
+Note: The `onelogin-simulator` does _not_ emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
+
+### Switch `auth-service` from One Login Simulator to GOV.UK One Login integration environment:
+In order to use the official [GOV.UK One Login integration environment](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment),
+the application needs to be configured with the API account details.
+
+1. Edit `apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json`
+
+2. Switch the OneLogin configuration from **Local simulator** to **Integration environment**:
+```bash
+--CHANGE---8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+  "OneLogin": {
+    "ClientId": "<CLIENT ID>",
+    "PrivateKeyPem": "<PRIVATE KEY PEM>",
+    "Url": "https://localhost:9010/onelogin"
+  },
+--TO---8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+  "OneLogin": {
+     "Url": "https://oidc.integration.account.gov.uk"
+  }
+-----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
+```
+
+3. Stop `auth-service` running locally and configure `ClientId` and `PrivateKeyPem` with the **integration environment credentials**:
+```bash
+just set-secret OneLogin:ClientId "exampleClientId"
+just set-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
+```
+
+4. Restart `auth-service` locally:
+```bash
+cd ~/swpdp/apps/auth-service
+just watch-authz
+```
+
+5. Go to `user-management` (https://localhost:7244) and click **Sign in with GOV.UK One Login**.
+Rather than being redirected to the local One Login Simulator, you will be redirected to
+https://signin.integration.account.gov.uk/sign-in-or-create
+
+6. Click **Sign in**, enter the default email address and complete the login process. If successful, you will be redirected to the `user-management` dashboard. NB: Using the default email address, the same row in `persons` is used for this login, although a new row is added to `one_login_users` with a different `subject` value.
+
+### Reverting `auth-service` to use One Login Simulator
+
+1. Stop `auth-service` running locally and configure `ClientId` and `PrivateKeyPem` with the **simulator cedentials**:
+```bash
+just set-secret OneLogin:ClientId "exampleClientId"
+just set-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
+```
+2. Restart `auth-service` locally:
+```bash
+cd ~/swpdp/apps/auth-service
+just watch-authz
+```
+
+### Creating an additional One Login user
+
+1. Manually add a row to the `persons` and `person_roles` tables, assigning them the admin role:
+```bash
+INSERT INTO public.persons
+  (person_id, created_on, first_name, last_name, email_address)
+VALUES
+  ('99999999-9999-9999-9999-999999999999', NOW(), 'New', 'User', 'newuser@education.gov.uk');
+
+INSERT INTO public.person_roles
+	(person_id, role_id)
+VALUES
+	('99999999-9999-9999-9999-999999999999', 1000);
+```
+
+2. Go to `user-management` (https://localhost:7244) and click **Sign in with GOV.UK One Login**.
+
+3. Authenticate
+   - If `auth-service` is configured to use the One Login Simulator:
+     - Change the default **Subject (sub)** field to `999`
+     - Change the default **Email** field to `newuser@education.gov.uk`
+     - Click **Continue**
+     - The One Login Simulator login page will be re-displayed.
+   - If `auth-service` is configured to use the GOV.UK One Login integration environment:
+     - Click **Sign in**
+     - Enter email address/password and complete OTP authentication.
+     - A **Request vtr is not permitted** error page will be shown: **this is expected**.
+
+4. Manually link the One Login login with the `auth-service` login:
+   - The `one_login_users` table will have a new row with `email` set to the recently-attempted login.
+   - Update this `one_login_users` row, setting `person_id` to `99999999-9999-9999-9999-999999999999`
+
+6. Repeat **steps 2 and 3** above: One Login should now allow this login and redirect the user to the `user-management` dashboard.
 
 ## Testing
 
@@ -20,73 +126,6 @@ To generate the test database and execute the migrations against it, run:
 ```bash
 cd ~/swpdp/apps/auth-service
 just cli migrate-db --connection TestDbConnection
-```
-
-TODO: Document testing
-
-#### Manual Database Updates
-
-##### Post database setup
-
-This section only needs to be done once when creating the database. Once the database migrations have successfully completed you need to add a person into the `person` table.
-
-You can use the following script:
-
-```sql
-INSERT INTO public.persons (person_id, created_on, updated_on, deleted_on, trn, first_name, middle_name, last_name, date_of_birth, email_address, national_insurance_number) VALUES ('<GUID_HERE>', NOW(), null, null, '<SOCIAL_WORK_ENGLAND_ID>', '<FIRST_NAME>', ' ', '<LAST_NAME>', '<DATE_OF_BIRTH>', null, null);
-```
-
-Once a person has been added you need to link the person record with the record in `one_login_users` (if none are there, try starting the app and logging into OneLogin). You can link the person to the one login user by updating the `person_id` column in the `one_login_users` table to match the record that was just created in the `person` table. Also, given this person is added manually, you need to also add their role in the `person_roles` table.
-
-You also need to create an entry in the `organisations` table and insert a row in the `person_organisations` with the ID of the organisation and ID of the person as the foreign keys `person_id` and `organisation_id`.
-
-##### Applying migrations
-
-If changes have been made in the repo that include migrations, these need to be applied locally. You should be able to use the following command in the terminal while in the Core project:
-`dotnet ef database update`
-
-### OneLogin Integration
-
-We integrate with [Gov.UK OneLogin](https://www.sign-in.service.gov.uk/documentation) to provide us authentication services for our users. To utilise the integration locally, there are two methods; the GOV.UK One Login [integration environment](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/), or the [simulator](https://github.com/govuk-one-login/simulator).
-
-#### Simulator
-
-The [simulator](https://github.com/govuk-one-login/simulator) is a Node application that acts as the OpenID authentication server in place of the real One Login service. It runs entirely locally as a container and allows us full control over what the response is from the auth flow. It also features a [config](https://github.com/govuk-one-login/simulator/blob/main/docs/configuration.md) endpoint that can be used to change the responses of the service on-the-fly. Further information and guides can be found in the official [GitHub repo](https://github.com/govuk-one-login/simulator) for the simulator.
-
-The development configurations for the auth service are already pre-configured to use the simulator by default, all you have to do is generate some local SSL certificates and start it up.
-This process has been simplified with the some `just` commands.
-
-Ensure you have [mkcert](https://github.com/FiloSottile/mkcert?tab=readme-ov-file#installation) installed on your machine (to generate the necessary SSL certificates) and run `just onelogin-sim setup`. This will generate the certificates needed, trust them, and place them in the `tools/onelogin-simulator/certs` directory.
-
-After this, you can simply run `just onelogin-sim start` to start the simulator. By default, it will be hosted at https://localhost:3000/onelogin. You can confirm it is working by going to https://localhost:3000/onelogin/config in your browser and you should see the current configuration of the simulator as a JSON object.
-
-`just onelogin-sim stop` can be used to stop the simulator.
-
-Ensure you comment out any local secrets for `OneLogin:ClientId` and `OneLogin:PrivateKeyPem` associated with the One Login integration environment when using the simulator. Secrets take precendence over variables specified in app settings.
-
-Note: The simulator does _not_ emulate the UI of the One Login service; it will not show the user any login pages or forms, it will simply return whatever response it is configured to give. By default, it will log the user in successfully with the default values specified [here](https://github.com/govuk-one-login/simulator).
-
-#### Integration environment
-
-In order to use the official GOV.UK One Login [integration environment](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/), the application needs to be configured with the API account details in order for this to work.
-
-The endpoint used by the auth service can be changed in the [appsettings.development.json](Dfe.Sww.Ecf\src\Dfe.Sww.Ecf.AuthorizeAccess\appsettings.Development.json). Update the `OneLogin.Url` to point at `https://oidc.integration.account.gov.uk` instead. The `ClientId` and `PrivateKeyPem` will need to be deleted or commented out as they will be specified via user-secrets instead.
-
-The `ClientId` and `PrivateKeyPem` can be configured using user-secrets, the same way we specify database connection details.
-The two values to configure are `OneLogin:ClientId` and `OneLogin:PrivateKeyPem`. Speak to the team to acquire these details.
-
-To set these, run the following:
-
-```shell
-just set-secret OneLogin:ClientId "exampleClientId"
-just set-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
-```
-
-To run the tests, you will also need to set the OneLogin secrets for the test projects:
-
-```shell
-just set-tests-secret OneLogin:ClientId "exampleClientId"
-just set-tests-secret OneLogin:PrivateKeyPem "-----BEGIN PRIVATE KEY-----\nExamplePrivateKeyPem\nWithNewLinesEscaped\nSoItsOnASingleLine\n-----END PRIVATE KEY-----"
 ```
 
 ## Feature Flags
