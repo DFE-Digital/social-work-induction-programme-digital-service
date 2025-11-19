@@ -7,11 +7,11 @@ This repository houses the digital service for the Social Work Practice Developm
   - The `onelogin-simulator` provides a local [One Login](https://www.sign-in.service.gov.uk) simulator to support `auth-service`.
 - User management (`user-management`) provides a secure web-accessible frontend to allow organisations and users to be managed. Data retrieval/persistence is handled by `auth-service`.
   - The `notification-service` provides access to [GOV.UK Notify](https://www.notifications.service.gov.uk) to support `user-management`. 
-- Moodle service (`moodle-ddev`) provides a secure web-accessible frontend to provide access to learning materials and assessment tools.
+- Moodle (`moodle-ddev`) provides a secure web-accessible frontend to provide access to learning materials and assessment tools.
   - The standalone [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme) adds [GDS](https://design-system.service.gov.uk/) compliance to Moodle.
   - The standalone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
 
-This README contains instructions for installinng and starting the overall digital service; the following READMEs provide
+This README contains instructions for installing and starting the overall digital service; the following READMEs provide
 more detail about individual components:
 - Auth service (`auth-service`) [README](apps/auth-service/README.md)
 - User management (`user-management`) [README](apps/user-management/README.md) and [README](apps/user-management/apps/frontend/README.md)
@@ -143,7 +143,7 @@ sudo docker run hello-world
 
 When the `hello-world` container runs, it prints a confirmation message and exits.
 
-4. Add the current user to the docker group:
+4. Add the current user to the `docker` group:
 ```bash
 getent group docker
 sudo usermod -aG docker $USER
@@ -187,7 +187,7 @@ eval "$(mise activate bash)"
 -----8<-----8<-----8<-----8<-----8<-----8<-----8<-----
 source ~/.bashrc
 
-- Set up
+- Install auth-service
 cd ~/swpdp/apps/auth-service
 just install-tools
 just restore

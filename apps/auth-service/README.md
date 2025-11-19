@@ -1,6 +1,8 @@
-# Social Work Practice Development Programme Digital Service - Authentication Service
+# SWPDP digital service - Auth service (`auth-service`)
 
-Note: Any diagrams in .jpg files can be rendered using the [.dsl files and https://structurizr.com/dsl](docs/c4-diagrams-as-code/)
+## Installation
+
+See [LOCALDEV one-time installation](/README#localdev-one-time-installation) and [Starting LOCALDEV](/README#starting-localdev).
 
 ## Developer setup
 
