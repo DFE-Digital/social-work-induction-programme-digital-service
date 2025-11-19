@@ -11,6 +11,12 @@ This repository houses the digital service for the Social Work Practice Developm
   - The standalone [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme) adds [GDS](https://design-system.service.gov.uk/) compliance to Moodle.
   - The standlone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
 
+This README contains instructions for installinng and starting the overall digital service; the following READMEs provide
+more detail about individual components:
+- User management (`user-management`) [README](apps/user-management/README.md) and [README](apps/user-management/apps/frontend/README.md)
+- The `notification-service` [README](apps/user-management/apps/notification-service/DfeSwwEcf.NotificationService/README.md)
+- Auth service (`auth-service`) [README](apps/auth-service/README.md)
+
 ## Starting LOCALDEV
 
 Once the **LOCALDEV one-time installation** has been run once, the following commands will bring up the service:
