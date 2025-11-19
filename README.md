@@ -1,21 +1,21 @@
 # Social Work Practice Development Programme (SWPDP) digital service
 
-This repository houses the digital service for the Social Work Practice Development Programme (SWPDP), which is delivered using a number of applications:
+This repository houses the digital service for the Social Work Practice Development Programme (SWPDP):
 
-- User management (`user-management`) provides a secure web-accessible frontend to allow organisations and users to be managed.
-  - The `notification-service` provides access to [GOV.UK Notify](https://www.notifications.service.gov.uk) to support `user-management`. 
-- Auth service (`auth-service`) provides an API for both authentication and data retrieval/persistence for `user-management`
-  - The `auth-db` service provides a database instance to support `auth-service`
+- Auth service (`auth-service`) provides an API for authentication and data retrieval/persistence for `user-management`
+  - The `auth-db` service provides a database instance to support `auth-service`.
   - The `onelogin-simulator` provides a local [One Login](https://www.sign-in.service.gov.uk) simulator to support `auth-service`.
+- User management (`user-management`) provides a secure web-accessible frontend to allow organisations and users to be managed. Data retrieval/persistence is handled by `auth-service`.
+  - The `notification-service` provides access to [GOV.UK Notify](https://www.notifications.service.gov.uk) to support `user-management`. 
 - Moodle service (`moodle-ddev`) provides a secure web-accessible frontend to provide access to learning materials and assessment tools.
   - The standalone [GOV.UK Moodle Theme](https://github.com/DFE-Digital/govuk-moodle-theme) adds [GDS](https://design-system.service.gov.uk/) compliance to Moodle.
-  - The standlone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
+  - The standalone [GOV.UK Moodle Assessment Activity](https://github.com/DFE-Digital/govuk-moodle-assessment-activity) adds data collection and workflow for an Assessment activity.
 
 This README contains instructions for installinng and starting the overall digital service; the following READMEs provide
 more detail about individual components:
+- Auth service (`auth-service`) [README](apps/auth-service/README.md)
 - User management (`user-management`) [README](apps/user-management/README.md) and [README](apps/user-management/apps/frontend/README.md)
 - The `notification-service` [README](apps/user-management/apps/notification-service/DfeSwwEcf.NotificationService/README.md)
-- Auth service (`auth-service`) [README](apps/auth-service/README.md)
 
 ## Starting LOCALDEV
 
