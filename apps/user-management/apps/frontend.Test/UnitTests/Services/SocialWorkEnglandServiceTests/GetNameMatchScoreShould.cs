@@ -1,6 +1,4 @@
-﻿using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Models;
-using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
-using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
+﻿using Dfe.Sww.Ecf.Frontend.Models.NameMatch;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using FluentAssertions;
 using Moq;

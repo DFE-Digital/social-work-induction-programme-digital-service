@@ -12,9 +12,7 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 public class EditAccountJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IAccountService accountService,
-    EcfLinkGenerator linkGenerator,
-    IMoodleService moodleService,
-    IOptions<FeatureFlags> featureFlags
+    EcfLinkGenerator linkGenerator
 ) : IEditAccountJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -132,13 +130,6 @@ public class EditAccountJourneyService(
             ?? throw AccountNotFoundException(accountId);
 
         var updatedAccount = editAccountJourneyModel.ToAccount();
-
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var externalUserId = await moodleService.UpdateUserAsync(updatedAccount);
-            if (externalUserId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
-            updatedAccount.ExternalUserId = externalUserId;
-        }
 
         await _accountService.UpdateAsync(updatedAccount);
 

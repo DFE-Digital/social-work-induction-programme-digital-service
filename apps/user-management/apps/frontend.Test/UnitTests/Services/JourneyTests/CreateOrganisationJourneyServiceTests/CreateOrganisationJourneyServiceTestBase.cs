@@ -23,9 +23,7 @@ public abstract class CreateOrganisationJourneyServiceTestBase
         Sut = new CreateOrganisationJourneyService(
             httpContextAccessor,
             MockOrganisationService.Object,
-            MockEmailService.Object,
-            MockMoodleService.Object,
-            MockFeatureFlags.Object
+            MockEmailService.Object
         );
     }
 
@@ -37,7 +35,6 @@ public abstract class CreateOrganisationJourneyServiceTestBase
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; } = new();
     private protected Mock<IEmailService> MockEmailService { get; } = new();
-    private protected Mock<IMoodleService> MockMoodleService { get; } = new();
 
     private protected OrganisationBuilder OrganisationBuilder { get; } = new();
 
@@ -49,6 +46,5 @@ public abstract class CreateOrganisationJourneyServiceTestBase
     {
         MockOrganisationService.VerifyNoOtherCalls();
         MockEmailService.VerifyNoOtherCalls();
-        MockMoodleService.VerifyNoOtherCalls();
     }
 }

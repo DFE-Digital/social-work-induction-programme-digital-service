@@ -1,5 +1,4 @@
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
-using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Moq;
 using Xunit;

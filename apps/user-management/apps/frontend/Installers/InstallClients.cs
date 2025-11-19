@@ -7,9 +7,6 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.Models;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Interfaces;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Options;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.NotificationService.Options;
@@ -39,10 +36,7 @@ public static class InstallClients
 
         services.AddResiliencePipeline<string, HttpResponseMessage>(
             nameof(SocialWorkEnglandClient),
-            x =>
-            {
-                x.AddRetry(JitteredExponentialRetries()).Build();
-            }
+            x => { x.AddRetry(JitteredExponentialRetries()).Build(); }
         );
 
         // Social Work England Client
@@ -67,9 +61,6 @@ public static class InstallClients
         services
             .AddHttpClient<AuthClientOptions, IAuthServiceClient, AuthServiceClient>()
             .AddHttpMessageHandler<OidcAuthenticationDelegatingHandler>();
-
-        // Moodle Service Client
-        services.AddHttpClient<MoodleClientOptions, IMoodleServiceClient, MoodleServiceClient>();
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(
@@ -88,13 +79,9 @@ public static class InstallClients
             );
 
         if (isSingleton)
-        {
             services.AddSingleton<TInterface, TConcrete>();
-        }
         else
-        {
             services.AddTransient<TInterface, TConcrete>();
-        }
 
         var httpClientBuilder = services.AddHttpClient<TInterface, TConcrete>(
             (serviceProvider, client) =>
@@ -132,7 +119,7 @@ public static class InstallClients
                 HttpStatusCode.TooManyRequests,
                 HttpStatusCode.InternalServerError,
                 HttpStatusCode.ServiceUnavailable,
-                HttpStatusCode.GatewayTimeout,
+                HttpStatusCode.GatewayTimeout
             }
         ];
     }
