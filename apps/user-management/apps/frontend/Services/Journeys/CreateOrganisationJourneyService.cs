@@ -50,19 +50,6 @@ public class CreateOrganisationJourneyService(
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
-    public string? GetPhoneNumber()
-    {
-        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel.PhoneNumber;
-    }
-
-    public void SetPhoneNumber(string? phoneNumber)
-    {
-        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        createOrganisationJourneyModel.PhoneNumber = phoneNumber;
-        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
-    }
-
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
@@ -83,9 +70,9 @@ public class CreateOrganisationJourneyService(
 
     public async Task<Organisation?> CompleteJourneyAsync()
     {
-        var createAccountJourneyModel = GetOrganisationJourneyModel();
-        var organisation = createAccountJourneyModel.Organisation;
-        var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var organisation = createOrganisationJourneyModel.Organisation;
+        var primaryCoordinator = createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails;
 
         if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 

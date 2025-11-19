@@ -82,9 +82,6 @@ public class AccountDetails
 
     public IList<AccountType>? Types { get; set; }
 
-    [Display(Name = "UK phone number")]
-    public string? PhoneNumber { get; set; }
-
     /// <summary>
     /// Set to true on pages where a phone number is needed
     /// </summary>
@@ -127,7 +124,6 @@ public class AccountDetails
             RouteIntoSocialWork = account.RouteIntoSocialWork,
             OtherRouteIntoSocialWork = account.OtherRouteIntoSocialWork,
             Types = account.Types,
-            PhoneNumber = account.PhoneNumber,
             PhoneNumberRequired = account.PhoneNumberRequired
         };
     }
@@ -141,7 +137,6 @@ public class AccountDetails
             MiddleNames = accountDetails.MiddleNames,
             LastName = accountDetails.LastName,
             Email = accountDetails.Email,
-            PhoneNumber = accountDetails.PhoneNumber,
             Status =
                 accountDetails.Types != null
                 && accountDetails.Types.Contains(AccountType.EarlyCareerSocialWorker)

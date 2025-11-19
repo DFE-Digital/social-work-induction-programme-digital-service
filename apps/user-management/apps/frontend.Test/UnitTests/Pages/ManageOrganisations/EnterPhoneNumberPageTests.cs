@@ -1,4 +1,5 @@
 using Bogus;
+using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
@@ -27,18 +28,18 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
     public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var phoneNumber = new Faker().Phone.PhoneNumber("+447### ######");
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPhoneNumber()).Returns(phoneNumber);
+        var organisation = OrganisationBuilder.Build();
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
 
         // Act
         var result = Sut.OnGet();
 
         // Assert
-        Sut.PhoneNumber.Should().Be(phoneNumber);
+        Sut.PhoneNumber.Should().Be(organisation.PhoneNumber);
         Sut.BackLinkPath.Should().Be("/manage-organisations/confirm-organisation-details");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPhoneNumber(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -46,18 +47,18 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
     public void OnGetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
-        var phoneNumber = new Faker().Phone.PhoneNumber("+447### ######");
-        MockCreateOrganisationJourneyService.Setup(x => x.GetPhoneNumber()).Returns(phoneNumber);
+        var organisation = OrganisationBuilder.Build();
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
 
         // Act
         var result = Sut.OnGetChange();
 
         // Assert
-        Sut.PhoneNumber.Should().Be(phoneNumber);
+        Sut.PhoneNumber.Should().Be(organisation.PhoneNumber);
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
         result.Should().BeOfType<PageResult>();
 
-        MockCreateOrganisationJourneyService.Verify(x => x.GetPhoneNumber(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -91,8 +92,9 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
     public async Task OnPostAsync_WhenCalledWithPhoneNumber_SavesPhoneNumberAndRedirectsUser()
     {
         // Arrange
-        var phoneNumber = new Faker().Phone.PhoneNumber("+447### ######");
-        Sut.PhoneNumber = phoneNumber;
+        var organisation = OrganisationBuilder.Build();
+        Sut.PhoneNumber = organisation.PhoneNumber;
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -103,7 +105,8 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
         redirectResult.Should().NotBeNull();
         redirectResult!.Url.Should().Be("/manage-organisations/add-primary-coordinator");
 
-        MockCreateOrganisationJourneyService.Verify(x => x.SetPhoneNumber(phoneNumber), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();
     }
@@ -112,8 +115,9 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
     public async Task OnPostChangeAsync_WhenCalledWithPhoneNumber_SavesPhoneNumberAndRedirectsUser()
     {
         // Arrange
-        var phoneNumber = new Faker().Phone.PhoneNumber("+447### ######");
-        Sut.PhoneNumber = phoneNumber;
+        var organisation = OrganisationBuilder.Build();
+        Sut.PhoneNumber = organisation.PhoneNumber;
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns(organisation);
 
         // Act
         var result = await Sut.OnPostChangeAsync();
@@ -127,8 +131,30 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
         Sut.FromChangeLink.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");
 
-        MockCreateOrganisationJourneyService.Verify(x => x.SetPhoneNumber(phoneNumber), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+        MockCreateOrganisationJourneyService.Verify(x => x.SetOrganisation(organisation), Times.Once);
 
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostAsync_WhenCalledWithPhoneNumberAndNoOrganisation_ThrowsError()
+    {
+        // Arrange
+        Sut.PhoneNumber = new Faker().Phone.PhoneNumber("+447### ######");
+        MockCreateOrganisationJourneyService.Setup(x => x.GetOrganisation()).Returns((Organisation?)null);
+
+        // Act
+        var actualException = await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await Sut.OnPostAsync()
+        );
+
+        // Assert
+        actualException.Message.Should().Be("Organisation must be set before accessing this page.");
+
+        MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
+
+        VerifyAllNoOtherCalls();
+
     }
 }

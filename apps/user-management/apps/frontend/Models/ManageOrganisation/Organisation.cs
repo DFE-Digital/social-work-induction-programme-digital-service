@@ -20,4 +20,7 @@ public class Organisation
     public string? Region { get; init; }
 
     public Guid? PrimaryCoordinatorId { get; init; }
+
+    [Display(Name = "UK phone number")]
+    public string? PhoneNumber { get; set; }
 }
