@@ -2,7 +2,8 @@
 
 ## Installation
 
-See [LOCALDEV one-time installation](/README.md#localdev-one-time-installation) and [Starting LOCALDEV](/README.md#starting-localdev).
+See [LOCALDEV one-time installation](/README.md#localdev-one-time-installation) and [Starting LOCALDEV](/README.md#starting-localdev)
+for installation instructions for the SWPDP digital service.
 
 ## Developer setup
 
