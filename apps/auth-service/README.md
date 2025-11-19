@@ -7,7 +7,7 @@ for installation instructions for the SWPDP digital service.
 
 ## Overview
 
-Auth service (`auth-service`) provides an API for authentication and data retrieval/persistence. It is an ASP.NET Core 8 web application.
+`auth-service` provides an API for authentication and data retrieval/persistence. It is an ASP.NET Core 8 web application.
 
 ## One Login integration
 
