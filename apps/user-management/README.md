@@ -13,25 +13,6 @@ We apply coding standards using [CSharpier](https://csharpier.com/) and `.editor
 - [Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=csharpier.CSharpier) - `Configure Reformat with CSharpier on Save under Tools | Options | CSharpier | General`
 - [JetBrains Rider](https://plugins.jetbrains.com/plugin/18243-csharpier) - `Configure CSharpier to Run on Save under Preferences/Settings | Tools | CSharpier`
 
-### Tooling and Package Management
-
-#### Tool versions (`asdf`)
-This repo has been setup to use [asdf](https://asdf-vm.com) to manage tooling versions. Follow their [Getting Started](https://asdf-vm.com/guide/getting-started.html) guide to install `asdf` on your machine.
-
-#### Package manager (`pnpm`)
-For package management, we use [pnpm](https://pnpm.io). Once you have installed `asdf`, you can setup `pnpm` by simply adding the required plugins and installing it:
-```shell
-asdf plugin add nodejs
-asdf plugin add pnpm
-asdf plugin add dotnet
-asdf install
-```
-
-### Setup
-
-- Install dependencies: `pnpm i`
-- Install playwright dependencies: `pnpx playwright install`
-
 ### Tasks
 
 ###### Running Tests
