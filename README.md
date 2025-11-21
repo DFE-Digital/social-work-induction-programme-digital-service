@@ -14,8 +14,19 @@ This repository houses the digital service for the Social Work Practice Developm
 This README contains instructions for installing and starting the overall digital service; the following READMEs provide
 more detail about individual components:
 - Auth service (`auth-service`) [README](apps/auth-service/README.md)
-- User management (`user-management`) [README](apps/user-management/README.md) and [README](apps/user-management/apps/frontend/README.md)
+- User management (`user-management`) [README](apps/user-management/apps/frontend/README.md)
 - The `notification-service` [README](apps/user-management/apps/notification-service/DfeSwwEcf.NotificationService/README.md)
+
+## Development
+
+### Coding Conventions & Standards
+
+#### CSharpier
+We apply coding standards using [CSharpier](https://csharpier.com/) and `.editorconfig`. In order to apply the formatting on save you can install the extension for your chosen IDE [here](https://csharpier.com/docs/Editors), and follow the instructions in the extension overview.
+
+#### Extension Links
+- [Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=csharpier.CSharpier) - `Configure Reformat with CSharpier on Save under Tools | Options | CSharpier | General`
+- [JetBrains Rider](https://plugins.jetbrains.com/plugin/18243-csharpier) - `Configure CSharpier to Run on Save under Preferences/Settings | Tools | CSharpier`
 
 ## Starting LOCALDEV
 

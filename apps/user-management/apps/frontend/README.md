@@ -84,3 +84,35 @@ Example configuration in `appsettings.Development.json`:
     }
 }
 ```
+
+## Tasks
+
+### Running Tests
+
+To run Frontend Tests locally use `pnpm playwright test --project=frontend` after starting the auth service, the One Login simulator and the frontend app. 
+Note: `INTERACTIVE_MODE=true` needs to be set in `auth-service/tools/onelogin-simulator/compose.yml`.
+
+To run API Tests use- `pnpm playwright test --project=swe_api`
+
+### Running Performance Tests
+
+Prerequisites: at least Java v8+ installed
+
+- cd to `/apps/swe-performance-test`
+- `dotnet restore`
+
+Set the following secrets:
+
+- `dotnet user-secrets set 'ClientId' 'id'`
+- `dotnet user-secrets set 'ClientSecret' 'secret'`
+- `dotnet user-secrets set 'AccessTokenURL' 'url'`
+
+Set the following environment variables:
+
+- `export ENVIRONMENT=preprod` or `export ENVIRONMENT=production` (or if you are on Windows `set ENVIRONMENT=preprod` or `set ENVIRONMENT=production` or using powershell `set-item -path env:ENVIRONMENT -value preprod` or `set-item -path env:ENVIRONMENT -value production`)
+
+Run the test:
+
+- `dotnet test --logger "Console;verbosity=normal"`
+
+Reports are saved to the `dist/apps/swe-performance-test/net8.0/performance-test-results` folder.
