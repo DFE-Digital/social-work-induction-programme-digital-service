@@ -28,6 +28,14 @@ We apply coding standards using [CSharpier](https://csharpier.com/) and `.editor
 - [Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=csharpier.CSharpier) - `Configure Reformat with CSharpier on Save under Tools | Options | CSharpier | General`
 - [JetBrains Rider](https://plugins.jetbrains.com/plugin/18243-csharpier) - `Configure CSharpier to Run on Save under Preferences/Settings | Tools | CSharpier`
 
+## LOCALDEV assumptions
+
+The setup process assumes a LOCALDEV environment using [Ubuntu 24.04](https://ubuntu.com/blog/tag/ubuntu-24-04-lts)
+under [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about). All of the SWPDP developers
+were using this type of environment.
+
+**Developers using a Mac environment will need to alter these instructions, as required.**
+
 ## Starting LOCALDEV
 
 Once the **LOCALDEV one-time installation** has been run once, the following commands will bring up the service:
@@ -60,9 +68,7 @@ ddev start
 
 ## LOCALDEV one-time installation
 
-**This setup process assumes a LOCALDEV environment using [Ubuntu 24.04](https://ubuntu.com/blog/tag/ubuntu-24-04-lts)**
-
-### Set up Ubuntu 24.04 on [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about)
+### Set up Ubuntu 24.04 on WSL
 
 ```bash
 [Windows PowerShell] Remove any previous WSL distributions and install a new one:
