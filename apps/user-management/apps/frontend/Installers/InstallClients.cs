@@ -78,7 +78,7 @@ public static class InstallClients
                 return CreateStatusCodeRetryPolicy(
                     nameof(AuthServiceClient),
                     logger,
-                    3,
+                    5,
                     HttpStatusCode.BadGateway,
                     HttpStatusCode.ServiceUnavailable,
                     HttpStatusCode.GatewayTimeout);
