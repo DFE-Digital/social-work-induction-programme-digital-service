@@ -29,7 +29,7 @@ public class EligibilitySocialWorkEnglandAsyeDropoutPageTests : ManageAccountsPa
         // Assert
         result.Should().BeOfType<PageResult>();
         Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-social-work-england");
-        Sut.ContinueLinkPath.Should().Be("/manage-accounts/eligibility-agency-worker");
+        Sut.ContinueLinkPath.Should().Be("/manage-accounts/add-account-details");
         Sut.FromChangeLink.Should().BeFalse();
         VerifyAllNoOtherCalls();
     }
