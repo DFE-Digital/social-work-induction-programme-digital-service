@@ -132,7 +132,7 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
         "Url": "https://0.0.0.0:7236",
         "Certificate": {
           "Path": "aspnet-dev-cert.pfx",
-          "Password": "password123"
+          "Password": "<ANY PASSWORD, from the 'openssl pkcs12' command in 'Install auth-service'>"
         }
       }
     }
@@ -381,7 +381,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/CN=localhost" \
     -addext "subjectAltName = DNS:localhost, DNS:host.docker.internal"
 - This creates aspnet-dev-cert.crt and aspnet-dev-cert.key
-openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:password123
+openssl pkcs12 -export -out aspnet-dev-cert.pfx -inkey aspnet-dev-cert.key -in aspnet-dev-cert.crt -password pass:<ANY PASSWORD>
 - This creates aspnet-dev-cert.pfx
 
 - Run `auth-service`
@@ -475,7 +475,7 @@ Locate `apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/aspnet-dev
 and double click it to start the **Certificate Import Wizard**.
 - Store Location: **Current User**
 - Click **Next** twice
-- Password: **password123**
+- Password: **<ANY PASSWORD, from the 'openssl pkcs12' command in 'Install auth-service'>**
 - Click **Next**
 - Place all certificates in the following store: **Trusted Root Certification Authorities**
 - Click **Next**, then **Finish**, then complete the process
