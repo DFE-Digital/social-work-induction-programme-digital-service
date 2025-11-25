@@ -83,6 +83,11 @@ public class EnterLocalAuthorityCode(
             return Page();
         }
 
+        var phoneNumber = createOrganisationJourneyService.GetOrganisation()?.PhoneNumber;
+        if (phoneNumber is not null)
+        {
+            organisation.PhoneNumber = phoneNumber;
+        }
         createOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(

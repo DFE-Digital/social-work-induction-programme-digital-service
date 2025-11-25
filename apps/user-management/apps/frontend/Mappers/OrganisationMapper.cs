@@ -15,7 +15,8 @@ public class OrganisationMapper : IModelMapper<OrganisationDto, Organisation>
             LocalAuthorityCode = organisationDto.LocalAuthorityCode,
             Type = organisationDto.Type,
             PrimaryCoordinatorId = organisationDto.PrimaryCoordinatorId,
-            Region = organisationDto.Region
+            Region = organisationDto.Region,
+            PhoneNumber = organisationDto.PhoneNumber
         };
     }
 
@@ -29,7 +30,8 @@ public class OrganisationMapper : IModelMapper<OrganisationDto, Organisation>
             LocalAuthorityCode = organisation.LocalAuthorityCode,
             Type = organisation.Type,
             PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
-            Region = organisation.Region
+            Region = organisation.Region,
+            PhoneNumber = organisation.PhoneNumber
         };
     }
 }
