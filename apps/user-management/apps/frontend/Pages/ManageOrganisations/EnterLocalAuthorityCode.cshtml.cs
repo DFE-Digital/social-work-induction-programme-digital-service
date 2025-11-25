@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

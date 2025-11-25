@@ -23,16 +23,17 @@ namespace Dfe.Sww.Ecf.AuthorizeAccess.Infrastructure.Configuration;
 
 public static class ServicesExtensions
 {
-    public static IHostApplicationBuilder AddServiceDefaults(
-        this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks();
         builder.AddDatabase();
 
-        builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetPostgresConnectionString());
+        builder
+            .Services.AddHealthChecks()
+            .AddNpgSql(builder.Configuration.GetPostgresConnectionString());
 
-        var featureFlags = builder.Services
-            .BuildServiceProvider()
+        var featureFlags = builder
+            .Services.BuildServiceProvider()
             .GetRequiredService<IOptions<FeatureFlagOptions>>()
             .Value;
 
@@ -63,7 +64,8 @@ public static class ServicesExtensions
 
         if (featureFlags.EnableMsDotNetDataProtectionServices)
         {
-            builder.Services.AddDataProtection()
+            builder
+                .Services.AddDataProtection()
                 .PersistKeysToAzureBlobStorage(
                     // This will use managed identity for auth so the
                     // connection string will just be a URL to the blob container
@@ -77,9 +79,7 @@ public static class ServicesExtensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        var featureFlags = app.Services
-            .GetRequiredService<IOptions<FeatureFlagOptions>>()
-            .Value;
+        var featureFlags = app.Services.GetRequiredService<IOptions<FeatureFlagOptions>>().Value;
 
         if (featureFlags.EnableForwardedHeaders)
         {
@@ -91,7 +91,13 @@ public static class ServicesExtensions
             app.UseHsts();
         }
 
-        app.MapGet("/health", async context => { await context.Response.WriteAsync("OK"); });
+        app.MapGet(
+            "/health",
+            async context =>
+            {
+                await context.Response.WriteAsync("OK");
+            }
+        );
 
         app.UseHealthChecks("/status");
 
@@ -99,11 +105,15 @@ public static class ServicesExtensions
     }
 
     public static IHostApplicationBuilder AddAuthentication(
-        this IHostApplicationBuilder builder, ILogger logger)
+        this IHostApplicationBuilder builder,
+        ILogger logger
+    )
     {
         using var scope = logger.BeginScope("Adding authentication");
 
-        var oneLoginSection = builder.Configuration.GetRequiredSection(OneLoginOptions.ConfigurationKey);
+        var oneLoginSection = builder.Configuration.GetRequiredSection(
+            OneLoginOptions.ConfigurationKey
+        );
         builder.Services.AddOptions<OneLoginOptions>().Bind(oneLoginSection);
 
         var serviceProvider = builder.Services.BuildServiceProvider();
@@ -122,12 +132,18 @@ public static class ServicesExtensions
 
                 options.AddScheme(
                     AuthenticationSchemes.FormFlowJourney,
-                    scheme => { scheme.HandlerType = typeof(FormFlowJourneySignInHandler); }
+                    scheme =>
+                    {
+                        scheme.HandlerType = typeof(FormFlowJourneySignInHandler);
+                    }
                 );
 
                 options.AddScheme(
                     AuthenticationSchemes.MatchToEcfAccount,
-                    scheme => { scheme.HandlerType = typeof(MatchToEcfAccountAuthenticationHandler); }
+                    scheme =>
+                    {
+                        scheme.HandlerType = typeof(MatchToEcfAccountAuthenticationHandler);
+                    }
                 );
             })
             .AddOneLogin(options =>
@@ -177,9 +193,31 @@ public static class ServicesExtensions
                             )
                         )!;
 
-                        var result = await signInJourneyHelper.OnVerificationFailed(journeyInstance);
+                        var result = await signInJourneyHelper.OnVerificationFailed(
+                            journeyInstance
+                        );
                         await result.ExecuteAsync(context.HttpContext);
                     }
+                };
+
+                options.Events.OnRemoteFailure = context =>
+                {
+                    logger.LogError(
+                        context.Failure,
+                        "OneLogin remote failure. Error: {Message}",
+                        context.Failure?.Message
+                    );
+                    return Task.CompletedTask;
+                };
+
+                options.Events.OnAuthenticationFailed = context =>
+                {
+                    logger.LogError(
+                        context.Exception,
+                        "OneLogin authentication failed. Error: {Message}",
+                        context.Exception.Message
+                    );
+                    return Task.CompletedTask;
                 };
 
                 options.MetadataAddress = oneLoginConfig.Url + "/.well-known/openid-configuration";
@@ -187,11 +225,14 @@ public static class ServicesExtensions
 
                 if (featureFlags.EnableOneLoginCertificateRotation && certificateClient is not null)
                 {
-                    logger.LogInformation("Using certificate client to get certificate for OneLogin");
+                    logger.LogInformation(
+                        "Using certificate client to get certificate for OneLogin"
+                    );
                     if (oidcConfiguration.SigningCertificateName is null)
                     {
                         throw new InvalidConfigurationException(
-                            "Oidc:SigningCertificateName is required for OneLogin certificate rotation");
+                            "Oidc:SigningCertificateName is required for OneLogin certificate rotation"
+                        );
                     }
 
                     var signingCert = certificateClient
@@ -202,7 +243,9 @@ public static class ServicesExtensions
                     var rsaPrivateKey = signingCert.GetRSAPrivateKey();
                     if (rsaPrivateKey is null)
                     {
-                        throw new InvalidOperationException("Unable to get private key from certificate for OneLogin");
+                        throw new InvalidOperationException(
+                            "Unable to get private key from certificate for OneLogin"
+                        );
                     }
 
                     options.ClientAuthenticationCredentials = new SigningCredentials(
@@ -229,7 +272,17 @@ public static class ServicesExtensions
                 options.SignedOutCallbackPath = "/_onelogin/logout-callback";
 
                 options.CorrelationCookie.Name = "onelogin-correlation.";
+                options.CorrelationCookie.Path = "/";
+                options.CorrelationCookie.HttpOnly = true;
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
                 options.NonceCookie.Name = "onelogin-nonce.";
+                options.NonceCookie.Path = "/";
+                options.NonceCookie.HttpOnly = true;
+                options.NonceCookie.SameSite = SameSiteMode.None;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+
                 return;
 
                 static bool TryGetJourneyInstanceId(
@@ -257,7 +310,9 @@ public static class ServicesExtensions
     }
 
     public static IHostApplicationBuilder AddOpenIddict(
-        this IHostApplicationBuilder builder, ILogger logger)
+        this IHostApplicationBuilder builder,
+        ILogger logger
+    )
     {
         using var scope = logger.BeginScope("Adding OpenIdDict");
 
@@ -310,9 +365,13 @@ public static class ServicesExtensions
 
                 if (featureFlags.EnableOpenIdCertificates && certificateClient is not null)
                 {
-                    logger.LogInformation("Using certificate client to get certificates for OpenID");
-                    if (oidcConfiguration.SigningCertificateName is null ||
-                        oidcConfiguration.EncryptionCertificateName is null)
+                    logger.LogInformation(
+                        "Using certificate client to get certificates for OpenID"
+                    );
+                    if (
+                        oidcConfiguration.SigningCertificateName is null
+                        || oidcConfiguration.EncryptionCertificateName is null
+                    )
                     {
                         throw new InvalidConfigurationException(
                             "Missing OIDC:SigningCertificateName or OIDC:EncryptionCertificateName"
@@ -337,7 +396,9 @@ public static class ServicesExtensions
                 if (featureFlags.EnableDevelopmentOpenIdCertificates)
                 {
                     logger.LogInformation("Using development certificates for OpenID");
-                    options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
+                    options
+                        .AddDevelopmentEncryptionCertificate()
+                        .AddDevelopmentSigningCertificate();
                 }
             })
             .AddValidation(options =>

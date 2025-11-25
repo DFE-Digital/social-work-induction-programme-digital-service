@@ -17,7 +17,7 @@ public class EligibilitySocialWorkEnglandAsyeDropout(EcfLinkGenerator linkGenera
 
         ContinueLinkPath = FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId);
+            : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
 
         return Page();
     }

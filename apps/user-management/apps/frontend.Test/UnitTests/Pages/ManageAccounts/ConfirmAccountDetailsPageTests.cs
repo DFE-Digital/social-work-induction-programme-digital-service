@@ -175,45 +175,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
     }
 
     [Fact]
-    public async Task Post_WhenCalledWithMoodleIntegrationDisabled_CreatesUserAndSendsEmailAndDoesNotCallMoodleAndSetExternalUserId()
-    {
-        // Arrange
-        Sut = new ConfirmAccountDetails(
-            MockCreateAccountJourneyService.Object,
-            MockEditAccountJourneyService.Object,
-            new FakeLinkGenerator()
-        )
-        {
-            TempData = TempData
-        };
-        var account = AccountBuilder.Build();
-        var updatedAccountDetails = AccountDetails.FromAccount(account);
-
-        MockCreateAccountJourneyService
-            .Setup(x => x.GetAccountDetails())
-            .Returns(updatedAccountDetails);
-
-        MockCreateAccountJourneyService.Setup(x => x.CompleteJourneyAsync(null));
-
-        // Act
-        var result = await Sut.OnPostAsync();
-
-        // Assert
-        var response = result as RedirectResult;
-        response.Should().NotBeNull();
-        response!.Url.Should().Be("/manage-accounts");
-
-        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
-        TempData["NotificationHeader"].Should().Be("New user added");
-        TempData["NotificationMessage"].Should().Be($"An invitation to register has been sent to {updatedAccountDetails.FullName}, {updatedAccountDetails.Email}");
-
-        MockCreateAccountJourneyService.Verify(x => x.GetAccountDetails(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.CompleteJourneyAsync(null), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.SetExternalUserId(It.IsAny<int>()), Times.Never);
-        VerifyAllNoOtherCalls();
-    }
-
-    [Fact]
     public async Task GetUpdate_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
