@@ -113,9 +113,169 @@ cd swpdp
 git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-service.git .
 ```
 
-#### TODO: Add apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json
+### Add LOCALDEV environment configuration
 
-#### TODO: Add apps/user-management/apps/frontend/appsettings.Development.json
+#### Create apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json
+
+```bash
+{
+  "AppInfo": {
+    "Version": "0.0.0"
+  },
+  "DetailedErrors": true,
+  "ShowDebugPages": false,
+  "StorageConnectionString": "UseDevelopmentStorage=true",
+  "KeyVaultUri": "",
+  "Kestrel": {
+    "Endpoints": {
+      "HttpsInlineCertFile": {
+        "Url": "https://0.0.0.0:7236",
+        "Certificate": {
+          "Path": "aspnet-dev-cert.pfx",
+          "Password": "password123"
+        }
+      }
+    }
+  },
+  "FeatureFlags": {
+    "SupportEndToEndTesting": true,
+    "RequiresDbConnection": true,
+    "EnableDeveloperExceptionPage": true,
+    "EnableMigrationsEndpoint": true,
+    "EnableErrorExceptionHandler": false,
+    "EnableContentSecurityPolicyWorkaround": true,
+    "EnableDfeAnalytics": false,
+    "EnableSwagger": true,
+    "EnableSentry": false,
+    "EnableHttpStrictTransportSecurity": false,
+    "EnableForwardedHeaders": false,
+    "EnableMsDotNetDataProtectionServices": false,
+    "EnableOpenIdCertificates": false,
+    "EnableOneLoginCertificateRotation": false,
+    "EnableDevelopmentOpenIdCertificates": true
+  },
+  "Oidc": {
+    "Issuer": "https://localhost:7236",
+    "Applications": [
+      {
+        "ClientId": "dfe-sww-ecf-frontend-dev",
+        "ClientSecret": "Devel0pm3ntSecr4t",
+        "ClientType": "confidential",
+        "DisplayName": "SWIP Auth Service",
+        "RedirectUris": [
+          "https://localhost:7244/oidc/callback",
+          "https://localhost:44394/oidc/callback",
+          "https://moodle.ddev.site/auth/oidc/"
+        ],
+        "PostLogoutRedirectUris": [
+          "https://localhost:7244/oidc/logout-callback",
+          "https://localhost:44394/oidc/logout-callback",
+          "https://moodle.ddev.site/auth/oidc/logout.php"
+        ],
+        "AllowedEndpoints": ["authorization", "logout", "token"],
+        "AllowedGrantTypes": ["authorization_code"],
+        "AllowedResponseTypes": ["code"],
+        "AllowedScopes": [
+          "profile",
+          "roles",
+          "email",
+          "social_worker_record",
+          "organisation",
+          "ecsw_registered",
+          "person",
+          "staff_first_login"
+        ],
+        "RequirePkce": false
+      }
+    ]
+  },
+  "ContentSecurityPolicy": {
+    "ScriptHash": "sha256-j7OoGArf6XW6YY4cAyS3riSSvrJRqpSi1fOF9vQ5SrI="
+  },
+  "DatabaseSeed": {
+    "PersonId": "00000000-0000-0000-0001-000000000001",
+    "RoleId": 1000,
+    "OneLoginEmail": "<DEFAULT EMAIL ADDRESS>"
+  },
+  // Local simulator
+  "OneLogin": {
+    "ClientId": "<LOCALDEV ONE LOGIN SIMULATOR CLIENT ID>",
+    "PrivateKeyPem": "<LOCALDEV ONE LOGIN SIMULATOR PRIVATE KEY PEM>",
+    "Url": "https://localhost:9010/onelogin"
+  },
+  // Integration environment
+  "OneLoginDisabled": {
+     "Url": "https://oidc.integration.account.gov.uk"
+  }
+}
+```
+
+#### Create apps/user-management/apps/frontend/appsettings.Development.json
+
+```bash
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "FeatureFlags": {
+        "EnableDeveloperExceptionPage": true,
+        "EnableHttpStrictTransportSecurity": false,
+        "EnableContentSecurityPolicyWorkaround": true,
+        "EnableForwardedHeaders": false,
+        "EnableMoodleIntegration": true,
+        "EnablePlusEmailStripping": true
+    },
+    "Oidc": {
+        "AuthorityUrl": "https://localhost:7236",
+        "ClientId": "dfe-sww-ecf-frontend-dev",
+        "ClientSecret": "Devel0pm3ntSecr4t",
+        "EnableDevelopmentBackdoor": false,
+        "SessionLifetimeMinutes": 60
+    },
+    "SocialWorkEnglandClientOptions": {
+        "BaseUrl": "https://localhost:44359",
+        "Routes": {
+            "SocialWorker": {
+                "GetById": "/GetSocialWorkerById"
+            }
+        }
+    },
+    "NotificationClientOptions": {
+        "BaseUrl": "http://localhost:7124",
+        "Routes": {
+            "Notification": {
+                "SendEmail": "/api/Notification"
+            }
+        }
+    },
+    "AuthClientOptions": {
+        "BaseUrl": "https://localhost:7236"
+    },
+    "MoodleClientOptions": {
+        "BaseUrl": "https://moodle.ddev.site/webservice/rest/server.php"
+    },
+    "EmailTemplateOptions": {
+        "PrimaryCoordinatorInvitationEmail": "cedc407e-85d3-47b3-8fcc-0b91aa9a3728",
+        "Roles": {
+            "Coordinator": {
+                "Invitation": "e50fcdd8-3058-4246-9e6a-b4ad93dad52f",
+                "Welcome": "c002f721-66b8-4f54-8de7-8e65593a3725"
+            },
+            "Assessor": {
+                "Invitation": "fe2ca96e-4a5b-47e7-8f59-58be81091ed1",
+                "Welcome": "44f18f2e-5e24-4695-b45f-1dadef2daf97"
+            },
+            "EarlyCareerSocialWorker": {
+                "Invitation": "efd33d34-fd97-477d-996f-4007c40bf276",
+                "Welcome": "88c778f2-e944-41cb-9fcf-ae95ff8eda2a"
+            }
+        }
+    }
+}
+```
 
 ### Install the [mise](https://mise.jdx.dev/installing-mise.html) tool version manager
 ```bash
