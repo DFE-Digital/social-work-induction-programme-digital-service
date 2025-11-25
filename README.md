@@ -158,8 +158,8 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
     "Issuer": "https://localhost:7236",
     "Applications": [
       {
-        "ClientId": "dfe-sww-ecf-frontend-dev",
-        "ClientSecret": "Devel0pm3ntSecr4t",
+        "ClientId": "<ANY STRING VALUE #1>",
+        "ClientSecret": "<ANY STRING VALUE #2>",
         "ClientType": "confidential",
         "DisplayName": "SWIP Auth Service",
         "RedirectUris": [
@@ -230,8 +230,8 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
     },
     "Oidc": {
         "AuthorityUrl": "https://localhost:7236",
-        "ClientId": "dfe-sww-ecf-frontend-dev",
-        "ClientSecret": "Devel0pm3ntSecr4t",
+        "ClientId": "<ANY STRING VALUE #1 FROM apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json>",
+        "ClientSecret": "<ANY STRING VALUE #2 FROM apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json>",
         "EnableDevelopmentBackdoor": false,
         "SessionLifetimeMinutes": 60
     },
