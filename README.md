@@ -199,8 +199,8 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
   },
   // Local simulator
   "OneLogin": {
-    "ClientId": "<LOCALDEV ONE LOGIN SIMULATOR CLIENT ID>",
-    "PrivateKeyPem": "<LOCALDEV ONE LOGIN SIMULATOR PRIVATE KEY PEM>",
+    "ClientId": "<DEFAULT CLIENT ID FROM https://docs.sign-in.service.gov.uk/test-your-integration/gov-uk-one-login-simulator/#view-the-default-configuration>",
+    "PrivateKeyPem": "<DEFAULT PRIVATE KEY FROM https://docs.sign-in.service.gov.uk/test-your-integration/gov-uk-one-login-simulator/#view-the-default-configuration>",
     "Url": "https://localhost:9010/onelogin"
   },
   // Integration environment
