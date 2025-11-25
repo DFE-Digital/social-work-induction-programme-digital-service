@@ -15,6 +15,7 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Interfaces;
 using Dfe.Sww.Ecf.Frontend.HttpClients.SocialWorkEngland.Options;
 using Microsoft.Extensions.Options;
 using Polly;
+using Polly.Extensions.Http;
 using Polly.Retry;
 
 namespace Dfe.Sww.Ecf.Frontend.Installers;
@@ -34,11 +35,6 @@ public static class InstallClients
         services.AddTransient(typeof(OAuthAuthenticationDelegatingHandler<>));
         services.AddTransient(typeof(OidcAuthenticationDelegatingHandler));
 
-        services.AddResiliencePipeline<string, HttpResponseMessage>(
-            nameof(SocialWorkEnglandClient),
-            x => { x.AddRetry(JitteredExponentialRetries()).Build(); }
-        );
-
         // Social Work England Client
         services
             .AddHttpClient<
@@ -50,6 +46,20 @@ public static class InstallClients
                 OAuthAuthenticationDelegatingHandler<SocialWorkEnglandClientOptions>
             >();
 
+        services.AddResiliencePipeline<string, HttpResponseMessage>(
+            nameof(SocialWorkEnglandClient),
+            x =>
+            {
+                x.AddRetry(JitteredExponentialRetries([
+                    HttpStatusCode.RequestTimeout,
+                    HttpStatusCode.TooManyRequests,
+                    HttpStatusCode.InternalServerError,
+                    HttpStatusCode.ServiceUnavailable,
+                    HttpStatusCode.GatewayTimeout
+                ])).Build();
+            }
+        );
+
         // Notification Service Client
         services.AddHttpClient<
             NotificationClientOptions,
@@ -60,7 +70,19 @@ public static class InstallClients
         // Auth Service Client
         services
             .AddHttpClient<AuthClientOptions, IAuthServiceClient, AuthServiceClient>()
-            .AddHttpMessageHandler<OidcAuthenticationDelegatingHandler>();
+            .AddHttpMessageHandler<OidcAuthenticationDelegatingHandler>()
+            .AddPolicyHandler((sp, request) =>
+            {
+                var logger = sp.GetRequiredService<ILogger<AuthServiceClient>>();
+
+                return CreateStatusCodeRetryPolicy(
+                    nameof(AuthServiceClient),
+                    logger,
+                    5,
+                    HttpStatusCode.BadGateway,
+                    HttpStatusCode.ServiceUnavailable,
+                    HttpStatusCode.GatewayTimeout);
+            });
     }
 
     private static IHttpClientBuilder AddHttpClient<TOptions, TInterface, TConcrete>(
@@ -96,31 +118,45 @@ public static class InstallClients
         return httpClientBuilder;
     }
 
-    private static RetryStrategyOptions<HttpResponseMessage> JitteredExponentialRetries()
+    private static RetryStrategyOptions<HttpResponseMessage> JitteredExponentialRetries(ImmutableArray<HttpStatusCode> httpStatusCodes)
     {
         return new RetryStrategyOptions<HttpResponseMessage>
         {
             MaxRetryAttempts = 5,
             UseJitter = true,
             ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
-                .Handle<HttpRequestException>(ex => ex.InnerException is SocketException)
-                .HandleResult(response => RetriableStatuses().Contains(response.StatusCode)),
+                .Handle<HttpRequestException>()
+                .HandleResult(response => httpStatusCodes.Contains(response.StatusCode)),
             BackoffType = DelayBackoffType.Exponential
         };
     }
 
-    private static ImmutableArray<HttpStatusCode> RetriableStatuses()
+    private static IAsyncPolicy<HttpResponseMessage> CreateStatusCodeRetryPolicy(
+        string clientName,
+        ILogger logger,
+        int retryCount,
+        params HttpStatusCode[] statusCodes)
     {
-        return
-        [
-            .. new[]
-            {
-                HttpStatusCode.RequestTimeout,
-                HttpStatusCode.TooManyRequests,
-                HttpStatusCode.InternalServerError,
-                HttpStatusCode.ServiceUnavailable,
-                HttpStatusCode.GatewayTimeout
-            }
-        ];
+        var statusSet = statusCodes.ToHashSet();
+
+        return Policy<HttpResponseMessage>
+            .HandleResult(r => r is not null && statusSet.Contains(r.StatusCode))
+            .WaitAndRetryAsync(
+                retryCount,
+                attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+                (outcome, timespan, attempt, _) =>
+                {
+                    var status = outcome.Result?.StatusCode;
+                    var uri = outcome.Result?.RequestMessage?.RequestUri;
+
+                    logger.LogWarning(
+                        "[{ClientName}] Retry {Attempt} after status {StatusCode} ({StatusName}) for {RequestUri}. Delay {Delay}.",
+                        clientName,
+                        attempt,
+                        (int?)status,
+                        status,
+                        uri,
+                        timespan);
+                });
     }
 }
