@@ -16,6 +16,9 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     // Create Change Links
     public string EnterLocalAuthorityCodeChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode", handler: "Change");
     public string AddPrimaryCoordinatorChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator", handler: "Change");
+    public string EnterPhoneNumberChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterPhoneNumber", handler: "Change");
+    public string CheckYourAnswersPhoneNumberChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", handler: "FromPhoneNumberChange");
+    public string CheckYourAnswersLocalAuthorityChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", handler: "FromLocalAuthorityChange");
 
     // Edit links
     public string EditPrimaryCoordinatorChangeType(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinatorChangeType", routeValues: new { id });
