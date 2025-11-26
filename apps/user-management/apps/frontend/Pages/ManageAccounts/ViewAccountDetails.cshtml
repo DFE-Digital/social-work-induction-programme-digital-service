@@ -110,7 +110,7 @@
                         <govuk-summary-list-row-key>Programme start date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeStartDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDates(Model.Account.Id, Model.OrganisationId, "Update")" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>
@@ -119,7 +119,7 @@
                         <govuk-summary-list-row-key>Expected programme end date</govuk-summary-list-row-key>
                         <govuk-summary-list-row-value>@Model.Account.ProgrammeEndDate?.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</govuk-summary-list-row-value>
                         <govuk-summary-list-row-actions>
-                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(Model.Account.Id, Model.OrganisationId)" visually-hidden-text="account details">
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageAccount.SocialWorkerProgrammeDates(Model.Account.Id, Model.OrganisationId, "Update")" visually-hidden-text="account details">
                                 Change
                             </govuk-summary-list-row-action>
                         </govuk-summary-list-row-actions>

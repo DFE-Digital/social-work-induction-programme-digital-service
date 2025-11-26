@@ -28,13 +28,8 @@ public class SocialWorkerProgrammeDates(
 
     [BindProperty] public Guid? Id { get; set; }
 
-    public async Task<IActionResult> OnGetAsync([FromQuery] Guid? id = null)
+    public IActionResult OnGet()
     {
-        if (id.HasValue)
-        {
-            return await OnGetUpdateAsync(id.Value);
-        }
-
         BackLinkPath = FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails()
             : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
@@ -52,16 +47,13 @@ public class SocialWorkerProgrammeDates(
         return Page();
     }
 
-    private async Task<IActionResult> OnGetUpdateAsync(Guid id)
+    public async Task<IActionResult> OnGetUpdateAsync([FromQuery] Guid id)
     {
         Id = id;
         BackLinkPath = linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId);
 
         var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (accountDetails?.ProgrammeStartDate is null || accountDetails.ProgrammeEndDate is null)
-        {
-            return NotFound();
-        }
+        if (accountDetails?.ProgrammeStartDate is null || accountDetails.ProgrammeEndDate is null) return NotFound();
 
         ProgrammeStartDate = new YearMonth(
             accountDetails.ProgrammeStartDate.Value.Year,
@@ -78,10 +70,7 @@ public class SocialWorkerProgrammeDates(
     public async Task<IActionResult> OnPostAsync()
     {
         var result = await validator.ValidateAsync(this);
-        if (!result.IsValid)
-        {
-            result.AddToModelState(ModelState);
-        }
+        if (!result.IsValid) result.AddToModelState(ModelState);
 
         if (!ModelState.IsValid || !result.IsValid)
         {
@@ -91,11 +80,6 @@ public class SocialWorkerProgrammeDates(
                     ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
                     : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
             return Page();
-        }
-
-        if (Id.HasValue)
-        {
-            return await OnPostUpdateAsync(Id.Value);
         }
 
         if (ProgrammeStartDate.HasValue && ProgrammeEndDate.HasValue)
@@ -110,13 +94,23 @@ public class SocialWorkerProgrammeDates(
         return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId));
     }
 
-    private async Task<IActionResult> OnPostUpdateAsync(Guid id)
+    public async Task<IActionResult> OnPostUpdateAsync(Guid id)
     {
-        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
-        if (Id.HasValue == false || accountDetails is null || !ProgrammeStartDate.HasValue || !ProgrammeEndDate.HasValue)
+        var result = await validator.ValidateAsync(this);
+        if (!result.IsValid) result.AddToModelState(ModelState);
+
+        if (!ModelState.IsValid || !result.IsValid)
         {
+            BackLinkPath = Id.HasValue
+                ? linkGenerator.ManageAccount.ViewAccountDetails(Id.Value, OrganisationId)
+                : FromChangeLink
+                    ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
+                    : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
             return Page();
         }
+
+        var accountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
+        if (Id.HasValue == false || accountDetails is null || !ProgrammeStartDate.HasValue || !ProgrammeEndDate.HasValue) return Page();
 
         var dateOnlyStartDate = new DateOnly(ProgrammeStartDate.Value.Year, ProgrammeStartDate.Value.Month, 1);
         var dateOnlyEndDate = new DateOnly(ProgrammeEndDate.Value.Year, ProgrammeEndDate.Value.Month, 1);
@@ -129,10 +123,10 @@ public class SocialWorkerProgrammeDates(
         return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(Id.Value, OrganisationId));
     }
 
-    public Task<IActionResult> OnGetChangeAsync()
+    public IActionResult OnGetChange()
     {
         FromChangeLink = true;
-        return OnGetAsync();
+        return OnGet();
     }
 
     public async Task<IActionResult> OnPostChangeAsync()

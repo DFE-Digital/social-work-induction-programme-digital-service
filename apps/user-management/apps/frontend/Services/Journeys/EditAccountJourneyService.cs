@@ -147,7 +147,7 @@ public class EditAccountJourneyService(
             LastNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
             EmailChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
             SocialWorkEnglandNumberChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            ProgrammeDatesChangeLink = _linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(id, organisationId)
+            ProgrammeDatesChangeLink = _linkGenerator.ManageAccount.SocialWorkerProgrammeDates(id, organisationId, "Update")
         };
     }
 }
