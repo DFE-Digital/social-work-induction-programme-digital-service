@@ -91,7 +91,7 @@ public class EnterLocalAuthorityCode(
 
         return Redirect(
             FromChangeLink
-                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                ? linkGenerator.ManageOrganisations.CheckYourAnswersLocalAuthorityChange()
                 : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails()
         );
     }

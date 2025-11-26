@@ -52,7 +52,7 @@ public class EnterPhoneNumber(
 
         return Redirect(
             FromChangeLink
-                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                ? linkGenerator.ManageOrganisations.CheckYourAnswersPhoneNumberChange()
                 : linkGenerator.ManageOrganisations.AddPrimaryCoordinator()
         );
     }
