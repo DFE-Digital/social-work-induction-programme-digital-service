@@ -1,22 +1,17 @@
-using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
-using Dfe.Sww.Ecf.Frontend.HttpClients.MoodleService.Models.Courses;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Services.Email;
 using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
 public class CreateOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IEmailService emailService,
-    IMoodleService moodleService,
-    IOptions<FeatureFlags> featureFlags
+    IEmailService emailService
 ) : ICreateOrganisationJourneyService
 {
     private const string CreateOrganisationSessionKey = "_createOrganisation";
@@ -50,19 +45,6 @@ public class CreateOrganisationJourneyService(
         SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
     }
 
-    public string? GetPhoneNumber()
-    {
-        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        return createOrganisationJourneyModel.PhoneNumber;
-    }
-
-    public void SetPhoneNumber(string? phoneNumber)
-    {
-        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
-        createOrganisationJourneyModel.PhoneNumber = phoneNumber;
-        SetCreateOrganisationJourneyModel(createOrganisationJourneyModel);
-    }
-
     public AccountDetails? GetPrimaryCoordinatorAccountDetails()
     {
         var createOrganisationJourneyModel = GetOrganisationJourneyModel();
@@ -83,15 +65,13 @@ public class CreateOrganisationJourneyService(
 
     public async Task<Organisation?> CompleteJourneyAsync()
     {
-        var createAccountJourneyModel = GetOrganisationJourneyModel();
-        var organisation = createAccountJourneyModel.Organisation;
-        var primaryCoordinator = createAccountJourneyModel.PrimaryCoordinatorAccountDetails;
+        var createOrganisationJourneyModel = GetOrganisationJourneyModel();
+        var organisation = createOrganisationJourneyModel.Organisation;
+        var primaryCoordinator = createOrganisationJourneyModel.PrimaryCoordinatorAccountDetails;
 
         if (organisation is null || primaryCoordinator is null) throw new ArgumentNullException();
 
         var account = AccountDetails.ToAccount(primaryCoordinator);
-
-        await CreateMoodleOrganisationAsync(organisation, account);
 
         organisation = await organisationService.CreateAsync(organisation, account);
 
@@ -106,22 +86,6 @@ public class CreateOrganisationJourneyService(
             });
 
         return organisation;
-    }
-
-    private async Task CreateMoodleOrganisationAsync(Organisation organisation, Account primaryCoordinator)
-    {
-        if (featureFlags.Value.EnableMoodleIntegration)
-        {
-            var externalUserId = await moodleService.CreateUserAsync(primaryCoordinator);
-            var externalOrgId = await moodleService.CreateCourseAsync(organisation);
-
-            if (externalUserId is null || externalOrgId is null) throw new Exception(); // TODO handle unhappy path in separate ticket
-
-            organisation.ExternalOrganisationId = externalOrgId.Value;
-            primaryCoordinator.ExternalUserId = externalUserId.Value;
-
-            await moodleService.EnrolUserAsync(externalUserId.Value, externalOrgId.Value, MoodleRoles.Manager);
-        }
     }
 
     private CreateOrganisationJourneyModel GetOrganisationJourneyModel()

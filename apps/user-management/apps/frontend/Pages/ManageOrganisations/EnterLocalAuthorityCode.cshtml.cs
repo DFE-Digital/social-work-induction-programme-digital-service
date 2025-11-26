@@ -3,7 +3,6 @@ using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Dfe.Sww.Ecf.Frontend.Validation.ManageOrganisations;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -83,6 +82,11 @@ public class EnterLocalAuthorityCode(
             return Page();
         }
 
+        var phoneNumber = createOrganisationJourneyService.GetOrganisation()?.PhoneNumber;
+        if (phoneNumber is not null)
+        {
+            organisation.PhoneNumber = phoneNumber;
+        }
         createOrganisationJourneyService.SetOrganisation(organisation);
 
         return Redirect(

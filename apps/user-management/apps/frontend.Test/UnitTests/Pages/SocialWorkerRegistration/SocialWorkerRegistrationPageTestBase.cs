@@ -3,8 +3,6 @@ using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Fakers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Services;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
 
 namespace Dfe.Sww.Ecf.Frontend.Test.UnitTests.Pages.SocialWorkerRegistration;

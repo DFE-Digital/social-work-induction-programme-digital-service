@@ -11,4 +11,5 @@ public class OrganisationDto
     public OrganisationType? Type { get; set; }
     public Guid? PrimaryCoordinatorId { get; set; }
     public string? Region { get; set; }
+    public string? PhoneNumber { get; set; }
 }

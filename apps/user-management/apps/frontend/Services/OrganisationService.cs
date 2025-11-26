@@ -56,7 +56,8 @@ public class OrganisationService(
                 Type = organisation.Type,
                 PrimaryCoordinatorId = organisation.PrimaryCoordinatorId,
                 Region = organisation.Region,
-                CreatePersonRequest = new()
+                PhoneNumber = organisation.PhoneNumber,
+                CreatePersonRequest = new CreatePersonRequest
                 {
                     FirstName = primaryCoordinator.FirstName,
                     LastName = primaryCoordinator.LastName,
@@ -68,8 +69,7 @@ public class OrganisationService(
                     ExternalUserId = primaryCoordinator.ExternalUserId,
                     IsFunded = primaryCoordinator.IsFunded,
                     ProgrammeStartDate = primaryCoordinator.ProgrammeStartDate,
-                    ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate,
-                    PhoneNumber = primaryCoordinator.PhoneNumber
+                    ProgrammeEndDate = primaryCoordinator.ProgrammeEndDate
                 }
             }
         );
