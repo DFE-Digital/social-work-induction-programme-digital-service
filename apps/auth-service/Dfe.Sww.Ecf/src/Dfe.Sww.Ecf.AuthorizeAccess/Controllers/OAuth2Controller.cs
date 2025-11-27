@@ -116,17 +116,28 @@ public class OAuth2Controller(
                 ClaimTypes.Trn,
                 () => oneLoginUser.Person.Trn
             )
-            .AddIfScope(CustomScopes.Person, ClaimTypes.PersonId, () => oneLoginUser.PersonId.ToString())
+            .AddIfScope(
+                CustomScopes.Person,
+                ClaimTypes.PersonId,
+                () => oneLoginUser.PersonId.ToString()
+            )
             .AddRoleClaimsIfScopeAsync(Scopes.Roles, oneLoginUser.Person.PersonId, dbContext);
 
-        await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(CustomScopes.Organisation, oneLoginUser.Person.PersonId,
-            dbContext);
+        await claimsBuilder.AddOrganisationIdClaimIfScopeAsync(
+            CustomScopes.Organisation,
+            oneLoginUser.Person.PersonId,
+            dbContext
+        );
 
         if (request.HasScope(CustomScopes.StaffFirstLogin))
         {
-            var journeyInstance = await journeyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(HttpContext);
+            var journeyInstance =
+                await journeyHelper.UserInstanceStateProvider.GetSignInJourneyInstanceAsync(
+                    HttpContext
+                );
 
-            var staffFirstLoginValue = journeyInstance?.State.IsStaffFirstLogin == true ? "true" : null;
+            var staffFirstLoginValue =
+                journeyInstance?.State.IsStaffFirstLogin == true ? "true" : null;
 
             claimsBuilder.AddIfScope(
                 CustomScopes.StaffFirstLogin,
@@ -138,17 +149,17 @@ public class OAuth2Controller(
         // Claim only false for ECSWs that are pending registration
         if (oneLoginUser.Person.Status == PersonStatus.PendingRegistration)
         {
-            var isEcsw = await dbContext.PersonRoles
-                .AnyAsync(pr => pr.PersonId == oneLoginUser.Person.PersonId
-                                && pr.Role.RoleName == RoleType.EarlyCareerSocialWorker);
+            var isEcsw = await dbContext.PersonRoles.AnyAsync(pr =>
+                pr.PersonId == oneLoginUser.Person.PersonId
+                && pr.Role.RoleName == RoleType.EarlyCareerSocialWorker
+            );
             if (isEcsw)
             {
-                claimsBuilder
-                    .AddIfScope(
-                        CustomScopes.EcswRegistered,
-                        ClaimTypes.IsEcswRegistered,
-                        () => "false"
-                    );
+                claimsBuilder.AddIfScope(
+                    CustomScopes.EcswRegistered,
+                    ClaimTypes.IsEcswRegistered,
+                    () => "false"
+                );
             }
         }
     }
@@ -265,6 +276,11 @@ public class OAuth2Controller(
             ?? throw new InvalidOperationException(
                 "The OpenID Connect request cannot be retrieved."
             );
+
+        if (request.IdTokenHint is null)
+        {
+            return BadRequest();
+        }
 
         var authenticateResult = await HttpContext.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
