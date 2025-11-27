@@ -9,7 +9,7 @@
     <div class="govuk-grid-column-two-thirds">
         <form method="post" data-test-id="confirm-details">
             <h1 class="govuk-heading-l">
-                Check user details before @(Model.IsUpdatingAccount ? "updating" : "adding") them
+                Check your answers before @(Model.IsUpdatingAccount ? "saving" : "adding") them
             </h1>
 
             <govuk-summary-list>
@@ -205,8 +205,14 @@
 
                 <p class="govuk-body">When they sign in for the first time, we will ask them to complete their registration by adding some personal information. Once this is done, they will be fully registered and able to use the service.</p>
             }
+            else
+            {
+                <p class="govuk-body">
+                    We will send an email to the user to tell them their details have been changed.
+                </p>
+            }
 
-            <govuk-button type="submit">@(Model.IsUpdatingAccount ? "Update" : "Add this user")</govuk-button>
+            <govuk-button type="submit">@(Model.IsUpdatingAccount ? "Confirm and save changes" : "Add this user")</govuk-button>
         </form>
     </div>
 </div>
