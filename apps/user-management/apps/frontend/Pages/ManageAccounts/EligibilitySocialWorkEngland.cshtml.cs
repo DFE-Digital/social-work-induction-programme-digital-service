@@ -95,8 +95,6 @@ public class EligibilitySocialWorkEngland(
 
         if (noSweIdChange == false)
         {
-            // createAccountJourneyService.SetIsStatutoryWorker(null); // Stat worker comes before this page?
-            // createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(null); // This is the post for this step
             createAccountJourneyService.SetIsAgencyWorker(null);
             createAccountJourneyService.SetIsRecentlyQualified(null);
             SweIdChanged = true;
