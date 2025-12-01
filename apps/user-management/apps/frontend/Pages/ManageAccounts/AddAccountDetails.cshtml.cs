@@ -55,9 +55,9 @@ public class AddAccountDetails(
 
     public IList<AccountType> AccountTypes { get; set; } = createAccountJourneyService.GetAccountTypes() ?? new List<AccountType>();
 
-    private void SetBackLinkPath(bool fromConfirmPage = false, bool isFunded = false)
+    private void SetBackLinkPath(bool isFunded = false)
     {
-        BackLinkPath ??= fromConfirmPage
+        BackLinkPath ??= FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : IsStaff
                 ? linkGenerator.ManageAccount.SelectUseCase(OrganisationId)
@@ -71,7 +71,7 @@ public class AddAccountDetails(
         var accountDetails = createAccountJourneyService.GetAccountDetails();
         var isFunded = createAccountJourneyService.GetIsFunded();
 
-        SetBackLinkPath(isFunded: isFunded ?? false);
+        SetBackLinkPath(isFunded ?? false);
 
         FirstName = accountDetails?.FirstName;
         MiddleNames = accountDetails?.MiddleNames;
@@ -84,7 +84,7 @@ public class AddAccountDetails(
 
     public PageResult OnGetChange()
     {
-        SetBackLinkPath(true);
+        FromChangeLink = true;
         return OnGet();
     }
 
@@ -110,13 +110,13 @@ public class AddAccountDetails(
         {
             result.AddToModelState(ModelState);
             var isFunded = createAccountJourneyService.GetIsFunded();
-            SetBackLinkPath(isFunded: isFunded ?? false);
+            SetBackLinkPath(isFunded ?? false);
             return Page();
         }
 
         createAccountJourneyService.SetAccountDetails(accountDetails);
 
-        return Redirect((IsStaff || FromChangeLink)
+        return Redirect(IsStaff || FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId));
     }
@@ -124,7 +124,6 @@ public class AddAccountDetails(
     public async Task<IActionResult> OnPostChangeAsync()
     {
         FromChangeLink = true;
-        SetBackLinkPath(true);
         return await OnPostAsync();
     }
 }
