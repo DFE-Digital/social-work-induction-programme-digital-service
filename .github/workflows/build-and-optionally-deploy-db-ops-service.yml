@@ -16,8 +16,6 @@ on:
         options:
           - None
           - d01
-          - d02
-          - d03
   pull_request:
     branches:
       - development
