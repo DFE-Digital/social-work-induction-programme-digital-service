@@ -27,7 +27,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     }
 
     [Fact]
-    public async Task OnGet_WhenCalled_LoadsTheView()
+    public void OnGet_WhenCalled_LoadsTheView()
     {
         // Arrange
         var account = AccountBuilder.Build();
@@ -40,12 +40,12 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
             accountDetails.ProgrammeStartDate.Value.Month
         );
         var expectedProgrammeEndDate = new YearMonth(
-                accountDetails.ProgrammeEndDate!.Value.Year,
-                accountDetails.ProgrammeEndDate.Value.Month
-            );
+            accountDetails.ProgrammeEndDate!.Value.Year,
+            accountDetails.ProgrammeEndDate.Value.Month
+        );
 
         // Act
-        var result = await Sut.OnGetAsync();
+        var result = Sut.OnGet();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -77,7 +77,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         );
 
         // Act
-        var result = await Sut.OnGetAsync(id);
+        var result = await Sut.OnGetUpdateAsync(id);
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -99,7 +99,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync((AccountDetails?)null);
 
         // Act
-        var result = await Sut.OnGetAsync(id);
+        var result = await Sut.OnGetUpdateAsync(id);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -111,7 +111,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
     }
 
     [Fact]
-    public async Task OnGetChange_WhenCalled_LoadsTheView()
+    public void OnGetChange_WhenCalled_LoadsTheView()
     {
         // Arrange
         var account = AccountBuilder.Build();
@@ -129,7 +129,7 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         );
 
         // Act
-        var result = await Sut.OnGetChangeAsync();
+        var result = Sut.OnGetChange();
 
         // Assert
         result.Should().BeOfType<PageResult>();
@@ -182,19 +182,11 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         Sut.Id = id;
         Sut.ProgrammeStartDate = new YearMonth(2020, 1);
         Sut.ProgrammeEndDate = new YearMonth(2050, 12);
-        var expectedStartDate = new DateOnly(
-            Sut.ProgrammeStartDate.Value.Year,
-            Sut.ProgrammeStartDate.Value.Month,
-            1);
-        var expectedEndDate = new DateOnly(
-            Sut.ProgrammeEndDate.Value.Year,
-            Sut.ProgrammeEndDate.Value.Month,
-            1);
 
         MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(id)).ReturnsAsync(accountDetails);
 
         // Act
-        var result = await Sut.OnPostAsync();
+        var result = await Sut.OnPostUpdateAsync(id);
 
         // Assert
         result.Should().BeOfType<RedirectResult>();
@@ -250,12 +242,8 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         Validator.TryValidateObject(Sut, validationContext, validationResults, true);
 
         foreach (var validationResult in validationResults)
-        {
-            foreach (var memberName in validationResult.MemberNames)
-            {
-                Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
-            }
-        }
+        foreach (var memberName in validationResult.MemberNames)
+            Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
 
         // Act
         var result = await Sut.OnPostAsync();
@@ -295,12 +283,8 @@ public class SocialWorkerProgrammeDatesPageTests : ManageAccountsPageTestBase<So
         Validator.TryValidateObject(Sut, validationContext, validationResults, true);
 
         foreach (var validationResult in validationResults)
-        {
-            foreach (var memberName in validationResult.MemberNames)
-            {
-                Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
-            }
-        }
+        foreach (var memberName in validationResult.MemberNames)
+            Sut.ModelState.AddModelError(memberName, validationResult.ErrorMessage!);
 
         // Act
         var result = await Sut.OnPostChangeAsync();

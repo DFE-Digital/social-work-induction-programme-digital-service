@@ -214,7 +214,7 @@ public class CreateAccountJourneyService(
             SocialWorkEnglandNumberChangeLink = isEcsw
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandChange(organisationId)
                 : linkGenerator.ManageAccount.AddAccountDetailsChangeSocialWorkEnglandNumber(organisationId),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDatesChange(organisationId: organisationId)
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(organisationId: organisationId, handler: "Change")
         };
     }
 
