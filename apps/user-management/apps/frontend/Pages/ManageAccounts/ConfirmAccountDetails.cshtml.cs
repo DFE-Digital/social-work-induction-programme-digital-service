@@ -81,7 +81,7 @@ public class ConfirmAccountDetails(
         var accountLabels = createAccountJourneyService.GetAccountLabels();
         var accountTypes = createAccountJourneyService.GetAccountTypes();
 
-        SetBackLink();
+        BackLinkPath = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(OrganisationId);
         ChangeDetailsLinks = createAccountJourneyService.GetAccountChangeLinks(accountTypes?.Contains(AccountType.EarlyCareerSocialWorker) ?? false, OrganisationId);
 
         UserType = accountLabels?.IsStaffLabel;
@@ -162,14 +162,5 @@ public class ConfirmAccountDetails(
         TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
         return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId));
-    }
-
-    private void SetBackLink()
-    {
-        var isFunded = createAccountJourneyService.GetIsFunded() ?? false;
-
-        BackLinkPath = isFunded
-            ? linkGenerator.ManageAccount.EligibilityFundingAvailable(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityFundingNotAvailable(OrganisationId);
     }
 }

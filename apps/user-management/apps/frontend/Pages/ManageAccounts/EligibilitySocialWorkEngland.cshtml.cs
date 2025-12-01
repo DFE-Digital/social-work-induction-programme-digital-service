@@ -19,13 +19,10 @@ public class EligibilitySocialWorkEngland(
 {
     [BindProperty] public bool? IsRegisteredWithSocialWorkEngland { get; set; }
     [BindProperty] public string? SocialWorkerNumber { get; set; }
-    [BindProperty] public bool? SweIdChanged { get; set; }
 
     public PageResult OnGet()
     {
-        BackLinkPath = FromChangeLink
-            ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
-            : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
+        BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
         IsRegisteredWithSocialWorkEngland = createAccountJourneyService.GetIsRegisteredWithSocialWorkEngland();
         SocialWorkerNumber = createAccountJourneyService.GetAccountDetails()?.SocialWorkEnglandNumber;
         return Page();
@@ -41,18 +38,18 @@ public class EligibilitySocialWorkEngland(
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = FromChangeLink
-                ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
-                : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
+            BackLinkPath = FromChangeLink ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId) : linkGenerator.ManageAccount.EligibilityStatutoryWork(OrganisationId);
             return Page();
         }
 
         createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(IsRegisteredWithSocialWorkEngland);
 
         if (IsRegisteredWithSocialWorkEngland is false)
+        {
             return Redirect(FromChangeLink
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropoutChange(OrganisationId)
                 : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandDropout(OrganisationId));
+        }
 
         // Validated above but compiler complains if we don't check
         if (string.IsNullOrWhiteSpace(SocialWorkerNumber))
@@ -68,11 +65,13 @@ public class EligibilitySocialWorkEngland(
         var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkerNumber);
         createAccountJourneyService.SetIsEnrolledInAsye(isEnrolledInAsye);
         if (isEnrolledInAsye)
+        {
             return Redirect(FromChangeLink
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutChange()
                 : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
+        }
 
-        return Redirect(SweIdChanged is false
+        return Redirect(FromChangeLink
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
     }
@@ -86,22 +85,6 @@ public class EligibilitySocialWorkEngland(
     public async Task<IActionResult> OnPostChangeAsync()
     {
         FromChangeLink = true;
-
-        var accountDetails = createAccountJourneyService.GetAccountDetails();
-        if (accountDetails is null) return BadRequest();
-
-        var initialSweId = accountDetails.SocialWorkEnglandNumber;
-        var noSweIdChange = string.Equals(initialSweId?.Trim(), SocialWorkerNumber?.Trim(), StringComparison.OrdinalIgnoreCase);
-
-        if (noSweIdChange == false)
-        {
-            // createAccountJourneyService.SetIsStatutoryWorker(null); // Stat worker comes before this page?
-            // createAccountJourneyService.SetIsRegisteredWithSocialWorkEngland(null); // This is the post for this step
-            createAccountJourneyService.SetIsAgencyWorker(null);
-            createAccountJourneyService.SetIsRecentlyQualified(null);
-            SweIdChanged = true;
-        }
-
         return await OnPostAsync();
     }
 }

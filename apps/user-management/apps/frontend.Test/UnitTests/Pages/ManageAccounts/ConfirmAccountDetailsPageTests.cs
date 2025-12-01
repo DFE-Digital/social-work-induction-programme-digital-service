@@ -66,9 +66,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockCreateAccountJourneyService
             .Setup(x => x.GetProgrammeEndDate())
             .Returns(expectedEndDateDateOnly);
-        MockCreateAccountJourneyService
-            .Setup(x => x.GetIsFunded())
-            .Returns(true);
 
         // Act
         var result = Sut.OnGet();
@@ -83,7 +80,7 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         Sut.SocialWorkEnglandNumber.Should().Be(expectedAccountDetails.SocialWorkEnglandNumber);
         Sut.IsStaff.Should().Be(expectedAccountDetails.IsStaff);
         Sut.IsUpdatingAccount.Should().BeFalse();
-        Sut.BackLinkPath.Should().Be("/manage-accounts/eligibility-funding-available");
+        Sut.BackLinkPath.Should().Be("/manage-accounts/social-worker-programme-dates");
         Sut.ChangeDetailsLinks.Should().BeEquivalentTo(expectedChangeLinks);
         Sut.AccountTypes.Should().BeEquivalentTo(expectedAccountTypes);
         Sut.UserType.Should().Be(expectedAccountLabels.IsStaffLabel);
@@ -100,7 +97,6 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         MockCreateAccountJourneyService.Verify(x => x.GetAccountLabels(), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountChangeLinks(true, null), Times.Once);
         MockCreateAccountJourneyService.Verify(x => x.GetAccountTypes(), Times.Once);
-        MockCreateAccountJourneyService.Verify(x => x.GetIsFunded(), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
