@@ -72,7 +72,7 @@ public class EligibilitySocialWorkEngland(
                 ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutChange()
                 : linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropout());
 
-        return Redirect(SweIdChanged is false
+        return Redirect(FromChangeLink && SweIdChanged is not true
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : linkGenerator.ManageAccount.EligibilityAgencyWorker(OrganisationId));
     }
