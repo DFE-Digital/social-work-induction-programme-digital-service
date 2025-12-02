@@ -12,9 +12,6 @@ on:
         type: choice
         options:
           - d01
-          - d02
-          - d03
-          - d04
       reason:
         description: "Reason for token rotation"
         required: false
