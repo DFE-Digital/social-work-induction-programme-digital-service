@@ -11,9 +11,6 @@ on:
         options:
           - None
           - d01
-          - d02
-          - d03
-          - d04
       version-tag:
         description: Version tag to deploy, e.g. 20250506.118df8a.dev
         type: string

@@ -27,8 +27,6 @@ on:
         type: choice
         options:
           - d01
-          - d02
-          - d03
   # Uncomment the schedule below to enable daily automated backups across all instances
   # schedule:
   #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
@@ -60,7 +58,7 @@ jobs:
     if: github.event_name == 'schedule' && false
     strategy:
       matrix:
-        instance: [d01, d02, d03]
+        instance: [d01]
         db_name: [moodle, usermanagement]
     permissions:
       id-token: write
