@@ -9,4 +9,5 @@ public interface IOrganisationService
     Task<OrganisationDto?> GetByIdAsync(Guid id);
     Task<OrganisationDto> CreateAsync(Organisation organisation);
     Task<OrganisationDto?> GetByLocalAuthorityCodeAsync(int localAuthorityCode);
+    Task<OrganisationDto?> UpdateAsync(Organisation organisation);
 }
