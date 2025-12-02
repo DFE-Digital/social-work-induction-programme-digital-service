@@ -180,7 +180,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
 
     [Theory]
     [InlineData(true, "/manage-accounts/eligibility-agency-worker")]
-    [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
+    [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout")]
     public async Task
         OnPostAsync_WhenCalledFromChangeLink_RedirectsToRelevantPage(bool isRegisteredWithSocialWorkEngland, string redirectPath)
     {
@@ -188,7 +188,6 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
         var sweId = "SW123";
         var accountDetails = new AccountDetails { SocialWorkEnglandNumber = sweId };
         Sut.SocialWorkerNumber = sweId;
-        Sut.FromChangeLink = true;
         Sut.IsRegisteredWithSocialWorkEngland = isRegisteredWithSocialWorkEngland;
 
         MockCreateAccountJourneyService.Setup(x => x.GetAccountDetails()).Returns(accountDetails);
@@ -235,7 +234,7 @@ public class EligibilitySocialWorkEnglandPageTests : ManageAccountsPageTestBase<
     }
 
     [Theory]
-    [InlineData(true, "/manage-accounts/eligibility-agency-worker")]
+    [InlineData(true, "/manage-accounts/confirm-account-details")]
     [InlineData(false, "/manage-accounts/eligibility-social-work-england-dropout?handler=Change")]
     public async Task OnPostChangeAsync_WhenSweIdNotChanged_HasFromChangeLinkNull(bool isRegisteredWithSocialWorkEngland, string redirectPath)
     {
