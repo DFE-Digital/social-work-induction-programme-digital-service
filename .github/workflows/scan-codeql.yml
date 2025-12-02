@@ -15,7 +15,7 @@ on:
   pull_request:
     branches: [development]
     paths-ignore:
-      - apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.Core/DataStore/Postgres/Migrations/**
+      - apps/auth-service/**/Migrations/**
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
