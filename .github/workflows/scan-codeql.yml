@@ -11,6 +11,9 @@
 #
 name: "CodeQL Advanced"
 
+paths-ignore:
+  - apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.Core/DataStore/Postgres/Migrations/**
+
 on:
   pull_request:
     branches: [development]
