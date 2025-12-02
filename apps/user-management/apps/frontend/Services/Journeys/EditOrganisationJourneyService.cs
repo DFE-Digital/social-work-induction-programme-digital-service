@@ -107,20 +107,29 @@ public class EditOrganisationJourneyService(
         Session.Remove(EditOrganisationSessionKey(organisationId));
     }
 
-    public async Task<Organisation?> CompleteJourneyAsync(Guid organisationId)
+    public async Task CompleteJourneyAsync(Guid organisationId, bool updateAccount = false, bool updateOrganisation = false)
     {
         var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
-        var primaryCoordinator = editAccountJourneyModel?.PrimaryCoordinatorAccount;
+        if (updateAccount) {
+            var primaryCoordinator = editAccountJourneyModel?.PrimaryCoordinatorAccount;
 
-        if (primaryCoordinator is null)
-            throw new ArgumentNullException();
+            if (primaryCoordinator is null)
+                throw new ArgumentNullException();
 
-        var account = AccountDetails.ToAccount(primaryCoordinator);
-        await _accountService.UpdateAsync(account);
+            var account = AccountDetails.ToAccount(primaryCoordinator);
+            await _accountService.UpdateAsync(account);
+        }
+
+        if (updateOrganisation) {
+            var organisation = editAccountJourneyModel?.Organisation;
+
+            if (organisation is null)
+                throw new ArgumentNullException();
+
+            await _organisationService.UpdateOrganisationAsync(organisation);
+        }
 
         ResetEditOrganisationJourneyModel(organisationId);
-
-        return new Organisation();
     }
 }

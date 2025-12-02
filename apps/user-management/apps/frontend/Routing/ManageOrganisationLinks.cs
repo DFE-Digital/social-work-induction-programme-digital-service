@@ -17,6 +17,7 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     public string EnterLocalAuthorityCodeChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterLocalAuthorityCode", handler: "Change");
     public string AddPrimaryCoordinatorChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/AddPrimaryCoordinator", handler: "Change");
     public string EnterPhoneNumberChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterPhoneNumber", handler: "Change");
+    public string EnterPhoneNumberEdit(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EnterPhoneNumber", routeValues: new { id });
     public string CheckYourAnswersPhoneNumberChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", handler: "FromPhoneNumberChange");
     public string CheckYourAnswersLocalAuthorityChange() => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", handler: "FromLocalAuthorityChange");
 
@@ -25,6 +26,7 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
     public string ReplacePrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "Replace");
     public string EditPrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id });
     public string CheckYourAnswersEdit(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "Edit");
+    public string CheckYourAnswersEditPhoneNumber(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "EditPhoneNumber");
     public string CheckYourAnswersReplace(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "Replace");
 
     // Edit change links

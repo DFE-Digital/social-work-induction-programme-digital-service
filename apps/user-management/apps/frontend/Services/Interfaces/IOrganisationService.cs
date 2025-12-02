@@ -9,5 +9,6 @@ public interface IOrganisationService
     public Task<PaginationResult<Organisation>> GetAllAsync(PaginationRequest request);
     Task<Organisation> CreateAsync(Organisation organisation, Account primaryCoordinator);
     public Task<Organisation?> GetByIdAsync(Guid? id);
+    Task<Organisation> UpdateOrganisationAsync(Organisation organisation);
     Task<bool> ExistsByLocalAuthorityCodeAsync(int localAuthorityCode);
 }

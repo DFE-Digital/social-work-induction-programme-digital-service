@@ -23,6 +23,7 @@ public class CheckYourAnswers(
     public string? ChangePrimaryCoordinatorLink { get; set; }
     public string? ChangePhoneNumberLink { get; set; }
     public bool IsEdit { get; set; }
+    public bool IsEditPhoneNumber { get; set; }
     public bool IsReplace { get; set; }
     public bool IsFromPhoneNumberChange { get; set; }
     public bool IsFromLocalAuthorityChange { get; set; }
@@ -67,6 +68,14 @@ public class CheckYourAnswers(
         return Page();
     }
 
+    public async Task<PageResult> OnGetEditPhoneNumberAsync(Guid id)
+    {
+        IsEditPhoneNumber = true;
+        await GetEditReplaceDataAsync(id);
+
+        return Page();
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         var organisation = createOrganisationJourneyService.GetOrganisation();
@@ -90,7 +99,22 @@ public class CheckYourAnswers(
         if (organisation is null || primaryCoordinator is null)
             return BadRequest();
 
-        await editOrganisationJourneyService.CompleteJourneyAsync(id);
+        await editOrganisationJourneyService.CompleteJourneyAsync(id, updateAccount: true);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
+
+        return Redirect(linkGenerator.ManageOrganisations.Index());
+    }
+
+
+    public async Task<IActionResult> OnPostEditPhoneNumberAsync(Guid id)
+    {
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        if (organisation is null)
+            return BadRequest();
+
+        await editOrganisationJourneyService.CompleteJourneyAsync(id, updateOrganisation: true);
 
         TempData["NotificationType"] = NotificationBannerType.Success;
         TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
@@ -120,7 +144,7 @@ public class CheckYourAnswers(
         Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
         ChangeLocalAuthorityCodeLink = null;
-        ChangePhoneNumberLink = null;
+        ChangePhoneNumberLink = linkGenerator.ManageOrganisations.EnterPhoneNumberEdit(id);
         ChangePrimaryCoordinatorLink = IsReplace
             ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id)
             : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
@@ -129,23 +153,20 @@ public class CheckYourAnswers(
     public string GetBackLink(Guid? id = null)
     {
         if (IsEdit && id.HasValue)
-        {
             return linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id.Value);
-        }
+
+        if (IsEditPhoneNumber && id.HasValue)
+            return linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id.Value);
 
         if (IsReplace && id.HasValue)
-        {
             return linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id.Value);
-        }
+
         if (IsFromPhoneNumberChange)
-        {
             return linkGenerator.ManageOrganisations.EnterPhoneNumberChange();
-        }
 
         if (IsFromLocalAuthorityChange)
-        {
             return linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
-        }
+
         return linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
     }
 }

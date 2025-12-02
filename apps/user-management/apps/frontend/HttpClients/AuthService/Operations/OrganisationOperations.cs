@@ -76,4 +76,22 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
 
         return exists;
     }
+
+    public async Task<OrganisationDto> UpdateOrganisationAsync(UpdateOrganisationRequest updateOrganisationRequest)
+    {
+        var httpResponse = await authServiceClient.HttpClient.PostAsJsonAsync(
+            "/api/Organisations/Update",
+            updateOrganisationRequest
+        );
+
+        HandleHttpResponse(httpResponse, "Failed to update organisation.");
+
+        var response = await httpResponse.Content.ReadAsStringAsync();
+        var updatedOrganisation = JsonSerializer.Deserialize<OrganisationDto>(response, SerializerOptions);
+        if (updatedOrganisation is null)
+        {
+            throw new InvalidOperationException("Failed to update organisation.");
+        }
+        return updatedOrganisation;
+    }
 }

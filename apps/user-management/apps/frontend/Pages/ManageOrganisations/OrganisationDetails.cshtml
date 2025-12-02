@@ -57,11 +57,18 @@
                 </govuk-summary-list-row>
             }
 
-            @if (Model.Organisation?.PhoneNumber is not null)
+            @if (Model.Organisation?.PhoneNumber is not null && Model.Organisation.OrganisationId is not null)
             {
                 <govuk-summary-list-row>
                     <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.PhoneNumber)</govuk-summary-list-row-key>
-                    <govuk-summary-list-row-value>@Model.Organisation.PhoneNumber</govuk-summary-list-row-value>
+                    <govuk-summary-list-row-value>
+                        <p class="govuk-body">@Model.Organisation.PhoneNumber</p>
+                    </govuk-summary-list-row-value>
+                        <govuk-summary-list-row-actions>
+                            <govuk-summary-list-row-action href="@LinkGenerator.ManageOrganisations.EnterPhoneNumberEdit(Model.Organisation.OrganisationId.Value)" visually-hidden-text=" UK Phone number">
+                                Change
+                            </govuk-summary-list-row-action>
+                        </govuk-summary-list-row-actions>
                 </govuk-summary-list-row>
             }
         </govuk-summary-list>
