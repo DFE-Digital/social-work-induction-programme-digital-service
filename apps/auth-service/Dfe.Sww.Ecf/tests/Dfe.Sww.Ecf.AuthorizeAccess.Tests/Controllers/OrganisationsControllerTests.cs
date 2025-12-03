@@ -284,6 +284,7 @@ public class OrganisationsControllerTests : TestBase
             var organisationService = new OrganisationService(dbContext);
 
             var controller = new OrganisationsController(organisationService);
+
             // Act
             var result = await controller.UpdateAsync(
                 new UpdateOrganisationRequest

@@ -6,6 +6,7 @@ namespace Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Models;
 [PublicAPI]
 public record UpdateOrganisationRequest
 {
+    public required Guid OrganisationId { get; set; }
     public required string OrganisationName { get; set; }
     public int? ExternalOrganisationId { get; set; }
     public int? LocalAuthorityCode { get; set; }

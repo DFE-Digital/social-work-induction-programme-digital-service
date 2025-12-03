@@ -59,6 +59,7 @@ public class EnterPhoneNumber(
             if (editedOrganisation is null) throw new InvalidOperationException("Organisation must be set before accessing this page.");
             editedOrganisation.PhoneNumber = PhoneNumber;
             await editOrganisationJourneyService.SetOrganisationAsync(Id.Value, editedOrganisation);
+            await editOrganisationJourneyService.SetIsOrganisationUpdateAsync(Id.Value, true);
             return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswersEditPhoneNumber(Id.Value));
         }
 

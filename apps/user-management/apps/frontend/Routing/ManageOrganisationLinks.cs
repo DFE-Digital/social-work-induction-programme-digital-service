@@ -23,6 +23,7 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
 
     // Edit links
     public string EditPrimaryCoordinatorChangeType(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinatorChangeType", routeValues: new { id });
+    public string EditPrimaryCoordinatorChangeTypeChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinatorChangeType", routeValues: new { id }, handler: "Change");
     public string ReplacePrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "Replace");
     public string EditPrimaryCoordinator(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id });
     public string CheckYourAnswersEdit(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "Edit");
@@ -31,4 +32,8 @@ public class ManageOrganisationLinks(EcfLinkGenerator ecfLinkGenerator)
 
     // Edit change links
     public string ReplacePrimaryCoordinatorChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "ReplaceChange");
+    public string CheckYourAnswersEditChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/CheckYourAnswers", routeValues: new { id }, handler: "EditChange");
+    public string ReplacePrimaryCoordinatorEditChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "ReplaceEditChange");
+    public string EditPrimaryCoordinatorEditChange(Guid id) => ecfLinkGenerator.GetRequiredPathByPage("/ManageOrganisations/EditPrimaryCoordinator", routeValues: new { id }, handler: "EditChange");
+
 }

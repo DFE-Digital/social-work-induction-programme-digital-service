@@ -79,8 +79,8 @@ public class OrganisationOperations(AuthServiceClient authServiceClient)
 
     public async Task<OrganisationDto> UpdateOrganisationAsync(UpdateOrganisationRequest updateOrganisationRequest)
     {
-        var httpResponse = await authServiceClient.HttpClient.PostAsJsonAsync(
-            "/api/Organisations/Update",
+        var httpResponse = await authServiceClient.HttpClient.PutAsJsonAsync(
+            "/api/Organisations",
             updateOrganisationRequest
         );
 

@@ -5,4 +5,5 @@ public class EditOrganisationJourneyModel(Organisation organisation, AccountDeta
     public PrimaryCoordinatorChangeType? PrimaryCoordinatorChangeType { get; set; }
     public Organisation? Organisation { get; set; } = organisation;
     public AccountDetails? PrimaryCoordinatorAccount { get; set; } = primaryCoordinatorAccount;
+    public bool? IsOrganisationUpdate { get; set; }
 }

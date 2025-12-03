@@ -99,14 +99,16 @@ public class OrganisationService(
             || organisation.Type is null
             || organisation.LocalAuthorityCode is null
             || string.IsNullOrWhiteSpace(organisation.Region)
+            || organisation.OrganisationId is null
         )
         {
-            throw new ArgumentException("Organisation name, Type, Local Authority Code and Region are required");
+            throw new ArgumentException("Organisation name, Type, Local Authority Code, Region and Id are required");
         }
 
         var updatedOrganisationDto = await authServiceClient.Organisations.UpdateOrganisationAsync(
             new UpdateOrganisationRequest
             {
+                OrganisationId = organisation.OrganisationId.Value,
                 OrganisationName = organisation.OrganisationName,
                 ExternalOrganisationId = organisation.ExternalOrganisationId,
                 LocalAuthorityCode = organisation.LocalAuthorityCode,
