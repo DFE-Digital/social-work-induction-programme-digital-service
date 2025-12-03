@@ -43,11 +43,6 @@ variable "resource_name_prefix" {
   type        = string
 }
 
-variable "asp_sku_moodle" {
-  description = "SKU name for the Moodle App Service Plan"
-  type        = string
-}
-
 variable "asp_sku_maintenance" {
   description = "SKU name for the maintenance App Service Plan"
   type        = string
@@ -100,60 +95,9 @@ variable "admin_enabled" {
   type        = string
 }
 
-variable "moodle_db_prefix" {
-  description = "The prefix for the Moodle database"
-  type        = string
-  default     = "mdl_"
-}
-
-variable "moodle_web_port" {
-  description = "The web server port being exposed by the docker container for Moodle"
-  type        = string
-  default     = "8080"
-}
-
-variable "moodle_site_fullname" {
-  description = "The full name of the Moodle site"
-  type        = string
-}
-
-variable "moodle_site_shortname" {
-  description = "Short name for the Moodle site"
-  type        = string
-}
-
-variable "moodle_admin_user" {
-  description = "The username for the admin account on Moodle"
-  type        = string
-  sensitive   = true
-}
-
-variable "moodle_admin_password" {
-  description = "The password for Moodle admin user"
-  type        = string
-  sensitive   = true
-}
-
-variable "moodle_admin_email" {
-  description = "The email address to use for the admin user on Moodle"
-  type        = string
-  sensitive   = true
-}
-
-variable "moodle_db_type" {
-  description = "The database type for Moodle"
-  type        = string
-  default     = "pgsql"
-}
-
 variable "kv_purge_protection_enabled" {
   description = "Whether purge protection is enabled for key vaults"
   type        = bool
-}
-
-variable "moodle_instances" {
-  description = "The names of the moodle instances to be created"
-  type        = map(map(any))
 }
 
 variable "assign_delivery_team_key_vault_permissions" {
@@ -184,12 +128,6 @@ variable "auth_service_app_settings" {
   type        = map(string)
 }
 
-variable "moodle_app_settings" {
-  description = "Environment specific Moodle app settings"
-  type        = map(string)
-  default     = {}
-}
-
 variable "user_management_app_settings" {
   description = "Environment specific user management app settings"
   type        = map(string)
@@ -202,23 +140,6 @@ variable "notification_service_app_settings" {
   default     = {}
 }
 
-variable "moodle_web_service_name" {
-  description = "Name of Moodle web service"
-  type        = string
-}
-
-variable "moodle_web_service_user" {
-  description = "Name of Moodle web service user"
-  type        = string
-  sensitive   = true
-}
-
-variable "moodle_web_service_user_email" {
-  description = "Email of Moodle web service user"
-  type        = string
-  sensitive   = true
-}
-
 variable "email_support_address" {
   description = "Email address for support / alerting"
   type        = string
@@ -228,17 +149,6 @@ variable "email_support_address" {
 variable "asp_sku_notification" {
   description = "The app service SKU for Notification Service"
   type        = string
-}
-
-variable "moodle_max_data_storage_size_in_gb" {
-  type        = number
-  description = "The provisioned size (quota) in GiB for the Moodle data file share. This directly impacts performance and cost for Premium shares."
-  default     = 5
-
-  validation {
-    condition     = var.moodle_max_data_storage_size_in_gb > 0
-    error_message = "The storage size must be a positive number greater than 0."
-  }
 }
 
 variable "storage_redundancy" {
@@ -272,7 +182,7 @@ variable "blob_storage_account_tier" {
 
 variable "file_storage_account_tier" {
   type        = string
-  description = "The account tier for the dedicated Moodle file storage account. Allowed values are Standard or Premium."
+  description = "The account tier for the dedicated file storage account. Allowed values are Standard or Premium."
   default     = "Standard"
 
   validation {

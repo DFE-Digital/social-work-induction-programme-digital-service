@@ -56,13 +56,10 @@ These can either be declared globally in https://github.com/DFE-Digital/social-w
 | acr_resource_group  | Resource group which Azure container registry resides in |
 | acr_sku | Azure SKU for container registry |
 | admin_enabled | Corresponds to the Terraform Azure container registry property admin_enabled. If true, then there is a single admin user defined for interactions with the registry. We currently set it to false in all environments. |
-| asp_sku_moodle | The Azure SKU for the Moodle Application Service Plan |
-| asp_sku_maintenance | The Azure SKU for the Moodle Maintenance Service Plan (cron job + proxy service) |
+| asp_sku_maintenance | The Azure SKU for the Maintenance Service Plan (proxy service) |
 | asp_sku_services | The Azure SKU for the Services Application Service Plan (user management + auth service etc) |
 | days_to_expire | Number of days to expire for password / secrets. Currently not used, but may be required as we manage more secrets through the key vault. |
 | kv_purge_protection_enabled | Whether or not to enable purge protection for the key vault. When purge protection is on, a vault or an object in the deleted state cannot be purged until the retention period has passed. |
-| moodle_instances | Originally, this was added to support multiple Moodle instances per environment. However, there are two many Moodle dependent services for this to be viable now, so each environment simply implements a single primary Moodle instance. |
 | auth_service_app_settings | Environment specific app settings to merge with the auth service app settings. FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE, whether or not to enable the developer exception page in .NET. FEATUREFLAGS__ENABLESWAGGER, whether or not to enable swagger.  |
 | one_login_client_id | The Onelogin client ID either obtained from the admin integration site environment config, or the production environment config received from the central Onelogin team. Note that when creating a new environment, this can be left empty until the Onelogin config has been created / received. |
-| moodle_app_settings | Environment specific app settings to merge with the Moodle app settings. MOODLE_SWITCH_OFF_GOVUK_THEMING, whether or not to switch off the GovUK theming, to make admin easier in the dev and test environments. MOODLE_SWITCH_OFF_OAUTH, whether or not to switch of OAUTH, again to make admin easier. |
 | user_management_app_settings | Environment specific app settings to merge with the user management app settings. |

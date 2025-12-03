@@ -165,15 +165,6 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "magic_link_waf" {
 
 # Data sources to reference Front Door endpoints created by web-app modules
 # These avoid circular dependencies by referencing endpoints by name
-data "azurerm_cdn_frontdoor_endpoint" "moodle_endpoints" {
-  count               = var.magic_links_enabled ? length(var.moodle_instances) : 0
-  name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-moodle-${element(keys(var.moodle_instances), count.index)}"
-  profile_name        = var.frontdoor_profile_name
-  resource_group_name = var.resource_group_name
-
-  depends_on = [var.frontdoor_profile_id]
-}
-
 data "azurerm_cdn_frontdoor_endpoint" "user_management_endpoint" {
   count               = var.magic_links_enabled ? 1 : 0
   name                = "${var.resource_name_prefix}-fd-endpoint-web-wa-user-management"
@@ -195,7 +186,6 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
       association {
         dynamic "domain" {
           for_each = concat(
-            [for endpoint in data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints : endpoint.id],
             [for endpoint in data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint : endpoint.id],
           )
           content {
@@ -209,7 +199,6 @@ resource "azurerm_cdn_frontdoor_security_policy" "magic_link_security" {
 
   depends_on = [
     azurerm_cdn_frontdoor_firewall_policy.magic_link_waf,
-    data.azurerm_cdn_frontdoor_endpoint.moodle_endpoints,
     data.azurerm_cdn_frontdoor_endpoint.user_management_endpoint,
   ]
 }
