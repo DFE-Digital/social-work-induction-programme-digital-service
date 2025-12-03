@@ -68,4 +68,24 @@ public class OrganisationsController(IOrganisationService organisationService) :
         );
         return Ok(organisation != null);
     }
+
+    [HttpPut]
+    [ActionName(nameof(UpdateAsync))]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> UpdateAsync(
+        [FromBody] UpdateOrganisationRequest updateOrganisationRequest
+    )
+    {
+        var updatedOrganisation = await organisationService.UpdateAsync(
+            updateOrganisationRequest.ToOrganisation()
+        );
+
+        if (updatedOrganisation is null)
+        {
+            return BadRequest("Organisation not found.");
+        }
+
+        return Ok(updatedOrganisation);
+    }
 }
