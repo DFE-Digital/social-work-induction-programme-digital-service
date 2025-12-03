@@ -4,7 +4,7 @@ public interface IOneLoginAccountLinkingService
 {
     public Task<string> GetLinkingTokenForAccountIdAsync(Guid accountId);
 
-    public Guid? GetAccountIdForLinkingToken(string linkingToken);
+    public Task<Guid?> GetAccountIdForLinkingToken(string linkingToken);
 
     public void InvalidateLinkingToken(string linkingToken);
 }

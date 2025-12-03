@@ -250,7 +250,9 @@ public class SignInJourneyHelper(
             return null;
         }
 
-        var personId = oneLoginAccountLinkingService.GetAccountIdForLinkingToken(linkingToken);
+        var personId = await oneLoginAccountLinkingService.GetAccountIdForLinkingToken(
+            linkingToken
+        );
 
         if (personId is null)
         {
