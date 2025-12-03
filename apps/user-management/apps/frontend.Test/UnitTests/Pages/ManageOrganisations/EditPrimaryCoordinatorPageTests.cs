@@ -329,4 +329,70 @@ public class EditPrimaryCoordinatorPageTests : ManageOrganisationsPageTestBase<E
         );
         VerifyAllNoOtherCalls();
     }
+
+        [Fact]
+    public async Task OnGetEditChangeAsync_WhenCalled_LoadsTheView_WithChangeBackLink()
+    {
+        // Arrange
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(organisation);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnGetEditChangeAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.IsReplace.Should().BeFalse();
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}?handler=Change");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.GetOrganisationAsync(organisation.OrganisationId!.Value),
+            Times.Once);
+        MockEditOrganisationJourneyService.Verify(
+            x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value),
+            Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetReplaceEditChangeAsync_WhenCalled_LoadsTheView_WithReplaceAndChangeBackLink()
+    {
+        // Arrange
+        var account = AccountBuilder.Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(organisation);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(accountDetails);
+
+        // Act
+        var result = await Sut.OnGetReplaceEditChangeAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.IsReplace.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}?handler=Change");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.GetOrganisationAsync(organisation.OrganisationId!.Value),
+            Times.Once);
+        MockEditOrganisationJourneyService.Verify(
+            x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value),
+            Times.Once);
+        VerifyAllNoOtherCalls();
+    }
 }

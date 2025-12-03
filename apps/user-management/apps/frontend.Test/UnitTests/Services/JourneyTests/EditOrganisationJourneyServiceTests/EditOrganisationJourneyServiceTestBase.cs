@@ -40,4 +40,10 @@ public abstract class EditOrganisationJourneyServiceTestBase
             MockAccountService.Object
         );
     }
+
+    private protected void VerifyAllNoOtherCalls()
+    {
+        MockOrganisationService.VerifyNoOtherCalls();
+        MockAccountService.VerifyNoOtherCalls();
+    }
 }
