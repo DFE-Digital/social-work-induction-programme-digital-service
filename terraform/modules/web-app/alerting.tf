@@ -6,7 +6,7 @@ resource "azurerm_monitor_metric_alert" "frontdoor_back_end_health" {
   frequency           = "PT1M"
   window_size         = "PT5M"
   severity            = 2
-  enabled             = true
+  enabled             = false
 
   criteria {
     metric_namespace = "Microsoft.Cdn/profiles"
