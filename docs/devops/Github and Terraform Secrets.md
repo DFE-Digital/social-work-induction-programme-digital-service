@@ -22,7 +22,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | AZ_CLIENT_SECRET | Secret to be used in conjunction with the Client ID when authenticating with Azure. Mostly unused as we use `az login` with just Client ID and OIDC |
 | AZ_SUBSCRIPTION_ID | Subscription ID to be used when authenticating with Azure |
 | AZ_TENANT_ID | Tenant ID to be used when authenticating with Azure |
-| MOODLE_ADMIN_PASSWORD | Password assigned to the admin user for initial database configuration in Moodle |
 
 ## Terraform / Key Vault Secrets
 
@@ -32,11 +31,9 @@ We use Terraform to declare secrets and subsequently store them in the environme
 | -------- | ------- | 
 | AuthService-ClientSecret | Secret to be used by clients to authenticate with the auth service |
 | BlobStorage-ConnectionString | Connection string required to authenticate with Azure blob storage. |
-| Database-AdminPassword | Automatically created admin password for Moodle postgres database server |
+| Database-AdminPassword | Automatically created admin password for postgres database server |
 | FileStorage-AccessKey | Access key required to connect to the Azure Files share |
 | FileStorage-ConnectionString | Connection string required to connect to the Azure Files share |
-| Moodle-WebServicePassword | Password for the Moodle web service user |
-| Moodle-WebServiceToken | Authentication token generated for the web service user, from the user's name and password |
 
 ## Terraform / Key Vault Certificates
 

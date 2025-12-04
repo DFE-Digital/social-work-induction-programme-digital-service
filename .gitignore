@@ -1,7 +1,3 @@
-# Moodle
-public/
-moodledata/
-
 .ddev/*
 !.ddev/commands/
 !.ddev/commands/web/*
@@ -43,16 +39,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-/moodle-app/.ddev/addon-metadata
-moodle-app/.ddev/config.selenium-standalone-chrome.yaml
-moodle-app/.ddev/config.yaml
-/moodle-app/.ddev/custom_certs
-moodle-app/.ddev/docker-compose.selenium-chrome.yaml
-moodle-app/.ddev/docker-compose.selenium-chrome_extras.yaml
-/moodle-app/behat_moodle_data
-/moodle-app/moodle-browser-config
-/moodle-app/phpunit_moodle_data
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/dotnetcore,visualstudiocode,rider,macos,windows,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=dotnetcore,visualstudiocode,rider,macos,windows,linux

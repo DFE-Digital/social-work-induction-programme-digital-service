@@ -4,10 +4,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "= 4.43.0"
     }
-    azapi = {
-      source  = "Azure/azapi"
-      version = "2.7.0"
-    }
   }
 }
 
@@ -158,14 +154,6 @@ resource "azurerm_storage_account" "sa_db_backup_blob_storage" {
   #checkov:skip=CKV_AZURE_33:Argument has been deprecated
 }
 
-resource "azurerm_storage_container" "moodle_container" {
-  name                  = "${var.resource_name_prefix}-moodle-backups"
-  storage_account_id    = azurerm_storage_account.sa_db_backup_blob_storage.id
-  container_access_type = "private" # Keep backups private
-
-  #checkov:skip=CKV2_AZURE_21:Don't need storage loggin to be enabled
-}
-
 resource "azurerm_storage_container" "um_container" {
   name                  = "${var.resource_name_prefix}-usermanagement-backups"
   storage_account_id    = azurerm_storage_account.sa_db_backup_blob_storage.id
@@ -181,77 +169,4 @@ resource "azurerm_key_vault_secret" "db_backup_blob_storage_connection_string" {
   content_type    = "storage connection string"
   depends_on      = [azurerm_key_vault_access_policy.kv_gh_ap]
   expiration_date = time_offset.secret_expiry06.rfc3339
-}
-
-resource "azurerm_storage_account" "sa_moodle_data" {
-  name                            = "${var.resource_name_prefix}samoodledata"
-  resource_group_name             = azurerm_resource_group.rg_primary.name
-  location                        = var.location
-  account_tier                    = "Premium"
-  account_kind                    = "FileStorage"
-  account_replication_type        = "LRS"
-  allow_nested_items_to_be_public = false
-  nfsv3_enabled                   = false
-
-  # When mounting an NFS share, you'll need to ensure that Secure Transfer Required 
-  # is disabled on the storage account. App Service doesn't support mounting NFS shares 
-  # when this is enabled. It uses port 2409 and virtual network integration and private 
-  # endpoints as the security measure.
-  https_traffic_only_enabled = false
-
-  tags = var.tags
-
-  network_rules {
-    default_action = "Deny"
-    bypass         = ["AzureServices"]
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["Environment"],
-      tags["Product"],
-      tags["Service Offering"]
-    ]
-  }
-
-  #checkov:skip=CKV_AZURE_206:GRS not required
-  #checkov:skip=CKV_AZURE_59:Argument has been deprecated
-  #checkov:skip=CKV2_AZURE_18:Microsoft Managed keys are sufficient
-  #checkov:skip=CKV2_AZURE_1:Microsoft Managed keys are sufficient
-  #checkov:skip=CKV2_AZURE_38:Soft-delete not required
-  #checkov:skip=CKV2_AZURE_33:VNet not configured
-  #checkov:skip=CKV2_AZURE_41:SAS keys will be rotated
-  #checkov:skip=CKV2_AZURE_40:Shared access key are sufficient
-  #checkov:skip=CKV_AZURE_33:Argument has been deprecated
-  #checkov:skip=CKV_AZURE_44:Secured with vnet integration and private endpoints as security measures
-}
-
-resource "azurerm_storage_share" "moodle_data_share" {
-  name               = "${var.resource_name_prefix}-ss-moodle-data"
-  storage_account_id = azurerm_storage_account.sa_moodle_data.id
-  quota              = 100
-  enabled_protocol   = "NFS"
-
-  # This setting is not available in the current terraform provider,
-  # we need to set it via the azapi statement below
-  # root_squash = "RootSquash"
-
-  acl {
-    id = "default"
-    access_policy {
-      permissions = "rwdl" # Read Write Delete List
-    }
-  }
-}
-
-# call azapi to set the root squash setting
-resource "azapi_update_resource" "storage_share_rootsquash" {
-  type        = "Microsoft.Storage/storageAccounts/fileServices/shares@2023-01-01"
-  resource_id = azurerm_storage_share.moodle_data_share.id
-
-  body = {
-    properties = {
-      rootSquash = "RootSquash"
-    }
-  }
 }

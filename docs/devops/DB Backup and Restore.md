@@ -82,7 +82,7 @@ on:
           - backup
           - restore
       db_name:
-        description: "The name of the database to backup/restore (e.g. moodle_d01)"
+        description: "The name of the database to backup/restore (e.g. auth_service_d01)"
         required: true
         type: string
       backup_file_name:

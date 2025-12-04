@@ -10,7 +10,6 @@ create_and_own_container_registry = true
 acr_name                          = "${project_code}d01acr"
 acr_sku                           = "Basic"
 admin_enabled                     = false
-asp_sku_moodle                    = "B2"
 asp_sku_maintenance               = "B2"
 asp_sku_services                  = "B2"
 asp_sku_notification              = "B1"
@@ -21,11 +20,6 @@ postgresql_sku                    = "B_Standard_B1ms"
 frontdoor_sku                     = "Standard_AzureFrontDoor"
 key_vault_sku                     = "standard"
 log_analytics_sku                 = "PerGB2018"
-moodle_instances = {
-  # Capability to add multiple instances in the future (secondary = {} etc.)
-  # They will each have their own dedicated DB
-  primary = {}
-}
 # Enable dev friendly auth services features in dev environment
 auth_service_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
@@ -36,18 +30,12 @@ auth_service_app_settings = {
   "DATABASESEED__ONELOGINEMAIL"                = "swip.test@education.gov.uk"
 }
 one_login_client_id = "xxPfEn1Te_V7TX3xyAN4j39hZkI"
-moodle_app_settings = {
-  "MOODLE_SWITCH_OFF_GOVUK_THEMING" = "false"
-  "MOODLE_SWITCH_OFF_OAUTH"         = "false"
-  "MOODLE_PERSISTED_FILE_SYNC"      = "true"
-}
 user_management_app_settings = {
   "FEATUREFLAGS__ENABLEDEVELOPEREXCEPTIONPAGE" = "true"
   "FEATUREFLAGS__ENABLEPLUSEMAILSTRIPPING"     = "true"
 }
-moodle_max_data_storage_size_in_gb = 5
-storage_redundancy                 = "LRS"
-blob_storage_account_tier          = "Standard"
+storage_redundancy        = "LRS"
+blob_storage_account_tier = "Standard"
 # Standard pay as you go HDD file share 
 file_storage_account_tier = "Standard"
 

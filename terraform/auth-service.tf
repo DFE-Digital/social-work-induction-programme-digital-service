@@ -84,8 +84,6 @@ module "auth_service" {
     "OIDC__ENCRYPTIONCERTIFICATENAME"                  = module.encryption_certificate.cert_name
     "OIDC__APPLICATIONS__0__CLIENTID"                  = local.auth_service_client_id
     "OIDC__APPLICATIONS__0__CLIENTSECRET"              = local.auth_service_client_secret
-    "OIDC__APPLICATIONS__0__REDIRECTURIS__0"           = local.moodle_auth_redirect_uri
-    "OIDC__APPLICATIONS__0__POSTLOGOUTREDIRECTURIS__0" = local.moodle_auth_post_logout_redirect_uri
     "OIDC__APPLICATIONS__0__REDIRECTURIS__1"           = local.user_management_auth_redirect_uri
     "OIDC__APPLICATIONS__0__POSTLOGOUTREDIRECTURIS__1" = local.user_management_auth_post_logout_redirect_uri
     "ONELOGIN__CLIENTID"                               = var.one_login_client_id

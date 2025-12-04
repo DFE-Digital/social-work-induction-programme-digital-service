@@ -16,7 +16,6 @@ module "magic-links" {
 
   resource_name_prefix = var.resource_name_prefix
   magic_links_enabled  = var.magic_links_enabled
-  moodle_instances     = var.moodle_instances
   frontdoor_sku        = var.frontdoor_sku
   tags                 = var.tags
 
