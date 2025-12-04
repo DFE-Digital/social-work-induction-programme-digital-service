@@ -126,7 +126,7 @@ public class EnterPhoneNumberPageTests : ManageOrganisationsPageTestBase<EnterPh
         result.Should().BeOfType<RedirectResult>();
         var redirectResult = result as RedirectResult;
         redirectResult.Should().NotBeNull();
-        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers");
+        redirectResult!.Url.Should().Be("/manage-organisations/check-your-answers?handler=FromPhoneNumberChange");
 
         Sut.FromChangeLink.Should().BeTrue();
         Sut.BackLinkPath.Should().Be("/manage-organisations/check-your-answers");

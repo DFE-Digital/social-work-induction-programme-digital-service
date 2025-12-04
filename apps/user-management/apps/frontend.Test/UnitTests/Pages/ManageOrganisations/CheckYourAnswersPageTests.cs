@@ -43,6 +43,9 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         Sut.Organisation.Should().BeEquivalentTo(organisation);
         Sut.BackLinkPath.Should().Be("/manage-organisations/add-primary-coordinator");
         result.Should().BeOfType<PageResult>();
+        Sut.ChangeLocalAuthorityCodeLink.Should().BeEquivalentTo("/manage-organisations/enter-local-authority-code?handler=Change");
+        Sut.ChangePrimaryCoordinatorLink.Should().BeEquivalentTo("/manage-organisations/add-primary-coordinator?handler=Change");
+        Sut.ChangePhoneNumberLink.Should().BeEquivalentTo("/manage-organisations/enter-phone-number?handler=Change");
 
         MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
@@ -94,6 +97,28 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetFromPhoneNumberChange_WhenCalled_HasIsFromPhoneNumberChangeTrue()
+    {
+        // Act
+        _ = Sut.OnGetFromPhoneNumberChange();
+
+        // Assert
+        Sut.IsFromPhoneNumberChange.Should().BeTrue();
+        Sut.BackLinkPath.Should().BeEquivalentTo("/manage-organisations/enter-phone-number?handler=Change");
+    }
+
+    [Fact]
+    public void OnGetFromLocalAuthorityChange_WhenCalled_HasIsFromLocalAuthorityChangeTrue()
+    {
+        // Act
+        _ = Sut.OnGetFromLocalAuthorityChange();
+
+        // Assert
+        Sut.IsFromLocalAuthorityChange.Should().BeTrue();
+        Sut.BackLinkPath.Should().BeEquivalentTo("/manage-organisations/enter-local-authority-code?handler=Change");
     }
 
     [Fact]
