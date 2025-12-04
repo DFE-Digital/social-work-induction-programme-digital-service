@@ -79,11 +79,6 @@ output "magic_link_rule_set_id" {
   value       = var.magic_links_enabled ? module.magic-links[0].magic_link_rule_set_id : null
 }
 
-output "subnet_moodle_id" {
-  description = "The ID of the Moodle subnet"
-  value       = azurerm_subnet.sn_moodle_app.id
-}
-
 output "subnet_maintenance_id" {
   description = "The ID of the maintenance apps subnet"
   value       = azurerm_subnet.sn_maintenance_apps.id
@@ -92,11 +87,6 @@ output "subnet_maintenance_id" {
 output "subnet_services_id" {
   description = "The ID of the service apps subnet"
   value       = azurerm_subnet.sn_service_apps.id
-}
-
-output "moodle_service_plan_id" {
-  description = "ID of the Moodle app service plan"
-  value       = azurerm_service_plan.asp_moodle_app.id
 }
 
 output "maintenance_service_plan_id" {
@@ -178,20 +168,4 @@ output "db_backup_blob_storage_account_name" {
 output "full_backup_storage_connectionstring_uri" {
   description = "The full Key Vault URI for the backup blob storage connection string"
   value       = "${azurerm_key_vault.kv.vault_uri}secrets/${azurerm_key_vault_secret.db_backup_blob_storage_connection_string.name}"
-}
-
-output "moodle_data_storage_account_name" {
-  description = "The name of the Moodle Data storage account"
-  value       = azurerm_storage_account.sa_moodle_data.name
-}
-
-output "moodle_data_share_name" {
-  description = "The name of the Moodle Data share"
-  value       = azurerm_storage_share.moodle_data_share.name
-}
-
-output "moodle_data_share_access_key" {
-  description = "The access key for the Moodle data share"
-  value       = azurerm_storage_account.sa_moodle_data.primary_access_key
-  sensitive   = true
 }

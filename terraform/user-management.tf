@@ -37,8 +37,6 @@ module "user_management" {
     "OIDC__CLIENTSECRET"                      = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.auth_service_client_secret.name})"
     "SOCIALWORKENGLANDCLIENTOPTIONS__BASEURL" = "https://temp.placeholder.url.com" # TODO: SWE API usage deprioritised
     "AUTHCLIENTOPTIONS__BASEURL"              = module.auth_service.web_app_url
-    "MOODLECLIENTOPTIONS__BASEURL"            = "${module.web_app_moodle["primary"].web_app_url}/webservice/rest/server.php"
-    "MOODLECLIENTOPTIONS__APITOKEN"           = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.web_service_token.name})"
     "NOTIFICATIONCLIENTOPTIONS__BASEURL"      = module.notification-service.function_app_url
     "NOTIFICATIONCLIENTOPTIONS__FUNCTIONKEY"  = "@Microsoft.KeyVault(SecretUri=${module.stack.kv_vault_uri}secrets/${azurerm_key_vault_secret.function_key.name})"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"   = module.stack.appinsights_connection_string
