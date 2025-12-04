@@ -184,27 +184,4 @@ public class CheckYourAnswers(
 
         return linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
     }
-
-    public string GetBackLink(Guid? id = null)
-    {
-        if (IsEdit && id.HasValue)
-        {
-            return linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id.Value);
-        }
-
-        if (IsReplace && id.HasValue)
-        {
-            return linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id.Value);
-        }
-        if (IsFromPhoneNumberChange)
-        {
-            return linkGenerator.ManageOrganisations.EnterPhoneNumberChange();
-        }
-
-        if (IsFromLocalAuthorityChange)
-        {
-            return linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
-        }
-        return linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
-    }
 }
