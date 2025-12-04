@@ -269,7 +269,7 @@ public class SignInJourneyHelper(
         }
 
         // Invalidate the token
-        oneLoginAccountLinkingService.InvalidateLinkingToken(linkingToken);
+        await oneLoginAccountLinkingService.InvalidateLinkingToken(linkingToken);
 
         return new TryApplyLinkingTokenResult(linkingTokenPerson.PersonId);
     }
