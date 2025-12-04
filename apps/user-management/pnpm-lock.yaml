@@ -15,8 +15,8 @@ importers:
         specifier: ^5.11.1
         version: 5.11.1
       playwright:
-        specifier: ^1.54.2
-        version: 1.54.2
+        specifier: ^1.55.1
+        version: 1.55.1
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.16.5)(typescript@5.9.2)
@@ -41,10 +41,10 @@ importers:
         version: 3.34.0
       '@serenity-js/playwright':
         specifier: ^3.34.0
-        version: 3.34.0(playwright-core@1.54.2)
+        version: 3.34.0(playwright-core@1.55.1)
       '@serenity-js/playwright-test':
         specifier: ^3.34.0
-        version: 3.34.0(@playwright/test@1.54.2)(playwright-core@1.54.2)
+        version: 3.34.0(@playwright/test@1.54.2)(playwright-core@1.55.1)
       '@serenity-js/rest':
         specifier: ^3.34.0
         version: 3.34.0
@@ -697,8 +697,18 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.55.1:
+    resolution: {integrity: sha512-Z6Mh9mkwX+zxSlHqdr5AOcJnfp+xUWLCt9uKV18fhzA8eyxUd8NUWzAjxUh55RZKSYwDGX0cfaySdhZJGMoJ+w==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   playwright@1.54.2:
     resolution: {integrity: sha512-Hu/BMoA1NAdRUuulyvQC0pEqZ4vQbGfn8f7wPXcnqQmM+zct9UliKxsIkLNmz/ku7LElUNqmaiv1TG/aL5ACsw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.55.1:
+    resolution: {integrity: sha512-cJW4Xd/G3v5ovXtJJ52MAOclqeac9S/aGGgRzLabuF8TnIb6xHvMzKIa6JmrRzUkeXJgfL1MhukP0NK6l39h3A==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -994,11 +1004,11 @@ snapshots:
       upath: 2.0.1
       validate-npm-package-name: 6.0.2
 
-  '@serenity-js/playwright-test@3.34.0(@playwright/test@1.54.2)(playwright-core@1.54.2)':
+  '@serenity-js/playwright-test@3.34.0(@playwright/test@1.54.2)(playwright-core@1.55.1)':
     dependencies:
       '@playwright/test': 1.54.2
       '@serenity-js/core': 3.34.0
-      '@serenity-js/playwright': 3.34.0(playwright-core@1.54.2)
+      '@serenity-js/playwright': 3.34.0(playwright-core@1.55.1)
       '@serenity-js/rest': 3.34.0
       '@serenity-js/web': 3.34.0
       deepmerge: 4.3.1
@@ -1008,11 +1018,11 @@ snapshots:
       - playwright-core
       - supports-color
 
-  '@serenity-js/playwright@3.34.0(playwright-core@1.54.2)':
+  '@serenity-js/playwright@3.34.0(playwright-core@1.55.1)':
     dependencies:
       '@serenity-js/core': 3.34.0
       '@serenity-js/web': 3.34.0
-      playwright-core: 1.54.2
+      playwright-core: 1.55.1
       tiny-types: 1.23.0
 
   '@serenity-js/rest@3.34.0':
@@ -1506,9 +1516,17 @@ snapshots:
 
   playwright-core@1.54.2: {}
 
+  playwright-core@1.55.1: {}
+
   playwright@1.54.2:
     dependencies:
       playwright-core: 1.54.2
+    optionalDependencies:
+      fsevents: 2.3.2
+
+  playwright@1.55.1:
+    dependencies:
+      playwright-core: 1.55.1
     optionalDependencies:
       fsevents: 2.3.2
 
