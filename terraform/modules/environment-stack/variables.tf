@@ -115,7 +115,7 @@ variable "blob_storage_account_tier" {
 
 variable "file_storage_account_tier" {
   type        = string
-  description = "The account tier for the dedicated Moodle file storage account. Allowed values are Standard or Premium."
+  description = "The account tier for the dedicated file storage account. Allowed values are Standard or Premium."
   default     = "Standard"
 
   validation {

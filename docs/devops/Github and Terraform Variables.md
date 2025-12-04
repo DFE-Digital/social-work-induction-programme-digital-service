@@ -13,7 +13,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | Variable Name | Usage | 
 | -------- | ------- | 
 | AZURE_KUDU_SSH_USER | Global name of user required by Kudu to SSH to app service containers |
-| MOODLE_OIDC_PLUGIN_RELEASE_URL | Global url of OIDC plugin to use when building Moodle images |
 
 ## Environment Scoped Variables
 
@@ -21,11 +20,6 @@ These can be configured in the [Github Secrets and variables config section](htt
 | -------- | ------- | 
 | AUTH_SERVICE_CLIENT_ID | Client ID to be used by Github Actions when authenticating to Azure |
 | EMAIL_SUPPORT_ADDRESS | Email address used by Azure action group to send alert emails to |
-| MOODLE_ADMIN_EMAIL | Email address of admin user to be used when configuring Moodle |
-| MOODLE_ADMIN_USER | User name of admin user to be used when configuring Moodle |
-| MOODLE_WEB_SERVICE_NAME | Name of Moodle web service to be used when configuring the web service |
-| MOODLE_WEB_SERVICE_USER | Name of Moodle web service user to be used when configuring the web service |
-| MOODLE_WEB_SERVICE_USER_EMAIL | Email address of Moodle web service user to be used when configuring the web service |
 
 ## Terraform Variables
 
@@ -36,8 +30,6 @@ These can either be declared globally in https://github.com/DFE-Digital/social-w
 | Variable Name | Usage | 
 | -------- | ------- | 
 | project_code | SWIP programme project code |
-| moodle_site_fullname | Long site name to be used when configuring Moodle |
-| moodle_site_shortname | Short abbreviation of site name to be used when configuring Moodle |
 | webapp_storage_account_name | Generic name of blob storage account for apps - will be preceded by environment prefix in a particular environment |
 | parent_business_tag | The value of the 'Parent Business' tag for resources in Azure |
 | product_tag | The value of the 'Product' tag for resources in Azure |
