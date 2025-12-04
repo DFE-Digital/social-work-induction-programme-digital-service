@@ -35,6 +35,15 @@ public class OneLoginAccountLinkingService(IAccountsService accountsService, Ecf
             throw new InvalidOperationException("The account ID is not valid.");
         }
 
+        var existingToken = dbContext.LinkingTokens.FirstOrDefault(x =>
+            x.PersonId.Equals(accountId)
+        );
+
+        if (existingToken != null)
+        {
+            return existingToken.Token;
+        }
+
         var token = await GenerateUniqueLinkingToken();
         var linkingToken = new LinkingToken { PersonId = accountId, Token = token };
         await dbContext.LinkingTokens.AddAsync(linkingToken);
