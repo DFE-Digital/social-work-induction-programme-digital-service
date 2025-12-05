@@ -102,25 +102,49 @@ public class EditOrganisationJourneyService(
         SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
     }
 
+    public async Task<bool?> GetIsOrganisationUpdateAsync(Guid organisationId)
+    {
+        var editOrganisationJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
+        return editOrganisationJourneyModel?.IsOrganisationUpdate;
+    }
+
+    public async Task SetIsOrganisationUpdateAsync(Guid organisationId, bool isOrganisationUpdate)
+    {
+        var editOrganisationJourneyModel =
+            await GetOrganisationJourneyModelAsync(organisationId)
+            ?? throw OrganisationNotFoundException(organisationId);
+        editOrganisationJourneyModel.IsOrganisationUpdate = isOrganisationUpdate;
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
+    }
+
     public void ResetEditOrganisationJourneyModel(Guid organisationId)
     {
         Session.Remove(EditOrganisationSessionKey(organisationId));
     }
 
-    public async Task<Organisation?> CompleteJourneyAsync(Guid organisationId)
+    public async Task CompleteJourneyAsync(Guid organisationId)
     {
         var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
-        var primaryCoordinator = editAccountJourneyModel?.PrimaryCoordinatorAccount;
+        if (editAccountJourneyModel?.PrimaryCoordinatorChangeType is not null) {
+            var primaryCoordinator = editAccountJourneyModel.PrimaryCoordinatorAccount;
 
-        if (primaryCoordinator is null)
-            throw new ArgumentNullException();
+            if (primaryCoordinator is null)
+                throw new ArgumentNullException();
 
-        var account = AccountDetails.ToAccount(primaryCoordinator);
-        await _accountService.UpdateAsync(account);
+            var account = AccountDetails.ToAccount(primaryCoordinator);
+            await _accountService.UpdateAsync(account);
+        }
+
+        if (editAccountJourneyModel?.IsOrganisationUpdate == true) {
+            var organisation = editAccountJourneyModel.Organisation;
+
+            if (organisation is null)
+                throw new ArgumentNullException();
+
+            await _organisationService.UpdateOrganisationAsync(organisation);
+        }
 
         ResetEditOrganisationJourneyModel(organisationId);
-
-        return new Organisation();
     }
 }

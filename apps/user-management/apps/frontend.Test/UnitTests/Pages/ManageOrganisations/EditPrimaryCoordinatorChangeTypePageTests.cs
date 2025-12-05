@@ -118,4 +118,110 @@ public class EditPrimaryCoordinatorChangeTypePageTests : ManageOrganisationsPage
 
         VerifyAllNoOtherCalls();
     }
+
+    [Fact]
+    public async Task OnGetChangeAsync_WhenCalled_SetsFromChangeLinkAndLoadsViewWithCorrectBackLink()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var organisationId = organisation.OrganisationId ?? Guid.Empty;
+        var primaryCoordinatorChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator;
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisationId))
+            .ReturnsAsync(organisation);
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorChangeTypeAsync(organisationId))
+            .ReturnsAsync(primaryCoordinatorChangeType);
+
+        // Act
+        var result = await Sut.OnGetChangeAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+        Sut.FromChangeLink.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/check-your-answers/{organisationId}?handler=EditChange");
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorChangeTypeAsync(organisationId), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenUpdatingExisting_RedirectsToEditPrimaryCoordinatorEditChange()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        Sut.ChangeType = PrimaryCoordinatorChangeType.UpdateExistingCoordinator;
+
+        // Act
+        var result = await Sut.OnPostChangeAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-organisations/edit-primary-coordinator/{organisationId}?handler=EditChange");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorChangeTypeAsync(organisationId, Sut.ChangeType),
+            Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenReplacingAccount_RedirectsToReplacePrimaryCoordinatorEditChange()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        Sut.ChangeType = PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator;
+
+        // Act
+        var result = await Sut.OnPostChangeAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be($"/manage-organisations/edit-primary-coordinator/{organisationId}?handler=ReplaceEditChange");
+
+        MockEditOrganisationJourneyService.Verify(
+            x => x.SetPrimaryCoordinatorChangeTypeAsync(organisationId, Sut.ChangeType),
+            Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostChangeAsync_WhenCalledWithInvalidData_ReturnsErrorsAndUsesOrganisationDetailsBackLink()
+    {
+        // Arrange
+        Sut.ChangeType = null;
+        var organisation = OrganisationBuilder.Build();
+        var organisationId = organisation.OrganisationId ?? Guid.Empty;
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisationId))
+            .ReturnsAsync(organisation);
+
+        // Act
+        var result = await Sut.OnPostChangeAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        var modelState = Sut.ModelState;
+        var modelStateKeys = modelState.Keys.ToList();
+        modelStateKeys.Count.Should().Be(1);
+        modelStateKeys.Should().Contain("ChangeType");
+        modelState["ChangeType"]!.Errors.Count.Should().Be(1);
+        modelState["ChangeType"]!.Errors[0].ErrorMessage.Should()
+            .Be("Select the type of change you are making to the primary coordinator");
+
+        Sut.OrganisationName.Should().Be(organisation.OrganisationName);
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/organisation-details/{organisationId}");
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
 }

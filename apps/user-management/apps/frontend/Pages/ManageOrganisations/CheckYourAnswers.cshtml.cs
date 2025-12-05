@@ -23,6 +23,8 @@ public class CheckYourAnswers(
     public string? ChangePrimaryCoordinatorLink { get; set; }
     public string? ChangePhoneNumberLink { get; set; }
     public bool IsEdit { get; set; }
+    public bool IsEditPhoneNumber { get; set; }
+    public bool IsEditChange { get; set; }
     public bool IsReplace { get; set; }
     public bool IsFromPhoneNumberChange { get; set; }
     public bool IsFromLocalAuthorityChange { get; set; }
@@ -67,6 +69,22 @@ public class CheckYourAnswers(
         return Page();
     }
 
+    public async Task<PageResult> OnGetEditPhoneNumberAsync(Guid id)
+    {
+        IsEditPhoneNumber = true;
+        await GetEditReplaceDataAsync(id);
+
+        return Page();
+    }
+
+    public async Task<PageResult> OnGetEditChangeAsync(Guid id)
+    {
+        IsEditChange = true;
+        await GetEditReplaceDataAsync(id);
+
+        return Page();
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         var organisation = createOrganisationJourneyService.GetOrganisation();
@@ -88,6 +106,21 @@ public class CheckYourAnswers(
         var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         var primaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
         if (organisation is null || primaryCoordinator is null)
+            return BadRequest();
+
+        await editOrganisationJourneyService.CompleteJourneyAsync(id);
+
+        TempData["NotificationType"] = NotificationBannerType.Success;
+        TempData["NotificationHeader"] = $"{organisation.OrganisationName} has been updated";
+
+        return Redirect(linkGenerator.ManageOrganisations.Index());
+    }
+
+
+    public async Task<IActionResult> OnPostEditPhoneNumberAsync(Guid id)
+    {
+        var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
+        if (organisation is null)
             return BadRequest();
 
         await editOrganisationJourneyService.CompleteJourneyAsync(id);
@@ -120,32 +153,35 @@ public class CheckYourAnswers(
         Organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         PrimaryCoordinator = await editOrganisationJourneyService.GetPrimaryCoordinatorAccountAsync(id);
         ChangeLocalAuthorityCodeLink = null;
-        ChangePhoneNumberLink = null;
-        ChangePrimaryCoordinatorLink = IsReplace
-            ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id)
-            : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
+        ChangePhoneNumberLink = linkGenerator.ManageOrganisations.EnterPhoneNumberEdit(id);
+        if (IsReplace)
+            ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id);
+        else if (IsEditPhoneNumber || IsEditChange)
+            ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeTypeChange(id);
+        else
+            ChangePrimaryCoordinatorLink = linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id);
     }
 
     public string GetBackLink(Guid? id = null)
     {
         if (IsEdit && id.HasValue)
-        {
             return linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id.Value);
-        }
+
+        if (IsEditPhoneNumber && id.HasValue)
+            return linkGenerator.ManageOrganisations.EnterPhoneNumberEdit(id.Value);
 
         if (IsReplace && id.HasValue)
-        {
             return linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorChange(id.Value);
-        }
+
+        if (IsEditChange && id.HasValue)
+            return linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeTypeChange(id.Value);
+
         if (IsFromPhoneNumberChange)
-        {
             return linkGenerator.ManageOrganisations.EnterPhoneNumberChange();
-        }
 
         if (IsFromLocalAuthorityChange)
-        {
             return linkGenerator.ManageOrganisations.EnterLocalAuthorityCodeChange();
-        }
+
         return linkGenerator.ManageOrganisations.AddPrimaryCoordinator();
     }
 }
