@@ -1,0 +1,22 @@
+﻿@page
+@model ErrorModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Error @Model.ErrorStatusCode</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        h1 { color: darkred; }
+        .code { font-size: 2rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+<h1>Error <span class="code">@Model.ErrorStatusCode</span></h1>
+<p>@Model.Message</p>
+</body>
+</html>
