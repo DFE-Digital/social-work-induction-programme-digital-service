@@ -35,15 +35,6 @@ public class OneLoginAccountLinkingService(IAccountsService accountsService, Ecf
             throw new InvalidOperationException("The account ID is not valid.");
         }
 
-        var existingToken = dbContext.LinkingTokens.FirstOrDefault(x =>
-            x.PersonId.Equals(accountId)
-        );
-
-        if (existingToken != null)
-        {
-            return existingToken.Token;
-        }
-
         var token = await GenerateUniqueLinkingToken();
         var linkingToken = new LinkingToken { PersonId = accountId, Token = token };
         await dbContext.LinkingTokens.AddAsync(linkingToken);
@@ -74,17 +65,18 @@ public class OneLoginAccountLinkingService(IAccountsService accountsService, Ecf
         throw new InvalidOperationException("Could not generate a unique linking token.");
     }
 
-    public async Task InvalidateLinkingToken(string token)
+    public async Task InvalidateLinkingTokens(Guid personId)
     {
-        var linkingToken = await dbContext.LinkingTokens.FirstOrDefaultAsync(x =>
-            x.Token.Equals(token)
-        );
-        if (linkingToken is null)
+        var linkingTokens = await dbContext
+            .LinkingTokens.Where(x => x.PersonId.Equals(personId))
+            .ToListAsync();
+
+        if (linkingTokens.Count == 0)
         {
             return;
         }
 
-        dbContext.LinkingTokens.Remove(linkingToken);
+        dbContext.LinkingTokens.RemoveRange(linkingTokens);
         await dbContext.SaveChangesAsync();
     }
 }

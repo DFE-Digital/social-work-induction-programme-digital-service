@@ -8,6 +8,10 @@ public class LinkingToken
 {
     [Key]
     [Required]
+    public Guid LinkingTokenId { get; set; }
+
+    [Required]
+    [ForeignKey("Person")]
     public Guid PersonId { get; init; }
 
     [Required]

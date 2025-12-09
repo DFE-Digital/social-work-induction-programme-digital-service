@@ -15,6 +15,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                 name: "linking_token",
                 columns: table => new
                 {
+                    linking_token_id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     person_id = table.Column<Guid>(type: "uuid", nullable: false),
                     token = table.Column<string>(type: "character(64)", fixedLength: true, maxLength: 64, nullable: false),
                     created_on = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
@@ -22,7 +23,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_linking_token", x => x.person_id);
+                    table.PrimaryKey("pk_linking_token", x => x.linking_token_id);
                     table.ForeignKey(
                         name: "fk_linking_token_persons_person_id",
                         column: x => x.person_id,

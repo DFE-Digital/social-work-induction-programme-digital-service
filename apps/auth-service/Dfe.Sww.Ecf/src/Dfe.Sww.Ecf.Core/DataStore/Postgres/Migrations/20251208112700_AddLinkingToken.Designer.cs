@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 {
     [DbContext(typeof(EcfDbContext))]
-    [Migration("20251202155856_AddLinkingToken")]
+    [Migration("20251208112700_AddLinkingToken")]
     partial class AddLinkingToken
     {
         /// <inheritdoc />
@@ -125,9 +125,11 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LinkingToken", b =>
                 {
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid>("LinkingTokenId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("person_id");
+                        .HasColumnName("linking_token_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
@@ -141,6 +143,10 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("expiration_on")
                         .HasDefaultValueSql("now() + interval '3 days'");
 
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -148,7 +154,7 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                         .HasColumnName("token")
                         .IsFixedLength();
 
-                    b.HasKey("PersonId")
+                    b.HasKey("LinkingTokenId")
                         .HasName("pk_linking_token");
 
                     b.ToTable("linking_token", (string)null);
@@ -2322,8 +2328,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LinkingToken", b =>
                 {
                     b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", "Person")
-                        .WithOne()
-                        .HasForeignKey("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LinkingToken", "PersonId")
+                        .WithMany("LinkingTokens")
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_linking_token_persons_person_id");
@@ -2440,6 +2446,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", b =>
                 {
+                    b.Navigation("LinkingTokens");
+
                     b.Navigation("PersonOrganisations");
 
                     b.Navigation("PersonRoles");

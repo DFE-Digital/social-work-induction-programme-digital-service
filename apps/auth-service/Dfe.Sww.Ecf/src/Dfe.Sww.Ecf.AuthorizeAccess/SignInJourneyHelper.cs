@@ -268,8 +268,16 @@ public class SignInJourneyHelper(
             return null;
         }
 
-        // Invalidate the token
-        await oneLoginAccountLinkingService.InvalidateLinkingToken(linkingToken);
+        var linkingTokenEntity = await dbContext.LinkingTokens.FirstOrDefaultAsync(x =>
+            x.Token.Equals(linkingToken) && x.ExpirationOn > clock.UtcNow
+        );
+        if (linkingTokenEntity is null)
+        {
+            return null;
+        }
+
+        // Invalidate all tokens for user
+        await oneLoginAccountLinkingService.InvalidateLinkingTokens(personId.Value);
 
         return new TryApplyLinkingTokenResult(linkingTokenPerson.PersonId);
     }
