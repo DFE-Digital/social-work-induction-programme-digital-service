@@ -1,42 +1,49 @@
 using System.Security.Cryptography;
-using Microsoft.Extensions.Caching.Memory;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres;
+using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 
 namespace Dfe.Sww.Ecf.Core.Services.Accounts;
 
-public class OneLoginAccountLinkingService(
-    IAccountsService accountsService,
-    IMemoryCache memoryCache
-) : IOneLoginAccountLinkingService
+public class OneLoginAccountLinkingService(IAccountsService accountsService, EcfDbContext dbContext)
+    : IOneLoginAccountLinkingService
 {
-    private const string LinkingTokenCacheKey = "AccountLinkingToken";
-
-    private static string GetLinkingTokenCacheKey(string linkingToken) =>
-        $"{LinkingTokenCacheKey}-{linkingToken}";
-
     private async Task<bool> IsAccountIdValid(Guid accountId) =>
         await accountsService.GetByIdAsync(accountId) is not null;
 
-    private bool DoesLinkingTokenExist(string linkingToken) =>
-        memoryCache.TryGetValue(GetLinkingTokenCacheKey(linkingToken), out _);
+    private async Task<bool> DoesLinkingTokenExist(string token)
+    {
+        var linkingToken = await dbContext.LinkingTokens.FirstOrDefaultAsync(x =>
+            x.Token.Equals(token)
+        );
 
-    public Guid? GetAccountIdForLinkingToken(string linkingToken) =>
-        memoryCache.TryGetValue<Guid>(GetLinkingTokenCacheKey(linkingToken), out var accountId)
-            ? accountId
-            : null;
+        return linkingToken != null;
+    }
+
+    public async Task<Guid?> GetAccountIdForLinkingToken(string token)
+    {
+        var linkingToken = await dbContext.LinkingTokens.FirstOrDefaultAsync(x =>
+            x.Token.Equals(token)
+        );
+
+        return linkingToken?.PersonId;
+    }
 
     public async Task<string> GetLinkingTokenForAccountIdAsync(Guid accountId)
     {
-        if (!(await IsAccountIdValid(accountId)))
+        if (!await IsAccountIdValid(accountId))
         {
             throw new InvalidOperationException("The account ID is not valid.");
         }
 
-        var linkingToken = GenerateUniqueLinkingToken();
-        AddLinkingTokenToCache(accountId, linkingToken);
-        return linkingToken;
+        var token = await GenerateUniqueLinkingToken();
+        var linkingToken = new LinkingToken { PersonId = accountId, Token = token };
+        await dbContext.LinkingTokens.AddAsync(linkingToken);
+        await dbContext.SaveChangesAsync();
+
+        return linkingToken.Token;
     }
 
-    private string GenerateUniqueLinkingToken()
+    private async Task<string> GenerateUniqueLinkingToken()
     {
         var generationAttempt = 0;
         while (generationAttempt < 5)
@@ -47,7 +54,7 @@ public class OneLoginAccountLinkingService(
                 length: 64
             );
 
-            if (DoesLinkingTokenExist(linkingToken))
+            if (await DoesLinkingTokenExist(linkingToken))
             {
                 continue;
             }
@@ -58,18 +65,18 @@ public class OneLoginAccountLinkingService(
         throw new InvalidOperationException("Could not generate a unique linking token.");
     }
 
-    /**
-     * Adds an account ID to the cache, keyed by the linking token
-     */
-    private void AddLinkingTokenToCache(Guid accountId, string linkingToken)
+    public async Task InvalidateLinkingTokens(Guid personId)
     {
-        var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(
-            TimeSpan.FromDays(3)
-        );
+        var linkingTokens = await dbContext
+            .LinkingTokens.Where(x => x.PersonId.Equals(personId))
+            .ToListAsync();
 
-        memoryCache.Set(GetLinkingTokenCacheKey(linkingToken), accountId, cacheEntryOptions);
+        if (linkingTokens.Count == 0)
+        {
+            return;
+        }
+
+        dbContext.LinkingTokens.RemoveRange(linkingTokens);
+        await dbContext.SaveChangesAsync();
     }
-
-    public void InvalidateLinkingToken(string linkingToken) =>
-        memoryCache.Remove(GetLinkingTokenCacheKey(linkingToken));
 }

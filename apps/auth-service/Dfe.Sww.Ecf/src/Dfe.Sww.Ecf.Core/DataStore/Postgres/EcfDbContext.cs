@@ -36,6 +36,8 @@ public class EcfDbContext(DbContextOptions<EcfDbContext> options) : DbContext(op
 
     public DbSet<LocalAuthority> LocalAuthorities => Set<LocalAuthority>();
 
+    public DbSet<LinkingToken> LinkingTokens => Set<LinkingToken>();
+
     public static EcfDbContext Create(string connectionString, int? commandTimeout = null)
     {
         return new EcfDbContext(CreateOptions(connectionString, commandTimeout));
