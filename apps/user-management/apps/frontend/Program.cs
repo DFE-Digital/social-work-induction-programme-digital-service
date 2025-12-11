@@ -68,7 +68,6 @@ builder.Services.AddApplicationInsightsTelemetry();
 
 // Dependencies
 builder.Services.AddValidators();
-builder.Services.AddRepository();
 builder.Services.AddJourneys();
 builder.Services.AddClients();
 builder.Services.AddServices();
