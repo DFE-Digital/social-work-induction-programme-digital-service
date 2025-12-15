@@ -136,19 +136,18 @@ public class EditOrganisationJourneyService(
             var account = AccountDetails.ToAccount(primaryCoordinator);
             await accountService.UpdateAsync(account);
 
-            if (editAccountJourneyModel.PrimaryCoordinatorChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator)
-            {
-                if (editAccountJourneyModel.PrimaryCoordinatorAccount?.Id is { } primaryCoordinatorId
-                    && editAccountJourneyModel.Organisation is not null
-                   )
-                    await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
-                    {
-                        AccountId = primaryCoordinatorId,
-                        OrganisationName = editAccountJourneyModel.Organisation.OrganisationName,
-                        IsPrimaryCoordinator = true
-                    });
-            }
+            if (editAccountJourneyModel is { PrimaryCoordinatorChangeType: PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator,
+                    PrimaryCoordinatorAccount.Id: { } primaryCoordinatorId,
+                    Organisation: not null 
+                })
+                await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+                {
+                    AccountId = primaryCoordinatorId,
+                    OrganisationName = editAccountJourneyModel.Organisation.OrganisationName,
+                    IsPrimaryCoordinator = true
+                });
         }
+
 
         if (editAccountJourneyModel?.IsOrganisationUpdate == true)
         {
