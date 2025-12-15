@@ -98,8 +98,8 @@ if (featureFlags.EnableDeveloperExceptionPage)
 }
 else
 {
-    app.UseExceptionHandler("/Error");
-    app.UseStatusCodePagesWithReExecute("/Error", "?code={0}");
+    app.UseExceptionHandler("/Error/Index");
+    app.UseStatusCodePagesWithReExecute("/Error/Index", "?code={0}");
 }
 
 if (featureFlags.EnableHttpStrictTransportSecurity)
