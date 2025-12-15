@@ -105,9 +105,27 @@
                 </govuk-summary-card>
             }
 
-            <p class="govuk-body">@(Model.IsEdit || Model.IsEditPhoneNumber ? "When you update this organisation" : "When you save this organisation"), we will send the coordinator an invitation email with a link to enter the service through GOV.UK One Login. You should inform them to expect this email.</p>
-
-            <govuk-button type="submit">@(Model.IsEdit || Model.IsEditPhoneNumber ? "Update organisation" : "Save new organisation")</govuk-button>
+            @if (Model.IsEdit)
+            {
+                <p class="govuk-body">We will send an email to the primary coordinator to tell them their details have been changed.</p>
+                <govuk-button type="submit">Confirm and save changes</govuk-button>
+            }
+            else if (Model.IsReplace)
+            {
+                <p class="govuk-body">When you update this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One
+                    Login. You should inform them to expect this email.</p>
+                <govuk-button type="submit">Update organisation</govuk-button>
+            }
+            else if (!Model.IsEditPhoneNumber)
+            {
+                <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One
+                    Login. You should inform them to expect this email.</p>
+                <govuk-button type="submit">Save new organisation</govuk-button>
+            }
+            else
+            {
+                <govuk-button type="submit">Update organisation</govuk-button>
+            }
         </form>
     </div>
 </div>

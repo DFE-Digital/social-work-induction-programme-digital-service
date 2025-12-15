@@ -1,6 +1,8 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -9,14 +11,12 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 public class EditOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IAccountService accountService) : IEditOrganisationJourneyService
+    IAccountService accountService,
+    IEmailService emailService
+) : IEditOrganisationJourneyService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IOrganisationService _organisationService = organisationService;
-    private readonly IAccountService _accountService = accountService;
-
     private ISession Session =>
-        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     private static string EditOrganisationSessionKey(Guid id) => "_editOrganisation-" + id;
 
@@ -34,13 +34,13 @@ public class EditOrganisationJourneyService(
             return editOrganisationJourneyModel;
         }
 
-        var organisation = await _organisationService.GetByIdAsync(organisationId);
+        var organisation = await organisationService.GetByIdAsync(organisationId);
         if (organisation?.PrimaryCoordinatorId is null)
         {
             return null;
         }
 
-        var account = await _accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
+        var account = await accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
         var primaryCoordinator = account is not null ? AccountDetails.FromAccount(account) : null;
         if (primaryCoordinator is null)
         {
@@ -126,23 +126,38 @@ public class EditOrganisationJourneyService(
     {
         var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
-        if (editAccountJourneyModel?.PrimaryCoordinatorChangeType is not null) {
+        if (editAccountJourneyModel?.PrimaryCoordinatorChangeType is not null)
+        {
             var primaryCoordinator = editAccountJourneyModel.PrimaryCoordinatorAccount;
 
             if (primaryCoordinator is null)
                 throw new ArgumentNullException();
 
             var account = AccountDetails.ToAccount(primaryCoordinator);
-            await _accountService.UpdateAsync(account);
+            await accountService.UpdateAsync(account);
+
+            if (editAccountJourneyModel.PrimaryCoordinatorChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator)
+            {
+                if (editAccountJourneyModel.PrimaryCoordinatorAccount?.Id is { } primaryCoordinatorId
+                    && editAccountJourneyModel.Organisation is not null
+                   )
+                    await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+                    {
+                        AccountId = primaryCoordinatorId,
+                        OrganisationName = editAccountJourneyModel.Organisation.OrganisationName,
+                        IsPrimaryCoordinator = true
+                    });
+            }
         }
 
-        if (editAccountJourneyModel?.IsOrganisationUpdate == true) {
+        if (editAccountJourneyModel?.IsOrganisationUpdate == true)
+        {
             var organisation = editAccountJourneyModel.Organisation;
 
             if (organisation is null)
                 throw new ArgumentNullException();
 
-            await _organisationService.UpdateOrganisationAsync(organisation);
+            await organisationService.UpdateOrganisationAsync(organisation);
         }
 
         ResetEditOrganisationJourneyModel(organisationId);
