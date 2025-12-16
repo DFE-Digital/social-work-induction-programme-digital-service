@@ -1,3 +1,9 @@
+## ⚠️ Project Archived
+
+This repository has been archived and is no longer being maintained. The project has been discontinued, and this codebase is no longer required.
+
+Note: The code is provided as-is for historical reference only. No further updates, bug fixes, or pull requests will be accepted.
+
 # Social Work Practice Development Programme (SWPDP) digital service
 
 This repository houses the digital service for the Social Work Practice Development Programme (SWPDP):
