@@ -138,7 +138,7 @@ public class EditOrganisationJourneyService(
 
             if (editAccountJourneyModel is { PrimaryCoordinatorChangeType: PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator,
                     PrimaryCoordinatorAccount.Id: { } primaryCoordinatorId,
-                    Organisation: not null 
+                    Organisation: not null
                 })
                 await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
                 {
