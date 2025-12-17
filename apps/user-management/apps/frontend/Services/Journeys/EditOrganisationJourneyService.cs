@@ -15,8 +15,13 @@ public class EditOrganisationJourneyService(
     IEmailService emailService
 ) : IEditOrganisationJourneyService
 {
+    // If replaced with primary constructor parameters these become public - best practice to use readonly instead
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IOrganisationService _organisationService = organisationService;
+    private readonly IAccountService _accountService = accountService;
+
     private ISession Session =>
-        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     private static string EditOrganisationSessionKey(Guid id) => "_editOrganisation-" + id;
 
@@ -34,13 +39,13 @@ public class EditOrganisationJourneyService(
             return editOrganisationJourneyModel;
         }
 
-        var organisation = await organisationService.GetByIdAsync(organisationId);
+        var organisation = await _organisationService.GetByIdAsync(organisationId);
         if (organisation?.PrimaryCoordinatorId is null)
         {
             return null;
         }
 
-        var account = await accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
+        var account = await _accountService.GetByIdAsync(organisation.PrimaryCoordinatorId.Value);
         var primaryCoordinator = account is not null ? AccountDetails.FromAccount(account) : null;
         if (primaryCoordinator is null)
         {
@@ -134,7 +139,7 @@ public class EditOrganisationJourneyService(
                 throw new ArgumentNullException();
 
             var account = AccountDetails.ToAccount(primaryCoordinator);
-            await accountService.UpdateAsync(account);
+            await _accountService.UpdateAsync(account);
 
             if (editAccountJourneyModel is { PrimaryCoordinatorChangeType: PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator,
                     PrimaryCoordinatorAccount.Id: { } primaryCoordinatorId,
@@ -156,7 +161,7 @@ public class EditOrganisationJourneyService(
             if (organisation is null)
                 throw new ArgumentNullException();
 
-            await organisationService.UpdateOrganisationAsync(organisation);
+            await _organisationService.UpdateOrganisationAsync(organisation);
         }
 
         ResetEditOrganisationJourneyModel(organisationId);
