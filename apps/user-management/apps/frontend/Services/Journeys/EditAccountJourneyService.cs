@@ -1,11 +1,9 @@
 using System.Collections.Immutable;
-using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -18,7 +16,6 @@ public class EditAccountJourneyService(
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IAccountService _accountService = accountService;
     private readonly EcfLinkGenerator _linkGenerator = linkGenerator;
-
     private static string EditAccountSessionKey(Guid id)
     {
         return "_editAccount-" + id;
@@ -43,7 +40,10 @@ public class EditAccountJourneyService(
         var account = await _accountService.GetByIdAsync(accountId);
         if (account is null) return null;
 
-        editAccountJourneyModel = new EditAccountJourneyModel(account);
+        editAccountJourneyModel = new EditAccountJourneyModel(account)
+        {
+            StoredSocialWorkEnglandNumber = account.SocialWorkEnglandNumber
+        };
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
         return editAccountJourneyModel;
     }
@@ -69,6 +69,12 @@ public class EditAccountJourneyService(
     {
         var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         return editAccountJourneyModel?.IsStaff;
+    }
+
+    public async Task<string?> GetStoredSocialWorkEnglandNumberAsync(Guid accountId)
+    {
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
+        return editAccountJourneyModel?.StoredSocialWorkEnglandNumber;
     }
 
     public async Task SetAccountDetailsAsync(Guid accountId, AccountDetails accountDetails)

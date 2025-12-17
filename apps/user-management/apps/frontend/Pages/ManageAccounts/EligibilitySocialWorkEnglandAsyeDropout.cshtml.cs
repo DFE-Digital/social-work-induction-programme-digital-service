@@ -1,4 +1,3 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,6 +18,13 @@ public class EligibilitySocialWorkEnglandAsyeDropout(EcfLinkGenerator linkGenera
             ? linkGenerator.ManageAccount.ConfirmAccountDetails(OrganisationId)
             : linkGenerator.ManageAccount.AddAccountDetails(OrganisationId);
 
+        return Page();
+    }
+
+    public PageResult OnGetEdit(Guid id)
+    {
+        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
+        ContinueLinkPath = linkGenerator.ManageAccount.ConfirmAccountDetailsNotEligible(id, OrganisationId);
         return Page();
     }
 

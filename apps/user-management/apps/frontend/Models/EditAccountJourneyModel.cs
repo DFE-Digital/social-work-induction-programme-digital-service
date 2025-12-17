@@ -8,6 +8,8 @@ public class EditAccountJourneyModel(Account account)
 
     public AccountStatus? AccountStatus { get; set; } = account.Status;
 
+    public string? StoredSocialWorkEnglandNumber { get; set; }
+
     public AccountDetails AccountDetails { get; set; } =
         new()
         {

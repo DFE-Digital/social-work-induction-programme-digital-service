@@ -1,4 +1,4 @@
-@page
+@page "{id:Guid?}"
 
 @model Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts.EligibilitySocialWorkEnglandAsyeDropout
 
@@ -14,7 +14,10 @@
 
             <p>Your organisation will not receive payments for this social worker if they take part in the programme.</p>
 
-            <p>You can still register the social worker on this service. They will be able to access the learning, development and assessment materials.</p>
+            @if (RouteData.Values["id"] is null)
+            {
+                <p>You can still register the social worker on this service. They will be able to access the learning, development and assessment materials.</p>
+            }
 
             <govuk-button-link href="@Model.ContinueLinkPath">Continue</govuk-button-link>
         </div>

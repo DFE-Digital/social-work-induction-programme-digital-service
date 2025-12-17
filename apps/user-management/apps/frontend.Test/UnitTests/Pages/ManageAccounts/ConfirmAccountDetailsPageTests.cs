@@ -148,6 +148,38 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
         VerifyAllNoOtherCalls();
     }
 
+        [Fact]
+    public async Task GetNotEligible_WhenCalled_LoadsTheViewWithCorrectValues()
+    {
+        // Arrange
+        var account = AccountBuilder.Build();
+        var updatedAccountDetails = AccountDetails.FromAccount(AccountBuilder.Build());
+
+        MockEditAccountJourneyService
+            .Setup(x => x.GetAccountDetailsAsync(account.Id))
+            .ReturnsAsync(updatedAccountDetails);
+
+        // Act
+        var result = await Sut.OnGetNotEligibleAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.Id.Should().Be(account.Id);
+        Sut.FirstName.Should().Be(updatedAccountDetails.FirstName);
+        Sut.LastName.Should().Be(updatedAccountDetails.LastName);
+        Sut.Email.Should().Be(updatedAccountDetails.Email);
+        Sut.SocialWorkEnglandNumber.Should().Be(updatedAccountDetails.SocialWorkEnglandNumber);
+
+        Sut.IsUpdatingAccount.Should().BeTrue();
+        Sut.IsFromNotEligibleEditPage.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be($"/manage-accounts/eligibility-social-work-england-asye-dropout/{account.Id}?handler=Edit");
+
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountChangeLinks(account.Id, null), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
     [Fact]
     public async Task Post_WhenCalled_CreatesAccountAndSendsEmailToNewAccountWithInvitationTokenLink()
     {
@@ -215,6 +247,38 @@ public class ConfirmAccountDetailsShould : ManageAccountsPageTestBase<ConfirmAcc
 
         // Act
         var result = await Sut.OnPostUpdateAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-accounts/view-account-details/" + account.Id);
+
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be("User details updated");
+        TempData["NotificationMessage"].Should().Be($"An email has been sent to {account.FullName}, {account.Email}");
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.CompleteJourneyAsync(account.Id), Times.Once);
+
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task PostNotEligible_WhenCalled_UpdatesAccountDetailsAndRedirectsToAccountsIndex()
+    {
+        // Arrange
+        var account = AccountBuilder.Build();
+
+        MockEditAccountJourneyService
+            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+            .ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x => x.CompleteJourneyAsync(account.Id));
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(AccountDetails.FromAccount(account));
+
+        // Act
+        var result = await Sut.OnPostNotEligibleAsync(account.Id);
 
         // Assert
         result.Should().BeOfType<RedirectResult>();

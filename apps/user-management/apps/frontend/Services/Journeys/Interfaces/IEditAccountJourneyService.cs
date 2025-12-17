@@ -9,6 +9,7 @@ public interface IEditAccountJourneyService
     Task<IList<AccountType>?> GetAccountTypesAsync(Guid accountId);
     Task<AccountDetails?> GetAccountDetailsAsync(Guid accountId);
     Task<bool?> GetIsStaffAsync(Guid accountId);
+    Task<string?> GetStoredSocialWorkEnglandNumberAsync(Guid accountId);
     Task SetAccountDetailsAsync(Guid accountId, AccountDetails accountDetails);
     Task SetAccountTypesAsync(Guid accountId, IEnumerable<AccountType> accountTypes);
     Task SetAccountStatusAsync(Guid accountId, AccountStatus accountStatus);
