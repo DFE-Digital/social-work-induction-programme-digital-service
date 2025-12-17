@@ -19,7 +19,7 @@ public sealed class AccountDetailsFaker : Faker<AccountDetails>
 
 public static class AccountDetailsFakerExtensions
 {
-    public static AccountDetails GenerateWithInvalidEmail(
+    public static AccountDetails GenerateWithEmail(
         this AccountDetailsFaker accountDetailsFaker,
         string? email = null
     )
