@@ -60,6 +60,35 @@ public class CompleteJourneyAsyncShould : EditOrganisationJourneyServiceTestBase
     }
 
     [Fact]
+    public async Task WhenCalled_WithPrimaryCoordinatorReplace_SendsInvitationEmail()
+    {
+        var organisation = OrganisationBuilder.WithPrimaryCoordinatorId(Guid.Empty).Build();
+        var primaryCoordinator = AccountBuilder.Build();
+        var primaryCoordinatorDetails = AccountDetails.FromAccount(primaryCoordinator);
+        var organisationId = organisation.OrganisationId!.Value;
+
+        MockOrganisationService.Setup(x => x.UpdateOrganisationAsync(It.IsAny<Organisation>())).ReturnsAsync(organisation);
+
+        HttpContext.Session.Set(
+            EditOrganisationSessionKey(organisationId),
+            new EditOrganisationJourneyModel(organisation, primaryCoordinatorDetails) { PrimaryCoordinatorChangeType = PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator }
+        );
+
+        // Act
+        await Sut.CompleteJourneyAsync(organisationId);
+
+        // Assert
+        MockAccountService.Verify(x => x.UpdateAsync(It.Is<Account>(acc => acc.Email == primaryCoordinator.Email))
+        );
+        MockEmailService.Verify(x => x.SendInvitationEmailAsync(It.Is<InvitationEmailRequest>(req =>
+            req.AccountId == primaryCoordinator.Id
+            && req.OrganisationName == organisation.OrganisationName
+            && req.IsPrimaryCoordinator == true
+        )));
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
     public async Task CompleteJourneyAsync_WithNullOrganisation_ThrowsArgumentNullException()
     {
         // Arrange
