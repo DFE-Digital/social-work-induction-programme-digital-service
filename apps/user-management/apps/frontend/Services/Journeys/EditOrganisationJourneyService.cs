@@ -15,7 +15,6 @@ public class EditOrganisationJourneyService(
     IEmailService emailService
 ) : IEditOrganisationJourneyService
 {
-    // If replaced with primary constructor parameters these become public - best practice to use readonly instead
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IOrganisationService _organisationService = organisationService;
     private readonly IAccountService _accountService = accountService;
