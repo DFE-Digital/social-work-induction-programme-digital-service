@@ -1,11 +1,9 @@
 using System.Collections.Immutable;
-using Dfe.Sww.Ecf.Frontend.Configuration;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 
@@ -15,13 +13,16 @@ public class EditAccountJourneyService(
     EcfLinkGenerator linkGenerator
 ) : IEditAccountJourneyService
 {
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IAccountService _accountService = accountService;
+    private readonly EcfLinkGenerator _linkGenerator = linkGenerator;
     private static string EditAccountSessionKey(Guid id)
     {
         return "_editAccount-" + id;
     }
 
     private ISession Session =>
-        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     private static KeyNotFoundException AccountNotFoundException(Guid id)
     {
@@ -36,7 +37,7 @@ public class EditAccountJourneyService(
         );
         if (editAccountJourneyModel is not null) return editAccountJourneyModel;
 
-        var account = await accountService.GetByIdAsync(accountId);
+        var account = await _accountService.GetByIdAsync(accountId);
         if (account is null) return null;
 
         editAccountJourneyModel = new EditAccountJourneyModel(account)
@@ -114,7 +115,7 @@ public class EditAccountJourneyService(
 
     public async Task ResetEditAccountJourneyModelAsync(Guid accountId)
     {
-        var account = await accountService.GetByIdAsync(accountId);
+        var account = await _accountService.GetByIdAsync(accountId);
         if (account is null) throw AccountNotFoundException(accountId);
 
         Session.Remove(EditAccountSessionKey(accountId));
@@ -136,7 +137,7 @@ public class EditAccountJourneyService(
 
         var updatedAccount = editAccountJourneyModel.ToAccount();
 
-        await accountService.UpdateAsync(updatedAccount);
+        await _accountService.UpdateAsync(updatedAccount);
 
         await ResetEditAccountJourneyModelAsync(accountId);
         return updatedAccount;
@@ -146,13 +147,13 @@ public class EditAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            AccountTypesChangeLink = linkGenerator.ManageAccount.SelectUseCaseChange(id, organisationId),
-            FirstNameChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            MiddleNamesChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            LastNameChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            EmailChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(id, organisationId, "Update")
+            AccountTypesChangeLink = _linkGenerator.ManageAccount.SelectUseCaseChange(id, organisationId),
+            FirstNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            MiddleNamesChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            LastNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            EmailChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            SocialWorkEnglandNumberChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            ProgrammeDatesChangeLink = _linkGenerator.ManageAccount.SocialWorkerProgrammeDates(id, organisationId, "Update")
         };
     }
 }
