@@ -98,6 +98,17 @@ public class ManageAccountLinks(EcfLinkGenerator ecfLinkGenerator)
         return ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/ConfirmAccountDetails", "Update", new { id, organisationId });
     }
 
+    public string ConfirmAccountDetailsNotEligible(Guid id, Guid? organisationId = null)
+    {
+        return ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/ConfirmAccountDetails", "NotEligible", new { id, organisationId });
+    }
+
+    public string EligibilitySocialWorkEnglandAsyeDropoutEdit(Guid id, Guid? organisationId = null)
+    {
+        return ecfLinkGenerator.GetRequiredPathByPage("/ManageAccounts/EligibilitySocialWorkEnglandAsyeDropout", "Edit", routeValues: new { id, organisationId });
+    }
+
+
     // Eligibility
     public string EligibilityInformation(Guid? organisationId = null)
     {

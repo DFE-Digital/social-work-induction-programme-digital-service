@@ -71,6 +71,8 @@ public class ConfirmAccountDetails(
     public bool? IsStaff { get; set; }
     public bool IsSocialWorker { get; set; }
 
+    public bool IsFromNotEligibleEditPage { get; set; }
+
     /// <summary>
     ///     Action for confirming user details
     /// </summary>
@@ -109,7 +111,9 @@ public class ConfirmAccountDetails(
         var updatedAccountDetails = await editAccountJourneyService.GetAccountDetailsAsync(id);
         if (updatedAccountDetails is null) return NotFound();
 
-        BackLinkPath = linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
+        BackLinkPath = IsFromNotEligibleEditPage
+            ? linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutEdit(id, OrganisationId)
+            : linkGenerator.ManageAccount.EditAccountDetails(id, OrganisationId);
         ChangeDetailsLinks = editAccountJourneyService.GetAccountChangeLinks(id, OrganisationId);
 
         IsUpdatingAccount = true;
@@ -128,6 +132,12 @@ public class ConfirmAccountDetails(
             .ToString("MMMM yyyy", CultureInfo.InvariantCulture);
 
         return Page();
+    }
+
+    public async Task<IActionResult> OnGetNotEligibleAsync(Guid id)
+    {
+        IsFromNotEligibleEditPage = true;
+        return await OnGetUpdateAsync(id);
     }
 
     /// <summary>
@@ -162,6 +172,11 @@ public class ConfirmAccountDetails(
         TempData["NotificationMessage"] = $"An email has been sent to {accountDetails.FullName}, {accountDetails.Email}";
 
         return Redirect(linkGenerator.ManageAccount.ViewAccountDetails(id, OrganisationId));
+    }
+
+    public async Task<IActionResult> OnPostNotEligibleAsync(Guid id)
+    {
+        return await OnPostUpdateAsync(id);
     }
 
     private void SetBackLink()

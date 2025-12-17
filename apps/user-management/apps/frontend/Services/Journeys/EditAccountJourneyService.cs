@@ -15,17 +15,13 @@ public class EditAccountJourneyService(
     EcfLinkGenerator linkGenerator
 ) : IEditAccountJourneyService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-    private readonly IAccountService _accountService = accountService;
-    private readonly EcfLinkGenerator _linkGenerator = linkGenerator;
-
     private static string EditAccountSessionKey(Guid id)
     {
         return "_editAccount-" + id;
     }
 
     private ISession Session =>
-        _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
+        httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
 
     private static KeyNotFoundException AccountNotFoundException(Guid id)
     {
@@ -40,10 +36,13 @@ public class EditAccountJourneyService(
         );
         if (editAccountJourneyModel is not null) return editAccountJourneyModel;
 
-        var account = await _accountService.GetByIdAsync(accountId);
+        var account = await accountService.GetByIdAsync(accountId);
         if (account is null) return null;
 
-        editAccountJourneyModel = new EditAccountJourneyModel(account);
+        editAccountJourneyModel = new EditAccountJourneyModel(account)
+        {
+            StoredSocialWorkEnglandNumber = account.SocialWorkEnglandNumber
+        };
         SetEditAccountJourneyModel(accountId, editAccountJourneyModel);
         return editAccountJourneyModel;
     }
@@ -69,6 +68,12 @@ public class EditAccountJourneyService(
     {
         var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
         return editAccountJourneyModel?.IsStaff;
+    }
+
+    public async Task<string?> GetStoredSocialWorkEnglandNumberAsync(Guid accountId)
+    {
+        var editAccountJourneyModel = await GetEditAccountJourneyModelAsync(accountId);
+        return editAccountJourneyModel?.StoredSocialWorkEnglandNumber;
     }
 
     public async Task SetAccountDetailsAsync(Guid accountId, AccountDetails accountDetails)
@@ -109,7 +114,7 @@ public class EditAccountJourneyService(
 
     public async Task ResetEditAccountJourneyModelAsync(Guid accountId)
     {
-        var account = await _accountService.GetByIdAsync(accountId);
+        var account = await accountService.GetByIdAsync(accountId);
         if (account is null) throw AccountNotFoundException(accountId);
 
         Session.Remove(EditAccountSessionKey(accountId));
@@ -131,7 +136,7 @@ public class EditAccountJourneyService(
 
         var updatedAccount = editAccountJourneyModel.ToAccount();
 
-        await _accountService.UpdateAsync(updatedAccount);
+        await accountService.UpdateAsync(updatedAccount);
 
         await ResetEditAccountJourneyModelAsync(accountId);
         return updatedAccount;
@@ -141,13 +146,13 @@ public class EditAccountJourneyService(
     {
         return new AccountChangeLinks
         {
-            AccountTypesChangeLink = _linkGenerator.ManageAccount.SelectUseCaseChange(id, organisationId),
-            FirstNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            MiddleNamesChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            LastNameChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            EmailChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            SocialWorkEnglandNumberChangeLink = _linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
-            ProgrammeDatesChangeLink = _linkGenerator.ManageAccount.SocialWorkerProgrammeDates(id, organisationId, "Update")
+            AccountTypesChangeLink = linkGenerator.ManageAccount.SelectUseCaseChange(id, organisationId),
+            FirstNameChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            MiddleNamesChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            LastNameChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            EmailChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            SocialWorkEnglandNumberChangeLink = linkGenerator.ManageAccount.EditAccountDetails(id, organisationId),
+            ProgrammeDatesChangeLink = linkGenerator.ManageAccount.SocialWorkerProgrammeDates(id, organisationId, "Update")
         };
     }
 }
