@@ -18,6 +18,7 @@ public class EditOrganisationJourneyService(
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IOrganisationService _organisationService = organisationService;
     private readonly IAccountService _accountService = accountService;
+    private readonly IEmailService _emailService = emailService;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
@@ -144,7 +145,7 @@ public class EditOrganisationJourneyService(
                     PrimaryCoordinatorAccount.Id: { } primaryCoordinatorId,
                     Organisation: not null
                 })
-                await emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+                await _emailService.SendInvitationEmailAsync(new InvitationEmailRequest
                 {
                     AccountId = primaryCoordinatorId,
                     OrganisationName = editAccountJourneyModel.Organisation.OrganisationName,
