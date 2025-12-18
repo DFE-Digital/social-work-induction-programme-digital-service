@@ -18,8 +18,12 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
 
     public EditAccountDetailsPageTests()
     {
-        Sut = new EditAccountDetails(MockEditAccountJourneyService.Object, new TestAccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
-            new FakeLinkGenerator())
+        Sut = new EditAccountDetails(
+            MockEditAccountJourneyService.Object,
+            new TestAccountDetailsValidator(MockAccountService.Object, MockAuthServiceClient.Object),
+            new FakeLinkGenerator(),
+            MockAuthServiceClient.Object
+        )
         {
             TempData = TempData
         };
@@ -125,6 +129,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
             Times.Once
         );
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetStoredSocialWorkEnglandNumberAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -168,6 +173,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(accountDetails.SocialWorkEnglandNumber!), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetStoredSocialWorkEnglandNumberAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -221,6 +227,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(account.Id, It.IsAny<AccountDetails>()), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetStoredSocialWorkEnglandNumberAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -258,6 +265,7 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
         MockAccountService.Verify(x => x.CheckEmailExistsAsync(postedEmail), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetStoredSocialWorkEnglandNumberAsync(account.Id), Times.Once);
         VerifyAllNoOtherCalls();
     }
 
@@ -277,6 +285,53 @@ public class EditAccountDetailsPageTests : ManageAccountsPageTestBase<EditAccoun
         result.Should().BeOfType<BadRequestResult>();
         MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(id), Times.Once);
         MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(id), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+        [Fact]
+    public async Task Post_WhenSocialWorkNumberChangedToAsyeForEarlyCareerSocialWorker_RedirectsToDropoutPage()
+    {
+        // Arrange
+        var account = AccountBuilder
+            .WithTypes([AccountType.EarlyCareerSocialWorker])
+            .WithSocialWorkEnglandNumber("SW321")
+            .Build();
+        var accountDetails = AccountDetails.FromAccount(account);
+        var expectedAccountType = accountDetails.Types ?? new List<AccountType>();
+
+        Sut.FirstName = account.FirstName;
+        Sut.LastName = account.LastName;
+        Sut.Email = account.Email;
+        Sut.AccountTypes = expectedAccountType;
+        Sut.SocialWorkEnglandNumber = "SW2793";
+
+        MockEditAccountJourneyService
+            .Setup(x => x.IsAccountIdValidAsync(account.Id))
+            .ReturnsAsync(true);
+        MockEditAccountJourneyService.Setup(x => x.GetAccountDetailsAsync(account.Id)).ReturnsAsync(accountDetails);
+        MockAuthServiceClient.Setup(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(account.SocialWorkEnglandNumber!)).ReturnsAsync((Person?)null);
+        MockAuthServiceClient.Setup(x => x.AsyeSocialWorker.ExistsAsync(Sut.SocialWorkEnglandNumber)).ReturnsAsync(true);
+
+
+        // Act
+        var result = await Sut.OnPostAsync(account.Id);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!
+            .Url.Should()
+            .Be($"/manage-accounts/eligibility-social-work-england-asye-dropout/{account.Id}?handler=Edit");
+
+        MockEditAccountJourneyService.Verify(x => x.IsAccountIdValidAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetAccountDetailsAsync(account.Id), Times.Once);
+        MockAuthServiceClient.Verify(x => x.Accounts.GetBySocialWorkEnglandNumberAsync(accountDetails.SocialWorkEnglandNumber!), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.GetStoredSocialWorkEnglandNumberAsync(account.Id), Times.Once);
+        MockEditAccountJourneyService.Verify(x => x.SetAccountDetailsAsync(account.Id, accountDetails), Times.Once);
+        MockAuthServiceClient.Verify(x => x.AsyeSocialWorker.ExistsAsync(Sut.SocialWorkEnglandNumber), Times.Once);
+
         VerifyAllNoOtherCalls();
     }
 }

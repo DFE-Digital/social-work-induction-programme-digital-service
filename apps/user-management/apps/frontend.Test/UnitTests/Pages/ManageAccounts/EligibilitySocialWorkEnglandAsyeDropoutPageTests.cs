@@ -48,4 +48,21 @@ public class EligibilitySocialWorkEnglandAsyeDropoutPageTests : ManageAccountsPa
         Sut.FromChangeLink.Should().BeTrue();
         VerifyAllNoOtherCalls();
     }
+
+    [Fact]
+    public void OnGetEdit_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        // Act
+        var result = Sut.OnGetEdit(id);
+
+        // Assert
+        result.Should().BeOfType<PageResult>();
+
+        Sut.BackLinkPath.Should().Be("/manage-accounts/edit-account-details/" + id);
+        Sut.ContinueLinkPath.Should().Be($"/manage-accounts/confirm-account-details/{id}?handler=NotEligible");
+        VerifyAllNoOtherCalls();
+    }
 }

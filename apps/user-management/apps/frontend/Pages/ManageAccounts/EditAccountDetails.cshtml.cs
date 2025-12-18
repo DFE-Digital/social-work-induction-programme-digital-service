@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
+using Dfe.Sww.Ecf.Frontend.HttpClients.AuthService.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
@@ -13,7 +14,8 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageAccounts;
 public class EditAccountDetails(
     IEditAccountJourneyService editAccountJourneyService,
     IValidator<AccountDetails> validator,
-    EcfLinkGenerator linkGenerator
+    EcfLinkGenerator linkGenerator,
+    IAuthServiceClient authServiceClient
 ) : ManageAccountsBasePageModel
 {
     public Guid Id { get; set; }
@@ -81,7 +83,7 @@ public class EditAccountDetails(
         }
 
         var initialEmail = accountDetails.Email;
-        var initialSweId = accountDetails.SocialWorkEnglandNumber;
+        var initialSweId = await editAccountJourneyService.GetStoredSocialWorkEnglandNumberAsync(id);
 
         accountDetails.FirstName = FirstName;
         accountDetails.MiddleNames = MiddlesNames;
@@ -94,9 +96,14 @@ public class EditAccountDetails(
         var noEmailChange = string.Equals(initialEmail?.Trim(), accountDetails.Email?.Trim(), StringComparison.OrdinalIgnoreCase);
         var noSweIdChange = string.Equals(initialSweId?.Trim(), accountDetails.SocialWorkEnglandNumber?.Trim(), StringComparison.OrdinalIgnoreCase);
 
-        var validationContext = new ValidationContext<AccountDetails>(accountDetails);
-        validationContext.RootContextData["SkipEmailUnique"] = noEmailChange;
-        validationContext.RootContextData["SkipSweIdUnique"] = noSweIdChange;
+        var validationContext = new ValidationContext<AccountDetails>(accountDetails)
+        {
+            RootContextData =
+            {
+                ["SkipEmailUnique"] = noEmailChange,
+                ["SkipSweIdUnique"] = noSweIdChange
+            }
+        };
 
         var result = await validator.ValidateAsync(validationContext);
         if (!result.IsValid)
@@ -107,6 +114,14 @@ public class EditAccountDetails(
         }
 
         await editAccountJourneyService.SetAccountDetailsAsync(id, accountDetails);
+        if (!noSweIdChange && !string.IsNullOrWhiteSpace(SocialWorkEnglandNumber) && AccountTypes.Contains(AccountType.EarlyCareerSocialWorker))
+        {
+            var isEnrolledInAsye = await authServiceClient.AsyeSocialWorker.ExistsAsync(SocialWorkEnglandNumber);
+            if (isEnrolledInAsye)
+            {
+                return Redirect(linkGenerator.ManageAccount.EligibilitySocialWorkEnglandAsyeDropoutEdit(id, OrganisationId));
+            }
+        }
 
         return Redirect(linkGenerator.ManageAccount.ConfirmAccountDetailsUpdate(id, OrganisationId));
     }
