@@ -12,7 +12,7 @@ public class GetStoredSocialWorkEnglandNumberShould : EditAccountJourneyServiceT
     public async Task WhenCalled_ReturnSocialWorkEnglandNumber()
     {
         // Arrange
-        var account = AccountBuilder.Build();
+        var account = AccountBuilder.WithTypes([AccountType.EarlyCareerSocialWorker]).Build();
 
         var expected = account.SocialWorkEnglandNumber;
 

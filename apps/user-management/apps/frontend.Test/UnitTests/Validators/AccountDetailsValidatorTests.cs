@@ -309,7 +309,7 @@ public class AccountDetailsValidatorTests()
         var result = Sut.TestValidate(account);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(person => person.Email).WithErrorMessage("Enter an email address in the correct format, like name@example.com");
+        result.ShouldHaveValidationErrorFor(person => person.Email).WithErrorMessage("Email address must be 254 characters or less");
 
         VerifyAllNoOtherCall();
     }
