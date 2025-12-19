@@ -27,7 +27,7 @@ public static class CommonValidators
             .EmailAddress()
             .WithMessage("Enter an email address in the correct format, like name@example.com")
             .MaximumLength(254)
-            .WithMessage("Enter an email address in the correct format, like name@example.com")
+            .WithMessage("Email address must be 254 characters or less")
             .MustAsync(
                 async (_, email, context, ct) =>
                 {
