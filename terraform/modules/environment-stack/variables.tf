@@ -23,12 +23,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "asp_sku_moodle" {
-  type        = string
-  description = "The Moodle app service plan SKU"
-  default     = "S3"
-}
-
 variable "asp_sku_services" {
   type        = string
   description = "The services app service plan SKU"
@@ -39,24 +33,6 @@ variable "asp_sku_maintenance" {
   type        = string
   description = "The maintenance app service plan SKU"
   default     = "S3"
-}
-
-variable "moodle_default_instances" {
-  type        = number
-  description = "The default number of instances for the Moodle app service"
-  default     = 1
-}
-
-variable "moodle_minimum_instances" {
-  type        = number
-  description = "The minimum number of instances for the Moodle app service"
-  default     = 1
-}
-
-variable "moodle_maximum_instances" {
-  type        = number
-  description = "The maximum number of instances for the Moodle app service"
-  default     = 1
 }
 
 variable "service_apps_default_instances" {
@@ -108,17 +84,6 @@ variable "asp_sku_notification" {
   type        = string
 }
 
-variable "moodle_max_data_storage_size_in_gb" {
-  type        = number
-  description = "The provisioned size (quota) in GiB for the Moodle data file share. This directly impacts performance and cost for Premium shares."
-  default     = 5
-
-  validation {
-    condition     = var.moodle_max_data_storage_size_in_gb > 0
-    error_message = "The storage size must be a positive number greater than 0."
-  }
-}
-
 variable "storage_redundancy" {
   type        = string
   description = "The redundancy type for the storage accounts. Allowed values are LRS, ZRS, GRS, GZRS, RA-GRS, RA-GZRS."
@@ -150,7 +115,7 @@ variable "blob_storage_account_tier" {
 
 variable "file_storage_account_tier" {
   type        = string
-  description = "The account tier for the dedicated Moodle file storage account. Allowed values are Standard or Premium."
+  description = "The account tier for the dedicated file storage account. Allowed values are Standard or Premium."
   default     = "Standard"
 
   validation {
@@ -193,10 +158,4 @@ variable "db_backup_blob_sa_name" {
 variable "asp_sku_db_jobs" {
   description = "The app service plan SKU for the DB Jobs"
   type        = string
-}
-
-variable "moodle_instances" {
-  description = "The names of the moodle instances to be created"
-  type        = map(map(any))
-  default     = {}
 }

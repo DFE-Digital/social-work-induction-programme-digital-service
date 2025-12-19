@@ -120,6 +120,43 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.ToTable("journey_states", (string)null);
                 });
 
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LinkingToken", b =>
+                {
+                    b.Property<Guid>("LinkingTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("linking_token_id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_on")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTime>("ExpirationOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expiration_on")
+                        .HasDefaultValueSql("now() + interval '3 days'");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character(64)")
+                        .HasColumnName("token")
+                        .IsFixedLength();
+
+                    b.HasKey("LinkingTokenId")
+                        .HasName("pk_linking_token");
+
+                    b.ToTable("linking_token", (string)null);
+                });
+
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LocalAuthority", b =>
                 {
                     b.Property<int>("OldLaCode")
@@ -2285,6 +2322,18 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
+            modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.LinkingToken", b =>
+                {
+                    b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", "Person")
+                        .WithMany("LinkingTokens")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_linking_token_persons_person_id");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.OneLoginUser", b =>
                 {
                     b.HasOne("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", "Person")
@@ -2394,6 +2443,8 @@ namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Migrations
 
             modelBuilder.Entity("Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Person", b =>
                 {
+                    b.Navigation("LinkingTokens");
+
                     b.Navigation("PersonOrganisations");
 
                     b.Navigation("PersonRoles");

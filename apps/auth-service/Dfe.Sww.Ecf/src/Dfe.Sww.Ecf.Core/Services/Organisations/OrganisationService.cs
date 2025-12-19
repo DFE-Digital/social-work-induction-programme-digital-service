@@ -65,4 +65,27 @@ public class OrganisationService(EcfDbContext dbContext) : IOrganisationService
 
         return organisation?.ToDto();
     }
+
+    public async Task<OrganisationDto?> UpdateAsync(Organisation updatedOrganisation)
+    {
+        var organisation = await dbContext.Organisations.FirstOrDefaultAsync(x =>
+            x.OrganisationId == updatedOrganisation.OrganisationId
+        );
+
+        if (organisation is null)
+        {
+            return null;
+        }
+
+        organisation.OrganisationName = updatedOrganisation.OrganisationName;
+        organisation.ExternalOrganisationId = updatedOrganisation.ExternalOrganisationId;
+        organisation.LocalAuthorityCode = updatedOrganisation.LocalAuthorityCode;
+        organisation.Type = updatedOrganisation.Type;
+        organisation.Region = updatedOrganisation.Region;
+        organisation.PhoneNumber = updatedOrganisation.PhoneNumber;
+
+        await dbContext.SaveChangesAsync();
+
+        return organisation.ToDto();
+    }
 }

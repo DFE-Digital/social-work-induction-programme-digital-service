@@ -224,4 +224,82 @@ public class OrganisationsControllerTests : TestBase
             resultAccounts.Should().Be(false);
         });
     }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsUpdatedResult_WhenOrganisationIsUpdated()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var existingOrganisation = (await TestData.CreateOrganisation("test org")).ToDto();
+
+            var expectedOrganisation = new OrganisationDto
+            {
+                OrganisationId = existingOrganisation.OrganisationId,
+                OrganisationName = existingOrganisation.OrganisationName + " updated",
+                ExternalOrganisationId = existingOrganisation.ExternalOrganisationId,
+                LocalAuthorityCode = existingOrganisation.LocalAuthorityCode,
+                Type = existingOrganisation.Type,
+                Region = existingOrganisation.Region,
+                PhoneNumber = "01274123123",
+                CreatedOn = existingOrganisation.CreatedOn,
+                UpdatedOn = Clock.UtcNow,
+                PrimaryCoordinatorId = existingOrganisation.PrimaryCoordinatorId,
+            };
+
+            var organisationService = new OrganisationService(dbContext);
+
+            var controller = new OrganisationsController(organisationService);
+
+            // Act
+            var result = await controller.UpdateAsync(
+                new UpdateOrganisationRequest
+                {
+                    OrganisationId = existingOrganisation.OrganisationId,
+                    OrganisationName = existingOrganisation.OrganisationName + " updated",
+                    ExternalOrganisationId = existingOrganisation.ExternalOrganisationId,
+                    LocalAuthorityCode = existingOrganisation.LocalAuthorityCode,
+                    Type = existingOrganisation.Type,
+                    Region = existingOrganisation.Region,
+                    PhoneNumber = "01274123123",
+                }
+            );
+
+            // Assert
+            result.Should().BeOfType<OkObjectResult>();
+            var updatedResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            updatedResult.Value.Should().BeOfType<OrganisationDto>();
+            updatedResult.Value.Should().BeEquivalentTo(expectedOrganisation);
+        });
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ReturnsBadRequest_WhenOrganisationNotFound()
+    {
+        await WithDbContext(async dbContext =>
+        {
+            // Arrange
+            var organisationId = Guid.Empty;
+
+            var organisationService = new OrganisationService(dbContext);
+
+            var controller = new OrganisationsController(organisationService);
+            
+            // Act
+            var result = await controller.UpdateAsync(
+                new UpdateOrganisationRequest
+                {
+                    OrganisationId = organisationId,
+                    OrganisationName = "Non existing org",
+                }
+            );
+
+            // Assert
+            result
+                .Should()
+                .BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should()
+                .Be("Organisation not found.");
+        });
+    }
 }

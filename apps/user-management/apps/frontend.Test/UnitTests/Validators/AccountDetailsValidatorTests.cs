@@ -222,7 +222,7 @@ public class AccountDetailsValidatorTests()
     public void WhenEmailIsNotInEmailFormat_HaveValidationErrors()
     {
         // Arrange
-        var account = Faker.GenerateWithInvalidEmail("NotAnEmail:Oops.com");
+        var account = Faker.GenerateWithEmail("NotAnEmail:Oops.com");
 
         // Act
         var result = Sut.TestValidate(account);
@@ -296,6 +296,21 @@ public class AccountDetailsValidatorTests()
         // Assert
         result.IsValid.Should().BeTrue();
         _mockAccountService.Verify<Task<bool>>(x => x.CheckEmailExistsAsync(It.IsAny<string>()), Times.Never);
+        VerifyAllNoOtherCall();
+    }
+
+    [Fact]
+    public void WhenEmailIsTooLong_HaveValidationErrors()
+    {
+        // Arrange
+        var account = Faker.GenerateWithEmail(new string('a', 300) + "@example.com");
+
+        // Act
+        var result = Sut.TestValidate(account);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(person => person.Email).WithErrorMessage("Email address must be 254 characters or less");
+
         VerifyAllNoOtherCall();
     }
 

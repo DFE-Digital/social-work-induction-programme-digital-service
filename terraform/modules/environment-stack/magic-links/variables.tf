@@ -9,12 +9,6 @@ variable "magic_links_enabled" {
   default     = false
 }
 
-variable "moodle_instances" {
-  description = "Map of Moodle instances"
-  type        = map(any)
-  default     = {}
-}
-
 variable "frontdoor_sku" {
   description = "Front Door SKU"
   type        = string

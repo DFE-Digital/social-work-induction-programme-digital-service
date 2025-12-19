@@ -1,4 +1,5 @@
-﻿using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
+﻿using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers;
 using Dfe.Sww.Ecf.Frontend.Test.UnitTests.Helpers.Builders;
@@ -16,6 +17,8 @@ public abstract class EditOrganisationJourneyServiceTestBase
 
     private protected Mock<IOrganisationService> MockOrganisationService { get; }
     private protected Mock<IAccountService> MockAccountService { get; }
+
+    private protected Mock<IEmailService> MockEmailService { get; } = new();
 
     private protected readonly EditOrganisationJourneyService Sut;
 
@@ -37,7 +40,15 @@ public abstract class EditOrganisationJourneyServiceTestBase
         Sut = new EditOrganisationJourneyService(
             httpContextAccessor,
             MockOrganisationService.Object,
-            MockAccountService.Object
+            MockAccountService.Object,
+            MockEmailService.Object
         );
+    }
+
+    private protected void VerifyAllNoOtherCalls()
+    {
+        MockOrganisationService.VerifyNoOtherCalls();
+        MockAccountService.VerifyNoOtherCalls();
+        MockEmailService.VerifyNoOtherCalls();
     }
 }

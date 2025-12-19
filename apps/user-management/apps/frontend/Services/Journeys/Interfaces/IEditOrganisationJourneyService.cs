@@ -11,6 +11,8 @@ public interface IEditOrganisationJourneyService
     Task SetOrganisationAsync(Guid organisationId, Organisation organisation);
     Task<AccountDetails?> GetPrimaryCoordinatorAccountAsync(Guid organisationId);
     Task SetPrimaryCoordinatorAccountAsync(Guid organisationId, AccountDetails account);
+    Task<bool?> GetIsOrganisationUpdateAsync(Guid organisationId);
+    Task SetIsOrganisationUpdateAsync(Guid organisationId, bool isOrganisationUpdate);
     void ResetEditOrganisationJourneyModel(Guid organisationId);
-    Task<Organisation?> CompleteJourneyAsync(Guid organisationId);
+    Task CompleteJourneyAsync(Guid organisationId);
 }

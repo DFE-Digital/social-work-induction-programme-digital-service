@@ -1,7 +1,5 @@
-using Dfe.Sww.Ecf.Frontend.Authorisation;
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
-using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
 using Dfe.Sww.Ecf.Frontend.Pages.Shared;
 using Dfe.Sww.Ecf.Frontend.Routing;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
@@ -25,7 +23,9 @@ public class EditPrimaryCoordinator(
 
     public async Task<PageResult> OnGetAsync(Guid id)
     {
-        BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeTypeChange(id)
+            : linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
 
         var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         if (organisation is not null)
@@ -41,7 +41,9 @@ public class EditPrimaryCoordinator(
     public async Task<PageResult> OnGetReplaceAsync(Guid id)
     {
         IsReplace = true;
-        BackLinkPath = linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeTypeChange(id)
+            : linkGenerator.ManageOrganisations.EditPrimaryCoordinatorChangeType(id);
 
         var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         if (organisation is not null)
@@ -52,6 +54,19 @@ public class EditPrimaryCoordinator(
 
     public async Task<PageResult> OnGetReplaceChangeAsync(Guid id)
     {
+        IsReplace = true;
+        return await OnGetAsync(id);
+    }
+
+    public async Task<PageResult> OnGetEditChangeAsync(Guid id)
+    {
+        FromChangeLink = true;
+        return await OnGetAsync(id);
+    }
+
+    public async Task<PageResult> OnGetReplaceEditChangeAsync(Guid id)
+    {
+        FromChangeLink = true;
         IsReplace = true;
         return await OnGetAsync(id);
     }

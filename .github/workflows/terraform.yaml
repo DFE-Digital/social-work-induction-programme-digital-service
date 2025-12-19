@@ -11,9 +11,6 @@ on:
         type: choice
         options:
           - d01
-          - d02
-          - d03
-          - d04
 
       action:
         description: "Test the planned changes or plan and apply the changes"
@@ -131,13 +128,7 @@ jobs:
           export exitcode=0
           terraform plan -detailed-exitcode -no-color -out tfplan \
             -var-file=$TF_VAR_FILE \
-            -var='moodle_admin_password=${{ secrets.MOODLE_ADMIN_PASSWORD }}' \
-            -var='moodle_admin_email=${{ vars.MOODLE_ADMIN_EMAIL }}' \
-            -var='moodle_admin_user=${{ vars.MOODLE_ADMIN_USER }}' \
             -var='auth_service_client_id=${{ vars.AUTH_SERVICE_CLIENT_ID }}' \
-            -var='moodle_web_service_name=${{ vars.MOODLE_WEB_SERVICE_NAME }}' \
-            -var='moodle_web_service_user=${{ vars.MOODLE_WEB_SERVICE_USER }}' \
-            -var='moodle_web_service_user_email=${{ vars.MOODLE_WEB_SERVICE_USER_EMAIL }}' \
             -var='email_support_address=${{ vars.EMAIL_SUPPORT_ADDRESS }}' \
             -var='govnotify_api_key=${{secrets.GOVNOTIFY_API_KEY}}' \
             || export exitcode=$?
@@ -153,6 +144,4 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ inputs.action == 'Plan & Apply' }}
-        env:
-          TF_VAR_moodle_admin_password: ${{ secrets.MOODLE_ADMIN_PASSWORD }}
         run: terraform apply -auto-approve tfplan

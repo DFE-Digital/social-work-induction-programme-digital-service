@@ -6,7 +6,6 @@ module "stack" {
   primary_resource_group                     = var.primary_resource_group
   resource_name_prefix                       = var.resource_name_prefix
   kv_purge_protection_enabled                = var.kv_purge_protection_enabled
-  asp_sku_moodle                             = var.asp_sku_moodle
   asp_sku_maintenance                        = var.asp_sku_maintenance
   asp_sku_services                           = var.asp_sku_services
   admin_enabled                              = var.admin_enabled
@@ -22,5 +21,4 @@ module "stack" {
   key_vault_sku                              = var.key_vault_sku
   db_backup_blob_sa_name                     = var.db_backup_blob_sa_name
   asp_sku_db_jobs                            = var.asp_sku_db_jobs
-  moodle_instances                           = var.moodle_instances
 }

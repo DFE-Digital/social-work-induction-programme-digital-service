@@ -43,19 +43,15 @@ public class SelectUseCase(
         if (SelectedAccountTypes is null || !validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            BackLinkPath = linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
+            BackLinkPath = Id.HasValue
+                ? linkGenerator.ManageAccount.ViewAccountDetails(Id.Value)
+                : linkGenerator.ManageAccount.SelectAccountType(OrganisationId);
             return Page();
         }
 
-        if (FromChangeLink || Id.HasValue)
-        {
-            captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Id);
-        }
+        if (FromChangeLink || Id.HasValue) captureSocialWorkEnglandNumber = await ClearOrMarkForCaptureSocialWorkEnglandNumberAsync(Id);
 
-        if (Id.HasValue)
-        {
-            return await OnPostUpdateAsync(Id.Value, captureSocialWorkEnglandNumber);
-        }
+        if (Id.HasValue) return await OnPostUpdateAsync(Id.Value, captureSocialWorkEnglandNumber);
 
         createAccountJourneyService.SetAccountTypes(SelectedAccountTypes);
         return Redirect(FromChangeLink && !captureSocialWorkEnglandNumber
@@ -65,10 +61,7 @@ public class SelectUseCase(
 
     private async Task<IActionResult> OnPostUpdateAsync(Guid id, bool captureSocialWorkEnglandNumber)
     {
-        if (Id.HasValue == false || SelectedAccountTypes == null)
-        {
-            return Page();
-        }
+        if (Id.HasValue == false || SelectedAccountTypes == null) return Page();
 
         await editAccountJourneyService.SetAccountTypesAsync(Id.Value, SelectedAccountTypes);
 
@@ -94,13 +87,9 @@ public class SelectUseCase(
             accountDetails.SocialWorkEnglandNumber = null;
 
             if (id is null)
-            {
                 createAccountJourneyService.SetAccountDetails(accountDetails);
-            }
             else
-            {
                 await editAccountJourneyService.SetAccountDetailsAsync(id.Value, accountDetails);
-            }
 
             return false;
         }

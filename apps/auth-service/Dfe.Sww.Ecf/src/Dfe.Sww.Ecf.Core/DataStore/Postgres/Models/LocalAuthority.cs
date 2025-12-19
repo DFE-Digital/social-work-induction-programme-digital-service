@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Dfe.Sww.Ecf.Core.DataStore.Postgres.Models.Organisations;
 
 namespace Dfe.Sww.Ecf.Core.DataStore.Postgres.Models;
 

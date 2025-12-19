@@ -1,6 +1,4 @@
 project_code                               = "s205"
-moodle_site_fullname                       = "Social Work Induction Programme"
-moodle_site_shortname                      = "SWIP"
 webapp_storage_account_name                = "sablobs"
 parent_business_tag                        = "Children and Families"
 product_tag                                = "Early career framework for social work"

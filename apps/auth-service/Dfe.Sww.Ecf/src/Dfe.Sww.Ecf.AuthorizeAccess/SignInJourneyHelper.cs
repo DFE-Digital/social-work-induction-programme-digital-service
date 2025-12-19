@@ -250,7 +250,9 @@ public class SignInJourneyHelper(
             return null;
         }
 
-        var personId = oneLoginAccountLinkingService.GetAccountIdForLinkingToken(linkingToken);
+        var personId = await oneLoginAccountLinkingService.GetAccountIdForLinkingToken(
+            linkingToken
+        );
 
         if (personId is null)
         {
@@ -266,8 +268,16 @@ public class SignInJourneyHelper(
             return null;
         }
 
-        // Invalidate the token
-        oneLoginAccountLinkingService.InvalidateLinkingToken(linkingToken);
+        var linkingTokenEntity = await dbContext.LinkingTokens.FirstOrDefaultAsync(x =>
+            x.Token.Equals(linkingToken) && x.ExpirationOn > clock.UtcNow
+        );
+        if (linkingTokenEntity is null)
+        {
+            return null;
+        }
+
+        // Invalidate all tokens for user
+        await oneLoginAccountLinkingService.InvalidateLinkingTokens(personId.Value);
 
         return new TryApplyLinkingTokenResult(linkingTokenPerson.PersonId);
     }

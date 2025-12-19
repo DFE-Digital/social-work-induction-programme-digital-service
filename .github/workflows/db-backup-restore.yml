@@ -24,7 +24,7 @@ on:
         required: false
         type: string
       instance:
-        description: "The environment instance to operate on (e.g., d01, d02, d03)"
+        description: "The environment instance to operate on (e.g., d01)"
         required: true
         type: string
     secrets:

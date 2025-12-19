@@ -21,11 +21,19 @@ public class EditPrimaryCoordinatorChangeType(
 
     public async Task<PageResult> OnGetAsync(Guid id)
     {
-        BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
+        BackLinkPath = FromChangeLink
+            ? linkGenerator.ManageOrganisations.CheckYourAnswersEditChange(id)
+            : linkGenerator.ManageOrganisations.ViewOrganisationDetails(id);
         ChangeType = await editOrganisationJourneyService.GetPrimaryCoordinatorChangeTypeAsync(id);
         var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id);
         if (organisation is not null) OrganisationName = organisation.OrganisationName;
         return Page();
+    }
+
+    public async Task<PageResult> OnGetChangeAsync(Guid id)
+    {
+        FromChangeLink = true;
+        return await OnGetAsync(id);
     }
 
     public async Task<IActionResult> OnPostAsync(Guid id)
@@ -41,8 +49,21 @@ public class EditPrimaryCoordinatorChangeType(
 
         await editOrganisationJourneyService.SetPrimaryCoordinatorChangeTypeAsync(id, ChangeType);
 
+        if (FromChangeLink)
+        {
+            return Redirect(ChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator
+                ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinatorEditChange(id)
+                : linkGenerator.ManageOrganisations.EditPrimaryCoordinatorEditChange(id));
+        }
+
         return Redirect(ChangeType == PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator
             ? linkGenerator.ManageOrganisations.ReplacePrimaryCoordinator(id)
             : linkGenerator.ManageOrganisations.EditPrimaryCoordinator(id));
+    }
+
+    public async Task<IActionResult> OnPostChangeAsync(Guid id)
+    {
+        FromChangeLink = true;
+        return await OnPostAsync(id);
     }
 }

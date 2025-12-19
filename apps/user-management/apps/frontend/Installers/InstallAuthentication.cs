@@ -24,11 +24,9 @@ public static class InstallAuthentication
 
         var ecfAuthenticationOptions = configurationSection.Get<OidcConfiguration>();
         if (ecfAuthenticationOptions is null)
-        {
             throw new InvalidOperationException(
                 "Unable to parse configuration for ECF authentication."
             );
-        }
 
         services
             .AddAuthentication(options =>
@@ -39,10 +37,7 @@ public static class InstallAuthentication
             })
             .AddCookie(options =>
             {
-                if (ecfAuthenticationOptions.CookieName is not null)
-                {
-                    options.Cookie.Name = ecfAuthenticationOptions.CookieName;
-                }
+                if (ecfAuthenticationOptions.CookieName is not null) options.Cookie.Name = ecfAuthenticationOptions.CookieName;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(
                     ecfAuthenticationOptions.SessionLifetimeMinutes
                 );
@@ -51,6 +46,13 @@ public static class InstallAuthentication
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+
+                options.AccessDeniedPath = "/Error/Index";
+                options.Events.OnRedirectToAccessDenied = ctx =>
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;
+                };
 
                 // Validate absolute session timeout on each request
                 options.Events.OnValidatePrincipal = async context =>
@@ -100,9 +102,7 @@ public static class InstallAuthentication
                             out var linkingToken
                         )
                     )
-                    {
                         context.ProtocolMessage.SetParameter("LinkingToken", linkingToken);
-                    }
 
                     return Task.CompletedTask;
                 };

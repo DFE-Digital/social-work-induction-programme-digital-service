@@ -271,4 +271,120 @@ public class OrganisationsOperationsTests : AuthServiceClientTestBase
         mockHttp.VerifyNoOutstandingRequest();
         mockHttp.VerifyNoOutstandingExpectation();
     }
+
+    [Fact]
+    public async Task UpdateOrganisation_SuccessfulRequest_ReturnsCorrectResponse()
+    {
+        // Arrange
+        var requestModel = new UpdateOrganisationRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationName = "Updated organisation name",
+            LocalAuthorityCode = new Faker().Random.Int(100, 999),
+            Region = "Updated region"
+        };
+
+        var expectedOrganisation = new OrganisationDto
+        {
+            OrganisationId = requestModel.OrganisationId,
+            OrganisationName = requestModel.OrganisationName,
+            ExternalOrganisationId = new Faker().Random.Int(),
+            LocalAuthorityCode = requestModel.LocalAuthorityCode,
+            Type = OrganisationType.LocalAuthority,
+            Region = requestModel.Region
+        };
+
+        var route = "/api/Organisations";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Put,
+            expectedOrganisation,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var response = await sut.Organisations.UpdateOrganisationAsync(requestModel);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OrganisationDto>();
+        response.Should().BeEquivalentTo(expectedOrganisation);
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task UpdateOrganisation_WhenErrorResponseReturned_ThrowsHttpRequestException()
+    {
+        // Arrange
+        var requestModel = new UpdateOrganisationRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationName = "Updated organisation name",
+            LocalAuthorityCode = new Faker().Random.Int(100, 999),
+            Region = "Updated region"
+        };
+
+        var route = "/api/Organisations";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.BadRequest,
+            HttpMethod.Put,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(
+            () => sut.Organisations.UpdateOrganisationAsync(requestModel)
+        );
+
+        // Assert
+        exception.Message.Should().Be("Failed to update organisation.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task UpdateOrganisation_WhenNoOrganisationReturned_ThrowsException()
+    {
+        // Arrange
+        var requestModel = new UpdateOrganisationRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationName = "Updated organisation name",
+            LocalAuthorityCode = new Faker().Random.Int(100, 999),
+            Region = "Updated region"
+        };
+
+        var route = "/api/Organisations";
+
+        var (mockHttp, request) = GenerateMockClient(
+            HttpStatusCode.OK,
+            HttpMethod.Put,
+            null,
+            route
+        );
+
+        var sut = BuildSut(mockHttp);
+
+        // Act & Assert
+        await sut.Invoking(s => s.Organisations.UpdateOrganisationAsync(requestModel))
+            .Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage("Failed to update organisation.");
+
+        mockHttp.GetMatchCount(request).Should().Be(1);
+        mockHttp.VerifyNoOutstandingRequest();
+        mockHttp.VerifyNoOutstandingExpectation();
+    }
 }

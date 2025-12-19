@@ -28,8 +28,8 @@
                         @if (!string.IsNullOrEmpty(Model.ChangeLocalAuthorityCodeLink))
                         {
                             <govuk-summary-list-row-actions>
-                                <govuk-summary-list-row-action href="@Model.ChangeLocalAuthorityCodeLink">
-                                    Change code
+                                <govuk-summary-list-row-action href="@Model.ChangeLocalAuthorityCodeLink" visually-hidden-text=" local authority code">
+                                    Change
                                 </govuk-summary-list-row-action>
                             </govuk-summary-list-row-actions>
                         }
@@ -65,6 +65,24 @@
                         </govuk-summary-list-row-value>
                     </govuk-summary-list-row>
                 }
+
+                @if (Model.Organisation?.PhoneNumber is not null)
+                {
+                    <govuk-summary-list-row>
+                        <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.PhoneNumber)</govuk-summary-list-row-key>
+                        <govuk-summary-list-row-value>
+                            <p class="govuk-body">@Model.Organisation.PhoneNumber</p>
+                        </govuk-summary-list-row-value>
+                        @if (!string.IsNullOrEmpty(Model.ChangePhoneNumberLink))
+                        {
+                            <govuk-summary-list-row-actions>
+                                <govuk-summary-list-row-action href="@Model.ChangePhoneNumberLink" visually-hidden-text=" UK Phone number">
+                                    Change
+                                </govuk-summary-list-row-action>
+                            </govuk-summary-list-row-actions>
+                        }
+                    </govuk-summary-list-row>
+                }
             </govuk-summary-list>
 
             @if (Model.PrimaryCoordinator != null)
@@ -72,7 +90,7 @@
                 <govuk-summary-card>
                     <govuk-summary-card-title>Primary coordinator</govuk-summary-card-title>
                     <govuk-summary-card-actions>
-                        <govuk-summary-card-action href="@Model.ChangePrimaryCoordinatorLink">Change</govuk-summary-card-action>
+                        <govuk-summary-card-action href="@Model.ChangePrimaryCoordinatorLink" visually-hidden-text=" primary coordinator">Change</govuk-summary-card-action>
                     </govuk-summary-card-actions>
                     <govuk-summary-list>
                         <govuk-summary-list-row>
@@ -83,20 +101,31 @@
                             <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.PrimaryCoordinator!.Email)</govuk-summary-list-row-key>
                             <govuk-summary-list-row-value>@Model.PrimaryCoordinator.Email</govuk-summary-list-row-value>
                         </govuk-summary-list-row>
-                        @if (Model.Organisation != null)
-                        {
-                            <govuk-summary-list-row>
-                                <govuk-summary-list-row-key>@Html.DisplayNameFor(model => model.Organisation!.PhoneNumber)</govuk-summary-list-row-key>
-                                <govuk-summary-list-row-value>@Model.Organisation.PhoneNumber</govuk-summary-list-row-value>
-                            </govuk-summary-list-row>
-                        }
                     </govuk-summary-list>
                 </govuk-summary-card>
             }
 
-            <p class="govuk-body">@(Model.IsEdit ? "When you update this organisation" : "When you save this organisation"), we will send the coordinator an invitation email with a link to enter the service through GOV.UK One Login. You should inform them to expect this email.</p>
-
-            <govuk-button type="submit">@(Model.IsEdit ? "Update organisation" : "Save new organisation")</govuk-button>
+            @if (Model.IsEdit)
+            {
+                <p class="govuk-body">We will send an email to the primary coordinator to tell them their details have been changed.</p>
+                <govuk-button type="submit">Confirm and save changes</govuk-button>
+            }
+            else if (Model.IsReplace)
+            {
+                <p class="govuk-body">When you update this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One
+                    Login. You should inform them to expect this email.</p>
+                <govuk-button type="submit">Update organisation</govuk-button>
+            }
+            else if (!Model.IsEditPhoneNumber)
+            {
+                <p class="govuk-body">When you save this organisation, we will send the coordinator an invitation email with a link to enter the service through GOV.UK One
+                    Login. You should inform them to expect this email.</p>
+                <govuk-button type="submit">Save new organisation</govuk-button>
+            }
+            else
+            {
+                <govuk-button type="submit">Update organisation</govuk-button>
+            }
         </form>
     </div>
 </div>

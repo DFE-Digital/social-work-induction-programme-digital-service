@@ -1,6 +1,8 @@
 using Dfe.Sww.Ecf.Frontend.Extensions;
 using Dfe.Sww.Ecf.Frontend.Models;
 using Dfe.Sww.Ecf.Frontend.Models.ManageOrganisation;
+using Dfe.Sww.Ecf.Frontend.Services.Email;
+using Dfe.Sww.Ecf.Frontend.Services.Email.Models;
 using Dfe.Sww.Ecf.Frontend.Services.Interfaces;
 using Dfe.Sww.Ecf.Frontend.Services.Journeys.Interfaces;
 
@@ -9,11 +11,14 @@ namespace Dfe.Sww.Ecf.Frontend.Services.Journeys;
 public class EditOrganisationJourneyService(
     IHttpContextAccessor httpContextAccessor,
     IOrganisationService organisationService,
-    IAccountService accountService) : IEditOrganisationJourneyService
+    IAccountService accountService,
+    IEmailService emailService
+) : IEditOrganisationJourneyService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IOrganisationService _organisationService = organisationService;
     private readonly IAccountService _accountService = accountService;
+    private readonly IEmailService _emailService = emailService;
 
     private ISession Session =>
         _httpContextAccessor.HttpContext?.Session ?? throw new NullReferenceException();
@@ -102,25 +107,63 @@ public class EditOrganisationJourneyService(
         SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
     }
 
+    public async Task<bool?> GetIsOrganisationUpdateAsync(Guid organisationId)
+    {
+        var editOrganisationJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
+        return editOrganisationJourneyModel?.IsOrganisationUpdate;
+    }
+
+    public async Task SetIsOrganisationUpdateAsync(Guid organisationId, bool isOrganisationUpdate)
+    {
+        var editOrganisationJourneyModel =
+            await GetOrganisationJourneyModelAsync(organisationId)
+            ?? throw OrganisationNotFoundException(organisationId);
+        editOrganisationJourneyModel.IsOrganisationUpdate = isOrganisationUpdate;
+        SetEditOrganisationJourneyModel(organisationId, editOrganisationJourneyModel);
+    }
+
     public void ResetEditOrganisationJourneyModel(Guid organisationId)
     {
         Session.Remove(EditOrganisationSessionKey(organisationId));
     }
 
-    public async Task<Organisation?> CompleteJourneyAsync(Guid organisationId)
+    public async Task CompleteJourneyAsync(Guid organisationId)
     {
         var editAccountJourneyModel = await GetOrganisationJourneyModelAsync(organisationId);
 
-        var primaryCoordinator = editAccountJourneyModel?.PrimaryCoordinatorAccount;
+        if (editAccountJourneyModel?.PrimaryCoordinatorChangeType is not null)
+        {
+            var primaryCoordinator = editAccountJourneyModel.PrimaryCoordinatorAccount;
 
-        if (primaryCoordinator is null)
-            throw new ArgumentNullException();
+            if (primaryCoordinator is null)
+                throw new ArgumentNullException();
 
-        var account = AccountDetails.ToAccount(primaryCoordinator);
-        await _accountService.UpdateAsync(account);
+            var account = AccountDetails.ToAccount(primaryCoordinator);
+            await _accountService.UpdateAsync(account);
+
+            if (editAccountJourneyModel is { PrimaryCoordinatorChangeType: PrimaryCoordinatorChangeType.ReplaceWithNewCoordinator,
+                    PrimaryCoordinatorAccount.Id: { } primaryCoordinatorId,
+                    Organisation: not null
+                })
+                await _emailService.SendInvitationEmailAsync(new InvitationEmailRequest
+                {
+                    AccountId = primaryCoordinatorId,
+                    OrganisationName = editAccountJourneyModel.Organisation.OrganisationName,
+                    IsPrimaryCoordinator = true
+                });
+        }
+
+
+        if (editAccountJourneyModel?.IsOrganisationUpdate == true)
+        {
+            var organisation = editAccountJourneyModel.Organisation;
+
+            if (organisation is null)
+                throw new ArgumentNullException();
+
+            await _organisationService.UpdateOrganisationAsync(organisation);
+        }
 
         ResetEditOrganisationJourneyModel(organisationId);
-
-        return new Organisation();
     }
 }

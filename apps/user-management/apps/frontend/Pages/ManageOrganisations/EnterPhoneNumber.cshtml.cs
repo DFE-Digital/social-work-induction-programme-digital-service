@@ -10,29 +10,37 @@ namespace Dfe.Sww.Ecf.Frontend.Pages.ManageOrganisations;
 
 public class EnterPhoneNumber(
     ICreateOrganisationJourneyService createOrganisationJourneyService,
+    IEditOrganisationJourneyService editOrganisationJourneyService,
     EcfLinkGenerator linkGenerator,
     IValidator<EnterPhoneNumber> validator
 ) : BasePageModel
 {
     [BindProperty] public string? PhoneNumber { get; set; }
 
-    public PageResult OnGet()
+    [BindProperty] public Guid? Id { get; set; }
+
+    public async Task<PageResult> OnGetAsync(Guid? id = null)
     {
-        var phoneNumber = createOrganisationJourneyService.GetOrganisation()?.PhoneNumber;
-        if (phoneNumber is not null)
+        if (id.HasValue)
         {
-            PhoneNumber = phoneNumber;
+            var organisation = await editOrganisationJourneyService.GetOrganisationAsync(id.Value);
+            PhoneNumber = organisation?.PhoneNumber;
+            Id = id;
+        }
+        else
+        {
+            PhoneNumber = createOrganisationJourneyService.GetOrganisation()?.PhoneNumber;
         }
 
         SetBackLinkPath();
         return Page();
     }
 
-    public PageResult OnGetChange()
+    public async Task<PageResult> OnGetChangeAsync()
     {
         FromChangeLink = true;
         SetBackLinkPath();
-        return OnGet();
+        return await OnGetAsync();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -45,6 +53,16 @@ public class EnterPhoneNumber(
             return Page();
         }
 
+        if (Id.HasValue)
+        {
+            var editedOrganisation = await editOrganisationJourneyService.GetOrganisationAsync(Id.Value);
+            if (editedOrganisation is null) throw new InvalidOperationException("Organisation must be set before accessing this page.");
+            editedOrganisation.PhoneNumber = PhoneNumber;
+            await editOrganisationJourneyService.SetOrganisationAsync(Id.Value, editedOrganisation);
+            await editOrganisationJourneyService.SetIsOrganisationUpdateAsync(Id.Value, true);
+            return Redirect(linkGenerator.ManageOrganisations.CheckYourAnswersEditPhoneNumber(Id.Value));
+        }
+
         var organisation = createOrganisationJourneyService.GetOrganisation();
         if (organisation is null) throw new InvalidOperationException("Organisation must be set before accessing this page.");
         organisation.PhoneNumber = PhoneNumber;
@@ -52,7 +70,7 @@ public class EnterPhoneNumber(
 
         return Redirect(
             FromChangeLink
-                ? linkGenerator.ManageOrganisations.CheckYourAnswers()
+                ? linkGenerator.ManageOrganisations.CheckYourAnswersPhoneNumberChange()
                 : linkGenerator.ManageOrganisations.AddPrimaryCoordinator()
         );
     }
@@ -66,8 +84,13 @@ public class EnterPhoneNumber(
 
     private void SetBackLinkPath()
     {
-        BackLinkPath ??= FromChangeLink
-            ? linkGenerator.ManageOrganisations.CheckYourAnswers()
-            : linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
+        if (Id.HasValue)
+            BackLinkPath = linkGenerator.ManageOrganisations.ViewOrganisationDetails(Id.Value);
+        else if (FromChangeLink)
+            BackLinkPath = linkGenerator.ManageOrganisations.CheckYourAnswers();
+        else
+            BackLinkPath = linkGenerator.ManageOrganisations.ConfirmOrganisationDetails();
+
+
     }
 }

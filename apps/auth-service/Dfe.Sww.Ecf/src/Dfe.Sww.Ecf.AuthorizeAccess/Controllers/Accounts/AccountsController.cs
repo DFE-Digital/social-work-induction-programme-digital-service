@@ -19,7 +19,10 @@ public class AccountsController(
 {
     [HttpGet]
     [ActionName(nameof(GetAllAsync))]
-    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationRequest request, [FromQuery] string organisationId)
+    public async Task<IActionResult> GetAllAsync(
+        [FromQuery] PaginationRequest request,
+        [FromQuery] string organisationId
+    )
     {
         if (!Guid.TryParse(organisationId, out Guid parsedOrganisationId))
         {
@@ -80,7 +83,6 @@ public class AccountsController(
         return Ok(updatedAccount);
     }
 
-
     [HttpDelete("{id:guid}")]
     [ActionName(nameof(DeleteAsync))]
     [Consumes(MediaTypeNames.Application.Json)]
@@ -113,11 +115,12 @@ public class AccountsController(
         return Ok(result);
     }
 
-
     [HttpPost("check")]
     [ActionName(nameof(CheckEmailExists))]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> CheckEmailExists([FromBody] CheckEmailRequest checkEmailRequest)
+    public async Task<IActionResult> CheckEmailExists(
+        [FromBody] CheckEmailRequest checkEmailRequest
+    )
     {
         var user = await accountsService.GetByEmailAsync(checkEmailRequest.Email);
         return Ok(user != null);
@@ -126,13 +129,15 @@ public class AccountsController(
     [HttpGet("social-work-england-number/{socialWorkerEnglandNumber}")]
     [ActionName(nameof(GetBySocialWorkEnglandNumberAsync))]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> GetBySocialWorkEnglandNumberAsync([FromRoute] string socialWorkerEnglandNumber)
+    public async Task<IActionResult> GetBySocialWorkEnglandNumberAsync(
+        [FromRoute] string socialWorkerEnglandNumber
+    )
     {
-        var user = await accountsService.GetBySocialWorkEnglandNumberAsync(socialWorkerEnglandNumber);
+        var user = await accountsService.GetBySocialWorkEnglandNumberAsync(
+            socialWorkerEnglandNumber
+        );
 
-        return user is null
-            ? NoContent()
-            : Ok(user);
+        return user is null ? NoContent() : Ok(user);
     }
 
     [AllowAnonymous]

@@ -1,3 +1,9 @@
+## ⚠️ Project Archived
+
+This repository has been archived and is no longer being maintained. The project has been discontinued, and this codebase is no longer required.
+
+Note: The code is provided as-is for historical reference only. No further updates, bug fixes, or pull requests will be accepted.
+
 # Social Work Practice Development Programme (SWPDP) digital service
 
 This repository houses the digital service for the Social Work Practice Development Programme (SWPDP):
@@ -117,6 +123,8 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
 
 #### Create apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Development.json
 
+Below is an example, therefore check the `apps/auth-service/Dfe.Sww.Ecf/src/Dfe.Sww.Ecf.AuthorizeAccess/appsettings.Azure.json` file for the latest structure.
+
 ```bash
 {
   "AppInfo": {
@@ -126,17 +134,6 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
   "ShowDebugPages": false,
   "StorageConnectionString": "UseDevelopmentStorage=true",
   "KeyVaultUri": "",
-  "Kestrel": {
-    "Endpoints": {
-      "HttpsInlineCertFile": {
-        "Url": "https://0.0.0.0:7236",
-        "Certificate": {
-          "Path": "aspnet-dev-cert.pfx",
-          "Password": "<ANY PASSWORD, from the 'openssl pkcs12' command in 'Install auth-service'>"
-        }
-      }
-    }
-  },
   "FeatureFlags": {
     "SupportEndToEndTesting": true,
     "RequiresDbConnection": true,
@@ -164,13 +161,11 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
         "DisplayName": "SWIP Auth Service",
         "RedirectUris": [
           "https://localhost:7244/oidc/callback",
-          "https://localhost:44394/oidc/callback",
-          "https://moodle.ddev.site/auth/oidc/"
+          "https://localhost:44394/oidc/callback"
         ],
         "PostLogoutRedirectUris": [
           "https://localhost:7244/oidc/logout-callback",
-          "https://localhost:44394/oidc/logout-callback",
-          "https://moodle.ddev.site/auth/oidc/logout.php"
+          "https://localhost:44394/oidc/logout-callback"
         ],
         "AllowedEndpoints": ["authorization", "logout", "token"],
         "AllowedGrantTypes": ["authorization_code"],
@@ -185,12 +180,9 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
           "person",
           "staff_first_login"
         ],
-        "RequirePkce": false
+        "RequirePkce": true
       }
     ]
-  },
-  "ContentSecurityPolicy": {
-    "ScriptHash": "sha256-j7OoGArf6XW6YY4cAyS3riSSvrJRqpSi1fOF9vQ5SrI="
   },
   "DatabaseSeed": {
     "PersonId": "00000000-0000-0000-0001-000000000001",
@@ -211,6 +203,8 @@ git clone git@github.com:DFE-Digital/social-work-induction-programme-digital-ser
 ```
 
 #### Create apps/user-management/apps/frontend/appsettings.Development.json
+
+Below is an example, therefore check the `apps/user-management/apps/frontend/appsettings.Azure.json` file for the latest structure.
 
 ```bash
 {

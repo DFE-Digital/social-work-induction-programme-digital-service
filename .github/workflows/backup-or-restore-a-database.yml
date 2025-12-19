@@ -15,7 +15,6 @@ on:
         required: true
         type: choice
         options:
-          - moodle
           - usermanagement
       backup_file_name:
         description: "Specify the backup file name to restore from (only required for restore action)"
@@ -27,8 +26,6 @@ on:
         type: choice
         options:
           - d01
-          - d02
-          - d03
   # Uncomment the schedule below to enable daily automated backups across all instances
   # schedule:
   #   - cron: '0 2 * * *'  # Daily at 2 AM UTC
@@ -44,7 +41,7 @@ jobs:
     with:
       environment: Dev
       action: ${{ github.event.inputs.action }}
-      db-name: ${{ github.event.inputs.db_name == 'moodle' && format('s205{0}_db_moodle_primary', github.event.inputs.instance) || github.event.inputs.db_name == 'usermanagement' && format('s205{0}_db_auth_service', github.event.inputs.instance) || github.event.inputs.db_name }}
+      db-name: ${{ format('s205{0}_db_auth_service', github.event.inputs.instance) }}
       container-suffix: ${{ github.event.inputs.db_name }}
       backup-file-name: ${{ github.event.inputs.backup_file_name }}
       instance: ${{ github.event.inputs.instance }}
@@ -60,15 +57,15 @@ jobs:
     if: github.event_name == 'schedule' && false
     strategy:
       matrix:
-        instance: [d01, d02, d03]
-        db_name: [moodle, usermanagement]
+        instance: [d01]
+        db_name: [usermanagement]
     permissions:
       id-token: write
       contents: read
     with:
       environment: Dev
       action: backup
-      db-name: ${{ matrix.db_name == 'moodle' && format('s205{0}_db_moodle_primary', matrix.instance) || matrix.db_name == 'usermanagement' && format('s205{0}_db_auth_service', matrix.instance) || matrix.db_name }}
+      db-name: ${{ format('s205{0}_db_auth_service', matrix.instance) }}
       container-suffix: ${{ matrix.db_name }}
       instance: ${{ matrix.instance }}
     secrets:

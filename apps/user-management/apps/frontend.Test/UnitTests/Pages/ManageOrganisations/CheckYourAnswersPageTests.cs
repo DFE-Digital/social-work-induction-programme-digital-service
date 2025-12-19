@@ -43,6 +43,9 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         Sut.Organisation.Should().BeEquivalentTo(organisation);
         Sut.BackLinkPath.Should().Be("/manage-organisations/add-primary-coordinator");
         result.Should().BeOfType<PageResult>();
+        Sut.ChangeLocalAuthorityCodeLink.Should().BeEquivalentTo("/manage-organisations/enter-local-authority-code?handler=Change");
+        Sut.ChangePrimaryCoordinatorLink.Should().BeEquivalentTo("/manage-organisations/add-primary-coordinator?handler=Change");
+        Sut.ChangePhoneNumberLink.Should().BeEquivalentTo("/manage-organisations/enter-phone-number?handler=Change");
 
         MockCreateOrganisationJourneyService.Verify(x => x.GetOrganisation(), Times.Once);
         MockCreateOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountDetails(), Times.Once);
@@ -94,6 +97,28 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
         VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public void OnGetFromPhoneNumberChange_WhenCalled_HasIsFromPhoneNumberChangeTrue()
+    {
+        // Act
+        _ = Sut.OnGetFromPhoneNumberChange();
+
+        // Assert
+        Sut.IsFromPhoneNumberChange.Should().BeTrue();
+        Sut.BackLinkPath.Should().BeEquivalentTo("/manage-organisations/enter-phone-number?handler=Change");
+    }
+
+    [Fact]
+    public void OnGetFromLocalAuthorityChange_WhenCalled_HasIsFromLocalAuthorityChangeTrue()
+    {
+        // Act
+        _ = Sut.OnGetFromLocalAuthorityChange();
+
+        // Assert
+        Sut.IsFromLocalAuthorityChange.Should().BeTrue();
+        Sut.BackLinkPath.Should().BeEquivalentTo("/manage-organisations/enter-local-authority-code?handler=Change");
     }
 
     [Fact]
@@ -254,6 +279,117 @@ public class CheckYourAnswersPageTests : ManageOrganisationsPageTestBase<CheckYo
         MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
         MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisationId), Times.Once);
 
+        VerifyAllNoOtherCalls();
+    }
+
+
+    [Fact]
+    public async Task OnGetEditPhoneNumberAsync_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(organisation);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(primaryCoordinator);
+
+        // Act
+        var result = await Sut.OnGetEditPhoneNumberAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        Sut.IsEditPhoneNumber.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/enter-phone-number/{organisation.OrganisationId!.Value}");
+        Sut.ChangeLocalAuthorityCodeLink.Should().BeNull();
+        Sut.ChangePhoneNumberLink.Should().Be($"/manage-organisations/enter-phone-number/{organisation.OrganisationId!.Value}");
+        Sut.ChangePrimaryCoordinatorLink.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}?handler=Change");
+
+        result.Should().BeOfType<PageResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnGetEditChangeAsync_WhenCalled_LoadsTheView()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+        var account = AccountBuilder.Build();
+        var primaryCoordinator = AccountDetails.FromAccount(account);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(organisation);
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(primaryCoordinator);
+
+        // Act
+        var result = await Sut.OnGetEditChangeAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        Sut.IsEditChange.Should().BeTrue();
+        Sut.BackLinkPath.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}?handler=Change");
+        Sut.ChangeLocalAuthorityCodeLink.Should().BeNull();
+        Sut.ChangePhoneNumberLink.Should().Be($"/manage-organisations/enter-phone-number/{organisation.OrganisationId!.Value}");
+        Sut.ChangePrimaryCoordinatorLink.Should().Be($"/manage-organisations/edit-primary-coordinator-change-type/{organisation.OrganisationId!.Value}?handler=Change");
+
+        result.Should().BeOfType<PageResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.GetPrimaryCoordinatorAccountAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostEditPhoneNumberAsync_WhenCalled_RedirectsUser()
+    {
+        // Arrange
+        var organisation = OrganisationBuilder.Build();
+
+        MockEditOrganisationJourneyService
+            .Setup(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value))
+            .ReturnsAsync(organisation);
+
+        // Act
+        var result = await Sut.OnPostEditPhoneNumberAsync(organisation.OrganisationId!.Value);
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>();
+        var redirectResult = result as RedirectResult;
+        redirectResult.Should().NotBeNull();
+        redirectResult!.Url.Should().Be("/manage-organisations");
+
+        TempData["NotificationType"].Should().Be(NotificationBannerType.Success);
+        TempData["NotificationHeader"].Should().Be($"{organisation.OrganisationName} has been updated");
+        TempData["NotificationMessage"].Should().BeNull();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisation.OrganisationId!.Value), Times.Once);
+        MockEditOrganisationJourneyService.Verify(x => x.CompleteJourneyAsync(organisation.OrganisationId!.Value), Times.Once);
+        VerifyAllNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task OnPostEditPhoneNumberAsync_WhenCalledWithNullOrganisation_ReturnsBadRequest()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await Sut.OnPostEditPhoneNumberAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+
+        MockEditOrganisationJourneyService.Verify(x => x.GetOrganisationAsync(organisationId), Times.Once);
         VerifyAllNoOtherCalls();
     }
 }

@@ -251,14 +251,10 @@ app.UseWhen(
 app.UseCsp(csp =>
 {
     var pageTemplateHelper = app.Services.GetRequiredService<PageTemplateHelper>();
-    var cspSettings = builder.Configuration.GetSection("ContentSecurityPolicy");
-    var scriptHash = cspSettings["ScriptHash"];
 
     csp.ByDefaultAllow.FromSelf();
 
     csp.AllowScripts.FromSelf().From(pageTemplateHelper.GetCspScriptHashes()).AddNonce();
-
-    csp.AllowScripts.AllowUnsafeInline().WithHash(scriptHash);
 
     csp.AllowStyles.FromSelf().AddNonce();
 

@@ -68,7 +68,6 @@ builder.Services.AddApplicationInsightsTelemetry();
 
 // Dependencies
 builder.Services.AddValidators();
-builder.Services.AddRepository();
 builder.Services.AddJourneys();
 builder.Services.AddClients();
 builder.Services.AddServices();
@@ -93,9 +92,14 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (featureFlags.EnableDeveloperExceptionPage)
+{
     app.UseDeveloperExceptionPage();
+}
 else
-    app.UseExceptionHandler("/Home/Error");
+{
+    app.UseExceptionHandler("/Error/Index");
+    app.UseStatusCodePagesWithReExecute("/Error/Index", "?code={0}");
+}
 
 if (featureFlags.EnableHttpStrictTransportSecurity)
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
